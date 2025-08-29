@@ -1,0 +1,102 @@
+import { ArrowRight, Shield, Clock, Users, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import heroBg from '@/assets/hero-bg.jpg';
+
+const Hero = () => {
+  return (
+    <section className="relative overflow-hidden bg-gradient-hero">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={heroBg}
+          alt="CS2 Skins Trading Platform"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-hero opacity-80" />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 py-24 lg:py-32">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Main Headline */}
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+            Trade CS2 Skins{' '}
+            <span className="text-gaming-orange">Securely</span>
+            {' '}& Fast
+          </h1>
+
+          {/* Value Proposition */}
+          <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-3xl mx-auto">
+            Compare operators, analyze cases, and make informed decisions with our 
+            trust-first analysis and community reviews.
+          </p>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <Button 
+              size="lg" 
+              className="bg-white text-primary hover:bg-white/90 px-8 py-6 text-lg font-semibold"
+            >
+              Compare Operators
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
+            >
+              Explore Cases
+            </Button>
+          </div>
+
+          {/* Trust Strip */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 mb-8">
+            <a 
+              href="/methodology" 
+              className="flex items-center justify-center space-x-2 text-white/80 hover:text-white transition-colors group"
+            >
+              <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span className="text-sm font-medium">How we rate</span>
+            </a>
+            <a 
+              href="/editorial-policy" 
+              className="flex items-center justify-center space-x-2 text-white/80 hover:text-white transition-colors group"
+            >
+              <Users className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span className="text-sm font-medium">Editorial policy</span>
+            </a>
+            <a 
+              href="/affiliate-disclosure" 
+              className="flex items-center justify-center space-x-2 text-white/80 hover:text-white transition-colors group"
+            >
+              <TrendingUp className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span className="text-sm font-medium">Affiliate disclosure</span>
+            </a>
+            <div className="flex items-center justify-center space-x-2 text-white/80">
+              <Clock className="h-4 w-4" />
+              <span className="text-sm font-medium">Updated daily</span>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-6 text-white/90">
+            <Badge variant="secondary" className="bg-white/10 text-white border-white/20 px-4 py-2">
+              <strong className="font-semibold">50+</strong> operators reviewed
+            </Badge>
+            <Badge variant="secondary" className="bg-white/10 text-white border-white/20 px-4 py-2">
+              <strong className="font-semibold">4.2★</strong> average Trust score
+            </Badge>
+            <Badge variant="secondary" className="bg-white/10 text-white border-white/20 px-4 py-2">
+              <strong className="font-semibold">99.8%</strong> platform uptime
+            </Badge>
+          </div>
+        </div>
+      </div>
+
+      {/* Gradient Fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10" />
+    </section>
+  );
+};
+
+export default Hero;

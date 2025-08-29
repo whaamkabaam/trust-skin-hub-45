@@ -1,73 +1,131 @@
-# Welcome to your Lovable project
+# Unpacked.gg - CS2 Skins Trading Hub
 
-## Project info
+A trust-first hub for CS2 skins trading, cases, and mystery boxes built with React, TypeScript, and Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/be8f8431-6333-44ef-8978-4f9517f9f5b6
+## Features
 
-## How can I edit this code?
+### 🛡️ Trust-First Design
+- Comprehensive security analysis for all operators
+- Transparent methodology and editorial policies
+- Community-driven reviews and ratings
+- Trust scores based on multiple factors
 
-There are several ways of editing your application.
+### 🎮 CS2 Trading Focus
+- Operator comparisons with detailed analysis
+- Case opening odds and drop table analysis
+- Mystery box verification and fairness ratings
+- Real-time market data and trends
 
-**Use Lovable**
+### 📱 Responsive & Accessible
+- Full feature parity across desktop and mobile
+- WCAG 2.1 AA compliance
+- Keyboard navigation support
+- Colorblind-safe design elements
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/be8f8431-6333-44ef-8978-4f9517f9f5b6) and start prompting.
+### 🔍 Advanced Filtering
+- Multi-dimensional operator filtering
+- Sort by fees, trust score, payout speed
+- Game-specific filters (CS2, Rust, TF2, Dota2)
+- Payment method and KYC filtering
 
-Changes made via Lovable will be committed automatically to this repo.
+## Tech Stack
 
-**Use your preferred IDE**
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Animations**: Framer Motion
+- **Routing**: React Router v6
+- **Forms**: React Hook Form + Zod validation
+- **Icons**: Lucide React
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start development server: `npm run dev`
+4. Open http://localhost:8080
 
-Follow these steps:
+## Project Structure
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui base components
+│   ├── Header.tsx      # Navigation header
+│   ├── Hero.tsx        # Homepage hero section
+│   ├── OperatorCard.tsx # Operator comparison cards
+│   ├── CaseCard.tsx    # Case analysis cards
+│   ├── ReviewCard.tsx  # Community review cards
+│   └── ...
+├── pages/              # Page components
+├── types/              # TypeScript type definitions
+├── lib/                # Utilities and sample data
+└── assets/             # Images and media
 ```
 
-**Edit a file directly in GitHub**
+## Key Components
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Design System
+- **Colors**: Professional navy/slate with CS2-inspired accents
+- **Typography**: Inter font with clear hierarchy
+- **Shadows**: Layered elevation system
+- **Animations**: Smooth transitions and micro-interactions
 
-**Use GitHub Codespaces**
+### Operator Cards
+- Trust scores and verification badges
+- Fee analysis with visual indicators
+- Payment method icons
+- Pros/cons comparison
+- Community ratings integration
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Review System
+- Verified reviewer badges
+- Multi-dimensional ratings (Trust, Fees, UX, Support)
+- Helpful/unhelpful voting
+- Operator response threads
+- Photo attachments
 
-## What technologies are used for this project?
+### Case Analysis
+- Odds disclosure verification
+- Drop table analysis
+- Expected return calculations
+- Rarity-based color coding
+- Historical price data
 
-This project is built with:
+## Data Integration
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+The application uses sample JSON data for demonstration. To integrate real data:
 
-## How can I deploy this project?
+1. Replace sample data in `src/lib/sample-data.ts`
+2. Implement API calls in respective components
+3. Add error handling and loading states
+4. Update TypeScript types as needed
 
-Simply open [Lovable](https://lovable.dev/projects/be8f8431-6333-44ef-8978-4f9517f9f5b6) and click on Share -> Publish.
+## Performance
 
-## Can I connect a custom domain to my Lovable project?
+- Lazy loading for images with aspect ratio boxes
+- Route-level code splitting
+- Optimized bundle size with tree shaking
+- LCP target: ≤ 2.5s
 
-Yes, you can!
+## Security & Compliance
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- No affiliate parameters in regular links (only tracked CTAs)
+- GDPR-compliant review submission
+- Content moderation system
+- Anti-gaming safeguards for reviews
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Contributing
+
+1. Follow the established component patterns
+2. Maintain TypeScript strict mode compliance
+3. Test accessibility with keyboard navigation
+4. Ensure mobile responsiveness
+5. Update this README for significant changes
+
+## License
+
+This project is proprietary software for Unpacked.gg.
+
+---
+
+For more information about features and implementation details, see the component documentation in each file.
