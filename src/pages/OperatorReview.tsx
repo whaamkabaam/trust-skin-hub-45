@@ -49,7 +49,7 @@ const OperatorReview = () => {
       
       {/* Breadcrumbs */}
       <div className="border-b bg-muted/20">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-4 py-2">
           <div className="flex items-center gap-2 text-sm">
             <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
             <span className="text-muted-foreground">/</span>
@@ -60,30 +60,30 @@ const OperatorReview = () => {
         </div>
       </div>
 
-      {/* Hero Section */}
+      {/* Compact Hero Section */}
       <section className="bg-gradient-card border-b">
-        <div className="container mx-auto px-4 py-6">
-          <Button variant="ghost" size="sm" className="mb-4" asChild>
+        <div className="container mx-auto px-4 py-4">
+          <Button variant="ghost" size="sm" className="mb-3" asChild>
             <Link to="/operators">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to operators
             </Link>
           </Button>
 
-          {/* Main Header Row */}
-          <div className="flex flex-col lg:flex-row gap-8 mb-6">
-            {/* Left: Operator Info */}
-            <div className="flex-1 min-w-0">
+          {/* Compact Layout */}
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Left: Main Info */}
+            <div className="lg:col-span-2">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-16 h-16 bg-white rounded-xl shadow-card flex items-center justify-center flex-shrink-0">
-                  <span className="text-xl font-bold text-primary">{operator.name.charAt(0)}</span>
+                <div className="w-12 h-12 bg-white rounded-lg shadow-card flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg font-bold text-primary">{operator.name.charAt(0)}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-3xl font-bold mb-2">{operator.name} Review</h1>
-                  <p className="text-lg text-muted-foreground mb-3">{operator.verdict}</p>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <RatingBadge rating={operator.overallRating} size="lg" showText />
-                    <TrustIndicator score={operator.trustScore} size="md" />
+                  <h1 className="text-2xl font-bold mb-1">{operator.name} Review</h1>
+                  <p className="text-muted-foreground mb-2">{operator.verdict}</p>
+                  <div className="flex items-center gap-3 flex-wrap mb-3">
+                    <RatingBadge rating={operator.overallRating} size="md" showText />
+                    <TrustIndicator score={operator.trustScore} size="sm" />
                     {operator.verified && (
                       <Badge className="bg-success text-success-foreground">
                         <CheckCircle className="w-3 h-3 mr-1" />
@@ -91,72 +91,24 @@ const OperatorReview = () => {
                       </Badge>
                     )}
                   </div>
+                  <div className="flex gap-3">
+                    <Button size="sm" className="bg-gradient-trust">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Visit {operator.name}
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Read Trust Section
+                    </Button>
+                  </div>
                 </div>
               </div>
 
-              {/* Quick Actions */}
-              <div className="flex gap-3 mb-4">
-                <Button className="bg-gradient-trust">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Visit {operator.name}
-                </Button>
-                <Button variant="outline">
-                  Read Trust Section
-                </Button>
-              </div>
-            </div>
-
-            {/* Right: Key Stats */}
-            <div className="lg:w-80 flex-shrink-0">
-              <Card className="h-full">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Quick Facts</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-success">{operator.fees.deposit}%</div>
-                      <div className="text-xs text-muted-foreground">Deposit fee</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-warning">{operator.fees.withdrawal}%</div>
-                      <div className="text-xs text-muted-foreground">Withdrawal fee</div>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Payout speed</span>
-                      <span className="font-medium">{operator.payoutSpeed}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">KYC required</span>
-                      <span className="font-medium">{operator.kycRequired ? 'Yes' : 'No'}</span>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div>
-                    <span className="text-sm text-muted-foreground block mb-2">Payment methods</span>
-                    <div className="flex gap-1 flex-wrap">
-                      {operator.paymentMethods.slice(0, 3).map((method) => (
-                        <Badge key={method} variant="outline" className="text-xs">
-                          {method}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Summary Row */}
-          <div className="grid lg:grid-cols-4 gap-6">
-            {/* Pros & Cons */}
-            <div className="lg:col-span-3">
+              {/* Compact Pros & Cons */}
               <Card>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold mb-3">Why we recommend {operator.name}</h3>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Why we recommend {operator.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <h4 className="font-medium text-success mb-2 flex items-center text-sm">
@@ -185,15 +137,55 @@ const OperatorReview = () => {
               </Card>
             </div>
 
-            {/* Compare Section */}
-            <div className="lg:col-span-1">
-              <Card className="h-full">
+            {/* Right: Sidebar with Quick Facts & Compare */}
+            <div className="space-y-4">
+              {/* Quick Facts */}
+              <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Compare with</CardTitle>
+                  <CardTitle className="text-lg">Quick Facts</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="pt-0 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-3 bg-muted/30 rounded-lg">
+                      <div className="text-xl font-bold text-success">{operator.fees.deposit}%</div>
+                      <div className="text-xs text-muted-foreground">Deposit fee</div>
+                    </div>
+                    <div className="text-center p-3 bg-muted/30 rounded-lg">
+                      <div className="text-xl font-bold text-warning">{operator.fees.withdrawal}%</div>
+                      <div className="text-xs text-muted-foreground">Withdrawal fee</div>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Payout speed</span>
+                      <span className="font-medium">{operator.payoutSpeed}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">KYC required</span>
+                      <span className="font-medium">{operator.kycRequired ? 'Yes' : 'No'}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground block mb-2">Payment methods</span>
+                    <div className="flex gap-1 flex-wrap">
+                      {operator.paymentMethods.slice(0, 3).map((method) => (
+                        <Badge key={method} variant="outline" className="text-xs">
+                          {method}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Compare Section */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Compare with</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-3">
                   {sampleOperators.slice(1, 3).map((comp) => (
-                    <div key={comp.id} className="flex items-center gap-2">
+                    <div key={comp.id} className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
                         <span className="text-xs font-semibold">{comp.name.charAt(0)}</span>
                       </div>
@@ -203,7 +195,7 @@ const OperatorReview = () => {
                       </div>
                     </div>
                   ))}
-                  <Button variant="ghost" size="sm" className="w-full mt-2">
+                  <Button variant="ghost" size="sm" className="w-full">
                     View All Comparisons
                   </Button>
                 </CardContent>
@@ -351,8 +343,6 @@ const OperatorReview = () => {
                 </Card>
               </div>
             </div>
-
-            {/* More sections would continue here... */}
 
             {/* Final Scores */}
             <div id="conclusion-section">
