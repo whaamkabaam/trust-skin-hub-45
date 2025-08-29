@@ -62,65 +62,121 @@ const OperatorReview = () => {
 
       {/* Hero Section */}
       <section className="bg-gradient-card border-b">
-        <div className="container mx-auto px-4 py-8">
-          <Button variant="ghost" size="sm" className="mb-6" asChild>
+        <div className="container mx-auto px-4 py-6">
+          <Button variant="ghost" size="sm" className="mb-4" asChild>
             <Link to="/operators">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to operators
             </Link>
           </Button>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <div className="flex items-start gap-6 mb-6">
-                <div className="w-20 h-20 bg-white rounded-2xl shadow-card flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl font-bold text-primary">{operator.name.charAt(0)}</span>
+          {/* Main Header Row */}
+          <div className="flex flex-col lg:flex-row gap-8 mb-6">
+            {/* Left: Operator Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-16 h-16 bg-white rounded-xl shadow-card flex items-center justify-center flex-shrink-0">
+                  <span className="text-xl font-bold text-primary">{operator.name.charAt(0)}</span>
                 </div>
-                <div className="flex-1">
-                  <h1 className="text-4xl font-bold mb-3">{operator.name} Review</h1>
-                  <p className="text-xl text-muted-foreground mb-4">{operator.verdict}</p>
-                  <div className="flex items-center gap-4">
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-3xl font-bold mb-2">{operator.name} Review</h1>
+                  <p className="text-lg text-muted-foreground mb-3">{operator.verdict}</p>
+                  <div className="flex items-center gap-3 flex-wrap">
                     <RatingBadge rating={operator.overallRating} size="lg" showText />
                     <TrustIndicator score={operator.trustScore} size="md" />
+                    {operator.verified && (
+                      <Badge className="bg-success text-success-foreground">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Quick Actions */}
-              <div className="flex gap-3 mb-6">
-                <Button size="lg" className="bg-gradient-trust">
-                  <ExternalLink className="w-5 h-5 mr-2" />
+              <div className="flex gap-3 mb-4">
+                <Button className="bg-gradient-trust">
+                  <ExternalLink className="w-4 h-4 mr-2" />
                   Visit {operator.name}
                 </Button>
-                <Button variant="outline" size="lg">
+                <Button variant="outline">
                   Read Trust Section
                 </Button>
               </div>
+            </div>
 
-              {/* Summary */}
+            {/* Right: Key Stats */}
+            <div className="lg:w-80 flex-shrink-0">
+              <Card className="h-full">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Quick Facts</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-success">{operator.fees.deposit}%</div>
+                      <div className="text-xs text-muted-foreground">Deposit fee</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-warning">{operator.fees.withdrawal}%</div>
+                      <div className="text-xs text-muted-foreground">Withdrawal fee</div>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Payout speed</span>
+                      <span className="font-medium">{operator.payoutSpeed}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">KYC required</span>
+                      <span className="font-medium">{operator.kycRequired ? 'Yes' : 'No'}</span>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div>
+                    <span className="text-sm text-muted-foreground block mb-2">Payment methods</span>
+                    <div className="flex gap-1 flex-wrap">
+                      {operator.paymentMethods.slice(0, 3).map((method) => (
+                        <Badge key={method} variant="outline" className="text-xs">
+                          {method}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Summary Row */}
+          <div className="grid lg:grid-cols-4 gap-6">
+            {/* Pros & Cons */}
+            <div className="lg:col-span-3">
               <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-4">Why we recommend {operator.name}</h3>
-                  <div className="grid md:grid-cols-2 gap-6">
+                <CardContent className="p-4">
+                  <h3 className="font-semibold mb-3">Why we recommend {operator.name}</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-medium text-success mb-2 flex items-center">
+                      <h4 className="font-medium text-success mb-2 flex items-center text-sm">
                         <CheckCircle className="w-4 h-4 mr-2" />
                         Strengths
                       </h4>
-                      <ul className="space-y-1 text-sm">
+                      <ul className="space-y-1">
                         {operator.pros.map((pro, i) => (
-                          <li key={i} className="text-muted-foreground">• {pro}</li>
+                          <li key={i} className="text-sm text-muted-foreground">• {pro}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-medium text-destructive mb-2 flex items-center">
+                      <h4 className="font-medium text-destructive mb-2 flex items-center text-sm">
                         <XCircle className="w-4 h-4 mr-2" />
                         Areas for improvement
                       </h4>
-                      <ul className="space-y-1 text-sm">
+                      <ul className="space-y-1">
                         {operator.cons.map((con, i) => (
-                          <li key={i} className="text-muted-foreground">• {con}</li>
+                          <li key={i} className="text-sm text-muted-foreground">• {con}</li>
                         ))}
                       </ul>
                     </div>
@@ -129,9 +185,40 @@ const OperatorReview = () => {
               </Card>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Table of Contents */}
+            {/* Compare Section */}
+            <div className="lg:col-span-1">
+              <Card className="h-full">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Compare with</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {sampleOperators.slice(1, 3).map((comp) => (
+                    <div key={comp.id} className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-semibold">{comp.name.charAt(0)}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">{comp.name}</div>
+                        <RatingBadge rating={comp.overallRating} size="sm" />
+                      </div>
+                    </div>
+                  ))}
+                  <Button variant="ghost" size="sm" className="w-full mt-2">
+                    View All Comparisons
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Table of Contents Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">On this page</CardTitle>
@@ -148,95 +235,11 @@ const OperatorReview = () => {
                   ))}
                 </CardContent>
               </Card>
-
-              {/* Fast Facts */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Fast Facts</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Deposit fees</span>
-                    <span className="text-sm font-medium">{operator.fees.deposit}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Withdrawal fees</span>
-                    <span className="text-sm font-medium">{operator.fees.withdrawal}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Trading fees</span>
-                    <span className="text-sm font-medium">{operator.fees.trading}%</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Min deposit</span>
-                    <span className="text-sm font-medium">$5</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Payout speed</span>
-                    <span className="text-sm font-medium">{operator.payoutSpeed}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">KYC required</span>
-                    <span className="text-sm font-medium">
-                      {operator.kycRequired ? 'Yes' : 'No'}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div>
-                    <span className="text-sm text-muted-foreground block mb-2">Payment methods</span>
-                    <div className="flex gap-1 flex-wrap">
-                      {operator.paymentMethods.map((method) => (
-                        <Badge key={method} variant="outline" className="text-xs">
-                          {method}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground block mb-2">Available modes</span>
-                    <div className="flex gap-1 flex-wrap">
-                      {operator.modes.map((mode) => (
-                        <Badge key={mode} variant="outline" className="text-xs">
-                          {mode}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Compare Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Compare with</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {sampleOperators.slice(1, 3).map((comp) => (
-                    <div key={comp.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
-                          <span className="text-sm font-semibold">{comp.name.charAt(0)}</span>
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium">{comp.name}</div>
-                          <RatingBadge rating={comp.overallRating} size="sm" />
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm">Compare</Button>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-12">
+          {/* Main Content */}
+          <div className="lg:col-span-3 space-y-12">
             
             {/* Trust Section */}
             <div id="trust-section">
@@ -405,45 +408,6 @@ const OperatorReview = () => {
                   Visit {operator.name}
                 </Button>
               </div>
-            </div>
-          </div>
-
-          {/* Sticky Sidebar */}
-          <div className="hidden lg:block">
-            <div className="sticky top-8 space-y-6">
-              {/* Quick CTA */}
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <h4 className="font-semibold mb-2">Ready to trade?</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Start trading CS2 skins securely
-                  </p>
-                  <Button className="w-full bg-gradient-trust">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Visit {operator.name}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Related Reviews */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Related reviews</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {sampleOperators.slice(1, 3).map((related) => (
-                    <div key={related.id} className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                        <span className="text-xs font-semibold">{related.name.charAt(0)}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate">{related.name}</div>
-                        <RatingBadge rating={related.overallRating} size="sm" />
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>
