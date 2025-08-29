@@ -219,29 +219,6 @@ const OperatorReview = () => {
                   </Badge>
                 </CardContent>
               </Card>
-
-              {/* Compare Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Compare with</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {sampleOperators.slice(1, 3).map((comp) => (
-                    <div key={comp.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0 border">
-                        <span className="text-sm font-semibold">{comp.name.charAt(0)}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{comp.name}</div>
-                        <RatingBadge rating={comp.overallRating} size="sm" />
-                      </div>
-                    </div>
-                  ))}
-                  <Button variant="outline" size="sm" className="w-full mt-3">
-                    View Full Comparison
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>
