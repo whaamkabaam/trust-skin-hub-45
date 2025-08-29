@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Grid, List, Package, Hash, Verified, TrendingUp, Calendar } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -92,7 +93,7 @@ const MysteryBoxesArchive = () => {
       <div className="border-b bg-muted/20">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <a href="/" className="text-muted-foreground hover:text-foreground">Home</a>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
             <span className="text-muted-foreground">/</span>
             <span className="font-medium">Mystery Boxes</span>
           </div>
@@ -369,11 +370,12 @@ const MysteryBoxesArchive = () => {
                     "relative overflow-hidden",
                     view === 'list' ? "w-32 flex-shrink-0" : "aspect-square"
                   )}>
-                    <img
-                      src={box.image}
-                      alt={box.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
+                    <div className="w-full h-full bg-gradient-card rounded group-hover:scale-105 transition-transform duration-200 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-4xl mb-2">🎁</div>
+                        <div className="font-semibold text-sm">{box.name}</div>
+                      </div>
+                    </div>
                     <div className="absolute top-3 left-3">
                       <Badge variant="secondary">{box.game}</Badge>
                     </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, TrendingUp, Verified, Eye, BarChart3, Calculator, ShoppingCart, ExternalLink, Info, Package, Truck, RotateCcw, Hash } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -124,9 +125,9 @@ const MysteryBoxDetail = () => {
       <div className="border-b bg-muted/20">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <a href="/" className="text-muted-foreground hover:text-foreground">Home</a>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
             <span className="text-muted-foreground">/</span>
-            <a href="/mystery-boxes" className="text-muted-foreground hover:text-foreground">Mystery Boxes</a>
+            <Link to="/mystery-boxes" className="text-muted-foreground hover:text-foreground">Mystery Boxes</Link>
             <span className="text-muted-foreground">/</span>
             <span className="font-medium">{boxData.name}</span>
           </div>
@@ -136,20 +137,24 @@ const MysteryBoxDetail = () => {
       {/* Hero Section */}
       <section className="bg-gradient-card border-b">
         <div className="container mx-auto px-4 py-8">
-          <Button variant="ghost" size="sm" className="mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to mystery boxes
+          <Button variant="ghost" size="sm" className="mb-4" asChild>
+            <Link to="/mystery-boxes">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to mystery boxes
+            </Link>
           </Button>
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <div className="flex flex-col md:flex-row gap-6 mb-6">
                 <div className="relative">
-                  <img
-                    src={boxData.image || '/img/boxes/default-box.jpg'}
-                    alt={boxData.name}
-                    className="w-full md:w-80 aspect-square object-cover rounded-lg shadow-card"
-                  />
+                  <div className="w-full md:w-80 aspect-square bg-gradient-card rounded-lg shadow-card flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-6xl mb-4">🎁</div>
+                      <div className="font-semibold text-xl text-primary">{boxData.name}</div>
+                      <div className="text-sm text-muted-foreground mt-2">{boxData.category} Collection</div>
+                    </div>
+                  </div>
                   <div className="absolute top-4 left-4">
                     <Badge variant="secondary">{boxData.game}</Badge>
                   </div>

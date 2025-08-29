@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Filter, SlidersHorizontal, Grid, List, TrendingUp, Star } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -76,7 +77,7 @@ const OperatorsArchive = () => {
       <div className="border-b bg-muted/20">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <a href="/" className="text-muted-foreground hover:text-foreground">Home</a>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
             <span className="text-muted-foreground">/</span>
             <span className="font-medium">Operators</span>
           </div>

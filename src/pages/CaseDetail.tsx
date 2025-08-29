@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, TrendingUp, Verified, Eye, BarChart3, Calculator, ShoppingCart, ExternalLink, Info } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -126,9 +127,9 @@ const CaseDetail = () => {
       <div className="border-b bg-muted/20">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <a href="/" className="text-muted-foreground hover:text-foreground">Home</a>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
             <span className="text-muted-foreground">/</span>
-            <a href="/cases" className="text-muted-foreground hover:text-foreground">Cases</a>
+            <Link to="/cases" className="text-muted-foreground hover:text-foreground">Cases</Link>
             <span className="text-muted-foreground">/</span>
             <span className="font-medium">{caseData.name}</span>
           </div>
@@ -138,20 +139,23 @@ const CaseDetail = () => {
       {/* Hero Section */}
       <section className="bg-gradient-card border-b">
         <div className="container mx-auto px-4 py-8">
-          <Button variant="ghost" size="sm" className="mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to cases
+          <Button variant="ghost" size="sm" className="mb-4" asChild>
+            <Link to="/cases">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to cases
+            </Link>
           </Button>
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <div className="flex flex-col md:flex-row gap-6 mb-6">
                 <div className="relative">
-                  <img
-                    src={caseData.image || '/img/cases/default-case.jpg'}
-                    alt={caseData.name}
-                    className="w-full md:w-80 aspect-[4/3] object-cover rounded-lg shadow-card"
-                  />
+                  <div className="w-full md:w-80 aspect-[4/3] bg-gradient-card rounded-lg shadow-card flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">📦</div>
+                      <div className="font-semibold text-lg">{caseData.name}</div>
+                    </div>
+                  </div>
                   {caseData.verified && (
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-success text-success-foreground">

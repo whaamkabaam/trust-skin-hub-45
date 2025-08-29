@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Shield, Clock, CreditCard, Globe, Users, TrendingUp, Star, ChevronDown, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -50,9 +51,9 @@ const OperatorReview = () => {
       <div className="border-b bg-muted/20">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <a href="/" className="text-muted-foreground hover:text-foreground">Home</a>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
             <span className="text-muted-foreground">/</span>
-            <a href="/operators" className="text-muted-foreground hover:text-foreground">Operators</a>
+            <Link to="/operators" className="text-muted-foreground hover:text-foreground">Operators</Link>
             <span className="text-muted-foreground">/</span>
             <span className="font-medium">{operator.name} Review</span>
           </div>
@@ -63,9 +64,11 @@ const OperatorReview = () => {
       <section className="bg-gradient-card border-b">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-start justify-between mb-6">
-            <Button variant="ghost" size="sm" className="mb-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to operators
+            <Button variant="ghost" size="sm" className="mb-4" asChild>
+              <Link to="/operators">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to operators
+              </Link>
             </Button>
           </div>
 
