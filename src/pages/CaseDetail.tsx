@@ -136,117 +136,266 @@ const CaseDetail = () => {
         </div>
       </div>
 
-      {/* Compact Hero Section */}
+      {/* Hero Section */}
       <section className="bg-gradient-card border-b">
-        <div className="container mx-auto px-4 py-3">
-          <Button variant="ghost" size="sm" className="mb-2" asChild>
+        <div className="container mx-auto px-4 py-8">
+          <Button variant="ghost" size="sm" className="mb-4" asChild>
             <Link to="/cases">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to cases
             </Link>
           </Button>
 
-          {/* Single Row Layout */}
-          <div className="grid lg:grid-cols-12 gap-4 items-center">
-            {/* Case Info */}
-            <div className="lg:col-span-5 flex items-center gap-4">
-              <div className="relative">
-                <div className="w-16 h-16 bg-gradient-card rounded-lg shadow-card flex items-center justify-center flex-shrink-0">
-                  <div className="text-2xl">📦</div>
-                </div>
-                {caseData.verified && (
-                  <Badge className="absolute -top-1 -right-1 bg-success text-success-foreground text-xs">
-                    <Verified className="w-3 h-3 mr-1" />
-                    Verified
-                  </Badge>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h1 className="text-xl font-bold leading-tight">{caseData.name}</h1>
-                <div className="flex items-center gap-2 mb-1">
-                  <Badge variant="secondary" className="text-xs">{caseData.game}</Badge>
-                  <Badge className="bg-success text-success-foreground text-xs">
-                    Odds: {caseData.oddsDisclosed}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">{caseData.description}</p>
-              </div>
-            </div>
-
-            {/* Key Stats - Horizontal */}
-            <div className="lg:col-span-4">
-              <div className="grid grid-cols-4 gap-2 text-center">
-                <div className="p-2 bg-muted/30 rounded">
-                  <div className="text-lg font-bold text-primary">${caseData.currentPrice}</div>
-                  <div className="text-xs text-muted-foreground">Price</div>
-                </div>
-                <div className="p-2 bg-muted/30 rounded">
-                  <div className="text-lg font-bold">{(caseData.stats.avgReturn * 100).toFixed(0)}%</div>
-                  <div className="text-xs text-muted-foreground">Return</div>
-                </div>
-                <div className="p-2 bg-muted/30 rounded">
-                  <div className="text-sm font-bold text-success">{caseData.stats.profitableOpens}%</div>
-                  <div className="text-xs text-muted-foreground">Profitable</div>
-                </div>
-                <div className="p-2 bg-muted/30 rounded">
-                  <div className="text-sm font-bold">{(caseData.stats.openCount / 1000).toFixed(0)}k</div>
-                  <div className="text-xs text-muted-foreground">Opens</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Similar Cases - Inline */}
-            <div className="lg:col-span-3">
-              <div className="text-xs text-muted-foreground mb-1">Similar Cases:</div>
-              <div className="flex gap-2">
-                {relatedCases.slice(0, 3).map((relatedCase, index) => (
-                  <div key={index} className="flex items-center gap-1 bg-muted/30 rounded px-2 py-1 text-xs">
-                    <span className="font-medium truncate">{relatedCase.name.split(' ')[0]}</span>
-                    <span className="text-muted-foreground">${relatedCase.price}</span>
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="flex flex-col md:flex-row gap-6 mb-6">
+                <div className="relative">
+                  <div className="w-full md:w-80 aspect-[4/3] bg-gradient-card rounded-lg shadow-card flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">📦</div>
+                      <div className="font-semibold text-lg">{caseData.name}</div>
+                    </div>
                   </div>
-                ))}
+                  {caseData.verified && (
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-success text-success-foreground">
+                        <Verified className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex-1">
+                  <h1 className="text-4xl font-bold mb-3">{caseData.name}</h1>
+                  <div className="flex items-center gap-4 mb-4">
+                    <Badge variant="secondary">{caseData.game}</Badge>
+                    <Badge className="bg-success text-success-foreground">
+                      Odds: {caseData.oddsDisclosed}
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <div className="text-2xl font-bold text-primary">
+                        ${caseData.currentPrice.toFixed(2)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Current price</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-muted-foreground">
+                        {(caseData.stats.avgReturn * 100).toFixed(0)}%
+                      </div>
+                      <div className="text-sm text-muted-foreground">Avg return</div>
+                    </div>
+                  </div>
+
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {caseData.description}
+                  </p>
+
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Released {new Date(caseData.releaseDate).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Eye className="w-4 h-4" />
+                      <span>{caseData.stats.openCount.toLocaleString()} opens</span>
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Key Stats */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Key Statistics</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-lg font-bold">{caseData.stats.openCount.toLocaleString()}</div>
+                      <div className="text-xs text-muted-foreground">Total opens</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-success">
+                        {caseData.stats.profitableOpens}%
+                      </div>
+                      <div className="text-xs text-muted-foreground">Profitable</div>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Min price</span>
+                      <span className="font-medium">${caseData.minPrice}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Current price</span>
+                      <span className="font-medium">${caseData.currentPrice}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Expected value</span>
+                      <span className="font-medium">${(caseData.currentPrice * caseData.stats.avgReturn).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Related Cases */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Similar Cases</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {relatedCases.map((relatedCase, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <img
+                        src={relatedCase.image}
+                        alt={relatedCase.name}
+                        className="w-12 h-12 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{relatedCase.name}</div>
+                        <div className="text-xs text-muted-foreground">${relatedCase.price}</div>
+                      </div>
+                      <Button variant="ghost" size="sm">View</Button>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Safety Note */}
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  Case opening involves chance. Never spend more than you can afford to lose.
+                </AlertDescription>
+              </Alert>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Content - No Tabs, All Visible */}
-      <section className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left Column - Drop Table */}
-          <div className="lg:col-span-2 space-y-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <BarChart3 className="w-6 h-6" />
-              Drop Table & Odds
-            </h2>
-            
-            <div className="space-y-4">
+      {/* Main Content Tabs */}
+      <section className="container mx-auto px-4 py-12">
+        <Tabs defaultValue="overview" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="drops">Drop Table</TabsTrigger>
+            <TabsTrigger value="history">Price History</TabsTrigger>
+            <TabsTrigger value="calculator">ROI Calculator</TabsTrigger>
+            <TabsTrigger value="operators">Where to Open</TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5" />
+                    Drop Statistics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {dropTable.map((rarity) => (
+                      <div key={rarity.rarity} className="flex justify-between items-center">
+                        <span className={cn("font-medium", rarity.color)}>{rarity.rarity}</span>
+                        <span className="text-sm">{rarity.probability}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5" />
+                    Value Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Case cost</span>
+                      <span className="font-medium">${caseData.currentPrice}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Expected value</span>
+                      <span className="font-medium">${(caseData.currentPrice * caseData.stats.avgReturn).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Expected loss</span>
+                      <span className="font-medium text-destructive">
+                        -${(caseData.currentPrice * (1 - caseData.stats.avgReturn)).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="w-5 h-5" />
+                    Community Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Opens today</span>
+                      <span className="font-medium">1,247</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Avg per hour</span>
+                      <span className="font-medium">52</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Peak hour</span>
+                      <span className="font-medium">8:00 PM UTC</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Drop Table Tab */}
+          <TabsContent value="drops" className="space-y-6">
+            <div className="space-y-6">
               {dropTable.map((rarity) => (
                 <Card key={rarity.rarity}>
-                  <CardHeader className="pb-2">
-                    <CardTitle className={cn("flex items-center justify-between text-lg", rarity.color)}>
+                  <CardHeader>
+                    <CardTitle className={cn("flex items-center justify-between", rarity.color)}>
                       <span>{rarity.rarity}</span>
                       <Badge variant="outline">{rarity.probability}% chance</Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid gap-2">
+                    <div className="grid gap-4">
                       {rarity.items.map((item, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-muted/20 rounded">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
-                              <TrendingUp className="w-3 h-3" />
+                        <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-8 bg-muted rounded flex items-center justify-center">
+                              <TrendingUp className="w-4 h-4" />
                             </div>
                             <div>
-                              <div className="font-medium text-sm">{item.name}</div>
-                              <div className="text-xs text-muted-foreground">{item.wear}</div>
+                              <div className="font-medium">{item.name}</div>
+                              <div className="text-sm text-muted-foreground">{item.wear}</div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-medium text-sm">${item.price.avg}</div>
-                            <div className="text-xs text-muted-foreground">
-                              ${item.price.min} - ${(item.price.avg * 1.2).toFixed(2)}
+                            <div className="font-medium">${item.price.avg}</div>
+                            <div className="text-sm text-muted-foreground">
+                              ${item.price.min} - ${item.price.avg * 1.2}
                             </div>
                           </div>
                         </div>
@@ -256,144 +405,170 @@ const CaseDetail = () => {
                 </Card>
               ))}
             </div>
-          </div>
+          </TabsContent>
 
-          {/* Right Column - Calculator & Operators */}
-          <div className="space-y-6">
-            {/* ROI Calculator */}
+          {/* Price History Tab */}
+          <TabsContent value="history" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>6-Month Price History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64 flex items-end justify-between gap-2">
+                  {priceHistory.map((point, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div 
+                        className="w-full bg-primary rounded-t"
+                        style={{ height: `${(point.price / 4) * 100}%` }}
+                      />
+                      <div className="text-xs text-muted-foreground mt-2">{point.date}</div>
+                      <div className="text-xs font-medium">${point.price}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 text-center text-sm text-muted-foreground">
+                  Prices shown are daily averages across major operators
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ROI Calculator Tab */}
+          <TabsContent value="calculator" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="w-5 h-5" />
-                  ROI Calculator
+                  Expected Value Calculator
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div>
-                    <Label htmlFor="price">Case Price ($)</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      value={calculatorPrice}
-                      onChange={(e) => setCalculatorPrice(e.target.value)}
-                    />
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="price">Case price ($)</Label>
+                      <Input
+                        id="price"
+                        type="number"
+                        step="0.01"
+                        value={calculatorPrice}
+                        onChange={(e) => setCalculatorPrice(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="quantity">Quantity</Label>
+                      <Input
+                        id="quantity"
+                        type="number"
+                        min="1"
+                        value={calculatorQuantity}
+                        onChange={(e) => setCalculatorQuantity(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="quantity">Quantity</Label>
-                    <Input
-                      id="quantity"
-                      type="number"
-                      value={calculatorQuantity}
-                      onChange={(e) => setCalculatorQuantity(e.target.value)}
-                    />
-                  </div>
-                </div>
-                
-                <Separator />
-                
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Total cost</span>
-                    <span className="font-medium">${calculations.totalCost}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Expected value</span>
-                    <span className="font-medium">${calculations.expectedValue}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Expected profit</span>
-                    <span className={cn("font-medium", 
-                      parseFloat(calculations.profit) >= 0 ? "text-success" : "text-destructive"
-                    )}>
-                      ${calculations.profit}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Profit margin</span>
-                    <span className={cn("font-medium", 
-                      parseFloat(calculations.profitMargin) >= 0 ? "text-success" : "text-destructive"
-                    )}>
-                      {calculations.profitMargin}%
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Where to Open */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
-                  Where to Open
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {operators.map((operator, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                        <span className="text-xs font-bold text-primary-foreground">
-                          {operator.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="font-medium text-sm flex items-center gap-1">
-                          {operator.name}
-                          {operator.verified && (
-                            <Verified className="w-3 h-3 text-success" />
-                          )}
+                  <div className="space-y-4">
+                    <div className="p-4 bg-muted/30 rounded-lg">
+                      <h4 className="font-medium mb-3">Results</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Total cost:</span>
+                          <span className="font-medium">${calculations.totalCost}</span>
                         </div>
-                        <RatingBadge rating={operator.rating} size="sm" />
+                        <div className="flex justify-between">
+                          <span>Expected value:</span>
+                          <span className="font-medium">${calculations.expectedValue}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Expected profit:</span>
+                          <span className={cn(
+                            "font-medium",
+                            parseFloat(calculations.profit) >= 0 ? "text-success" : "text-destructive"
+                          )}>
+                            ${calculations.profit}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Profit margin:</span>
+                          <span className={cn(
+                            "font-medium",
+                            parseFloat(calculations.profitMargin) >= 0 ? "text-success" : "text-destructive"
+                          )}>
+                            {calculations.profitMargin}%
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-medium text-sm">${operator.price}</div>
-                      <Button variant="ghost" size="sm" className="h-6 text-xs">
-                        <ExternalLink className="w-3 h-3 mr-1" />
-                        Open
-                      </Button>
-                    </div>
+                    
+                    <Alert>
+                      <Info className="h-4 w-4" />
+                      <AlertDescription>
+                        This calculation is based on historical averages and current market prices. 
+                        Actual results may vary significantly.
+                      </AlertDescription>
+                    </Alert>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Operators Tab */}
+          <TabsContent value="operators" className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold">Where to open {caseData.name}</h3>
+              <p className="text-muted-foreground">
+                Compare prices and ratings across verified operators
+              </p>
+              
+              <div className="grid gap-4">
+                {operators.map((operator, index) => (
+                  <Card key={index}>
+                    <CardContent className="flex items-center justify-between p-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
+                          <span className="font-semibold">{operator.name.charAt(0)}</span>
+                        </div>
+                        <div>
+                          <div className="font-semibold">{operator.name}</div>
+                          <div className="flex items-center gap-2">
+                            <RatingBadge rating={operator.rating} size="sm" />
+                            {operator.verified && (
+                              <Badge className="bg-success text-success-foreground text-xs">
+                                <Verified className="w-3 h-3 mr-1" />
+                                Verified
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <div className="text-lg font-bold">${operator.price}</div>
+                          <div className="text-sm text-muted-foreground">per case</div>
+                        </div>
+                        <Button className="bg-gradient-trust">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Open Case
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
-              </CardContent>
-            </Card>
-
-            {/* Quick Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Analysis</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span>Expected value</span>
-                  <span className="font-medium">${(caseData.currentPrice * caseData.stats.avgReturn).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Expected loss</span>
-                  <span className="font-medium text-destructive">
-                    -${(caseData.currentPrice * (1 - caseData.stats.avgReturn)).toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Break-even chance</span>
-                  <span className="font-medium">{caseData.stats.profitableOpens}%</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Safety Warning */}
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                Case opening involves chance. Never spend more than you can afford to lose.
-              </AlertDescription>
-            </Alert>
-          </div>
-        </div>
+              </div>
+              
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  Prices update every 15 minutes. Always verify current prices on the operator's website.
+                </AlertDescription>
+              </Alert>
+            </div>
+          </TabsContent>
+        </Tabs>
       </section>
+
       <Footer />
     </div>
   );
