@@ -60,143 +60,185 @@ const OperatorReview = () => {
         </div>
       </div>
 
-      {/* Compact Hero Section */}
-      <section className="bg-gradient-card border-b">
-        <div className="container mx-auto px-4 py-4">
-          <Button variant="ghost" size="sm" className="mb-3" asChild>
+      {/* Hero Section */}
+      <section className="bg-gradient-subtle border-b">
+        <div className="container mx-auto px-4 py-8">
+          <Button variant="ghost" size="sm" className="mb-6" asChild>
             <Link to="/operators">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to operators
             </Link>
           </Button>
 
-          {/* Compact Layout */}
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Left: Main Info */}
-            <div className="lg:col-span-2">
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 bg-white rounded-lg shadow-card flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg font-bold text-primary">{operator.name.charAt(0)}</span>
+          {/* Main Hero Content */}
+          <div className="grid lg:grid-cols-5 gap-8 items-start">
+            {/* Left: Logo & Main Info */}
+            <div className="lg:col-span-3">
+              <div className="flex items-start gap-6 mb-8">
+                {/* Large Logo */}
+                <div className="w-20 h-20 bg-white rounded-xl shadow-elevated flex items-center justify-center flex-shrink-0 border">
+                  <span className="text-2xl font-bold text-primary">{operator.name.charAt(0)}</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-2xl font-bold mb-1">{operator.name} Review</h1>
-                  <p className="text-muted-foreground mb-2">{operator.verdict}</p>
-                  <div className="flex items-center gap-3 flex-wrap mb-3">
-                    <RatingBadge rating={operator.overallRating} size="md" showText />
-                    <TrustIndicator score={operator.trustScore} size="sm" />
+                
+                {/* Title & Rating */}
+                <div className="flex-1">
+                  <h1 className="text-4xl font-bold mb-2">{operator.name}</h1>
+                  <p className="text-xl text-muted-foreground mb-4">{operator.verdict}</p>
+                  
+                  {/* Rating & Badges */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-lg border">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-5 w-5 fill-gaming-gold text-gaming-gold" />
+                        <span className="text-2xl font-bold">{operator.overallRating}</span>
+                        <span className="text-muted-foreground">/5.0</span>
+                      </div>
+                    </div>
+                    <TrustIndicator score={operator.trustScore} size="md" />
                     {operator.verified && (
-                      <Badge className="bg-success text-success-foreground">
-                        <CheckCircle className="w-3 h-3 mr-1" />
+                      <Badge className="bg-success text-success-foreground px-3 py-1">
+                        <CheckCircle className="w-4 h-4 mr-1" />
                         Verified
                       </Badge>
                     )}
                   </div>
-                  <div className="flex gap-3">
-                    <Button size="sm" className="bg-gradient-trust">
-                      <ExternalLink className="w-4 h-4 mr-2" />
+
+                  {/* Main CTA */}
+                  <div className="flex gap-4">
+                    <Button size="lg" className="bg-gradient-primary text-lg px-8 py-3 h-auto">
+                      <ExternalLink className="w-5 h-5 mr-2" />
                       Visit {operator.name}
                     </Button>
-                    <Button variant="outline" size="sm">
-                      Read Trust Section
+                    <Button variant="outline" size="lg" className="text-lg px-6 py-3 h-auto">
+                      Compare Rates
                     </Button>
                   </div>
                 </div>
               </div>
 
-              {/* Compact Pros & Cons */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Why we recommend {operator.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-medium text-success mb-2 flex items-center text-sm">
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Strengths
-                      </h4>
-                      <ul className="space-y-1">
-                        {operator.pros.map((pro, i) => (
-                          <li key={i} className="text-sm text-muted-foreground">• {pro}</li>
-                        ))}
-                      </ul>
+              {/* Key Features Grid */}
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Pros/USPs */}
+                <Card className="border-success/20 bg-success/5">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-success flex items-center">
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Key Advantages
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <ul className="space-y-2">
+                      {operator.pros.slice(0, 4).map((pro, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm">
+                          <CheckCircle className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
+                          <span>{pro}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                {/* Important Info */}
+                <Card>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center">
+                      <Clock className="w-5 h-5 mr-2" />
+                      Quick Info
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Payout Speed</span>
+                      <Badge variant="outline" className="font-semibold">{operator.payoutSpeed}</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">KYC Required</span>
+                      <Badge variant={operator.kycRequired ? "destructive" : "secondary"} 
+                             className={!operator.kycRequired ? "bg-success/10 text-success border-success/20" : ""}>
+                        {operator.kycRequired ? 'Yes' : 'No'}
+                      </Badge>
                     </div>
                     <div>
-                      <h4 className="font-medium text-destructive mb-2 flex items-center text-sm">
-                        <XCircle className="w-4 h-4 mr-2" />
-                        Areas for improvement
-                      </h4>
-                      <ul className="space-y-1">
-                        {operator.cons.map((con, i) => (
-                          <li key={i} className="text-sm text-muted-foreground">• {con}</li>
+                      <span className="text-muted-foreground block mb-2">Payment Methods</span>
+                      <div className="flex gap-2 flex-wrap">
+                        {operator.paymentMethods.map((method) => (
+                          <Badge key={method} variant="secondary" className="capitalize">
+                            {method === 'skins' && '🎯'} 
+                            {method === 'crypto' && '₿'} 
+                            {method === 'cards' && '💳'} 
+                            {method}
+                          </Badge>
                         ))}
-                      </ul>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
-            {/* Right: Sidebar with Quick Facts & Compare */}
-            <div className="space-y-4">
-              {/* Quick Facts */}
+            {/* Right: Sidebar */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Trust Score Highlight */}
+              <Card className="text-center p-6 bg-gradient-card">
+                <div className="text-4xl font-bold text-primary mb-2">{operator.trustScore}</div>
+                <div className="text-muted-foreground mb-4">Trust Score</div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Security</span>
+                    <span className="font-medium">Excellent</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Transparency</span>
+                    <span className="font-medium">High</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Community</span>
+                    <span className="font-medium">Trusted</span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Fee Highlights */}
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Quick Facts</CardTitle>
+                <CardHeader>
+                  <CardTitle className="text-center">Fee Structure</CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 space-y-3">
+                <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="text-center p-3 bg-muted/30 rounded-lg">
-                      <div className="text-xl font-bold text-success">{operator.fees.deposit}%</div>
-                      <div className="text-xs text-muted-foreground">Deposit fee</div>
+                    <div className="text-center p-4 bg-success/10 rounded-lg border border-success/20">
+                      <div className="text-2xl font-bold text-success">{operator.fees.deposit}%</div>
+                      <div className="text-xs text-muted-foreground">Deposit</div>
                     </div>
-                    <div className="text-center p-3 bg-muted/30 rounded-lg">
-                      <div className="text-xl font-bold text-warning">{operator.fees.withdrawal}%</div>
-                      <div className="text-xs text-muted-foreground">Withdrawal fee</div>
-                    </div>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Payout speed</span>
-                      <span className="font-medium">{operator.payoutSpeed}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">KYC required</span>
-                      <span className="font-medium">{operator.kycRequired ? 'Yes' : 'No'}</span>
+                    <div className="text-center p-4 bg-warning/10 rounded-lg border border-warning/20">
+                      <div className="text-2xl font-bold text-warning">{operator.fees.withdrawal}%</div>
+                      <div className="text-xs text-muted-foreground">Withdrawal</div>
                     </div>
                   </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground block mb-2">Payment methods</span>
-                    <div className="flex gap-1 flex-wrap">
-                      {operator.paymentMethods.slice(0, 3).map((method) => (
-                        <Badge key={method} variant="outline" className="text-xs">
-                          {method}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
+                  <Badge variant="outline" className="w-full justify-center py-2">
+                    {operator.feeLevel} Fees Overall
+                  </Badge>
                 </CardContent>
               </Card>
 
               {/* Compare Section */}
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Compare with</CardTitle>
+                <CardHeader>
+                  <CardTitle>Compare with</CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 space-y-3">
+                <CardContent className="space-y-3">
                   {sampleOperators.slice(1, 3).map((comp) => (
-                    <div key={comp.id} className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                        <span className="text-xs font-semibold">{comp.name.charAt(0)}</span>
+                    <div key={comp.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0 border">
+                        <span className="text-sm font-semibold">{comp.name.charAt(0)}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate">{comp.name}</div>
+                        <div className="font-medium truncate">{comp.name}</div>
                         <RatingBadge rating={comp.overallRating} size="sm" />
                       </div>
                     </div>
                   ))}
-                  <Button variant="ghost" size="sm" className="w-full">
-                    View All Comparisons
+                  <Button variant="outline" size="sm" className="w-full mt-3">
+                    View Full Comparison
                   </Button>
                 </CardContent>
               </Card>
