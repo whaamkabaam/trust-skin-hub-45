@@ -10,6 +10,7 @@ import MysteryBoxDetail from "./pages/MysteryBoxDetail";
 import OperatorsArchive from "./pages/OperatorsArchive";
 import CasesArchive from "./pages/CasesArchive";
 import MysteryBoxesArchive from "./pages/MysteryBoxesArchive";
+import MysteryBoxOperators from "./pages/MysteryBoxOperators";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/cases" element={<CasesArchive />} />
           <Route path="/cases/:id" element={<CaseDetail />} />
           <Route path="/mystery-boxes" element={<MysteryBoxesArchive />} />
+          <Route path="/mystery-boxes/operators" element={<MysteryBoxOperators />} />
           <Route path="/mystery-boxes/:id" element={<MysteryBoxDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
