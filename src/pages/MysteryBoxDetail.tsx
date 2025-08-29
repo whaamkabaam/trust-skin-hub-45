@@ -389,6 +389,132 @@ const MysteryBoxDetail = () => {
         </div>
       </section>
 
+      {/* Top Rated Operators */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-2">Top Rated Operators</h2>
+          <p className="text-muted-foreground">Discover the most trusted CS2 trading platforms</p>
+        </div>
+
+        <div className="space-y-4 max-w-4xl mx-auto">
+          {/* Full-width operator card */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <img 
+                  src="https://wordpress-1472941-5579290.cloudwaysapps.com/hub/images/ccc8c7f7-53cc-41ac-8e6d-0fe13f968fd3.png" 
+                  alt="CSGOEmpire" 
+                  className="w-16 h-16 rounded-lg"
+                />
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-xl font-bold">CSGOEmpire</h3>
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-semibold">4.8</span>
+                      <span className="text-muted-foreground">(2,847 reviews)</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>Fee Level: <span className="text-green-600 font-medium">Very Low</span></span>
+                    <span>Trust Score: <span className="text-green-600 font-medium">9.2/10</span></span>
+                    <span>Payout Speed: <span className="font-medium">Instant</span></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">Skins</Badge>
+                    <Badge variant="outline">Crypto</Badge>
+                    <Badge variant="outline">Cards</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Button>Read Review</Button>
+                <Button variant="outline">Visit Site</Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <img 
+                  src="https://wordpress-1472941-5579290.cloudwaysapps.com/hub/images/ccc8c7f7-53cc-41ac-8e6d-0fe13f968fd3.png" 
+                  alt="Gamdom" 
+                  className="w-16 h-16 rounded-lg"
+                />
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-xl font-bold">Gamdom</h3>
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-semibold">4.6</span>
+                      <span className="text-muted-foreground">(1,923 reviews)</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>Fee Level: <span className="text-green-600 font-medium">Low</span></span>
+                    <span>Trust Score: <span className="text-green-600 font-medium">8.9/10</span></span>
+                    <span>Payout Speed: <span className="font-medium">1-2 hours</span></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">Skins</Badge>
+                    <Badge variant="outline">Crypto</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Button>Read Review</Button>
+                <Button variant="outline">Visit Site</Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <img 
+                  src="https://wordpress-1472941-5579290.cloudwaysapps.com/hub/images/ccc8c7f7-53cc-41ac-8e6d-0fe13f968fd3.png" 
+                  alt="DatDrop" 
+                  className="w-16 h-16 rounded-lg"
+                />
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-xl font-bold">DatDrop</h3>
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-semibold">4.5</span>
+                      <span className="text-muted-foreground">(1,654 reviews)</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>Fee Level: <span className="text-yellow-600 font-medium">Medium</span></span>
+                    <span>Trust Score: <span className="text-green-600 font-medium">8.7/10</span></span>
+                    <span>Payout Speed: <span className="font-medium">2-4 hours</span></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">Skins</Badge>
+                    <Badge variant="outline">Crypto</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Button>Read Review</Button>
+                <Button variant="outline">Visit Site</Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <div className="text-center mt-8">
+          <Button variant="outline" size="lg" asChild>
+            <Link to="/operators">View All Operators</Link>
+          </Button>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
