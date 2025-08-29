@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Star, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Star, ExternalLink, Home } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
@@ -68,39 +68,51 @@ const MysteryBoxDetail = () => {
         </div>
       </div>
 
+      {/* Breadcrumb */}
+      <div className="container mx-auto px-4 py-2">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Home className="w-4 h-4" />
+          <span>Hub</span>
+          <span>/</span>
+          <span className="text-foreground">{boxData.name}</span>
+        </div>
+      </div>
+
       {/* Main Content */}
       <section className="container mx-auto px-4 py-8">
-        {/* Title and Operator */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">{boxData.name}</h1>
-          <div className="flex items-center gap-3">
-            <img 
-              src={boxData.operator.logo} 
-              alt={boxData.operator.name} 
-              className="w-8 h-8 rounded"
-            />
-            <span className="font-semibold">{boxData.operator.name}</span>
-            <Button variant="outline" size="sm">
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Read Review
-            </Button>
-          </div>
+        {/* Title */}
+        <h1 className="text-4xl font-bold text-center mb-4">{boxData.name}</h1>
+        
+        {/* Operator */}
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <img 
+            src={boxData.operator.logo} 
+            alt={boxData.operator.name} 
+            className="w-8 h-8 rounded"
+          />
+          <span className="font-semibold text-purple-600">{boxData.operator.name}</span>
+          <ExternalLink className="w-4 h-4" />
+          <Button variant="outline" size="sm">
+            <Star className="w-4 h-4 mr-2" />
+            Read Review
+            <ExternalLink className="w-4 h-4 ml-2" />
+          </Button>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Left Side - Image */}
-          <div>
-            <img 
-              src={boxData.image} 
-              alt={boxData.name}
-              className="w-full h-auto rounded-lg"
-            />
-          </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Side - Image and Main Stats */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Mystery Box Image */}
+            <div className="flex justify-center">
+              <img 
+                src={boxData.image} 
+                alt={boxData.name}
+                className="w-80 h-auto rounded-lg"
+              />
+            </div>
 
-          {/* Right Side - Stats */}
-          <div className="space-y-6">
-            {/* Main Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Main Stats */}
+            <div className="grid grid-cols-3 gap-4">
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold">${boxData.price.toFixed(2)}</div>
@@ -110,109 +122,217 @@ const MysteryBoxDetail = () => {
               
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-success">{boxData.expectedValue}% (EV)</div>
+                  <div className="text-2xl font-bold text-green-600">{boxData.expectedValue}% (EV)</div>
                   <div className="text-sm text-muted-foreground">Expected Value</div>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-destructive">{boxData.volatility}%</div>
+                  <div className="text-2xl font-bold text-purple-600">{boxData.volatility}%</div>
                   <div className="text-sm text-muted-foreground">Volatility</div>
+                  <div className="text-xs text-muted-foreground mt-1">Measure of risk and unpredictability</div>
                 </CardContent>
               </Card>
             </div>
 
             {/* All Tags */}
-            <div>
-              <h4 className="font-semibold mb-3">All Tags</h4>
-              <div className="flex flex-wrap gap-2">
-                {boxData.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">{tag}</Badge>
-                ))}
-              </div>
-            </div>
+            <Card>
+              <CardContent className="p-4">
+                <h4 className="font-semibold mb-3">All Tags</h4>
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-purple-100 text-purple-700 border-purple-200">Parody</Badge>
+                  <Badge className="bg-blue-100 text-blue-700 border-blue-200">Novelty</Badge>
+                  <Badge className="bg-gray-100 text-gray-700 border-gray-200">Junk</Badge>
+                  <Badge className="bg-gray-100 text-gray-700 border-gray-200">Misc</Badge>
+                  <Badge className="bg-purple-100 text-purple-700 border-purple-200">Budget</Badge>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Additional Stats */}
             <div className="grid grid-cols-2 gap-4">
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-xl font-bold text-destructive">{boxData.floorRate}%</div>
+                  <div className="text-2xl font-bold text-red-600">{boxData.floorRate}%</div>
                   <div className="text-sm text-muted-foreground">Floor Rate</div>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-xl font-bold text-destructive">{boxData.lossChance}%</div>
+                  <div className="text-2xl font-bold text-red-600">{boxData.lossChance}%</div>
                   <div className="text-sm text-muted-foreground">Loss Chance</div>
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </div>
 
-        {/* All Items Section */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">All Items (by Drop Rate & Value)</h2>
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Item Name</TableHead>
-                  <TableHead className="text-center">Drop Rate</TableHead>
-                  <TableHead className="text-right">Value</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            {/* All Items Table */}
+            <div>
+              <h3 className="text-xl font-bold mb-4">All Items (by Drop Rate & Value)</h3>
+              <div className="space-y-2">
                 {allItems.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant="secondary">{item.dropRate}%</Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-bold">
-                      ${item.value.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+                    <span className="font-medium">{item.name}</span>
+                    <div className="flex items-center gap-4">
+                      <Badge variant="secondary" className="text-purple-600">
+                        {item.dropRate}%
+                      </Badge>
+                      <span className="font-bold text-green-600">
+                        ${item.value.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </div>
+              </div>
+            </div>
+          </div>
 
-        {/* Jackpot Items Section */}
-        <div className="mt-12">
-          <div className="flex items-center gap-2 mb-6">
-            <Star className="w-6 h-6 text-yellow-500" />
-            <h2 className="text-2xl font-bold">Jackpot Items</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-purple-50 dark:bg-purple-900/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-purple-600">{jackpotItems.dropOdds}%</div>
-                <div className="text-sm text-muted-foreground">Jackpot Items Drop Odds</div>
+          {/* Right Sidebar */}
+          <div className="space-y-6">
+            {/* Jackpot Items */}
+            <Card className="bg-purple-50 dark:bg-purple-900/20 border-purple-200">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Star className="w-5 h-5 text-purple-600" />
+                  <h3 className="font-bold text-purple-800 dark:text-purple-200">Jackpot Items</h3>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-purple-600">{jackpotItems.dropOdds}%</div>
+                    <div className="text-xs text-muted-foreground">Jackpot Items Drop Odds</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-purple-600">{jackpotItems.evShare}%</div>
+                    <div className="text-xs text-muted-foreground">Jackpot Items EV Share</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-purple-600">{jackpotItems.oddsEvRatio}x</div>
+                    <div className="text-xs text-muted-foreground">Odds/EV Ratio</div>
+                  </div>
+                </div>
+                
+                <div className="text-xs text-center text-muted-foreground mb-4">
+                  Jackpot Items Value Range: ${jackpotItems.valueRange.min.toFixed(2)} - ${jackpotItems.valueRange.max.toFixed(2)}
+                </div>
+
+                {/* Top Jackpot Items */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-purple-200 rounded flex items-center justify-center">
+                        <span className="text-xs">📦</span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Glass Jar with a Lid</div>
+                        <div className="text-xs text-purple-600">Drop Rate: 0.5%</div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-green-600">$2.15</div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-purple-200 rounded flex items-center justify-center">
+                        <span className="text-xs">🪝</span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Plastic Hanger</div>
+                        <div className="text-xs text-purple-600">Drop Rate: 0.75%</div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-green-600">$1.45</div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-purple-200 rounded flex items-center justify-center">
+                        <span className="text-xs">📰</span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Stunning Trump Win LA Times Newspaper</div>
+                        <div className="text-xs text-purple-600">Drop Rate: 1%</div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-green-600">$0.99</div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-            
-            <Card className="bg-purple-50 dark:bg-purple-900/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-purple-600">{jackpotItems.evShare}%</div>
-                <div className="text-sm text-muted-foreground">Jackpot Items EV Share</div>
+
+            {/* Common Items */}
+            <Card className="bg-orange-50 dark:bg-orange-900/20 border-orange-200">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-5 h-5 bg-orange-200 rounded flex items-center justify-center">
+                    <span className="text-xs">⚠️</span>
+                  </div>
+                  <h3 className="font-bold text-orange-800 dark:text-orange-200">Common Items</h3>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-orange-600">52.0%</div>
+                    <div className="text-xs text-muted-foreground">Common Items Drop Odds</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-orange-600">6.4%</div>
+                    <div className="text-xs text-muted-foreground">Common Items EV Share</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-orange-600">8.1x</div>
+                    <div className="text-xs text-muted-foreground">Odds/EV Ratio</div>
+                  </div>
+                </div>
+                
+                <div className="text-xs text-center text-muted-foreground mb-4">
+                  Common Items Value Range: $0.01 - $0.02
+                </div>
+
+                {/* Common Items List */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-orange-200 rounded flex items-center justify-center">
+                        <span className="text-xs">📎</span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Paper Clip</div>
+                        <div className="text-xs text-orange-600">Drop Rate: 20%</div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-green-600">$0.01</div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-blue-200 rounded flex items-center justify-center">
+                        <span className="text-xs">🏷️</span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Aquafina Water Bottle Label</div>
+                        <div className="text-xs text-orange-600">Drop Rate: 20%</div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-green-600">$0.01</div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-amber-200 rounded flex items-center justify-center">
+                        <span className="text-xs">🍷</span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Wine Cork</div>
+                        <div className="text-xs text-orange-600">Drop Rate: 12%</div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-green-600">$0.02</div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-            
-            <Card className="bg-purple-50 dark:bg-purple-900/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-purple-600">{jackpotItems.oddsEvRatio}x</div>
-                <div className="text-sm text-muted-foreground">Odds/EV Ratio</div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="mt-4 text-center text-sm text-muted-foreground">
-            Jackpot Items Value Range: ${jackpotItems.valueRange.min.toFixed(2)} - ${jackpotItems.valueRange.max.toFixed(2)}
           </div>
         </div>
       </section>
