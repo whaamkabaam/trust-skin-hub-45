@@ -63,14 +63,12 @@ const OperatorReview = () => {
       {/* Hero Section */}
       <section className="bg-gradient-card border-b">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-start justify-between mb-6">
-            <Button variant="ghost" size="sm" className="mb-4" asChild>
-              <Link to="/operators">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to operators
-              </Link>
-            </Button>
-          </div>
+          <Button variant="ghost" size="sm" className="mb-6" asChild>
+            <Link to="/operators">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to operators
+            </Link>
+          </Button>
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
@@ -89,7 +87,7 @@ const OperatorReview = () => {
               </div>
 
               {/* Quick Actions */}
-              <div className="flex gap-3 mb-8">
+              <div className="flex gap-3 mb-6">
                 <Button size="lg" className="bg-gradient-trust">
                   <ExternalLink className="w-5 h-5 mr-2" />
                   Visit {operator.name}
@@ -100,7 +98,7 @@ const OperatorReview = () => {
               </div>
 
               {/* Summary */}
-              <Card className="mb-8">
+              <Card>
                 <CardContent className="p-6">
                   <h3 className="font-semibold mb-4">Why we recommend {operator.name}</h3>
                   <div className="grid md:grid-cols-2 gap-6">
