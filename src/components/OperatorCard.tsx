@@ -1,4 +1,4 @@
-import { Star, CreditCard, Smartphone, Bitcoin, TrendingUp, HelpCircle, ExternalLink } from 'lucide-react';
+import { Star, CreditCard, Smartphone, Bitcoin, TrendingUp, HelpCircle, ExternalLink, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -92,23 +92,16 @@ const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
               </div>
             </div>
 
-            {/* Pros & Cons */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <h4 className="text-sm font-medium text-success mb-1">Pros</h4>
-                <ul className="text-xs space-y-1">
-                  {operator.pros.slice(0, 2).map((pro, i) => (
-                    <li key={i} className="text-muted-foreground">• {pro}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-destructive mb-1">Cons</h4>
-                <ul className="text-xs space-y-1">
-                  {operator.cons.slice(0, 2).map((con, i) => (
-                    <li key={i} className="text-muted-foreground">• {con}</li>
-                  ))}
-                </ul>
+            {/* Key Features / USPs */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-foreground mb-2">Key Features</h4>
+              <div className="space-y-2">
+                {operator.pros.slice(0, 3).map((feature, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-success flex-shrink-0" />
+                    <span className="text-xs text-muted-foreground">{feature}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </>
@@ -146,31 +139,55 @@ const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
         )}
       </CardContent>
 
-      <CardFooter className={cn("p-6 pt-0 flex justify-between", isListView && "flex-col gap-2 p-4")}>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                <HelpCircle className="h-4 w-4 mr-1" />
-                Why we recommend
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-sm">
-              <p>Based on our trust score ({operator.trustScore}/5), fee analysis, 
-                 and community feedback. View full methodology.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+      <CardFooter className={cn("p-6 pt-0", isListView && "p-4")}>
+        {!isListView && (
+          <div className="w-full space-y-3">
+            {/* Trust indicator */}
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-muted-foreground">Trust Score:</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-sm">
+                      <p>Based on security analysis, fee transparency, and community feedback</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className={cn("font-semibold", getTrustColor(operator.trustScore))}>
+                {operator.trustScore}/5.0
+              </div>
+            </div>
 
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            Read Review
-          </Button>
-          <Button size="sm" className="bg-gradient-trust">
-            <ExternalLink className="h-4 w-4 mr-1" />
-            Visit Site
-          </Button>
-        </div>
+            {/* Action buttons */}
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex-1">
+                Read Review
+              </Button>
+              <Button size="sm" className="flex-1">
+                <ExternalLink className="h-4 w-4 mr-1" />
+                Visit Site
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {isListView && (
+          <div className="flex gap-2 w-full">
+            <Button variant="outline" size="sm" className="flex-1">
+              Read Review
+            </Button>
+            <Button size="sm" className="flex-1">
+              <ExternalLink className="h-4 w-4 mr-1" />
+              Visit Site
+            </Button>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );
