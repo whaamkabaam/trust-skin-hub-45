@@ -15,7 +15,6 @@ import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { sampleCases } from '@/lib/sample-data';
 import { cn } from '@/lib/utils';
-
 const CasesArchive = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<'grid' | 'list'>('grid');
@@ -30,56 +29,77 @@ const CasesArchive = () => {
     priceMax: 100,
     popularity: 'all'
   });
-
   const itemsPerPage = 12;
   const totalCases = 156; // Simulated total
   const totalPages = Math.ceil(totalCases / itemsPerPage);
-
   const stats = {
     totalCases: 156,
     avgPrice: 2.47,
     verifiedCases: 142,
     newThisWeek: 8
   };
-
-  const categories = [
-    { name: 'All Cases', count: 156, href: '/cases' },
-    { name: 'CS2 Cases', count: 89, href: '/cases?game=cs2' },
-    { name: 'Rust Cases', count: 23, href: '/cases?game=rust' },
-    { name: 'TF2 Cases', count: 31, href: '/cases?game=tf2' },
-    { name: 'Dota2 Cases', count: 13, href: '/cases?game=dota2' },
-    { name: 'New Releases', count: 8, href: '/cases?new=true' },
-    { name: 'Best Value', count: 24, href: '/cases?value=best' },
-    { name: 'Odds Disclosed', count: 98, href: '/cases?odds=disclosed' }
-  ];
-
+  const categories = [{
+    name: 'All Cases',
+    count: 156,
+    href: '/cases'
+  }, {
+    name: 'CS2 Cases',
+    count: 89,
+    href: '/cases?game=cs2'
+  }, {
+    name: 'Rust Cases',
+    count: 23,
+    href: '/cases?game=rust'
+  }, {
+    name: 'TF2 Cases',
+    count: 31,
+    href: '/cases?game=tf2'
+  }, {
+    name: 'Dota2 Cases',
+    count: 13,
+    href: '/cases?game=dota2'
+  }, {
+    name: 'New Releases',
+    count: 8,
+    href: '/cases?new=true'
+  }, {
+    name: 'Best Value',
+    count: 24,
+    href: '/cases?value=best'
+  }, {
+    name: 'Odds Disclosed',
+    count: 98,
+    href: '/cases?odds=disclosed'
+  }];
   const gameFilters = ['CS2', 'Rust', 'TF2', 'Dota2'];
-  const sortOptions = [
-    { value: 'newest', label: 'Newest First' },
-    { value: 'price-low', label: 'Price: Low to High' },
-    { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'popular', label: 'Most Popular' },
-    { value: 'value', label: 'Best Value' }
-  ];
+  const sortOptions = [{
+    value: 'newest',
+    label: 'Newest First'
+  }, {
+    value: 'price-low',
+    label: 'Price: Low to High'
+  }, {
+    value: 'price-high',
+    label: 'Price: High to Low'
+  }, {
+    value: 'popular',
+    label: 'Most Popular'
+  }, {
+    value: 'value',
+    label: 'Best Value'
+  }];
 
   // Simulate filtered cases (extend sample data for demo)
-  const allCases = [
-    ...sampleCases,
-    ...Array.from({ length: Math.max(0, itemsPerPage - sampleCases.length) }, (_, i) => ({
-      ...sampleCases[i % sampleCases.length],
-      id: `case-${i + sampleCases.length}`,
-      name: `${sampleCases[i % sampleCases.length].name} ${i + 1}`,
-      minPrice: Math.round((Math.random() * 10 + 0.5) * 100) / 100
-    }))
-  ];
-
-  const filteredCases = allCases.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  return (
-    <div className="min-h-screen bg-background">
+  const allCases = [...sampleCases, ...Array.from({
+    length: Math.max(0, itemsPerPage - sampleCases.length)
+  }, (_, i) => ({
+    ...sampleCases[i % sampleCases.length],
+    id: `case-${i + sampleCases.length}`,
+    name: `${sampleCases[i % sampleCases.length].name} ${i + 1}`,
+    minPrice: Math.round((Math.random() * 10 + 0.5) * 100) / 100
+  }))];
+  const filteredCases = allCases.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  return <div className="min-h-screen bg-background">
       <Header />
       
       {/* Breadcrumbs */}
@@ -94,109 +114,39 @@ const CasesArchive = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-purple-100 dark:from-blue-900 dark:to-purple-800 py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Side - Main Content */}
-            <div className="text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <span className="text-2xl">📦</span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold">CS2 Skin Cases</h1>
-              </div>
-              
-              <p className="text-xl text-muted-foreground mb-8">
-                Discover premium weapon skins in our curated CS2 cases. From rare knives to legendary finishes with verified odds.
-              </p>
-
-              {/* Search */}
-              <div className="max-w-md mx-auto lg:mx-0 mb-8">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                  <Input
-                    placeholder="Search cases by name, skins..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              {/* Key Stats */}
-              <div className="grid grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
-                <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-primary">{stats.totalCases}</div>
-                  <div className="text-sm text-muted-foreground">Total Cases</div>
-                </div>
-                <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-green-600">${stats.avgPrice}</div>
-                  <div className="text-sm text-muted-foreground">Avg. Price</div>
-                </div>
-              </div>
+      <section className="bg-gradient-card border-b">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl font-bold mb-4">CS2 Cases & Containers</h1>
+            <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
+              Analyze {stats.totalCases} CS2 cases with detailed drop tables, odds disclosure, 
+              and expected value calculations. Make informed decisions before opening.
+            </p>
+            
+            {/* Search */}
+            <div className="relative mb-8">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <Input placeholder="Search cases by name, skins, or collection..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10 pr-4 py-3 text-lg" />
             </div>
 
-            {/* Right Side - Featured Case */}
-            <div>
-              <Card className="bg-gradient-to-r from-blue-50 to-purple-100 dark:from-blue-800 dark:to-purple-700 border-blue-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <TrendingUp className="w-5 h-5 text-orange-500" />
-                    <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs">
-                      Featured Case
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex gap-4 mb-4">
-                    {/* Case Image */}
-                    <div className="w-20 h-20 bg-white/50 dark:bg-black/20 rounded-lg flex-shrink-0 flex items-center justify-center">
-                      <img src="/img/cases/revolution-case.jpg" alt="Revolution Case" className="w-16 h-16 object-cover rounded" />
-                    </div>
-                    
-                    {/* Case Info */}
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold mb-1">Revolution Case</h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Premium CS2 case featuring rare knife skins and legendary weapon finishes with disclosed odds.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Featured Skins */}
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Featured Skins</h4>
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-sm">
-                        <span>★ Karambit | Doppler</span>
-                        <span className="font-medium text-gaming-gold">$2,499</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span>AK-47 | Redline</span>
-                        <span className="font-medium text-primary">$89</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span>M4A4 | Asiimov</span>
-                        <span className="font-medium text-accent">$124</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
-                      <div className="text-xl font-bold">$2.49</div>
-                      <div className="text-xs text-muted-foreground">Case Price</div>
-                    </div>
-                    <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
-                      <div className="text-xl font-bold text-green-600">$3.87</div>
-                      <div className="text-xs text-muted-foreground">Expected Value</div>
-                    </div>
-                  </div>
-                  
-                  <Button asChild className="w-full">
-                    <Link to="/cases/revolution-case">View Case Details</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">{stats.totalCases}</div>
+                <div className="text-sm text-muted-foreground">Total cases</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-success">${stats.avgPrice}</div>
+                <div className="text-sm text-muted-foreground">Avg price</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-accent">{stats.verifiedCases}</div>
+                <div className="text-sm text-muted-foreground">Verified</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-warning">{stats.newThisWeek}</div>
+                <div className="text-sm text-muted-foreground">New this week</div>
+              </div>
             </div>
           </div>
         </div>
@@ -214,16 +164,10 @@ const CasesArchive = () => {
                   <CardTitle className="text-lg">Categories</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  {categories.map((category) => (
-                    <a
-                      key={category.name}
-                      href={category.href}
-                      className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
-                    >
+                  {categories.map(category => <a key={category.name} href={category.href} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors">
                       <span className="text-sm">{category.name}</span>
                       <Badge variant="outline" className="text-xs">{category.count}</Badge>
-                    </a>
-                  ))}
+                    </a>)}
                 </CardContent>
               </Card>
 
@@ -234,13 +178,7 @@ const CasesArchive = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="px-2">
-                    <Slider
-                      value={priceRange}
-                      onValueChange={setPriceRange}
-                      max={100}
-                      step={0.5}
-                      className="w-full"
-                    />
+                    <Slider value={priceRange} onValueChange={setPriceRange} max={100} step={0.5} className="w-full" />
                     <div className="flex justify-between text-sm text-muted-foreground mt-2">
                       <span>${priceRange[0]}</span>
                       <span>${priceRange[1]}</span>
@@ -249,23 +187,11 @@ const CasesArchive = () => {
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <Label className="text-xs">Min</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={priceRange[0]}
-                        onChange={(e) => setPriceRange([parseFloat(e.target.value), priceRange[1]])}
-                        className="text-sm"
-                      />
+                      <Input type="number" step="0.01" value={priceRange[0]} onChange={e => setPriceRange([parseFloat(e.target.value), priceRange[1]])} className="text-sm" />
                     </div>
                     <div>
                       <Label className="text-xs">Max</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], parseFloat(e.target.value)])}
-                        className="text-sm"
-                      />
+                      <Input type="number" step="0.01" value={priceRange[1]} onChange={e => setPriceRange([priceRange[0], parseFloat(e.target.value)])} className="text-sm" />
                     </div>
                   </div>
                 </CardContent>
@@ -281,12 +207,10 @@ const CasesArchive = () => {
                   <div>
                     <Label className="text-sm font-medium mb-3 block">Games</Label>
                     <div className="grid grid-cols-2 gap-2">
-                      {gameFilters.map((game) => (
-                        <div key={game} className="flex items-center space-x-2">
+                      {gameFilters.map(game => <div key={game} className="flex items-center space-x-2">
                           <Checkbox id={`game-${game}`} />
                           <Label htmlFor={`game-${game}`} className="text-sm">{game}</Label>
-                        </div>
-                      ))}
+                        </div>)}
                     </div>
                   </div>
 
@@ -317,9 +241,10 @@ const CasesArchive = () => {
                   {/* Popularity */}
                   <div>
                     <Label className="text-sm font-medium mb-3 block">Popularity</Label>
-                    <Select value={filters.popularity} onValueChange={(value) => 
-                      setFilters({ ...filters, popularity: value })
-                    }>
+                    <Select value={filters.popularity} onValueChange={value => setFilters({
+                    ...filters,
+                    popularity: value
+                  })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -358,7 +283,7 @@ const CasesArchive = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Eye className="w-4 h-4 text-muted-foreground" />
-                    <span>47K cases opened yesterday</span>
+                    
                   </div>
                 </CardContent>
               </Card>
@@ -385,30 +310,18 @@ const CasesArchive = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {sortOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
+                    {sortOptions.map(option => <SelectItem key={option.value} value={option.value}>
                         {option.label}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
 
                 {/* View Toggle */}
                 <div className="flex items-center border rounded-lg">
-                  <Button
-                    variant={view === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setView('grid')}
-                    className="rounded-r-none"
-                  >
+                  <Button variant={view === 'grid' ? 'default' : 'ghost'} size="sm" onClick={() => setView('grid')} className="rounded-r-none">
                     <Grid className="w-4 h-4" />
                   </Button>
-                  <Button
-                    variant={view === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setView('list')}
-                    className="rounded-l-none"
-                  >
+                  <Button variant={view === 'list' ? 'default' : 'ghost'} size="sm" onClick={() => setView('list')} className="rounded-l-none">
                     <List className="w-4 h-4" />
                   </Button>
                 </div>
@@ -431,19 +344,8 @@ const CasesArchive = () => {
             </Card>
 
             {/* Results Grid/List */}
-            <div className={cn(
-              "gap-6",
-              view === 'grid' 
-                ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
-                : "flex flex-col space-y-4"
-            )}>
-              {filteredCases.map((caseItem) => (
-                <CaseCard 
-                  key={caseItem.id} 
-                  case={caseItem} 
-                  view={view}
-                />
-              ))}
+            <div className={cn("gap-6", view === 'grid' ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" : "flex flex-col space-y-4")}>
+              {filteredCases.map(caseItem => <CaseCard key={caseItem.id} case={caseItem} view={view} />)}
             </div>
 
             {/* Load More / Pagination */}
@@ -452,33 +354,18 @@ const CasesArchive = () => {
                 Page {currentPage} of {totalPages}
               </div>
               <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>
                   Previous
                 </Button>
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const page = i + 1;
-                  return (
-                    <Button
-                      key={page}
-                      variant={page === currentPage ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                    >
+                {Array.from({
+                length: Math.min(5, totalPages)
+              }, (_, i) => {
+                const page = i + 1;
+                return <Button key={page} variant={page === currentPage ? 'default' : 'outline'} size="sm" onClick={() => setCurrentPage(page)}>
                       {page}
-                    </Button>
-                  );
-                })}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                >
+                    </Button>;
+              })}
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>
                   Next
                 </Button>
               </div>
@@ -488,8 +375,6 @@ const CasesArchive = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default CasesArchive;
