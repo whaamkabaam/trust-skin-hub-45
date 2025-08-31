@@ -19,6 +19,7 @@ const AppleMysteryBoxes = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [priceRange, setPriceRange] = useState([0, 2000]);
+  const [returnsRange, setReturnsRange] = useState([45, 75]);
   const itemsPerPage = 12;
   const totalBoxes = 45;
   const totalPages = Math.ceil(totalBoxes / itemsPerPage);
@@ -340,7 +341,8 @@ const AppleMysteryBoxes = () => {
                   <div className="relative">
                     <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
                     <Slider 
-                      defaultValue={[45, 75]} 
+                      value={returnsRange} 
+                      onValueChange={setReturnsRange}
                       max={100} 
                       min={40} 
                       step={5} 
@@ -369,7 +371,7 @@ const AppleMysteryBoxes = () => {
                   
                   {/* Selected Range Display */}
                   <div className="text-center">
-                    <span className="text-sm font-medium">45% - 75%</span>
+                    <span className="text-sm font-medium">{returnsRange[0]}% - {returnsRange[1]}%</span>
                   </div>
                 </div>
               </CardContent>
