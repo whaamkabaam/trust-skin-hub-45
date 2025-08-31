@@ -14,6 +14,7 @@ import MysteryBoxOperators from "./pages/MysteryBoxOperators";
 import AppleMysteryBoxes from "./pages/AppleMysteryBoxes";
 import Skins from "./pages/Skins";
 import NotFound from "./pages/NotFound";
+import StyleGuide from "./pages/StyleGuide";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/mystery-boxes/apple" element={<AppleMysteryBoxes />} />
           <Route path="/mystery-boxes/operators" element={<MysteryBoxOperators />} />
           <Route path="/mystery-boxes/:id" element={<MysteryBoxDetail />} />
+          <Route path="/style-guide" element={<StyleGuide />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

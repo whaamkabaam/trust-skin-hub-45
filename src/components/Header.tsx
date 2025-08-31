@@ -367,6 +367,11 @@ const Header = () => {
                       <Shield className="h-4 w-4 mr-2" />
                       How we rate
                     </Button>
+                    <Button variant="ghost" className="w-full justify-start mt-2" asChild>
+                      <a href="/style-guide">
+                        📚 Style Guide
+                      </a>
+                    </Button>
                   </div>
                 </div>
               </SheetContent>
