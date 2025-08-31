@@ -12,6 +12,7 @@ import CasesArchive from "./pages/CasesArchive";
 import MysteryBoxesArchive from "./pages/MysteryBoxesArchive";
 import MysteryBoxOperators from "./pages/MysteryBoxOperators";
 import AppleMysteryBoxes from "./pages/AppleMysteryBoxes";
+import Skins from "./pages/Skins";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/skins" element={<Skins />} />
           <Route path="/operators" element={<OperatorsArchive />} />
           <Route path="/operators/:id/review" element={<OperatorReview />} />
           <Route path="/cases" element={<CasesArchive />} />

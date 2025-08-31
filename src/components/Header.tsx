@@ -24,6 +24,16 @@ const Header = () => {
 
   const navItems = [
     {
+      title: 'Skins',
+      href: '/skins',
+      description: 'Gaming skins hub for all games',
+      items: [
+        { title: 'All Games', href: '/skins' },
+        { title: 'CS2 Cases', href: '/cases' },
+        { title: 'Mystery Boxes', href: '/mystery-boxes' },
+      ]
+    },
+    {
       title: 'Operators',
       href: '/operators',
       description: 'Compare CS2 trading platforms',
