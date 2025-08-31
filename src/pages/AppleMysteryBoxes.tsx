@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Grid, List, Package, Hash, Verified, TrendingUp, Calendar, Smartphone, Laptop, Watch, Headphones } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AppleHero from '@/components/AppleHero';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -157,108 +158,7 @@ const AppleMysteryBoxes = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Side - Main Content */}
-            <div className="text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-600 rounded-xl flex items-center justify-center">
-                  <span className="text-2xl">🍎</span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold">Apple Mystery Boxes</h1>
-              </div>
-              
-              <p className="text-xl text-muted-foreground mb-8">
-                Discover amazing Apple products in our curated mystery boxes. From the latest iPhones to vintage collectibles.
-              </p>
-
-              {/* Search */}
-              <div className="max-w-md mx-auto lg:mx-0 mb-8">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                  <Input placeholder="Search Apple mystery boxes..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
-                </div>
-              </div>
-
-              {/* Key Stats */}
-              <div className="grid grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
-                <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-primary">{stats.totalBoxes}</div>
-                  <div className="text-sm text-muted-foreground">Apple Boxes</div>
-                </div>
-                <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-green-600">${stats.avgPrice}</div>
-                  <div className="text-sm text-muted-foreground">Avg. Price</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side - Featured Box */}
-            <div>
-              <Card className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-gray-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <TrendingUp className="w-5 h-5 text-orange-500" />
-                    <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs">
-                      Staff Pick
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex gap-4 mb-4">
-                    {/* Box Image */}
-                    <div className="w-20 h-20 bg-white/50 dark:bg-black/20 rounded-lg flex-shrink-0 flex items-center justify-center">
-                      <img src="/img/boxes/apple-mystery-box.jpg" alt="iPhone 15 Pro Mystery Box" className="w-16 h-16 object-cover rounded" />
-                    </div>
-                    
-                    {/* Box Info */}
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold mb-1">iPhone 15 Pro Mystery Box</h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Premium Apple mystery box with guaranteed iPhone 15 Pro and exclusive accessories.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Jackpot Items */}
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Top Jackpot Items</h4>
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-sm">
-                        <span>iPhone 15 Pro Max 1TB</span>
-                        <span className="font-medium text-gaming-gold">$1,599</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span>AirPods Pro (2nd Gen)</span>
-                        <span className="font-medium text-primary">$249</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span>Apple Watch Ultra 2</span>
-                        <span className="font-medium text-accent">$799</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
-                      <div className="text-xl font-bold">$899</div>
-                      <div className="text-xs text-muted-foreground">Box Price</div>
-                    </div>
-                    <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
-                      <div className="text-xl font-bold text-green-600">$1,299</div>
-                      <div className="text-xs text-muted-foreground">Expected Value</div>
-                    </div>
-                  </div>
-                  
-                  <Button asChild className="w-full">
-                    <Link to="/mystery-boxes/iphone-15-pro-mystery">View Details</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
+      <AppleHero />
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-8">
