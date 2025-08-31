@@ -24,54 +24,72 @@ const Header = () => {
 
   const navItems = [
     {
-      title: 'Skins',
-      href: '/skins',
-      description: 'Gaming skins hub for all games',
+      title: 'Skin Cases',
+      href: '/skin-cases',
+      description: 'Best skin case opening sites',
       items: [
-        { title: 'All Games', href: '/skins' },
-        { title: 'CS2 Cases', href: '/cases' },
-        { title: 'Mystery Boxes', href: '/mystery-boxes' },
-      ]
-    },
-    {
-      title: 'Operators',
-      href: '/operators',
-      description: 'Compare CS2 trading platforms',
-      items: [
-        { title: 'All Operators', href: '/operators' },
-        { title: 'Top Rated', href: '/operators/top-rated' },
-        { title: 'Low Fees', href: '/operators/low-fees' },
-      ]
-    },
-    {
-      title: 'Cases',
-      href: '/cases',
-      description: 'CS2 case analysis and odds',
-      items: [
-        { title: 'All Cases', href: '/cases' },
-        { title: 'New Releases', href: '/cases/new' },
-        { title: 'Best Value', href: '/cases/best-value' },
+        { title: 'CS2', href: '/skin-cases/cs2' },
+        { title: 'Dota2', href: '/skin-cases/dota2' },
+        { title: 'Rust', href: '/skin-cases/rust' },
+        { title: 'Team Fortress 2', href: '/skin-cases/tf2' },
+        { title: 'New Skin Operators', href: '/skin-cases/new' },
+        { title: 'Promo Codes', href: '/skin-cases/promo-codes' },
+        { title: 'Best Case Opening Sites', href: '/skin-cases/best' },
+        { title: 'Best Skin Trading Sites', href: '/skin-cases/trading' },
       ]
     },
     {
       title: 'Mystery Boxes',
       href: '/mystery-boxes',
-      description: 'Third-party box openings',
+      description: 'Mystery box opening platforms',
       items: [
-        { title: 'All Boxes', href: '/mystery-boxes' },
-        { title: 'Verified Only', href: '/mystery-boxes/verified' },
-        { title: 'Fair Odds', href: '/mystery-boxes/fair' },
+        { title: 'Best Sites', href: '/mystery-boxes/best' },
+        { title: 'New Sites', href: '/mystery-boxes/new' },
+        { title: 'Promo Codes', href: '/mystery-boxes/promo-codes' },
+        { title: 'Tech', href: '/mystery-boxes/tech' },
+        { title: 'Jewelry', href: '/mystery-boxes/jewelry' },
+        { title: 'Cars', href: '/mystery-boxes/cars' },
+        { title: 'Lego', href: '/mystery-boxes/lego' },
+        { title: 'Collectibles', href: '/mystery-boxes/collectibles' },
       ]
     },
     {
-      title: 'Guides',
-      href: '/guides',
-      description: 'Trading education and tips',
+      title: 'eSports Betting',
+      href: '/esports-betting',
+      description: 'Best eSports betting platforms',
       items: [
-        { title: 'Trading Guides', href: '/guides/trading' },
-        { title: 'Security Tips', href: '/guides/security' },
-        { title: 'Market Analysis', href: '/guides/analysis' },
+        { title: 'Best Sites', href: '/esports-betting/best' },
+        { title: 'New Sites', href: '/esports-betting/new' },
+        { title: 'Promo Codes', href: '/esports-betting/promo-codes' },
+        { title: 'Welcome Bonuses', href: '/esports-betting/welcome-bonuses' },
+        { title: 'Free Bonuses', href: '/esports-betting/free-bonuses' },
+        { title: 'CS2 Match Betting Sites', href: '/esports-betting/cs2' },
       ]
+    },
+    {
+      title: 'Casinos',
+      href: '/casinos',
+      description: 'Top online casino platforms',
+      items: [
+        { title: 'Best Casinos', href: '/casinos/best' },
+        { title: 'New Casinos', href: '/casinos/new' },
+        { title: 'Casino Bonuses', href: '/casinos/bonuses' },
+        { title: 'Crypto Casinos', href: '/casinos/crypto' },
+        { title: 'Bitcoin Casinos', href: '/casinos/bitcoin' },
+        { title: 'Slots Casinos', href: '/casinos/slots' },
+        { title: 'Plinko Casinos', href: '/casinos/plinko' },
+        { title: 'Crash Casinos', href: '/casinos/crash' },
+      ]
+    },
+    {
+      title: 'Reviews',
+      href: '/reviews',
+      description: 'Platform reviews and ratings',
+    },
+    {
+      title: 'Guides Blog',
+      href: '/guides',
+      description: 'Gaming and trading guides',
     },
   ];
 
@@ -94,42 +112,55 @@ const Header = () => {
             <NavigationMenuList>
               {navItems.map((item) => (
                 <NavigationMenuItem key={item.title}>
-                  <NavigationMenuTrigger className="h-10">
-                    {item.title}
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid w-[400px] gap-3 p-4">
-                      <div className="row-span-3">
-                        <NavigationMenuLink asChild>
-                          <a
-                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-card p-6 no-underline outline-none focus:shadow-md"
-                            href={item.href}
-                          >
-                            <div className="mb-2 mt-4 text-lg font-medium">
-                              {item.title}
-                            </div>
-                            <p className="text-sm leading-tight text-muted-foreground">
-                              {item.description}
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </div>
-                      <div className="grid gap-2">
-                        {item.items?.map((subItem) => (
-                          <NavigationMenuLink key={subItem.title} asChild>
-                            <a
-                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                              href={subItem.href}
-                            >
-                              <div className="text-sm font-medium leading-none">
-                                {subItem.title}
-                              </div>
-                            </a>
-                          </NavigationMenuLink>
-                        ))}
-                      </div>
-                    </div>
-                  </NavigationMenuContent>
+                  {item.items ? (
+                    <>
+                      <NavigationMenuTrigger className="h-10">
+                        {item.title}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="grid w-[400px] gap-3 p-4">
+                          <div className="row-span-3">
+                            <NavigationMenuLink asChild>
+                              <a
+                                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-card p-6 no-underline outline-none focus:shadow-md"
+                                href={item.href}
+                              >
+                                <div className="mb-2 mt-4 text-lg font-medium">
+                                  {item.title}
+                                </div>
+                                <p className="text-sm leading-tight text-muted-foreground">
+                                  {item.description}
+                                </p>
+                              </a>
+                            </NavigationMenuLink>
+                          </div>
+                          <div className="grid gap-2">
+                            {item.items?.map((subItem) => (
+                              <NavigationMenuLink key={subItem.title} asChild>
+                                <a
+                                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                  href={subItem.href}
+                                >
+                                  <div className="text-sm font-medium leading-none">
+                                    {subItem.title}
+                                  </div>
+                                </a>
+                              </NavigationMenuLink>
+                            ))}
+                          </div>
+                        </div>
+                      </NavigationMenuContent>
+                    </>
+                  ) : (
+                    <NavigationMenuLink asChild>
+                      <a
+                        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+                        href={item.href}
+                      >
+                        {item.title}
+                      </a>
+                    </NavigationMenuLink>
+                  )}
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>
@@ -190,18 +221,29 @@ const Header = () => {
                 <div className="flex flex-col space-y-4 mt-8">
                   {navItems.map((item) => (
                     <div key={item.title} className="space-y-2">
-                      <h3 className="font-medium">{item.title}</h3>
-                      <div className="pl-4 space-y-1">
-                        {item.items?.map((subItem) => (
-                          <a
-                            key={subItem.title}
-                            href={subItem.href}
-                            className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            {subItem.title}
-                          </a>
-                        ))}
-                      </div>
+                      {item.items ? (
+                        <>
+                          <h3 className="font-medium">{item.title}</h3>
+                          <div className="pl-4 space-y-1">
+                            {item.items?.map((subItem) => (
+                              <a
+                                key={subItem.title}
+                                href={subItem.href}
+                                className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                              >
+                                {subItem.title}
+                              </a>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <a
+                          href={item.href}
+                          className="block font-medium hover:text-foreground/80 transition-colors"
+                        >
+                          {item.title}
+                        </a>
+                      )}
                     </div>
                   ))}
                   <div className="pt-4 border-t">
