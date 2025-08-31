@@ -9,10 +9,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 const MysteryBoxDetail = () => {
   const getVolatilityRisk = (volatility: number) => {
-    if (volatility <= 50) return 'Low Risk';
-    if (volatility <= 100) return 'Medium Risk';
-    if (volatility <= 200) return 'High Risk';
-    return 'Extreme Risk';
+    if (volatility <= 50) return 'Low';
+    if (volatility <= 100) return 'Medium';
+    if (volatility <= 200) return 'High';
+    return 'Extreme';
   };
 
   const boxData = {
@@ -137,7 +137,7 @@ const MysteryBoxDetail = () => {
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold text-purple-600">{getVolatilityRisk(boxData.volatility)} ({boxData.volatility}%)</div>
-                  <div className="text-sm text-muted-foreground">Volatility</div>
+                  <div className="text-sm text-muted-foreground">Risk</div>
                 </CardContent>
               </Card>
             </div>
