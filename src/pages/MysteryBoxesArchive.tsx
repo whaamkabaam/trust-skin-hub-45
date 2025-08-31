@@ -34,6 +34,7 @@ const MysteryBoxesArchive = () => {
 
   const categories = [
     { name: 'All Mystery Boxes', count: 89, href: '/mystery-boxes' },
+    { name: 'Apple Mystery Boxes', count: 45, href: '/mystery-boxes/apple' },
     { name: 'Knife Collections', count: 23, href: '/mystery-boxes?type=knives' },
     { name: 'Weapon Skins', count: 31, href: '/mystery-boxes?type=weapons' },
     { name: 'Glove Collections', count: 12, href: '/mystery-boxes?type=gloves' },

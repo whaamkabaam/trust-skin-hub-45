@@ -1,0 +1,495 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Search, Grid, List, Package, Hash, Verified, TrendingUp, Calendar, Smartphone, Laptop, Watch, Headphones } from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+
+const AppleMysteryBoxes = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [priceRange, setPriceRange] = useState([0, 2000]);
+
+  const itemsPerPage = 12;
+  const totalBoxes = 45;
+  const totalPages = Math.ceil(totalBoxes / itemsPerPage);
+
+  const stats = {
+    totalBoxes: 45,
+    avgPrice: 347.50,
+    verifiedBoxes: 42,
+    newThisWeek: 3
+  };
+
+  const categories = [
+    { name: 'All Apple Boxes', count: 45, href: '/mystery-boxes/apple' },
+    { name: 'iPhone Collection', count: 15, href: '/mystery-boxes/apple?type=iphone' },
+    { name: 'MacBook Mystery', count: 8, href: '/mystery-boxes/apple?type=macbook' },
+    { name: 'Apple Watch Box', count: 10, href: '/mystery-boxes/apple?type=watch' },
+    { name: 'AirPods & Audio', count: 7, href: '/mystery-boxes/apple?type=audio' },
+    { name: 'iPad Collection', count: 5, href: '/mystery-boxes/apple?type=ipad' },
+    { name: 'Accessories Pack', count: 12, href: '/mystery-boxes/apple?type=accessories' },
+    { name: 'Vintage Apple', count: 6, href: '/mystery-boxes/apple?vintage=true' }
+  ];
+
+  const productFilters = ['iPhone', 'MacBook', 'Apple Watch', 'AirPods', 'iPad', 'Accessories'];
+  const conditionFilters = ['New', 'Refurbished', 'Vintage', 'Mixed'];
+  const sortOptions = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'popular', label: 'Most Popular' },
+    { value: 'value', label: 'Best Expected Value' },
+    { value: 'rarity', label: 'Rarest Items' }
+  ];
+
+  // Sample Apple mystery boxes data
+  const appleBoxes = Array.from({ length: itemsPerPage }, (_, i) => ({
+    id: `apple-box-${i + 1}`,
+    name: `${['iPhone Pro Max', 'MacBook Air', 'Apple Watch Ultra', 'AirPods Pro', 'iPad Pro'][i % 5]} Mystery Box ${i + 1}`,
+    image: '/img/boxes/apple-mystery-box.jpg',
+    category: ['iPhone', 'MacBook', 'Apple Watch', 'AirPods', 'iPad'][i % 5],
+    condition: ['New', 'Refurbished', 'Vintage'][i % 3],
+    price: Math.round((Math.random() * 1500 + 50) * 100) / 100,
+    expectedValue: Math.round((Math.random() * 2000 + 100) * 100) / 100,
+    verified: Math.random() > 0.15,
+    authenticity: Math.random() > 0.1,
+    profitRate: Math.round((Math.random() * 80 + 20) * 10) / 10,
+    popularity: Math.floor(Math.random() * 3000) + 200,
+    operator: ['Apple Direct', 'Tech Vault', 'iBox Mystery', 'Premium Apple', 'Elite Tech'][i % 5],
+    highlights: [
+      { name: 'iPhone 15 Pro Max', rarity: 'Ultra Rare', value: '$1,199' },
+      { name: 'MacBook Pro M3', rarity: 'Rare', value: '$1,999' },
+      { name: 'Apple Watch Series 9', rarity: 'Common', value: '$399' }
+    ]
+  }));
+
+  const getRarityColor = (rarity: string) => {
+    switch (rarity.toLowerCase()) {
+      case 'ultra rare': return 'text-gaming-gold';
+      case 'rare': return 'text-primary';
+      case 'uncommon': return 'text-accent';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category.toLowerCase()) {
+      case 'iphone': return <Smartphone className="w-4 h-4" />;
+      case 'macbook': return <Laptop className="w-4 h-4" />;
+      case 'apple watch': return <Watch className="w-4 h-4" />;
+      case 'airpods': return <Headphones className="w-4 h-4" />;
+      default: return <Package className="w-4 h-4" />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      {/* Breadcrumbs */}
+      <div className="border-b bg-muted/20">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center gap-2 text-sm">
+            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
+            <span className="text-muted-foreground">/</span>
+            <Link to="/mystery-boxes" className="text-muted-foreground hover:text-foreground">Mystery Boxes</Link>
+            <span className="text-muted-foreground">/</span>
+            <span className="font-medium">Apple Mystery Boxes</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-16">
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-600 rounded-xl flex items-center justify-center">
+              <span className="text-2xl">🍎</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold">Apple Mystery Boxes</h1>
+          </div>
+          
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Discover amazing Apple products in our curated mystery boxes. From the latest iPhones to vintage collectibles.
+          </p>
+
+          {/* Search */}
+          <div className="max-w-md mx-auto mb-8">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Search Apple mystery boxes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
+              <div className="text-2xl font-bold text-primary">{stats.totalBoxes}</div>
+              <div className="text-sm text-muted-foreground">Apple Boxes</div>
+            </div>
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
+              <div className="text-2xl font-bold text-green-600">${stats.avgPrice}</div>
+              <div className="text-sm text-muted-foreground">Avg. Price</div>
+            </div>
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
+              <div className="text-2xl font-bold text-accent">{stats.verifiedBoxes}</div>
+              <div className="text-sm text-muted-foreground">Verified</div>
+            </div>
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
+              <div className="text-2xl font-bold text-orange-600">{stats.newThisWeek}</div>
+              <div className="text-sm text-muted-foreground">New This Week</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar Filters */}
+          <aside className="lg:w-80 space-y-6">
+            {/* Categories */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Hash className="w-5 h-5" />
+                  Categories
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.name}
+                      to={category.href}
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <span className="text-sm">{category.name}</span>
+                      <Badge variant="secondary" className="text-xs">
+                        {category.count}
+                      </Badge>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Price Range Filter */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Price Range</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Slider
+                    value={priceRange}
+                    onValueChange={setPriceRange}
+                    max={2000}
+                    min={0}
+                    step={50}
+                    className="w-full"
+                  />
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>${priceRange[0]}</span>
+                    <span>${priceRange[1]}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Product Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Apple Products</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {productFilters.map((product) => (
+                    <div key={product} className="flex items-center space-x-2">
+                      <Checkbox id={product.toLowerCase()} />
+                      <Label htmlFor={product.toLowerCase()} className="text-sm flex items-center gap-2">
+                        {getCategoryIcon(product)}
+                        {product}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Condition Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Condition</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {conditionFilters.map((condition) => (
+                    <div key={condition} className="flex items-center space-x-2">
+                      <Checkbox id={condition.toLowerCase()} />
+                      <Label htmlFor={condition.toLowerCase()} className="text-sm">
+                        {condition}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Features */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Features</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="verified" />
+                    <Label htmlFor="verified" className="text-sm flex items-center gap-2">
+                      <Verified className="w-4 h-4 text-primary" />
+                      Verified Authentic
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="warranty" />
+                    <Label htmlFor="warranty" className="text-sm">
+                      Warranty Included
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="unopened" />
+                    <Label htmlFor="unopened" className="text-sm">
+                      Factory Sealed
+                    </Label>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </aside>
+
+          {/* Main Content Area */}
+          <main className="flex-1">
+            {/* Results Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Apple Mystery Boxes</h2>
+                <p className="text-muted-foreground">
+                  Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalBoxes)} of {totalBoxes} boxes
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sortOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="flex rounded-lg border">
+                  <Button
+                    variant={view === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setView('grid')}
+                    className="rounded-r-none"
+                  >
+                    <Grid className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={view === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setView('list')}
+                    className="rounded-l-none"
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Featured Box */}
+            <Card className="mb-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <TrendingUp className="w-6 h-6 text-orange-500" />
+                  <h3 className="text-xl font-bold">Featured: iPhone 15 Pro Mystery Box</h3>
+                  <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+                    Staff Pick
+                  </Badge>
+                </div>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="md:col-span-2">
+                    <p className="text-muted-foreground mb-4">
+                      Our most popular Apple mystery box featuring the latest iPhone 15 Pro models, premium accessories, and exclusive Apple merchandise. Guaranteed authentic products with full warranty.
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <Badge variant="outline" className="text-green-600 border-green-200">iPhone 15 Pro</Badge>
+                      <Badge variant="outline" className="text-blue-600 border-blue-200">Factory Sealed</Badge>
+                      <Badge variant="outline" className="text-purple-600 border-purple-200">1 Year Warranty</Badge>
+                    </div>
+                    <Button asChild>
+                      <Link to="/mystery-boxes/iphone-15-pro-mystery">View Details</Link>
+                    </Button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">$899</div>
+                      <div className="text-sm text-muted-foreground">Box Price</div>
+                    </div>
+                    <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <div className="text-2xl font-bold text-accent">$1,299</div>
+                      <div className="text-sm text-muted-foreground">Expected Value</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Apple Boxes Grid */}
+            <div className={cn(
+              "gap-6 mb-8",
+              view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'space-y-4'
+            )}>
+              {appleBoxes.map((box) => (
+                <Card key={box.id} className={cn(
+                  "group hover:shadow-lg transition-all duration-300",
+                  view === 'list' && "flex flex-row"
+                )}>
+                  <div className={cn(
+                    view === 'list' ? 'w-48 flex-shrink-0' : 'aspect-square'
+                  )}>
+                    <img
+                      src={box.image}
+                      alt={box.name}
+                      className="w-full h-full object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <CardContent className={cn(
+                    "p-4 flex-1",
+                    view === 'list' && "flex flex-col justify-between"
+                  )}>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="outline" className="text-xs">
+                          {getCategoryIcon(box.category)}
+                          <span className="ml-1">{box.category}</span>
+                        </Badge>
+                        {box.verified && (
+                          <Verified className="w-4 h-4 text-primary" />
+                        )}
+                      </div>
+                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                        {box.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        By {box.operator}
+                      </p>
+                      
+                      {/* Highlights */}
+                      <div className="space-y-1 mb-4">
+                        {box.highlights.slice(0, 2).map((highlight, idx) => (
+                          <div key={idx} className="flex items-center justify-between text-xs">
+                            <span className="truncate">{highlight.name}</span>
+                            <span className={cn("font-medium", getRarityColor(highlight.rarity))}>
+                              {highlight.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-lg font-bold">${box.price}</div>
+                          <div className="text-xs text-muted-foreground">Box Price</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-green-600">
+                            ${box.expectedValue} EV
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {box.profitRate}% profit rate
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button size="sm" className="flex-1" asChild>
+                          <Link to={`/mystery-boxes/${box.id}`}>
+                            View Details
+                          </Link>
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          <Package className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + 1;
+                return (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                );
+              })}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default AppleMysteryBoxes;
