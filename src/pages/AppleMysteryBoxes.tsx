@@ -301,73 +301,13 @@ const AppleMysteryBoxes = () => {
             </Card>
 
             {/* Product Filters */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Apple Products</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {productFilters.map(product => <div key={product} className="flex items-center space-x-2">
-                      <Checkbox id={product.toLowerCase()} />
-                      <Label htmlFor={product.toLowerCase()} className="text-sm flex items-center gap-2">
-                        {getCategoryIcon(product)}
-                        {product}
-                      </Label>
-                    </div>)}
-                </div>
-              </CardContent>
-            </Card>
+            
 
             {/* Condition Filters */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Condition</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {conditionFilters.map(condition => (
-                    <div key={condition} className="flex items-center space-x-2">
-                      <Checkbox id={condition.toLowerCase()} />
-                      <Label htmlFor={condition.toLowerCase()} className="text-sm">
-                        {condition}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            
 
             {/* Tags */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Popular Tags</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">
-                    Apple
-                  </Badge>
-                  <Badge variant="outline" className="cursor-pointer hover:bg-muted transition-colors">
-                    Premium
-                  </Badge>
-                  <Badge variant="outline" className="cursor-pointer hover:bg-muted transition-colors">
-                    Limited Edition
-                  </Badge>
-                  <Badge variant="outline" className="cursor-pointer hover:bg-muted transition-colors">
-                    Verified
-                  </Badge>
-                  <Badge variant="outline" className="cursor-pointer hover:bg-muted transition-colors">
-                    High Value
-                  </Badge>
-                  <Badge variant="outline" className="cursor-pointer hover:bg-muted transition-colors">
-                    New Release
-                  </Badge>
-                  <Badge variant="outline" className="cursor-pointer hover:bg-muted transition-colors">
-                    Collector's Item
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
+            
           </aside>
 
           {/* Main Content Area */}
