@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import Hero from '@/components/Hero';
 import SkinsHero from '@/components/SkinsHero';
+import AppleHero from '@/components/AppleHero';
+import OperatorReviewHero from '@/components/OperatorReviewHero';
 import TrustIndicator from '@/components/TrustIndicator';
 import RatingBadge from '@/components/RatingBadge';
 import CaseCard from '@/components/CaseCard';
@@ -251,6 +253,8 @@ const StyleGuide = () => {
             <TabsList>
               <TabsTrigger value="main">Main Hero</TabsTrigger>
               <TabsTrigger value="skins">Skins Hero</TabsTrigger>
+              <TabsTrigger value="apple">Apple Hero</TabsTrigger>
+              <TabsTrigger value="operator-review">Operator Review</TabsTrigger>
             </TabsList>
             
             <TabsContent value="main" className="space-y-4">
@@ -274,6 +278,48 @@ const StyleGuide = () => {
                 <CardContent>
                   <div className="border rounded-lg overflow-hidden">
                     <SkinsHero />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="apple" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Apple Mystery Box Hero</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden">
+                    <AppleHero />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="operator-review" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Operator Review Hero</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden">
+                    <OperatorReviewHero 
+                      operator={{
+                        id: 'csgoroll',
+                        name: 'CSGORoll',
+                        verified: true,
+                        url: 'https://csgoroll.com',
+                        modes: ['Case Opening', 'Upgrader']
+                      }}
+                      scores={{
+                        overall: 4.3,
+                        user: 3.7
+                      }}
+                      userRatings={{
+                        total: 1284
+                      }}
+                      promoCode="XYZ123"
+                    />
                   </div>
                 </CardContent>
               </Card>
