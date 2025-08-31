@@ -328,15 +328,23 @@ const AppleMysteryBoxes = () => {
                 <CardTitle>Returns Rate</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {['0-10%', '10-25%', '25-50%', '50%+'].map(rate => (
-                    <div key={rate} className="flex items-center space-x-2">
-                      <Checkbox id={rate} />
-                      <Label htmlFor={rate} className="text-sm cursor-pointer">
-                        {rate}
-                      </Label>
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
+                    <Slider 
+                      defaultValue={[25]} 
+                      max={100} 
+                      min={0} 
+                      step={5} 
+                      className="absolute top-0 w-full"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>0%</span>
+                    <span>Low Risk</span>
+                    <span>High Risk</span>
+                    <span>100%</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
