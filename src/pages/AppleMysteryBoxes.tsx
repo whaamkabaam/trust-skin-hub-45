@@ -309,15 +309,23 @@ const AppleMysteryBoxes = () => {
                 <CardTitle>Risk Level</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {['Low', 'Medium', 'High', 'Extreme'].map(risk => (
-                    <div key={risk} className="flex items-center space-x-2">
-                      <Checkbox id={risk} />
-                      <Label htmlFor={risk} className="text-sm cursor-pointer">
-                        {risk}
-                      </Label>
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
+                    <Slider 
+                      defaultValue={[30]} 
+                      max={100} 
+                      min={0} 
+                      step={10} 
+                      className="absolute top-0 w-full"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Low</span>
+                    <span>Medium</span>
+                    <span>High</span>
+                    <span>Extreme</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
