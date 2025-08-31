@@ -114,39 +114,104 @@ const CasesArchive = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-gradient-card border-b">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl font-bold mb-4">CS2 Cases & Containers</h1>
-            <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
-              Analyze {stats.totalCases} CS2 cases with detailed drop tables, odds disclosure, 
-              and expected value calculations. Make informed decisions before opening.
-            </p>
-            
-            {/* Search */}
-            <div className="relative mb-8">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-              <Input placeholder="Search cases by name, skins, or collection..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10 pr-4 py-3 text-lg" />
+      <section className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Main Content */}
+            <div className="text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded-xl flex items-center justify-center">
+                  <span className="text-2xl">🎮</span>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold">CS2 Cases</h1>
+              </div>
+              
+              <p className="text-xl text-muted-foreground mb-8">
+                Analyze {stats.totalCases} CS2 cases with detailed drop tables, odds disclosure, and expected value calculations.
+              </p>
+
+              {/* Search */}
+              <div className="max-w-md mx-auto lg:mx-0 mb-8">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input placeholder="Search CS2 cases..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
+                </div>
+              </div>
+
+              {/* Key Stats */}
+              <div className="grid grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
+                <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
+                  <div className="text-2xl font-bold text-primary">{stats.totalCases}</div>
+                  <div className="text-sm text-muted-foreground">Total Cases</div>
+                </div>
+                <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
+                  <div className="text-2xl font-bold text-green-600">${stats.avgPrice}</div>
+                  <div className="text-sm text-muted-foreground">Avg. Price</div>
+                </div>
+              </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{stats.totalCases}</div>
-                <div className="text-sm text-muted-foreground">Total cases</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-success">${stats.avgPrice}</div>
-                <div className="text-sm text-muted-foreground">Avg price</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-accent">{stats.verifiedCases}</div>
-                <div className="text-sm text-muted-foreground">Verified</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-warning">{stats.newThisWeek}</div>
-                <div className="text-sm text-muted-foreground">New this week</div>
-              </div>
+            {/* Right Side - Featured Case */}
+            <div>
+              <Card className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-gray-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <TrendingUp className="w-5 h-5 text-orange-500" />
+                    <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs">
+                      Most Popular
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex gap-4 mb-4">
+                    {/* Case Image */}
+                    <div className="w-20 h-20 bg-white/50 dark:bg-black/20 rounded-lg flex-shrink-0 flex items-center justify-center">
+                      <span className="text-3xl">📦</span>
+                    </div>
+                    
+                    {/* Case Info */}
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold mb-1">Revolution Case</h3>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Latest CS2 case with premium weapon skins and verified drop rates.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Featured Skins */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Featured Skins</h4>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <span>AK-47 | Nightwish</span>
+                        <span className="font-medium text-gaming-gold">$450</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span>M4A4 | Temukau</span>
+                        <span className="font-medium text-primary">$120</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span>AWP | Duality</span>
+                        <span className="font-medium text-accent">$85</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <div className="text-xl font-bold">$2.50</div>
+                      <div className="text-xs text-muted-foreground">Case Price</div>
+                    </div>
+                    <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <div className="text-xl font-bold text-green-600">$3.20</div>
+                      <div className="text-xs text-muted-foreground">Expected Value</div>
+                    </div>
+                  </div>
+                  
+                  <Button asChild className="w-full">
+                    <Link to="/cases/revolution-case">View Case Details</Link>
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
