@@ -136,23 +136,61 @@ const Index = () => {
 
         {/* Quick Links Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Explore More</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <h2 className="text-3xl font-bold text-center mb-8">Gaming Hubs</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  CS2 Cases
+                  Online Casinos
                   <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4">
-                  Analyze case odds, drop tables, and expected returns.
+                  Trusted crypto casinos with provably fair games and fast payouts.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">Revolution Case</Badge>
-                  <Badge variant="outline">Recoil Case</Badge>
-                  <Badge variant="outline">Dreams & Nightmares</Badge>
+                  <Badge variant="outline">Provably Fair</Badge>
+                  <Badge variant="outline">Crypto Friendly</Badge>
+                  <Badge variant="outline">Live Games</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  eSports Betting
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">
+                  Best odds and markets for CS2, Dota 2, and other major esports.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline">Live Betting</Badge>
+                  <Badge variant="outline">CS2 Matches</Badge>
+                  <Badge variant="outline">Best Odds</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  Cases
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">
+                  Analyze case odds, drop tables, and expected returns across games.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline">CS2 Cases</Badge>
+                  <Badge variant="outline">Rust Boxes</Badge>
+                  <Badge variant="outline">TF2 Crates</Badge>
                 </div>
               </CardContent>
             </Card>
@@ -172,25 +210,6 @@ const Index = () => {
                   <Badge variant="outline">Knife Boxes</Badge>
                   <Badge variant="outline">Glove Collections</Badge>
                   <Badge variant="outline">Rare Skins</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  Trading Guides
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Learn trading strategies, security best practices, and market analysis.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">Beginner Guide</Badge>
-                  <Badge variant="outline">Security Tips</Badge>
-                  <Badge variant="outline">Market Trends</Badge>
                 </div>
               </CardContent>
             </Card>
