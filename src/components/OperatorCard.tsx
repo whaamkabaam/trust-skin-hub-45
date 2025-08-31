@@ -5,37 +5,37 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Operator, FeeLevel } from '@/types';
 import { cn } from '@/lib/utils';
-
 interface OperatorCardProps {
   operator: Operator;
   view?: 'grid' | 'list';
 }
-
 const getFeeColor = (level: FeeLevel) => {
   switch (level) {
-    case 'Very Low': return 'bg-success text-success-foreground';
-    case 'Low': return 'bg-success/80 text-success-foreground';
-    case 'Medium': return 'bg-warning text-warning-foreground';
-    case 'High': return 'bg-destructive/80 text-destructive-foreground';
-    case 'Very High': return 'bg-destructive text-destructive-foreground';
-    default: return 'bg-muted text-muted-foreground';
+    case 'Very Low':
+      return 'bg-success text-success-foreground';
+    case 'Low':
+      return 'bg-success/80 text-success-foreground';
+    case 'Medium':
+      return 'bg-warning text-warning-foreground';
+    case 'High':
+      return 'bg-destructive/80 text-destructive-foreground';
+    case 'Very High':
+      return 'bg-destructive text-destructive-foreground';
+    default:
+      return 'bg-muted text-muted-foreground';
   }
 };
-
 const getTrustColor = (score: number) => {
   if (score >= 4) return 'text-success';
   if (score >= 3) return 'text-warning';
   return 'text-destructive';
 };
-
-const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
+const OperatorCard = ({
+  operator,
+  view = 'grid'
+}: OperatorCardProps) => {
   const isListView = view === 'list';
-
-  return (
-    <Card className={cn(
-      "group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1",
-      isListView && "flex-row"
-    )}>
+  return <Card className={cn("group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1", isListView && "flex-row")}>
       <CardContent className={cn("p-6", isListView && "flex-1 flex items-center gap-6")}>
         {/* Logo & Header */}
         <div className={cn("flex items-start gap-4 mb-4", isListView && "mb-0 flex-shrink-0")}>
@@ -47,11 +47,9 @@ const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-lg truncate">{operator.name}</h3>
-              {operator.verified && (
-                <Badge variant="secondary" className="bg-success/10 text-success">
+              {operator.verified && <Badge variant="secondary" className="bg-success/10 text-success">
                   Verified
-                </Badge>
-              )}
+                </Badge>}
             </div>
             <p className="text-sm text-muted-foreground mb-2">{operator.verdict}</p>
             
@@ -68,27 +66,20 @@ const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
           </div>
         </div>
 
-        {!isListView && (
-          <>
+        {!isListView && <>
             {/* Payment Methods */}
             <div className="flex items-center gap-2 mb-4">
               <span className="text-sm font-medium">Accepts:</span>
               <div className="flex gap-1">
-                {operator.paymentMethods.includes('skins') && (
-                  <div className="w-6 h-6 bg-primary/10 rounded flex items-center justify-center">
+                {operator.paymentMethods.includes('skins') && <div className="w-6 h-6 bg-primary/10 rounded flex items-center justify-center">
                     <TrendingUp className="h-3 w-3 text-primary" />
-                  </div>
-                )}
-                {operator.paymentMethods.includes('crypto') && (
-                  <div className="w-6 h-6 bg-primary/10 rounded flex items-center justify-center">
+                  </div>}
+                {operator.paymentMethods.includes('crypto') && <div className="w-6 h-6 bg-primary/10 rounded flex items-center justify-center">
                     <Bitcoin className="h-3 w-3 text-primary" />
-                  </div>
-                )}
-                {operator.paymentMethods.includes('cards') && (
-                  <div className="w-6 h-6 bg-primary/10 rounded flex items-center justify-center">
+                  </div>}
+                {operator.paymentMethods.includes('cards') && <div className="w-6 h-6 bg-primary/10 rounded flex items-center justify-center">
                     <CreditCard className="h-3 w-3 text-primary" />
-                  </div>
-                )}
+                  </div>}
               </div>
             </div>
 
@@ -96,35 +87,27 @@ const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
             <div className="mb-4">
               <h4 className="text-sm font-medium text-foreground mb-2">Key Features</h4>
               <div className="space-y-2">
-                {operator.pros.slice(0, 3).map((feature, i) => (
-                  <div key={i} className="flex items-center gap-2">
+                {operator.pros.slice(0, 3).map((feature, i) => <div key={i} className="flex items-center gap-2">
                     <CheckCircle className="h-3 w-3 text-success flex-shrink-0" />
                     <span className="text-xs text-muted-foreground">{feature}</span>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
-          </>
-        )}
+          </>}
 
         {/* Modes (for both views) */}
         <div className={cn("mb-4", isListView && "flex-shrink-0")}>
           <div className="flex flex-wrap gap-1">
-            {operator.modes.slice(0, isListView ? 2 : 4).map((mode) => (
-              <Badge key={mode} variant="outline" className="text-xs">
+            {operator.modes.slice(0, isListView ? 2 : 4).map(mode => <Badge key={mode} variant="outline" className="text-xs">
                 {mode}
-              </Badge>
-            ))}
-            {operator.modes.length > (isListView ? 2 : 4) && (
-              <Badge variant="outline" className="text-xs text-muted-foreground">
+              </Badge>)}
+            {operator.modes.length > (isListView ? 2 : 4) && <Badge variant="outline" className="text-xs text-muted-foreground">
                 +{operator.modes.length - (isListView ? 2 : 4)}
-              </Badge>
-            )}
+              </Badge>}
           </div>
         </div>
 
-        {isListView && (
-          <div className="flex items-center gap-4 flex-shrink-0">
+        {isListView && <div className="flex items-center gap-4 flex-shrink-0">
             <div className="text-center">
               <div className={cn("text-lg font-semibold", getTrustColor(operator.trustScore))}>
                 {operator.trustScore}
@@ -135,34 +118,13 @@ const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
               <div className="text-sm font-medium">{operator.payoutSpeed}</div>
               <div className="text-xs text-muted-foreground">Payout</div>
             </div>
-          </div>
-        )}
+          </div>}
       </CardContent>
 
       <CardFooter className={cn("p-6 pt-0", isListView && "p-4")}>
-        {!isListView && (
-          <div className="w-full space-y-3">
+        {!isListView && <div className="w-full space-y-3">
             {/* Trust indicator */}
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center gap-1 cursor-help">
-                        <HelpCircle className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">Trust Score:</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-sm">
-                      <p>Based on security analysis, fee transparency, and community feedback</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <div className={cn("font-semibold", getTrustColor(operator.trustScore))}>
-                {operator.trustScore}/5.0
-              </div>
-            </div>
+            
 
             {/* Action buttons */}
             <div className="flex gap-2">
@@ -174,11 +136,9 @@ const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
                 Visit Site
               </Button>
             </div>
-          </div>
-        )}
+          </div>}
 
-        {isListView && (
-          <div className="flex gap-2 w-full">
+        {isListView && <div className="flex gap-2 w-full">
             <Button variant="outline" size="sm" className="flex-1">
               Read Review
             </Button>
@@ -186,11 +146,8 @@ const OperatorCard = ({ operator, view = 'grid' }: OperatorCardProps) => {
               <ExternalLink className="h-4 w-4 mr-1" />
               Visit Site
             </Button>
-          </div>
-        )}
+          </div>}
       </CardFooter>
-    </Card>
-  );
+    </Card>;
 };
-
 export default OperatorCard;
