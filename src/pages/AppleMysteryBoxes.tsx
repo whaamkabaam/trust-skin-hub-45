@@ -340,7 +340,7 @@ const AppleMysteryBoxes = () => {
                   <div className="relative">
                     <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
                     <Slider 
-                      defaultValue={[45]} 
+                      defaultValue={[45, 75]} 
                       max={100} 
                       min={40} 
                       step={5} 
@@ -365,6 +365,11 @@ const AppleMysteryBoxes = () => {
                         );
                       })}
                     </div>
+                  </div>
+                  
+                  {/* Selected Range Display */}
+                  <div className="text-center">
+                    <span className="text-sm font-medium">45% - 75%</span>
                   </div>
                 </div>
               </CardContent>
