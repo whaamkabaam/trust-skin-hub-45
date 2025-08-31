@@ -1,43 +1,14 @@
 import { Link } from 'react-router-dom';
-import { Star, ExternalLink, Home, Gamepad2, CreditCard, TrendingUp } from 'lucide-react';
+import { Star, ExternalLink, Home, CreditCard, TrendingUp } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SkinsHero from '@/components/SkinsHero';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { sampleOperators } from '@/lib/sample-data';
 
 const Skins = () => {
-  const games = [
-    { 
-      name: 'Counter-Strike 2', 
-      shortName: 'CS2', 
-      path: '/cases',
-      color: 'from-orange-500 to-red-600',
-      icon: '🔫'
-    },
-    { 
-      name: 'Dota 2', 
-      shortName: 'Dota2', 
-      path: '/cases?game=dota2',
-      color: 'from-red-500 to-pink-600',
-      icon: '⚔️'
-    },
-    { 
-      name: 'Rust', 
-      shortName: 'Rust', 
-      path: '/cases?game=rust',
-      color: 'from-amber-600 to-orange-700',
-      icon: '🔨'
-    },
-    { 
-      name: 'Team Fortress 2', 
-      shortName: 'TF2', 
-      path: '/cases?game=tf2',
-      color: 'from-blue-500 to-purple-600',
-      icon: '🎯'
-    }
-  ];
 
   const getPaymentMethodIcon = (method: string) => {
     switch (method) {
@@ -76,36 +47,8 @@ const Skins = () => {
         </div>
       </div>
 
-      {/* Hero Section with Game Navigation */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Gamepad2 className="w-8 h-8 text-gaming-orange" />
-            <h1 className="text-3xl md:text-5xl font-bold">Gaming Skins Hub</h1>
-          </div>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Discover the best platforms for trading, opening cases, and collecting skins across all major games
-          </p>
-
-          {/* Game Navigation Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            {games.map((game) => (
-              <Link key={game.shortName} to={game.path}>
-                <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden">
-                  <div className={`h-32 bg-gradient-to-br ${game.color} p-6 flex flex-col items-center justify-center text-white relative`}>
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                    <div className="relative z-10 text-center">
-                      <div className="text-2xl mb-2">{game.icon}</div>
-                      <h3 className="font-bold text-lg">{game.shortName}</h3>
-                      <p className="text-sm opacity-90">{game.name}</p>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Hero Section */}
+      <SkinsHero />
 
       {/* Top Operators Section */}
       <section className="container mx-auto px-4 pb-12">
