@@ -263,6 +263,79 @@ const CasesArchive = () => {
                 </CardContent>
               </Card>
 
+              {/* Risk Level Filter */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Risk Level</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
+                      <Slider 
+                        defaultValue={[30]} 
+                        max={100} 
+                        min={0} 
+                        step={10} 
+                        className="absolute top-0 w-full"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Low</span>
+                      <span>Medium</span>
+                      <span>High</span>
+                      <span>Extreme</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Returns Rate Filter */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Returns Rate</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
+                      <Slider 
+                        value={[70, 90]} 
+                        onValueChange={(value) => console.log('Returns rate:', value)}
+                        max={100} 
+                        min={40} 
+                        step={5} 
+                        className="absolute top-0 w-full"
+                      />
+                    </div>
+                    
+                    {/* Tick marks and labels */}
+                    <div className="relative">
+                      <div className="flex justify-between items-end h-4">
+                        {/* Generate marks for 40% to 100% in 5% increments */}
+                        {Array.from({ length: 13 }, (_, i) => {
+                          const value = 40 + (i * 5);
+                          const isMainTick = value % 10 === 0;
+                          return (
+                            <div key={value} className="flex flex-col items-center">
+                              <div className={`bg-muted-foreground ${isMainTick ? 'h-3 w-px' : 'h-1.5 w-px'}`}></div>
+                              {isMainTick && (
+                                <span className="text-xs text-muted-foreground mt-1">{value}%</span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    
+                    {/* Selected Range Display */}
+                    <div className="text-center">
+                      <span className="text-sm font-medium">70% - 90%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Market Insights */}
               <Card>
                 <CardHeader>
