@@ -340,15 +340,15 @@ const AppleMysteryBoxes = () => {
                   <div className="relative">
                     <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
                     <Slider 
-                      defaultValue={[25]} 
+                      defaultValue={[45]} 
                       max={100} 
-                      min={0} 
+                      min={40} 
                       step={5} 
                       className="absolute top-0 w-full"
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>0%</span>
+                    <span>40%</span>
                     <span>Low Risk</span>
                     <span>High Risk</span>
                     <span>100%</span>
