@@ -32,52 +32,52 @@ const Hero = () => {
           </p>
 
           {/* Gaming Hubs CTAs */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 justify-center mb-12 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 justify-center mb-12 max-w-5xl mx-auto">
             <Button 
               size="lg" 
-              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-4 py-6 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-3 md:px-4 py-4 md:py-6 text-sm md:text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[80px] md:min-h-[100px]"
               asChild
             >
               <a href="/casinos">
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-2xl">🎰</span>
-                  <span>Casinos</span>
+                <div className="flex flex-col items-center gap-1 md:gap-2">
+                  <span className="text-xl md:text-2xl">🎰</span>
+                  <span className="text-center leading-tight">Casinos</span>
                 </div>
               </a>
             </Button>
             <Button 
               size="lg" 
-              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-4 py-6 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-3 md:px-4 py-4 md:py-6 text-sm md:text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[80px] md:min-h-[100px]"
               asChild
             >
               <a href="/esports">
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-2xl">🏆</span>
-                  <span>eSports</span>
+                <div className="flex flex-col items-center gap-1 md:gap-2">
+                  <span className="text-xl md:text-2xl">🏆</span>
+                  <span className="text-center leading-tight">eSports</span>
                 </div>
               </a>
             </Button>
             <Button 
               size="lg" 
-              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-4 py-6 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-3 md:px-4 py-4 md:py-6 text-sm md:text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[80px] md:min-h-[100px]"
               asChild
             >
               <a href="/cases">
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-2xl">📦</span>
-                  <span>Cases</span>
+                <div className="flex flex-col items-center gap-1 md:gap-2">
+                  <span className="text-xl md:text-2xl">📦</span>
+                  <span className="text-center leading-tight">Cases</span>
                 </div>
               </a>
             </Button>
             <Button 
               size="lg" 
-              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-4 py-6 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-3 md:px-4 py-4 md:py-6 text-sm md:text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[80px] md:min-h-[100px]"
               asChild
             >
               <a href="/mystery-boxes">
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-2xl">🎁</span>
-                  <span>Mystery Boxes</span>
+                <div className="flex flex-col items-center gap-1 md:gap-2">
+                  <span className="text-xl md:text-2xl">🎁</span>
+                  <span className="text-center leading-tight">Mystery Boxes</span>
                 </div>
               </a>
             </Button>
