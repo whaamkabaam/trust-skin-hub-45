@@ -12,6 +12,7 @@ import Hero from '@/components/Hero';
 import SkinsHero from '@/components/SkinsHero';
 import AppleHero from '@/components/AppleHero';
 import OperatorReviewHero from '@/components/OperatorReviewHero';
+import TopOperatorList from '@/components/TopOperatorList';
 import TrustIndicator from '@/components/TrustIndicator';
 import RatingBadge from '@/components/RatingBadge';
 import CaseCard from '@/components/CaseCard';
@@ -146,6 +147,133 @@ const StyleGuide = () => {
     { site: 'CSGOEmpire', rating: 4.3, bonus: '$300', payoutTime: '2-48h', established: '2018' },
     { site: 'Hellcase', rating: 4.1, bonus: '$200', payoutTime: '1-12h', established: '2014' },
     { site: 'DatDrop', rating: 4.0, bonus: '$150', payoutTime: '6-24h', established: '2017' }
+  ];
+
+  // Sample data for Top Operator Lists
+  const mysteryBoxOperators = [
+    {
+      id: 'hypedrop',
+      name: 'HypeDrop',
+      logo: '/placeholder.svg',
+      rating: 4.8,
+      reviewCount: 2847,
+      verified: true,
+      trustScore: 9.2,
+      specialFeature: 'Number of boxes',
+      specialValue: '127',
+      payoutSpeed: 'Instant',
+      tags: ['Mystery Boxes', 'Tech Items', 'Physical Items']
+    },
+    {
+      id: 'cases-gg',
+      name: 'Cases.GG',
+      logo: '/placeholder.svg',
+      rating: 4.6,
+      reviewCount: 1923,
+      verified: true,
+      trustScore: 8.9,
+      specialFeature: 'Number of boxes',
+      specialValue: '89',
+      payoutSpeed: '1-2 hours',
+      tags: ['Mystery Boxes', 'Novelty Items']
+    },
+    {
+      id: 'supabox',
+      name: 'Supabox',
+      logo: '/placeholder.svg',
+      rating: 4.5,
+      reviewCount: 1564,
+      verified: true,
+      trustScore: 8.7,
+      specialFeature: 'Number of boxes',
+      specialValue: '76',
+      payoutSpeed: '2-4 hours',
+      tags: ['Mystery Boxes', 'Electronics', 'Collectibles']
+    }
+  ];
+
+  const skinSiteOperators = [
+    {
+      id: 'csgoroll',
+      name: 'CSGORoll',
+      logo: '/placeholder.svg',
+      rating: 4.7,
+      reviewCount: 3241,
+      verified: true,
+      trustScore: 9.4,
+      specialFeature: 'Number of cases',
+      specialValue: '234',
+      payoutSpeed: 'Instant',
+      tags: ['CS2 Cases', 'Upgrader', 'Roulette']
+    },
+    {
+      id: 'csgoempire',
+      name: 'CSGOEmpire',
+      logo: '/placeholder.svg',
+      rating: 4.6,
+      reviewCount: 2856,
+      verified: true,
+      trustScore: 9.1,
+      specialFeature: 'Number of cases',
+      specialValue: '189',
+      payoutSpeed: '1-5 min',
+      tags: ['CS2 Cases', 'Crash', 'Coinflip']
+    },
+    {
+      id: 'hellcase',
+      name: 'Hellcase',
+      logo: '/placeholder.svg',
+      rating: 4.4,
+      reviewCount: 4123,
+      verified: true,
+      trustScore: 8.8,
+      specialFeature: 'Number of cases',
+      specialValue: '156',
+      payoutSpeed: '5-15 min',
+      tags: ['CS2 Cases', 'Contracts', 'Battles']
+    }
+  ];
+
+  const casinoSiteOperators = [
+    {
+      id: 'stake',
+      name: 'Stake Casino',
+      logo: '/placeholder.svg',
+      rating: 4.9,
+      reviewCount: 5678,
+      verified: true,
+      trustScore: 9.6,
+      specialFeature: 'Number of games',
+      specialValue: '3000+',
+      payoutSpeed: 'Instant',
+      tags: ['Slots', 'Live Casino', 'Sports Betting']
+    },
+    {
+      id: 'bc-game',
+      name: 'BC.GAME',
+      logo: '/placeholder.svg',
+      rating: 4.7,
+      reviewCount: 4321,
+      verified: true,
+      trustScore: 9.3,
+      specialFeature: 'Number of games',
+      specialValue: '2500+',
+      payoutSpeed: '1-5 min',
+      tags: ['Crypto Casino', 'Crash', 'Plinko']
+    },
+    {
+      id: 'gamdom',
+      name: 'Gamdom',
+      logo: '/placeholder.svg',
+      rating: 4.5,
+      reviewCount: 3789,
+      verified: true,
+      trustScore: 9.0,
+      specialFeature: 'Number of games',
+      specialValue: '2000+',
+      payoutSpeed: '2-10 min',
+      tags: ['Roulette', 'Crash', 'eSports Betting']
+    }
   ];
 
   return (
@@ -580,6 +708,67 @@ const StyleGuide = () => {
             </Card>
 
           </div>
+        </section>
+
+        {/* Top Operator Lists */}
+        <section className="space-y-8">
+          <div>
+            <h2 className="text-3xl font-bold mb-4 text-primary">Top Operator Lists</h2>
+            <p className="text-muted-foreground mb-8">Ranked operator lists for different gaming categories</p>
+          </div>
+
+          <Tabs defaultValue="mystery-box" className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="mystery-box">Mystery Box Sites</TabsTrigger>
+              <TabsTrigger value="skin-sites">Skin Sites</TabsTrigger>
+              <TabsTrigger value="casino-sites">Casino Sites</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="mystery-box" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Top Mystery Box Operators</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TopOperatorList
+                    title="Top Mystery Box Operators"
+                    subtitle="Discover the most trusted platforms for mystery box openings, ranked by community reviews and box selection"
+                    operators={mysteryBoxOperators}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="skin-sites" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Top Skin Trading Sites</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TopOperatorList
+                    title="Top Skin Trading Platforms"
+                    subtitle="Most trusted platforms for skin trading, case opening, and marketplace activities"
+                    operators={skinSiteOperators}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="casino-sites" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Top Casino Sites</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TopOperatorList
+                    title="Top Online Casino Platforms"
+                    subtitle="Leading casino sites with the best games, bonuses, and security for online gambling"
+                    operators={casinoSiteOperators}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </section>
 
         {/* Interactive Components */}
