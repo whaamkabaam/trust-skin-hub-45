@@ -31,21 +31,55 @@ const Hero = () => {
             trust-first analysis and community reviews.
           </p>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          {/* Gaming Hubs CTAs */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 justify-center mb-12 max-w-4xl mx-auto">
             <Button 
               size="lg" 
-              className="bg-white text-primary hover:bg-white/90 px-8 py-6 text-lg font-semibold"
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-4 py-6 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              asChild
             >
-              Compare Operators
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <a href="/casinos">
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-2xl">🎰</span>
+                  <span>Casinos</span>
+                </div>
+              </a>
             </Button>
             <Button 
               size="lg" 
-              variant="outline" 
-              className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-4 py-6 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              asChild
             >
-              Explore Cases
+              <a href="/esports">
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-2xl">🏆</span>
+                  <span>eSports</span>
+                </div>
+              </a>
+            </Button>
+            <Button 
+              size="lg" 
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-4 py-6 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              asChild
+            >
+              <a href="/cases">
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-2xl">📦</span>
+                  <span>Cases</span>
+                </div>
+              </a>
+            </Button>
+            <Button 
+              size="lg" 
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-4 py-6 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              asChild
+            >
+              <a href="/mystery-boxes">
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-2xl">🎁</span>
+                  <span>Mystery Boxes</span>
+                </div>
+              </a>
             </Button>
           </div>
 
