@@ -198,29 +198,54 @@ const AppleMysteryBoxes = () => {
               <Card className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-gray-200">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <TrendingUp className="w-6 h-6 text-orange-500" />
-                    <h3 className="text-xl font-bold">Featured: iPhone 15 Pro Mystery Box</h3>
-                    <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+                    <TrendingUp className="w-5 h-5 text-orange-500" />
+                    <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs">
                       Staff Pick
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground mb-4">
-                    Our most popular Apple mystery box featuring the latest iPhone 15 Pro models, premium accessories, and exclusive Apple merchandise.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge variant="outline" className="text-green-600 border-green-200">iPhone 15 Pro</Badge>
-                    <Badge variant="outline" className="text-blue-600 border-blue-200">Factory Sealed</Badge>
-                    <Badge variant="outline" className="text-purple-600 border-purple-200">1 Year Warranty</Badge>
+                  
+                  <div className="flex gap-4 mb-4">
+                    {/* Box Image */}
+                    <div className="w-20 h-20 bg-white/50 dark:bg-black/20 rounded-lg flex-shrink-0 flex items-center justify-center">
+                      <img src="/img/boxes/apple-mystery-box.jpg" alt="iPhone 15 Pro Mystery Box" className="w-16 h-16 object-cover rounded" />
+                    </div>
+                    
+                    {/* Box Info */}
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold mb-1">iPhone 15 Pro Mystery Box</h3>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Premium Apple mystery box with guaranteed iPhone 15 Pro and exclusive accessories.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Jackpot Items */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Top Jackpot Items</h4>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <span>iPhone 15 Pro Max 1TB</span>
+                        <span className="font-medium text-gaming-gold">$1,599</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span>AirPods Pro (2nd Gen)</span>
+                        <span className="font-medium text-primary">$249</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span>Apple Watch Ultra 2</span>
+                        <span className="font-medium text-accent">$799</span>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">$899</div>
-                      <div className="text-sm text-muted-foreground">Box Price</div>
+                      <div className="text-xl font-bold">$899</div>
+                      <div className="text-xs text-muted-foreground">Box Price</div>
                     </div>
                     <div className="text-center p-3 bg-white/50 dark:bg-black/20 rounded-lg">
-                      <div className="text-2xl font-bold text-accent">$1,299</div>
-                      <div className="text-sm text-muted-foreground">Expected Value</div>
+                      <div className="text-xl font-bold text-green-600">$1,299</div>
+                      <div className="text-xs text-muted-foreground">Expected Value</div>
                     </div>
                   </div>
                   
