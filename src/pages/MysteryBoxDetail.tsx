@@ -8,6 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const MysteryBoxDetail = () => {
+  const getVolatilityRisk = (volatility: number) => {
+    if (volatility <= 50) return 'Low Risk';
+    if (volatility <= 100) return 'Medium Risk';
+    if (volatility <= 200) return 'High Risk';
+    return 'Extreme Risk';
+  };
+
   const boxData = {
     id: 'reduce-reuse-recycle',
     name: 'Reduce Reuse Recycle',
@@ -122,16 +129,15 @@ const MysteryBoxDetail = () => {
               
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-600">{boxData.expectedValue}% (EV)</div>
+                  <div className="text-2xl font-bold text-green-600">{boxData.expectedValue}%</div>
                   <div className="text-sm text-muted-foreground">Expected Value</div>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-purple-600">{boxData.volatility}%</div>
+                  <div className="text-2xl font-bold text-purple-600">{getVolatilityRisk(boxData.volatility)} ({boxData.volatility}%)</div>
                   <div className="text-sm text-muted-foreground">Volatility</div>
-                  <div className="text-xs text-muted-foreground mt-1">Measure of risk and unpredictability</div>
                 </CardContent>
               </Card>
             </div>
