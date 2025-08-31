@@ -85,6 +85,54 @@ const Header = () => {
       title: 'Reviews',
       href: '/reviews',
       description: 'Platform reviews and ratings',
+      items: [
+        { 
+          title: 'Skin Case Opening',
+          href: '/reviews/case-opening',
+          subcategories: [
+            { title: 'Hellcase', href: '/reviews/case-opening/hellcase' },
+            { title: 'CSGORoll', href: '/reviews/case-opening/csgoroll' },
+            { title: 'CSGOEmpire', href: '/reviews/case-opening/csgoempire' },
+            { title: 'RustyPot', href: '/reviews/case-opening/rustypot' },
+            { title: 'RustClash', href: '/reviews/case-opening/rustclash' },
+            { title: 'Clash.gg', href: '/reviews/case-opening/clash-gg' },
+          ]
+        },
+        { 
+          title: 'Mystery Box Sites',
+          href: '/reviews/mystery-box',
+          subcategories: [
+            { title: 'Hypedrop Review', href: '/reviews/mystery-box/hypedrop' },
+            { title: 'Cases.gg', href: '/reviews/mystery-box/cases-gg' },
+            { title: 'Boxed.gg', href: '/reviews/mystery-box/boxed-gg' },
+            { title: 'Supabox', href: '/reviews/mystery-box/supabox' },
+            { title: 'Rillabox', href: '/reviews/mystery-box/rillabox' },
+            { title: 'LuxDrop', href: '/reviews/mystery-box/luxdrop' },
+          ]
+        },
+        { 
+          title: 'eSports Betting Sites',
+          href: '/reviews/esports-betting',
+          subcategories: [
+            { title: 'Gamdom', href: '/reviews/esports-betting/gamdom' },
+            { title: 'DuelBits', href: '/reviews/esports-betting/duelbits' },
+            { title: 'BC.GAME', href: '/reviews/esports-betting/bc-game' },
+            { title: 'Stake Casino', href: '/reviews/esports-betting/stake-casino' },
+          ]
+        },
+        { 
+          title: 'Casino Sites',
+          href: '/reviews/casinos',
+          subcategories: [
+            { title: 'Stake Casino Review', href: '/reviews/casinos/stake-casino' },
+            { title: 'Gamdom Casino Review', href: '/reviews/casinos/gamdom-casino' },
+            { title: 'BC.GAME Casino Review', href: '/reviews/casinos/bc-game-casino' },
+            { title: 'Betti Casino Review', href: '/reviews/casinos/betti-casino' },
+            { title: 'BitKingz Casino Review', href: '/reviews/casinos/bitkingz-casino' },
+            { title: 'BitStarz Casino Review', href: '/reviews/casinos/bitstarz-casino' },
+          ]
+        },
+      ]
     },
     {
       title: 'Guides Blog',
@@ -118,37 +166,85 @@ const Header = () => {
                         {item.title}
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
-                        <div className="grid w-[400px] gap-3 p-4">
-                          <div className="row-span-3">
-                            <NavigationMenuLink asChild>
-                              <a
-                                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-card p-6 no-underline outline-none focus:shadow-md"
-                                href={item.href}
-                              >
-                                <div className="mb-2 mt-4 text-lg font-medium">
-                                  {item.title}
-                                </div>
-                                <p className="text-sm leading-tight text-muted-foreground">
-                                  {item.description}
-                                </p>
-                              </a>
-                            </NavigationMenuLink>
-                          </div>
-                          <div className="grid gap-2">
-                            {item.items?.map((subItem) => (
-                              <NavigationMenuLink key={subItem.title} asChild>
+                        {item.title === 'Reviews' ? (
+                          <div className="grid w-[600px] gap-3 p-4">
+                            <div className="row-span-3">
+                              <NavigationMenuLink asChild>
                                 <a
-                                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                  href={subItem.href}
+                                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-card p-6 no-underline outline-none focus:shadow-md"
+                                  href={item.href}
                                 >
-                                  <div className="text-sm font-medium leading-none">
-                                    {subItem.title}
+                                  <div className="mb-2 mt-4 text-lg font-medium">
+                                    {item.title}
                                   </div>
+                                  <p className="text-sm leading-tight text-muted-foreground">
+                                    {item.description}
+                                  </p>
                                 </a>
                               </NavigationMenuLink>
-                            ))}
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              {item.items?.map((subItem) => (
+                                <div key={subItem.title} className="space-y-2">
+                                  <NavigationMenuLink asChild>
+                                    <a
+                                      href={subItem.href}
+                                      className="block select-none rounded-md p-2 font-medium text-sm leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    >
+                                      {subItem.title}
+                                    </a>
+                                  </NavigationMenuLink>
+                                  {subItem.subcategories && (
+                                    <div className="space-y-1 pl-2">
+                                      {subItem.subcategories.map((subSubItem) => (
+                                        <NavigationMenuLink key={subSubItem.title} asChild>
+                                          <a
+                                            href={subSubItem.href}
+                                            className="block select-none rounded-md p-1 text-xs leading-none no-underline outline-none transition-colors hover:bg-accent/50 hover:text-accent-foreground text-muted-foreground"
+                                          >
+                                            {subSubItem.title}
+                                          </a>
+                                        </NavigationMenuLink>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="grid w-[400px] gap-3 p-4">
+                            <div className="row-span-3">
+                              <NavigationMenuLink asChild>
+                                <a
+                                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-card p-6 no-underline outline-none focus:shadow-md"
+                                  href={item.href}
+                                >
+                                  <div className="mb-2 mt-4 text-lg font-medium">
+                                    {item.title}
+                                  </div>
+                                  <p className="text-sm leading-tight text-muted-foreground">
+                                    {item.description}
+                                  </p>
+                                </a>
+                              </NavigationMenuLink>
+                            </div>
+                            <div className="grid gap-2">
+                              {item.items?.map((subItem) => (
+                                <NavigationMenuLink key={subItem.title} asChild>
+                                  <a
+                                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    href={subItem.href}
+                                  >
+                                    <div className="text-sm font-medium leading-none">
+                                      {subItem.title}
+                                    </div>
+                                  </a>
+                                </NavigationMenuLink>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </NavigationMenuContent>
                     </>
                   ) : (
@@ -226,13 +322,33 @@ const Header = () => {
                           <h3 className="font-medium">{item.title}</h3>
                           <div className="pl-4 space-y-1">
                             {item.items?.map((subItem) => (
-                              <a
-                                key={subItem.title}
-                                href={subItem.href}
-                                className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
-                              >
-                                {subItem.title}
-                              </a>
+                              <div key={subItem.title} className="space-y-1">
+                                {subItem.subcategories ? (
+                                  <>
+                                    <div className="font-medium text-sm text-foreground/90">
+                                      {subItem.title}
+                                    </div>
+                                    <div className="pl-3 space-y-1">
+                                      {subItem.subcategories.map((subSubItem) => (
+                                        <a
+                                          key={subSubItem.title}
+                                          href={subSubItem.href}
+                                          className="block text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                        >
+                                          {subSubItem.title}
+                                        </a>
+                                      ))}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <a
+                                    href={subItem.href}
+                                    className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                  >
+                                    {subItem.title}
+                                  </a>
+                                )}
+                              </div>
                             ))}
                           </div>
                         </>
