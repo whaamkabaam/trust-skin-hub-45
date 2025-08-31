@@ -347,11 +347,24 @@ const AppleMysteryBoxes = () => {
                       className="absolute top-0 w-full"
                     />
                   </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>40%</span>
-                    <span>Low Risk</span>
-                    <span>High Risk</span>
-                    <span>100%</span>
+                  
+                  {/* Tick marks and labels */}
+                  <div className="relative">
+                    <div className="flex justify-between items-end h-4">
+                      {/* Generate marks for 40% to 100% in 5% increments */}
+                      {Array.from({ length: 13 }, (_, i) => {
+                        const value = 40 + (i * 5);
+                        const isMainTick = value % 10 === 0;
+                        return (
+                          <div key={value} className="flex flex-col items-center">
+                            <div className={`bg-muted-foreground ${isMainTick ? 'h-3 w-px' : 'h-1.5 w-px'}`}></div>
+                            {isMainTick && (
+                              <span className="text-xs text-muted-foreground mt-1">{value}%</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </CardContent>
