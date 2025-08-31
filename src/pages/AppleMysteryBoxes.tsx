@@ -264,22 +264,25 @@ const AppleMysteryBoxes = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <aside className="lg:w-80 space-y-6">
-            {/* Categories */}
+            {/* Apple Product Tags */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Hash className="w-5 h-5" />
-                  Categories
+                  Apple Products
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {categories.map(category => <Link key={category.name} to={category.href} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                      <span className="text-sm">{category.name}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {category.count}
-                      </Badge>
-                    </Link>)}
+                <div className="flex flex-wrap gap-2">
+                  {productFilters.map(product => (
+                    <Badge 
+                      key={product} 
+                      variant="outline" 
+                      className="cursor-pointer hover:bg-muted text-xs"
+                    >
+                      {product}
+                    </Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -300,13 +303,43 @@ const AppleMysteryBoxes = () => {
               </CardContent>
             </Card>
 
-            {/* Product Filters */}
-            
+            {/* Risk Level Filter */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Risk Level</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {['Low', 'Medium', 'High', 'Extreme'].map(risk => (
+                    <div key={risk} className="flex items-center space-x-2">
+                      <Checkbox id={risk} />
+                      <Label htmlFor={risk} className="text-sm cursor-pointer">
+                        {risk}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-            {/* Condition Filters */}
-            
-
-            {/* Tags */}
+            {/* Returns Rate Filter */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Returns Rate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {['0-10%', '10-25%', '25-50%', '50%+'].map(rate => (
+                    <div key={rate} className="flex items-center space-x-2">
+                      <Checkbox id={rate} />
+                      <Label htmlFor={rate} className="text-sm cursor-pointer">
+                        {rate}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
             
           </aside>
 
