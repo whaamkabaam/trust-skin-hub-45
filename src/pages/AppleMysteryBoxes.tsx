@@ -13,49 +13,80 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-
 const AppleMysteryBoxes = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [priceRange, setPriceRange] = useState([0, 2000]);
-
   const itemsPerPage = 12;
   const totalBoxes = 45;
   const totalPages = Math.ceil(totalBoxes / itemsPerPage);
-
   const stats = {
     totalBoxes: 45,
     avgPrice: 347.50,
     verifiedBoxes: 42,
     newThisWeek: 3
   };
-
-  const categories = [
-    { name: 'All Apple Boxes', count: 45, href: '/mystery-boxes/apple' },
-    { name: 'iPhone Collection', count: 15, href: '/mystery-boxes/apple?type=iphone' },
-    { name: 'MacBook Mystery', count: 8, href: '/mystery-boxes/apple?type=macbook' },
-    { name: 'Apple Watch Box', count: 10, href: '/mystery-boxes/apple?type=watch' },
-    { name: 'AirPods & Audio', count: 7, href: '/mystery-boxes/apple?type=audio' },
-    { name: 'iPad Collection', count: 5, href: '/mystery-boxes/apple?type=ipad' },
-    { name: 'Accessories Pack', count: 12, href: '/mystery-boxes/apple?type=accessories' },
-    { name: 'Vintage Apple', count: 6, href: '/mystery-boxes/apple?vintage=true' }
-  ];
-
+  const categories = [{
+    name: 'All Apple Boxes',
+    count: 45,
+    href: '/mystery-boxes/apple'
+  }, {
+    name: 'iPhone Collection',
+    count: 15,
+    href: '/mystery-boxes/apple?type=iphone'
+  }, {
+    name: 'MacBook Mystery',
+    count: 8,
+    href: '/mystery-boxes/apple?type=macbook'
+  }, {
+    name: 'Apple Watch Box',
+    count: 10,
+    href: '/mystery-boxes/apple?type=watch'
+  }, {
+    name: 'AirPods & Audio',
+    count: 7,
+    href: '/mystery-boxes/apple?type=audio'
+  }, {
+    name: 'iPad Collection',
+    count: 5,
+    href: '/mystery-boxes/apple?type=ipad'
+  }, {
+    name: 'Accessories Pack',
+    count: 12,
+    href: '/mystery-boxes/apple?type=accessories'
+  }, {
+    name: 'Vintage Apple',
+    count: 6,
+    href: '/mystery-boxes/apple?vintage=true'
+  }];
   const productFilters = ['iPhone', 'MacBook', 'Apple Watch', 'AirPods', 'iPad', 'Accessories'];
   const conditionFilters = ['New', 'Refurbished', 'Vintage', 'Mixed'];
-  const sortOptions = [
-    { value: 'newest', label: 'Newest First' },
-    { value: 'price-low', label: 'Price: Low to High' },
-    { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'popular', label: 'Most Popular' },
-    { value: 'value', label: 'Best Expected Value' },
-    { value: 'rarity', label: 'Rarest Items' }
-  ];
+  const sortOptions = [{
+    value: 'newest',
+    label: 'Newest First'
+  }, {
+    value: 'price-low',
+    label: 'Price: Low to High'
+  }, {
+    value: 'price-high',
+    label: 'Price: High to Low'
+  }, {
+    value: 'popular',
+    label: 'Most Popular'
+  }, {
+    value: 'value',
+    label: 'Best Expected Value'
+  }, {
+    value: 'rarity',
+    label: 'Rarest Items'
+  }];
 
   // Sample Apple mystery boxes data
-  const appleBoxes = Array.from({ length: itemsPerPage }, (_, i) => ({
+  const appleBoxes = Array.from({
+    length: itemsPerPage
+  }, (_, i) => ({
     id: `apple-box-${i + 1}`,
     name: `${['iPhone Pro Max', 'MacBook Air', 'Apple Watch Ultra', 'AirPods Pro', 'iPad Pro'][i % 5]} Mystery Box ${i + 1}`,
     image: '/img/boxes/apple-mystery-box.jpg',
@@ -68,34 +99,47 @@ const AppleMysteryBoxes = () => {
     profitRate: Math.round((Math.random() * 80 + 20) * 10) / 10,
     popularity: Math.floor(Math.random() * 3000) + 200,
     operator: ['Apple Direct', 'Tech Vault', 'iBox Mystery', 'Premium Apple', 'Elite Tech'][i % 5],
-    highlights: [
-      { name: 'iPhone 15 Pro Max', rarity: 'Ultra Rare', value: '$1,199' },
-      { name: 'MacBook Pro M3', rarity: 'Rare', value: '$1,999' },
-      { name: 'Apple Watch Series 9', rarity: 'Common', value: '$399' }
-    ]
+    highlights: [{
+      name: 'iPhone 15 Pro Max',
+      rarity: 'Ultra Rare',
+      value: '$1,199'
+    }, {
+      name: 'MacBook Pro M3',
+      rarity: 'Rare',
+      value: '$1,999'
+    }, {
+      name: 'Apple Watch Series 9',
+      rarity: 'Common',
+      value: '$399'
+    }]
   }));
-
   const getRarityColor = (rarity: string) => {
     switch (rarity.toLowerCase()) {
-      case 'ultra rare': return 'text-gaming-gold';
-      case 'rare': return 'text-primary';
-      case 'uncommon': return 'text-accent';
-      default: return 'text-muted-foreground';
+      case 'ultra rare':
+        return 'text-gaming-gold';
+      case 'rare':
+        return 'text-primary';
+      case 'uncommon':
+        return 'text-accent';
+      default:
+        return 'text-muted-foreground';
     }
   };
-
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
-      case 'iphone': return <Smartphone className="w-4 h-4" />;
-      case 'macbook': return <Laptop className="w-4 h-4" />;
-      case 'apple watch': return <Watch className="w-4 h-4" />;
-      case 'airpods': return <Headphones className="w-4 h-4" />;
-      default: return <Package className="w-4 h-4" />;
+      case 'iphone':
+        return <Smartphone className="w-4 h-4" />;
+      case 'macbook':
+        return <Laptop className="w-4 h-4" />;
+      case 'apple watch':
+        return <Watch className="w-4 h-4" />;
+      case 'airpods':
+        return <Headphones className="w-4 h-4" />;
+      default:
+        return <Package className="w-4 h-4" />;
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Header />
       
       {/* Breadcrumbs */}
@@ -129,12 +173,7 @@ const AppleMysteryBoxes = () => {
           <div className="max-w-md mx-auto mb-8">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search Apple mystery boxes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+              <Input placeholder="Search Apple mystery boxes..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
             </div>
           </div>
 
@@ -175,18 +214,12 @@ const AppleMysteryBoxes = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {categories.map((category) => (
-                    <Link
-                      key={category.name}
-                      to={category.href}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors"
-                    >
+                  {categories.map(category => <Link key={category.name} to={category.href} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
                       <span className="text-sm">{category.name}</span>
                       <Badge variant="secondary" className="text-xs">
                         {category.count}
                       </Badge>
-                    </Link>
-                  ))}
+                    </Link>)}
                 </div>
               </CardContent>
             </Card>
@@ -198,14 +231,7 @@ const AppleMysteryBoxes = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <Slider
-                    value={priceRange}
-                    onValueChange={setPriceRange}
-                    max={2000}
-                    min={0}
-                    step={50}
-                    className="w-full"
-                  />
+                  <Slider value={priceRange} onValueChange={setPriceRange} max={2000} min={0} step={50} className="w-full" />
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>${priceRange[0]}</span>
                     <span>${priceRange[1]}</span>
@@ -221,67 +247,22 @@ const AppleMysteryBoxes = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {productFilters.map((product) => (
-                    <div key={product} className="flex items-center space-x-2">
+                  {productFilters.map(product => <div key={product} className="flex items-center space-x-2">
                       <Checkbox id={product.toLowerCase()} />
                       <Label htmlFor={product.toLowerCase()} className="text-sm flex items-center gap-2">
                         {getCategoryIcon(product)}
                         {product}
                       </Label>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </CardContent>
             </Card>
 
             {/* Condition Filters */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Condition</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {conditionFilters.map((condition) => (
-                    <div key={condition} className="flex items-center space-x-2">
-                      <Checkbox id={condition.toLowerCase()} />
-                      <Label htmlFor={condition.toLowerCase()} className="text-sm">
-                        {condition}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            
 
             {/* Features */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Features</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="verified" />
-                    <Label htmlFor="verified" className="text-sm flex items-center gap-2">
-                      <Verified className="w-4 h-4 text-primary" />
-                      Verified Authentic
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="warranty" />
-                    <Label htmlFor="warranty" className="text-sm">
-                      Warranty Included
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="unopened" />
-                    <Label htmlFor="unopened" className="text-sm">
-                      Factory Sealed
-                    </Label>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            
           </aside>
 
           {/* Main Content Area */}
@@ -300,28 +281,16 @@ const AppleMysteryBoxes = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {sortOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
+                    {sortOptions.map(option => <SelectItem key={option.value} value={option.value}>
                         {option.label}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
                 <div className="flex rounded-lg border">
-                  <Button
-                    variant={view === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setView('grid')}
-                    className="rounded-r-none"
-                  >
+                  <Button variant={view === 'grid' ? 'default' : 'ghost'} size="sm" onClick={() => setView('grid')} className="rounded-r-none">
                     <Grid className="w-4 h-4" />
                   </Button>
-                  <Button
-                    variant={view === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setView('list')}
-                    className="rounded-l-none"
-                  >
+                  <Button variant={view === 'list' ? 'default' : 'ghost'} size="sm" onClick={() => setView('list')} className="rounded-l-none">
                     <List className="w-4 h-4" />
                   </Button>
                 </div>
@@ -367,37 +336,19 @@ const AppleMysteryBoxes = () => {
             </Card>
 
             {/* Apple Boxes Grid */}
-            <div className={cn(
-              "gap-6 mb-8",
-              view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'space-y-4'
-            )}>
-              {appleBoxes.map((box) => (
-                <Card key={box.id} className={cn(
-                  "group hover:shadow-lg transition-all duration-300",
-                  view === 'list' && "flex flex-row"
-                )}>
-                  <div className={cn(
-                    view === 'list' ? 'w-48 flex-shrink-0' : 'aspect-square'
-                  )}>
-                    <img
-                      src={box.image}
-                      alt={box.name}
-                      className="w-full h-full object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
-                    />
+            <div className={cn("gap-6 mb-8", view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'space-y-4')}>
+              {appleBoxes.map(box => <Card key={box.id} className={cn("group hover:shadow-lg transition-all duration-300", view === 'list' && "flex flex-row")}>
+                  <div className={cn(view === 'list' ? 'w-48 flex-shrink-0' : 'aspect-square')}>
+                    <img src={box.image} alt={box.name} className="w-full h-full object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300" />
                   </div>
-                  <CardContent className={cn(
-                    "p-4 flex-1",
-                    view === 'list' && "flex flex-col justify-between"
-                  )}>
+                  <CardContent className={cn("p-4 flex-1", view === 'list' && "flex flex-col justify-between")}>
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <Badge variant="outline" className="text-xs">
                           {getCategoryIcon(box.category)}
                           <span className="ml-1">{box.category}</span>
                         </Badge>
-                        {box.verified && (
-                          <Verified className="w-4 h-4 text-primary" />
-                        )}
+                        {box.verified && <Verified className="w-4 h-4 text-primary" />}
                       </div>
                       <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
                         {box.name}
@@ -408,14 +359,12 @@ const AppleMysteryBoxes = () => {
                       
                       {/* Highlights */}
                       <div className="space-y-1 mb-4">
-                        {box.highlights.slice(0, 2).map((highlight, idx) => (
-                          <div key={idx} className="flex items-center justify-between text-xs">
+                        {box.highlights.slice(0, 2).map((highlight, idx) => <div key={idx} className="flex items-center justify-between text-xs">
                             <span className="truncate">{highlight.name}</span>
                             <span className={cn("font-medium", getRarityColor(highlight.rarity))}>
                               {highlight.value}
                             </span>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
                     </div>
 
@@ -447,39 +396,23 @@ const AppleMysteryBoxes = () => {
                       </div>
                     </div>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
 
             {/* Pagination */}
             <div className="flex items-center justify-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>
                 Previous
               </Button>
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const page = i + 1;
-                return (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCurrentPage(page)}
-                  >
+              {Array.from({
+              length: Math.min(5, totalPages)
+            }, (_, i) => {
+              const page = i + 1;
+              return <Button key={page} variant={currentPage === page ? 'default' : 'outline'} size="sm" onClick={() => setCurrentPage(page)}>
                     {page}
-                  </Button>
-                );
-              })}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-              >
+                  </Button>;
+            })}
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>
                 Next
               </Button>
             </div>
@@ -488,8 +421,6 @@ const AppleMysteryBoxes = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default AppleMysteryBoxes;
