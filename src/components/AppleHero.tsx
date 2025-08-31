@@ -64,27 +64,6 @@ const AppleHero = () => {
                   />
                 </div>
               </div>
-
-              {/* Trust Stats */}
-              <div className="flex flex-wrap items-center gap-8">
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <span className="text-lg font-semibold">4.8/5</span>
-                  <span className="text-gray-400">(2,847 reviews)</span>
-                </div>
-                <div className="h-6 w-px bg-white/30 hidden md:block" />
-                <div className="text-gray-300">
-                  <span className="text-2xl font-bold text-white">15,000+</span> Happy Winners
-                </div>
-                <div className="h-6 w-px bg-white/30 hidden md:block" />
-                <div className="text-gray-300">
-                  <span className="text-2xl font-bold text-green-400">$2.4M+</span> in Prizes Won
-                </div>
-              </div>
             </div>
 
             {/* Right Column - Featured Box */}
