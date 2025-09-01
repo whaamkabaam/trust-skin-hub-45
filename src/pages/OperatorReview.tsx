@@ -118,103 +118,117 @@ const OperatorReview = () => {
           {/* Desktop Layout */}
           <div className="hidden md:block">
             <div className="flex items-start gap-6 mb-8">
-              {/* Site Logo */}
-              <div className="w-16 h-16 bg-white rounded-lg shadow-lg flex items-center justify-center flex-shrink-0 border">
-                <span className="text-xl font-bold text-primary">{operator.name.charAt(0)}</span>
-              </div>
-              
-              {/* Site Info */}
+              {/* Left - Site Info */}
               <div className="flex-1">
-                <div className="flex items-center gap-4 mb-4">
-                  <h1 className="text-3xl font-bold">{operator.name}</h1>
-                  <Badge variant="outline" className="text-blue-600 border-blue-200">
-                    {siteType}
-                  </Badge>
-                  {operator.verified && (
-                    <Badge className="bg-green-100 text-green-800">
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Verified ✓
-                    </Badge>
-                  )}
-                </div>
+                <div className="flex items-start gap-6">
+                  {/* Site Logo */}
+                  <div className="w-16 h-16 bg-white rounded-lg shadow-lg flex items-center justify-center flex-shrink-0 border">
+                    <span className="text-xl font-bold text-primary">{operator.name.charAt(0)}</span>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-4">
+                      <h1 className="text-3xl font-bold">{operator.name}</h1>
+                      <Badge variant="outline" className="text-blue-600 border-blue-200">
+                        {siteType}
+                      </Badge>
+                      {operator.verified && (
+                        <Badge className="bg-green-100 text-green-800">
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Verified ✓
+                        </Badge>
+                      )}
+                    </div>
 
-                {/* Ratings */}
-                <div className="flex items-center gap-8 mb-6">
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">Our Rating:</span>
-                    <div className="flex items-center gap-1">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                        ))}
+                    {/* Ratings */}
+                    <div className="flex items-center gap-8 mb-6">
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">Our Rating:</span>
+                        <div className="flex items-center gap-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                            ))}
+                          </div>
+                          <span className="font-bold text-lg">{scores.overall}/5</span>
+                        </div>
                       </div>
-                      <span className="font-bold text-lg">{scores.overall}/5</span>
-                    </div>
-                  </div>
-                  <div className="h-6 w-px bg-border" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">User Rating:</span>
-                    <div className="flex items-center gap-1">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                        ))}
+                      <div className="h-6 w-px bg-border" />
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">User Rating:</span>
+                        <div className="flex items-center gap-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                            ))}
+                          </div>
+                          <span className="font-bold">{scores.user}/5</span>
+                          <span className="text-muted-foreground">({userRatings.total})</span>
+                        </div>
                       </div>
-                      <span className="font-bold">{scores.user}/5</span>
-                      <span className="text-muted-foreground">({userRatings.total})</span>
+                    </div>
+
+                    {/* Key Facts */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">Launched:</span>
+                        <span className="ml-2 font-medium">2020</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Payments:</span>
+                        <div className="flex gap-1 mt-1">
+                          <Badge variant="outline" className="text-xs">Visa</Badge>
+                          <Badge variant="outline" className="text-xs">BTC</Badge>
+                          <Badge variant="outline" className="text-xs">ETH</Badge>
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">KYC:</span>
+                        <span className="ml-2 font-medium">{operator.kycRequired ? 'Required' : 'Not Required'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Payout:</span>
+                        <span className="ml-2 font-medium">{siteType === 'Case Site' ? 'Skins' : 'Physical | Skins'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Provably Fair:</span>
+                        <span className="ml-2 font-medium text-green-600">Yes</span>
+                      </div>
+                      <div>
+                        <Badge variant="outline" className="px-3 py-2">
+                          18+ / Play Responsibly
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* CTAs */}
-                <div className="flex items-center gap-4 mb-6">
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80" asChild>
-                    <a href={operator.url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="w-5 h-5 mr-2" />
-                      Visit Site
-                    </a>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    onClick={copyPromoCode}
-                    className="flex items-center gap-2"
-                  >
-                    <Copy className="w-4 h-4" />
-                    {promoCodeCopied ? "Copied!" : `Copy Code: ${promoCode}`}
-                  </Button>
-                  <Badge variant="outline" className="px-3 py-2">
-                    18+ / Play Responsibly
-                  </Badge>
-                </div>
-
-                {/* Key Facts */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Launched:</span>
-                    <span className="ml-2 font-medium">2020</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Payments:</span>
-                    <div className="flex gap-1 mt-1">
-                      <Badge variant="outline" className="text-xs">Visa</Badge>
-                      <Badge variant="outline" className="text-xs">BTC</Badge>
-                      <Badge variant="outline" className="text-xs">ETH</Badge>
+              {/* Right - Best Offer */}
+              <div className="w-80 flex-shrink-0">
+                <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                  <CardHeader>
+                    <CardTitle>Best Offer</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="text-center">
+                      <div className="text-lg font-bold">Free $10 + 3 Cases</div>
+                      <div className="text-sm text-muted-foreground">Welcome Bonus</div>
                     </div>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">KYC:</span>
-                    <span className="ml-2 font-medium">{operator.kycRequired ? 'Required' : 'Not Required'}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Payout:</span>
-                    <span className="ml-2 font-medium">{siteType === 'Case Site' ? 'Skins' : 'Physical | Skins'}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Provably Fair:</span>
-                    <span className="ml-2 font-medium text-green-600">Yes</span>
-                  </div>
-                </div>
+                    <div className="flex items-center gap-2 p-2 bg-background rounded border border-dashed">
+                      <code className="flex-1 text-center font-mono">{promoCode}</code>
+                      <Button size="sm" variant="ghost" onClick={copyPromoCode}>
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <Button className="w-full" asChild>
+                      <a href={operator.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Visit Site
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
@@ -801,29 +815,6 @@ const OperatorReview = () => {
                 </CardContent>
               </Card>
 
-              {/* Best Offer / Promo */}
-              <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                <CardHeader>
-                  <CardTitle>Best Offer</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="text-center">
-                    <div className="text-lg font-bold">Free $10 + 3 Cases</div>
-                    <div className="text-sm text-muted-foreground">Welcome Bonus</div>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 bg-background rounded border border-dashed">
-                    <code className="flex-1 text-center font-mono">{promoCode}</code>
-                    <Button size="sm" variant="ghost" onClick={copyPromoCode}>
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  <Button className="w-full" asChild>
-                    <a href={operator.url} target="_blank" rel="noopener noreferrer">
-                      Visit Site
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
 
               {/* Trust & Status */}
               <Card>
