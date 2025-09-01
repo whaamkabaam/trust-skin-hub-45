@@ -20,9 +20,7 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto text-center">
           {/* Main Headline */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            Trade CS2 Skins{' '}
-            <span className="text-gaming-orange">Securely</span>
-            {' '}& Fast
+            Andrej looked better in the past
           </h1>
 
           {/* Value Proposition */}
