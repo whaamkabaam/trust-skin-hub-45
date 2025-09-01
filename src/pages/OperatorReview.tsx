@@ -357,42 +357,54 @@ const OperatorReview = () => {
 
           {/* Category Ratings - Bottom of Hero */}
           <div className="bg-muted/30 rounded-lg p-4">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">Trust Factor</div>
-                <div className="flex justify-center mb-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.trust) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                  ))}
-                </div>
-                <div className="text-xs font-medium">{scores.trust}/5</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div className="flex flex-col items-center">
+                <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground">Trust:</span>
+                    <span className="font-bold text-sm">9</span>
+                  </div>
+                </Badge>
               </div>
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">Games & Design</div>
-                <div className="flex justify-center mb-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.ux) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                  ))}
-                </div>
-                <div className="text-xs font-medium">{scores.ux}/5</div>
+              <div className="flex flex-col items-center">
+                <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground">Value:</span>
+                    <span className="font-bold text-sm">9</span>
+                  </div>
+                </Badge>
               </div>
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">Deposit & Withdraw</div>
-                <div className="flex justify-center mb-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.fees) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                  ))}
-                </div>
-                <div className="text-xs font-medium">{scores.fees}/5</div>
+              <div className="flex flex-col items-center">
+                <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground">Payments:</span>
+                    <span className="font-bold text-sm">7</span>
+                  </div>
+                </Badge>
               </div>
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">Customer Support</div>
-                <div className="flex justify-center mb-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.support) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                  ))}
-                </div>
-                <div className="text-xs font-medium">{scores.support}/5</div>
+              <div className="flex flex-col items-center">
+                <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground">Offering:</span>
+                    <span className="font-bold text-sm">8</span>
+                  </div>
+                </Badge>
+              </div>
+              <div className="flex flex-col items-center">
+                <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground">UX & Tools:</span>
+                    <span className="font-bold text-sm">9</span>
+                  </div>
+                </Badge>
+              </div>
+              <div className="flex flex-col items-center">
+                <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground">Support:</span>
+                    <span className="font-bold text-sm">7</span>
+                  </div>
+                </Badge>
               </div>
             </div>
           </div>
