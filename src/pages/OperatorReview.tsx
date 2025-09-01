@@ -180,48 +180,6 @@ const OperatorReview = () => {
                       </div>
                     </div>
 
-                    {/* Category Ratings */}
-                    <div className="bg-muted/30 rounded-lg p-4 mb-6">
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="text-center">
-                          <div className="text-xs text-muted-foreground mb-1">Trust Factor</div>
-                          <div className="flex justify-center mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.trust) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
-                          </div>
-                          <div className="text-xs font-medium">{scores.trust}/5</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-xs text-muted-foreground mb-1">Games & Design</div>
-                          <div className="flex justify-center mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.ux) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
-                          </div>
-                          <div className="text-xs font-medium">{scores.ux}/5</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-xs text-muted-foreground mb-1">Deposit & Withdraw</div>
-                          <div className="flex justify-center mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.fees) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
-                          </div>
-                          <div className="text-xs font-medium">{scores.fees}/5</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-xs text-muted-foreground mb-1">Customer Support</div>
-                          <div className="flex justify-center mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.support) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
-                          </div>
-                          <div className="text-xs font-medium">{scores.support}/5</div>
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Key Facts */}
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
@@ -394,6 +352,48 @@ const OperatorReview = () => {
                     {section.title.replace(/^(What|Games|Prizes|Bonuses)/g, match => match.slice(0, match.includes('&') ? match.indexOf('&') : 6))}
                   </a>
                 </Button>)}
+            </div>
+          </div>
+
+          {/* Category Ratings - Bottom of Hero */}
+          <div className="bg-muted/30 rounded-lg p-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">Trust Factor</div>
+                <div className="flex justify-center mb-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.trust) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                  ))}
+                </div>
+                <div className="text-xs font-medium">{scores.trust}/5</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">Games & Design</div>
+                <div className="flex justify-center mb-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.ux) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                  ))}
+                </div>
+                <div className="text-xs font-medium">{scores.ux}/5</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">Deposit & Withdraw</div>
+                <div className="flex justify-center mb-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.fees) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                  ))}
+                </div>
+                <div className="text-xs font-medium">{scores.fees}/5</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">Customer Support</div>
+                <div className="flex justify-center mb-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(scores.support) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                  ))}
+                </div>
+                <div className="text-xs font-medium">{scores.support}/5</div>
+              </div>
             </div>
           </div>
         </div>
