@@ -491,52 +491,22 @@ const OperatorReview = () => {
               <Card>
                 <CardContent className="p-6">
                   <Carousel className="w-full">
-                    <CarouselContent>
-                      {/* Desktop: Show 2 screenshots per slide */}
-                      <div className="hidden md:block">
-                        {Array.from({ length: Math.ceil(screenshots.length / 2) }).map((_, slideIndex) => (
-                          <CarouselItem key={slideIndex} className="flex gap-4">
-                            {screenshots.slice(slideIndex * 2, slideIndex * 2 + 2).map((screenshot) => (
-                              <div key={screenshot.id} className="flex-1 aspect-[9/16] bg-muted rounded-lg overflow-hidden">
-                                <img 
-                                  src={screenshot.url} 
-                                  alt={screenshot.alt}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ))}
-                          </CarouselItem>
-                        ))}
-                      </div>
-                      
-                      {/* Mobile: Show 1 screenshot per slide */}
-                      <div className="md:hidden">
-                        {screenshots.map((screenshot) => (
-                          <CarouselItem key={screenshot.id}>
-                            <div className="aspect-[9/16] bg-muted rounded-lg overflow-hidden max-w-xs mx-auto">
-                              <img 
-                                src={screenshot.url} 
-                                alt={screenshot.alt}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          </CarouselItem>
-                        ))}
-                      </div>
+                    <CarouselContent className="-ml-2 md:-ml-4">
+                      {screenshots.map((screenshot, index) => (
+                        <CarouselItem key={screenshot.id} className="pl-2 md:pl-4 basis-3/4 md:basis-1/2">
+                          <div className="aspect-[9/16] bg-muted rounded-lg overflow-hidden">
+                            <img 
+                              src={screenshot.url} 
+                              alt={screenshot.alt}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
                     </CarouselContent>
-                    <CarouselPrevious className="hidden md:flex" />
-                    <CarouselNext className="hidden md:flex" />
+                    <CarouselPrevious />
+                    <CarouselNext />
                   </Carousel>
-                  
-                  {/* Mobile navigation dots */}
-                  <div className="flex justify-center gap-2 mt-4 md:hidden">
-                    {screenshots.map((_, index) => (
-                      <div 
-                        key={index} 
-                        className="w-2 h-2 rounded-full bg-muted-foreground/30"
-                      />
-                    ))}
-                  </div>
                 </CardContent>
               </Card>
             </div>
