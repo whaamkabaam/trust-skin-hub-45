@@ -363,7 +363,7 @@ const OperatorReview = () => {
                   <span className="text-xs text-muted-foreground mb-1">Trust:</span>
                   <div className="flex items-center justify-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-sm">9</span>
+                    <span className="font-bold text-sm">4.5/5</span>
                   </div>
                 </Badge>
               </div>
@@ -372,7 +372,7 @@ const OperatorReview = () => {
                   <span className="text-xs text-muted-foreground mb-1">Value:</span>
                   <div className="flex items-center justify-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-sm">9</span>
+                    <span className="font-bold text-sm">4.5/5</span>
                   </div>
                 </Badge>
               </div>
@@ -381,7 +381,7 @@ const OperatorReview = () => {
                   <span className="text-xs text-muted-foreground mb-1">Payments:</span>
                   <div className="flex items-center justify-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-sm">7</span>
+                    <span className="font-bold text-sm">3.5/5</span>
                   </div>
                 </Badge>
               </div>
@@ -390,7 +390,7 @@ const OperatorReview = () => {
                   <span className="text-xs text-muted-foreground mb-1">Offering:</span>
                   <div className="flex items-center justify-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-sm">8</span>
+                    <span className="font-bold text-sm">4.0/5</span>
                   </div>
                 </Badge>
               </div>
@@ -399,7 +399,7 @@ const OperatorReview = () => {
                   <span className="text-xs text-muted-foreground mb-1">UX & Tools:</span>
                   <div className="flex items-center justify-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-sm">9</span>
+                    <span className="font-bold text-sm">4.5/5</span>
                   </div>
                 </Badge>
               </div>
@@ -408,7 +408,7 @@ const OperatorReview = () => {
                   <span className="text-xs text-muted-foreground mb-1">Support:</span>
                   <div className="flex items-center justify-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-sm">7</span>
+                    <span className="font-bold text-sm">3.5/5</span>
                   </div>
                 </Badge>
               </div>
