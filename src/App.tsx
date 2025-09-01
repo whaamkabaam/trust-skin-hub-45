@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import OperatorReview from "./pages/OperatorReview";
 import CaseDetail from "./pages/CaseDetail";
 import MysteryBoxDetail from "./pages/MysteryBoxDetail";
+import MysteryBoxReviews from "./pages/MysteryBoxReviews";
 import OperatorsArchive from "./pages/OperatorsArchive";
 import CasesArchive from "./pages/CasesArchive";
 import MysteryBoxesArchive from "./pages/MysteryBoxesArchive";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/cases" element={<CasesArchive />} />
           <Route path="/cases/:id" element={<CaseDetail />} />
           <Route path="/mystery-boxes" element={<MysteryBoxesArchive />} />
+          <Route path="/mystery-boxes/reviews" element={<MysteryBoxReviews />} />
           <Route path="/mystery-boxes/apple" element={<AppleMysteryBoxes />} />
           <Route path="/mystery-boxes/operators" element={<MysteryBoxOperators />} />
           <Route path="/mystery-boxes/:id" element={<MysteryBoxDetail />} />

@@ -44,6 +44,7 @@ const Header = () => {
       description: 'Mystery box opening platforms',
       items: [
         { title: 'Best Sites', href: '/mystery-boxes/best' },
+        { title: 'Reviews', href: '/mystery-boxes/reviews' },
         { title: 'New Sites', href: '/mystery-boxes/new' },
         { title: 'Promo Codes', href: '/mystery-boxes/promo-codes' },
         { title: 'Tech', href: '/mystery-boxes/tech' },
@@ -100,8 +101,9 @@ const Header = () => {
         },
         { 
           title: 'Mystery Box Sites',
-          href: '/reviews/mystery-box',
+          href: '/mystery-boxes/reviews',
           subcategories: [
+            { title: 'All Reviews', href: '/mystery-boxes/reviews' },
             { title: 'Hypedrop Review', href: '/reviews/mystery-box/hypedrop' },
             { title: 'Cases.gg', href: '/reviews/mystery-box/cases-gg' },
             { title: 'Boxed.gg', href: '/reviews/mystery-box/boxed-gg' },
