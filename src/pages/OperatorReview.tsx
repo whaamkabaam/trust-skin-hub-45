@@ -14,7 +14,6 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { sampleOperators, sampleReviews } from '@/lib/sample-data';
-
 const OperatorReview = () => {
   const [tocOpen, setTocOpen] = useState(false);
   const [promoCodeCopied, setPromoCodeCopied] = useState(false);
@@ -22,18 +21,39 @@ const OperatorReview = () => {
   const [prosConsOpen, setProsConsOpen] = useState(false);
   const operator = sampleOperators[0]; // Clash.gg example
   const reviews = sampleReviews.filter(r => r.entityId === operator.id);
-
-  const sections = [
-    { id: 'what-is', title: `What is ${operator.name}?`, anchor: 'what-is-section' },
-    { id: 'games-modes', title: 'Games & Modes', anchor: 'games-modes-section' },
-    { id: 'prizes-payouts', title: 'Prizes & Payouts', anchor: 'prizes-payouts-section' },
-    { id: 'payments', title: 'Payments', anchor: 'payments-section' },
-    { id: 'bonuses-promos', title: 'Bonuses & Promos', anchor: 'bonuses-promos-section' },
-    { id: 'fairness-security', title: 'Fairness & Security', anchor: 'fairness-security-section' },
-    { id: 'ux-support', title: 'UX & Support', anchor: 'ux-support-section' },
-    { id: 'verdict', title: 'Verdict', anchor: 'verdict-section' },
-  ];
-
+  const sections = [{
+    id: 'what-is',
+    title: `What is ${operator.name}?`,
+    anchor: 'what-is-section'
+  }, {
+    id: 'games-modes',
+    title: 'Games & Modes',
+    anchor: 'games-modes-section'
+  }, {
+    id: 'prizes-payouts',
+    title: 'Prizes & Payouts',
+    anchor: 'prizes-payouts-section'
+  }, {
+    id: 'payments',
+    title: 'Payments',
+    anchor: 'payments-section'
+  }, {
+    id: 'bonuses-promos',
+    title: 'Bonuses & Promos',
+    anchor: 'bonuses-promos-section'
+  }, {
+    id: 'fairness-security',
+    title: 'Fairness & Security',
+    anchor: 'fairness-security-section'
+  }, {
+    id: 'ux-support',
+    title: 'UX & Support',
+    anchor: 'ux-support-section'
+  }, {
+    id: 'verdict',
+    title: 'Verdict',
+    anchor: 'verdict-section'
+  }];
   const scores = {
     overall: 4.3,
     user: 3.7,
@@ -43,17 +63,13 @@ const OperatorReview = () => {
     support: 3.8,
     speed: 4.6
   };
-
   const promoCode = "XYZ123";
-  
   const copyPromoCode = () => {
     navigator.clipboard.writeText(promoCode);
     setPromoCodeCopied(true);
     setTimeout(() => setPromoCodeCopied(false), 2000);
   };
-
   const siteType = operator.modes.includes('Case Opening') ? 'Case Site' : 'Mystery Box';
-  
   const userRatings = {
     total: 1284,
     breakdown: {
@@ -64,15 +80,17 @@ const OperatorReview = () => {
       1: 3
     }
   };
-
-  const faqItems = [
-    { q: `Is ${operator.name} legit?`, a: `Yes, ${operator.name} is a legitimate platform with proper security measures and verified payouts.` },
-    { q: "How do payouts work?", a: "Payouts are processed within 24-48 hours via Steam trade or direct shipping for physical items." },
-    { q: "What are the fees and limits?", a: "Deposit fees start at 0%, withdrawal fees vary by method. Minimum deposit is $10." }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
+  const faqItems = [{
+    q: `Is ${operator.name} legit?`,
+    a: `Yes, ${operator.name} is a legitimate platform with proper security measures and verified payouts.`
+  }, {
+    q: "How do payouts work?",
+    a: "Payouts are processed within 24-48 hours via Steam trade or direct shipping for physical items."
+  }, {
+    q: "What are the fees and limits?",
+    a: "Deposit fees start at 0%, withdrawal fees vary by method. Minimum deposit is $10."
+  }];
+  return <div className="min-h-screen bg-background">
       <Header />
       
       {/* Mobile Sticky Top Bar */}
@@ -132,12 +150,10 @@ const OperatorReview = () => {
                       <Badge variant="outline" className="text-blue-600 border-blue-200">
                         {siteType}
                       </Badge>
-                      {operator.verified && (
-                        <Badge className="bg-green-100 text-green-800">
+                      {operator.verified && <Badge className="bg-green-100 text-green-800">
                           <CheckCircle className="w-4 h-4 mr-1" />
                           Verified ✓
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
 
                     {/* Ratings */}
@@ -146,9 +162,7 @@ const OperatorReview = () => {
                         <span className="text-muted-foreground">Our Rating:</span>
                         <div className="flex items-center gap-1">
                           <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
+                            {[...Array(5)].map((_, i) => <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />)}
                           </div>
                           <span className="font-bold text-lg">{scores.overall}/5</span>
                         </div>
@@ -158,9 +172,7 @@ const OperatorReview = () => {
                         <span className="text-muted-foreground">User Rating:</span>
                         <div className="flex items-center gap-1">
                           <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
+                            {[...Array(5)].map((_, i) => <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />)}
                           </div>
                           <span className="font-bold">{scores.user}/5</span>
                           <span className="text-muted-foreground">({userRatings.total})</span>
@@ -207,9 +219,7 @@ const OperatorReview = () => {
               {/* Right - Best Offer */}
               <div className="w-80 flex-shrink-0">
                 <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                  <CardHeader>
-                    <CardTitle>Best Offer</CardTitle>
-                  </CardHeader>
+                  
                   <CardContent className="space-y-3">
                     <div className="text-center">
                       <div className="text-lg font-bold">Free $10 + 3 Cases</div>
@@ -247,9 +257,7 @@ const OperatorReview = () => {
                       <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
                         {siteType}
                       </Badge>
-                      {operator.verified && (
-                        <Badge className="text-xs bg-green-100 text-green-800">✓</Badge>
-                      )}
+                      {operator.verified && <Badge className="text-xs bg-green-100 text-green-800">✓</Badge>}
                     </div>
                     
                     <div className="space-y-2 text-sm">
@@ -314,23 +322,19 @@ const OperatorReview = () => {
                       <div>
                         <h4 className="font-medium text-green-600 mb-2">PROS</h4>
                         <ul className="text-sm space-y-1">
-                          {operator.pros.slice(0, 3).map((pro, i) => (
-                            <li key={i} className="flex items-start gap-2">
+                          {operator.pros.slice(0, 3).map((pro, i) => <li key={i} className="flex items-start gap-2">
                               <span className="text-green-600 mt-0.5">+</span>
                               <span>{pro}</span>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
                       </div>
                       <div>
                         <h4 className="font-medium text-red-600 mb-2">CONS</h4>
                         <ul className="text-sm space-y-1">
-                          {operator.cons.slice(0, 3).map((con, i) => (
-                            <li key={i} className="flex items-start gap-2">
+                          {operator.cons.slice(0, 3).map((con, i) => <li key={i} className="flex items-start gap-2">
                               <span className="text-red-600 mt-0.5">–</span>
                               <span>{con}</span>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
                       </div>
                     </div>
@@ -341,19 +345,11 @@ const OperatorReview = () => {
 
             {/* Mobile TOC */}
             <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
-              {sections.map((section) => (
-                <Button
-                  key={section.id}
-                  variant="outline"
-                  size="sm"
-                  className="whitespace-nowrap text-xs"
-                  asChild
-                >
+              {sections.map(section => <Button key={section.id} variant="outline" size="sm" className="whitespace-nowrap text-xs" asChild>
                   <a href={`#${section.anchor}`}>
-                    {section.title.replace(/^(What|Games|Prizes|Bonuses)/g, (match) => match.slice(0, match.includes('&') ? match.indexOf('&') : 6))}
+                    {section.title.replace(/^(What|Games|Prizes|Bonuses)/g, match => match.slice(0, match.includes('&') ? match.indexOf('&') : 6))}
                   </a>
-                </Button>
-              ))}
+                </Button>)}
             </div>
           </div>
         </div>
@@ -378,12 +374,10 @@ const OperatorReview = () => {
                   </CardHeader>
                   <CardContent className="pt-0">
                     <ul className="space-y-2">
-                      {operator.pros.map((pro, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
+                      {operator.pros.map((pro, i) => <li key={i} className="flex items-start gap-2 text-sm">
                           <span className="text-green-600 font-bold mt-0.5">+</span>
                           <span>{pro}</span>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
                   </CardContent>
                 </Card>
@@ -397,12 +391,10 @@ const OperatorReview = () => {
                   </CardHeader>
                   <CardContent className="pt-0">
                     <ul className="space-y-2">
-                      {operator.cons.map((con, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
+                      {operator.cons.map((con, i) => <li key={i} className="flex items-start gap-2 text-sm">
                           <span className="text-red-600 font-bold mt-0.5">–</span>
                           <span>{con}</span>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
                   </CardContent>
                 </Card>
@@ -426,11 +418,9 @@ const OperatorReview = () => {
               <h2 className="text-2xl font-bold mb-4">Games & Modes</h2>
               <div className="space-y-4">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {['Solo Unbox', 'Battles', 'Upgrade', 'Jackpot', 'Wheel'].map((mode) => (
-                    <Badge key={mode} variant="outline" className="px-3 py-1">
+                  {['Solo Unbox', 'Battles', 'Upgrade', 'Jackpot', 'Wheel'].map(mode => <Badge key={mode} variant="outline" className="px-3 py-1">
                       {mode}
-                    </Badge>
-                  ))}
+                    </Badge>)}
                 </div>
                 <div className="prose prose-gray max-w-none">
                   <ul className="space-y-2 text-muted-foreground">
@@ -448,8 +438,7 @@ const OperatorReview = () => {
             <div id="prizes-payouts-section">
               <h2 className="text-2xl font-bold mb-4">Prizes & Payouts</h2>
               <div className="space-y-4">
-                {siteType === 'Case Site' ? (
-                  <Card>
+                {siteType === 'Case Site' ? <Card>
                     <CardHeader>
                       <CardTitle>Case Site Payouts</CardTitle>
                     </CardHeader>
@@ -458,9 +447,7 @@ const OperatorReview = () => {
                       <div>• <strong>Steam Trade Flow:</strong> Withdraw skins directly to Steam via trade bot</div>
                       <div>• <strong>P2P/Market Cashout:</strong> Sell skins on integrated marketplace</div>
                     </CardContent>
-                  </Card>
-                ) : (
-                  <Card>
+                  </Card> : <Card>
                     <CardHeader>
                       <CardTitle>Mystery Box Payouts</CardTitle>
                     </CardHeader>
@@ -469,8 +456,7 @@ const OperatorReview = () => {
                       <div>• <strong>Ship/Claim Flow:</strong> Physical items shipped worldwide within 7-14 days</div>
                       <div>• <strong>Swap for Credits:</strong> Convert physical prizes to platform credits</div>
                     </CardContent>
-                  </Card>
-                )}
+                  </Card>}
               </div>
             </div>
 
@@ -660,20 +646,16 @@ const OperatorReview = () => {
                       <div className="text-center">
                         <div className="text-3xl font-bold">{scores.user}</div>
                         <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                          ))}
+                          {[...Array(5)].map((_, i) => <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />)}
                         </div>
                         <div className="text-sm text-muted-foreground">({userRatings.total})</div>
                       </div>
                       <div className="space-y-2 flex-1">
-                        {Object.entries(userRatings.breakdown).reverse().map(([stars, percentage]) => (
-                          <div key={stars} className="flex items-center gap-2 text-sm">
+                        {Object.entries(userRatings.breakdown).reverse().map(([stars, percentage]) => <div key={stars} className="flex items-center gap-2 text-sm">
                             <span className="w-8">{stars}★</span>
                             <Progress value={percentage} className="flex-1" />
                             <span className="w-10 text-muted-foreground">{percentage}%</span>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
                     </div>
                     <Button variant="outline">
@@ -683,9 +665,7 @@ const OperatorReview = () => {
                   </div>
                   
                   <div className="space-y-4">
-                    {reviews.slice(0, 3).map((review) => (
-                      <ReviewCard key={review.id} review={review} />
-                    ))}
+                    {reviews.slice(0, 3).map(review => <ReviewCard key={review.id} review={review} />)}
                   </div>
                 </CardContent>
               </Card>
@@ -694,8 +674,7 @@ const OperatorReview = () => {
             {/* FAQ Accordion */}
             <div className="space-y-4">
               <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
-              {faqItems.map((item, i) => (
-                <Collapsible key={i}>
+              {faqItems.map((item, i) => <Collapsible key={i}>
                   <Card>
                     <CollapsibleTrigger className="w-full p-4 text-left flex items-center justify-between hover:bg-muted/50 transition-colors">
                       <span className="font-medium">{item.q}</span>
@@ -707,16 +686,14 @@ const OperatorReview = () => {
                       </CardContent>
                     </CollapsibleContent>
                   </Card>
-                </Collapsible>
-              ))}
+                </Collapsible>)}
             </div>
 
             {/* Related Sites / Comparisons */}
             <div className="space-y-4">
               <h2 className="text-2xl font-bold">Related Sites</h2>
               <div className="grid md:grid-cols-2 gap-4">
-                {sampleOperators.slice(1, 3).map((relatedOp) => (
-                  <Card key={relatedOp.id} className="hover:shadow-lg transition-shadow">
+                {sampleOperators.slice(1, 3).map(relatedOp => <Card key={relatedOp.id} className="hover:shadow-lg transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 bg-white rounded border flex items-center justify-center">
@@ -736,8 +713,7 @@ const OperatorReview = () => {
                         </Link>
                       </Button>
                     </CardContent>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
             </div>
 
@@ -871,15 +847,9 @@ const OperatorReview = () => {
                   <CardTitle>On this page</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-1">
-                  {sections.map((section, index) => (
-                    <a
-                      key={section.id}
-                      href={`#${section.anchor}`}
-                      className="block text-sm text-muted-foreground hover:text-foreground py-1 transition-colors"
-                    >
+                  {sections.map((section, index) => <a key={section.id} href={`#${section.anchor}`} className="block text-sm text-muted-foreground hover:text-foreground py-1 transition-colors">
                       • {section.title}
-                    </a>
-                  ))}
+                    </a>)}
                 </CardContent>
               </Card>
             </div>
@@ -906,8 +876,6 @@ const OperatorReview = () => {
       </div>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default OperatorReview;
