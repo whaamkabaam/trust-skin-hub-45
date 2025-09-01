@@ -20,7 +20,7 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto text-center">
           {/* Main Headline */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            Andrej looked better in the past
+            Find the best Mystery Box Sites, Online Casinos and CSGO Betting Sites
           </h1>
 
           {/* Value Proposition */}
