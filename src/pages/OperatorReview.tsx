@@ -751,31 +751,50 @@ const OperatorReview = () => {
                 </Collapsible>)}
             </div>
 
-            {/* Related Sites / Comparisons */}
+            {/* Site Comparisons */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Related Sites</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                {sampleOperators.slice(1, 3).map(relatedOp => <Card key={relatedOp.id} className="hover:shadow-lg transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 bg-white rounded border flex items-center justify-center">
-                          <span className="font-bold text-sm">{relatedOp.name.charAt(0)}</span>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold">{relatedOp.name}</h4>
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm">{relatedOp.overallRating}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm" className="w-full" asChild>
-                        <Link to={`/operators/${relatedOp.id}/review`}>
-                          Compare Review
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>)}
+              <h2 className="text-2xl font-bold">Site Comparisons</h2>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/compare/clash-vs-hellcase">
+                    Clash.gg VS Hellcase
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/compare/clash-vs-csgoluck">
+                    Clash.gg VS CSGOLuck
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/compare/clash-vs-farmskins">
+                    Clash.gg VS Farmskins
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/compare/clash-vs-csgoroll">
+                    Clash.gg VS CSGORoll
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/compare/clash-vs-skinclub">
+                    Clash.gg VS SkinClub
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/compare/clash-vs-skinport">
+                    Clash.gg VS Skinport
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/compare/clash-vs-daddyskins">
+                    Clash.gg VS DaddySkins
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/compare/clash-vs-key-drop">
+                    Clash.gg VS Key-Drop
+                  </Link>
+                </Button>
               </div>
             </div>
 
@@ -802,6 +821,28 @@ const OperatorReview = () => {
           {/* RIGHT - Sticky Sidebar */}
           <div className="lg:col-span-1 hidden lg:block">
             <div className="sticky top-8 space-y-6">
+              
+              {/* Navigation Buttons */}
+              <div className="space-y-2">
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Link to={`/operators/${operator.id}/promo-code`}>
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    Promo Code
+                  </Link>
+                </Button>
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Link to={`/operators/${operator.id}/cases`}>
+                    <Gamepad2 className="w-4 h-4 mr-2" />
+                    Cases or Boxes
+                  </Link>
+                </Button>
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Link to={`/operators/${operator.id}/alternatives`}>
+                    <HelpCircle className="w-4 h-4 mr-2" />
+                    Alternatives
+                  </Link>
+                </Button>
+              </div>
               
               {/* Quick Facts Card */}
               <Card>
