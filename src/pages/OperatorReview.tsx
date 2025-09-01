@@ -357,8 +357,8 @@ const OperatorReview = () => {
 
           {/* Category Ratings - Bottom of Hero */}
           <div className="bg-muted/30 rounded-lg p-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              <div className="flex flex-col items-center">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 justify-center max-w-4xl mx-auto">
+              <div className="flex justify-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Trust:</span>
@@ -369,7 +369,7 @@ const OperatorReview = () => {
                   </div>
                 </Badge>
               </div>
-              <div className="flex flex-col items-center">
+              <div className="flex justify-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Value:</span>
@@ -380,7 +380,7 @@ const OperatorReview = () => {
                   </div>
                 </Badge>
               </div>
-              <div className="flex flex-col items-center">
+              <div className="flex justify-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Payments:</span>
@@ -391,7 +391,7 @@ const OperatorReview = () => {
                   </div>
                 </Badge>
               </div>
-              <div className="flex flex-col items-center">
+              <div className="flex justify-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Offering:</span>
@@ -402,7 +402,7 @@ const OperatorReview = () => {
                   </div>
                 </Badge>
               </div>
-              <div className="flex flex-col items-center">
+              <div className="flex justify-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">UX & Tools:</span>
@@ -413,7 +413,7 @@ const OperatorReview = () => {
                   </div>
                 </Badge>
               </div>
-              <div className="flex flex-col items-center">
+              <div className="flex justify-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Support:</span>
