@@ -360,49 +360,67 @@ const OperatorReview = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               <div className="flex flex-col items-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Trust:</span>
-                    <span className="font-bold text-sm">9</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-sm">9</span>
+                    </div>
                   </div>
                 </Badge>
               </div>
               <div className="flex flex-col items-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Value:</span>
-                    <span className="font-bold text-sm">9</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-sm">9</span>
+                    </div>
                   </div>
                 </Badge>
               </div>
               <div className="flex flex-col items-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Payments:</span>
-                    <span className="font-bold text-sm">7</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-sm">7</span>
+                    </div>
                   </div>
                 </Badge>
               </div>
               <div className="flex flex-col items-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Offering:</span>
-                    <span className="font-bold text-sm">8</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-sm">8</span>
+                    </div>
                   </div>
                 </Badge>
               </div>
               <div className="flex flex-col items-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">UX & Tools:</span>
-                    <span className="font-bold text-sm">9</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-sm">9</span>
+                    </div>
                   </div>
                 </Badge>
               </div>
               <div className="flex flex-col items-center">
                 <Badge variant="secondary" className="w-full text-center py-2 bg-muted border">
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center gap-1">
                     <span className="text-xs text-muted-foreground">Support:</span>
-                    <span className="font-bold text-sm">7</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-sm">7</span>
+                    </div>
                   </div>
                 </Badge>
               </div>
