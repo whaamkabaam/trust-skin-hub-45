@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
+import NewsAndBlogs from '@/components/NewsAndBlogs';
 import Footer from '@/components/Footer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -475,6 +476,9 @@ const Index = () => {
           </div>
         </section>
       </main>
+
+      {/* News and Blogs Section */}
+      <NewsAndBlogs />
 
       <Footer />
     </div>;
