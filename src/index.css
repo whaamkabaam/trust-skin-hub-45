@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Base colors - Professional slate/navy palette */
+    /* Base colors - More vibrant base */
     --background: 0 0% 100%;
     --foreground: 215 25% 15%;
     
@@ -18,12 +18,12 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 15%;
     
-    /* Primary - Trust-building navy */
-    --primary: 215 60% 25%;
+    /* Primary - Vibrant purple */
+    --primary: 258 90% 66%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 215 60% 20%;
+    --primary-hover: 258 90% 60%;
     
-    /* Secondary - Professional blue-gray */
+    /* Secondary - Soft blue-gray */
     --secondary: 215 15% 95%;
     --secondary-foreground: 215 25% 25%;
     --secondary-hover: 215 15% 90%;
@@ -32,63 +32,76 @@ All colors MUST be HSL.
     --muted: 215 15% 97%;
     --muted-foreground: 215 15% 45%;
     
-    /* Accent - CS2 blue highlight */
-    --accent: 214 85% 55%;
+    /* Accent - Bright cyan */
+    --accent: 189 85% 55%;
     --accent-foreground: 0 0% 100%;
-    --accent-hover: 214 85% 50%;
+    --accent-hover: 189 85% 50%;
     
-    /* Status colors */
-    --success: 142 76% 36%;
+    /* Status colors - More vibrant */
+    --success: 142 85% 45%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 38 92% 15%;
-    --destructive: 0 84% 60%;
+    --warning: 48 96% 53%;
+    --warning-foreground: 48 96% 15%;
+    --destructive: 348 83% 55%;
     --destructive-foreground: 0 0% 100%;
     
-    /* CS2 Gaming accents */
+    /* Gaming colors - Vibrant playful palette */
     --gaming-orange: 25 95% 53%;
-    --gaming-blue: 214 85% 55%;
+    --gaming-blue: 221 83% 53%;
+    --gaming-purple: 258 90% 66%;
+    --gaming-green: 142 85% 45%;
+    --gaming-red: 348 83% 55%;
+    --gaming-yellow: 48 96% 53%;
+    --gaming-pink: 330 85% 65%;
+    --gaming-cyan: 189 85% 55%;
     --gaming-gold: 45 93% 58%;
     
+    /* Playful Card Colors */
+    --card-purple: 258 90% 66%;
+    --card-green: 142 85% 45%;
+    --card-orange: 25 95% 53%;
+    --card-blue: 221 83% 53%;
+    --card-pink: 330 85% 65%;
+    --card-cyan: 189 85% 55%;
+    
     /* Trust indicators */
-    --trust-high: 142 76% 36%;
-    --trust-medium: 38 92% 50%;
-    --trust-low: 0 84% 60%;
+    --trust-high: 142 85% 45%;
+    --trust-medium: 48 96% 53%;
+    --trust-low: 348 83% 55%;
     
     /* Borders and inputs */
     --border: 215 15% 88%;
     --input: 215 15% 92%;
-    --ring: 214 85% 55%;
+    --ring: 258 90% 66%;
     
     /* Layout */
     --radius: 0.75rem;
     --radius-sm: 0.5rem;
     --radius-lg: 1rem;
     
-    /* Shadows */
-    --shadow-subtle: 0 1px 3px 0 hsl(215 25% 15% / 0.1);
-    --shadow-card: 0 4px 12px 0 hsl(215 25% 15% / 0.08);
-    --shadow-elevated: 0 8px 24px 0 hsl(215 25% 15% / 0.12);
+    /* Shadows - More colorful */
+    --shadow-subtle: 0 1px 3px 0 hsl(258 90% 66% / 0.1);
+    --shadow-card: 0 4px 12px 0 hsl(258 90% 66% / 0.08);
+    --shadow-elevated: 0 8px 24px 0 hsl(258 90% 66% / 0.12);
+    --shadow-colorful: 0 10px 30px -10px hsl(258 90% 66% / 0.3);
+    --shadow-glow: 0 0 40px hsl(189 85% 55% / 0.4);
     
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(215 60% 25%), hsl(214 85% 55%));
+    /* Vibrant Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(330 85% 65%) 35%, hsl(221 83% 53%) 100%);
     --gradient-card: linear-gradient(to bottom, hsl(0 0% 100%), hsl(215 15% 99%));
-    --gradient-trust: linear-gradient(90deg, hsl(142 76% 36%), hsl(142 76% 28%));
+    --gradient-trust: linear-gradient(90deg, hsl(142 85% 45%), hsl(142 85% 35%));
+    --gradient-card-1: linear-gradient(135deg, hsl(258 90% 66%), hsl(330 85% 65%));
+    --gradient-card-2: linear-gradient(135deg, hsl(142 85% 45%), hsl(189 85% 55%));
+    --gradient-card-3: linear-gradient(135deg, hsl(25 95% 53%), hsl(348 83% 55%));
+    --gradient-card-4: linear-gradient(135deg, hsl(221 83% 53%), hsl(258 90% 66%));
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -175,10 +188,79 @@ All colors MUST be HSL.
   }
 }
 
+@keyframes wiggle {
+  0%, 7% { transform: rotateZ(0); }
+  15% { transform: rotateZ(-15deg); }
+  20% { transform: rotateZ(10deg); }
+  25% { transform: rotateZ(-10deg); }
+  30% { transform: rotateZ(6deg); }
+  35% { transform: rotateZ(-4deg); }
+  40%, 100% { transform: rotateZ(0); }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(-10px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px hsl(var(--gaming-purple) / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px hsl(var(--gaming-purple) / 0.8), 0 0 30px hsl(var(--gaming-purple) / 0.4);
+  }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
 
 .animate-float-delayed {
   animation: float-delayed 8s ease-in-out infinite 2s;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Playful hover effects */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px -12px hsl(var(--gaming-purple) / 0.25);
+}
+
+.hover-rotate {
+  transition: transform 0.3s ease;
+}
+
+.hover-rotate:hover {
+  transform: rotate(5deg) scale(1.05);
+}
+
+.hover-gradient-shift {
+  background-size: 200% 200%;
+  transition: background-position 0.3s ease;
+}
+
+.hover-gradient-shift:hover {
+  background-position: right center;
 }

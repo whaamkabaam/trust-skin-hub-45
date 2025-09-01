@@ -29,56 +29,63 @@ const Hero = () => {
             trust-first analysis and community reviews.
           </p>
 
-          {/* Gaming Hubs CTAs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 justify-center mb-12 max-w-5xl mx-auto">
-            <Button 
-              size="lg" 
-              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-3 md:px-4 py-4 md:py-6 text-sm md:text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[80px] md:min-h-[100px]"
-              asChild
-            >
-              <a href="/casinos">
-                <div className="flex flex-col items-center gap-1 md:gap-2">
-                  <span className="text-xl md:text-2xl">🎰</span>
-                  <span className="text-center leading-tight">Casinos</span>
+          {/* Gaming Hubs CTAs - Playful Card Style */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 justify-center mb-12 max-w-6xl mx-auto">
+            <div className="group cursor-pointer">
+              <a href="/casinos" className="block">
+                <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[120px] md:min-h-[140px] bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 transform transition-all duration-300 hover:scale-105 hover:rotate-1 shadow-lg hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                    <div className="text-3xl md:text-4xl mb-3 transform transition-transform group-hover:scale-110">🎰</div>
+                    <span className="text-lg md:text-xl font-bold text-center">Casinos</span>
+                    <span className="text-xs md:text-sm opacity-90 mt-1">Best Bonuses</span>
+                  </div>
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
                 </div>
               </a>
-            </Button>
-            <Button 
-              size="lg" 
-              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-3 md:px-4 py-4 md:py-6 text-sm md:text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[80px] md:min-h-[100px]"
-              asChild
-            >
-              <a href="/esports">
-                <div className="flex flex-col items-center gap-1 md:gap-2">
-                  <span className="text-xl md:text-2xl">🏆</span>
-                  <span className="text-center leading-tight">eSports</span>
+            </div>
+            
+            <div className="group cursor-pointer">
+              <a href="/esports" className="block">
+                <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[120px] md:min-h-[140px] bg-gradient-to-br from-green-500 via-emerald-500 to-cyan-500 transform transition-all duration-300 hover:scale-105 hover:-rotate-1 shadow-lg hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                    <div className="text-3xl md:text-4xl mb-3 transform transition-transform group-hover:scale-110">🏆</div>
+                    <span className="text-lg md:text-xl font-bold text-center">eSports</span>
+                    <span className="text-xs md:text-sm opacity-90 mt-1">Live Betting</span>
+                  </div>
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
                 </div>
               </a>
-            </Button>
-            <Button 
-              size="lg" 
-              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-3 md:px-4 py-4 md:py-6 text-sm md:text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[80px] md:min-h-[100px]"
-              asChild
-            >
-              <a href="/cases">
-                <div className="flex flex-col items-center gap-1 md:gap-2">
-                  <span className="text-xl md:text-2xl">📦</span>
-                  <span className="text-center leading-tight">Cases</span>
+            </div>
+            
+            <div className="group cursor-pointer">
+              <a href="/cases" className="block">
+                <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[120px] md:min-h-[140px] bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 transform transition-all duration-300 hover:scale-105 hover:rotate-1 shadow-lg hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                    <div className="text-3xl md:text-4xl mb-3 transform transition-transform group-hover:scale-110">📦</div>
+                    <span className="text-lg md:text-xl font-bold text-center">Cases</span>
+                    <span className="text-xs md:text-sm opacity-90 mt-1">Open & Win</span>
+                  </div>
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 </div>
               </a>
-            </Button>
-            <Button 
-              size="lg" 
-              className="bg-white/10 text-white hover:bg-white/20 border border-white/20 px-3 md:px-4 py-4 md:py-6 text-sm md:text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[80px] md:min-h-[100px]"
-              asChild
-            >
-              <a href="/mystery-boxes">
-                <div className="flex flex-col items-center gap-1 md:gap-2">
-                  <span className="text-xl md:text-2xl">🎁</span>
-                  <span className="text-center leading-tight">Mystery Boxes</span>
+            </div>
+            
+            <div className="group cursor-pointer">
+              <a href="/mystery-boxes" className="block">
+                <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[120px] md:min-h-[140px] bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 transform transition-all duration-300 hover:scale-105 hover:-rotate-1 shadow-lg hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                    <div className="text-3xl md:text-4xl mb-3 transform transition-transform group-hover:scale-110">🎁</div>
+                    <span className="text-lg md:text-xl font-bold text-center">Mystery Boxes</span>
+                    <span className="text-xs md:text-sm opacity-90 mt-1">Unbox Skins</span>
+                  </div>
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
                 </div>
               </a>
-            </Button>
+            </div>
           </div>
 
           {/* Trust Strip */}
