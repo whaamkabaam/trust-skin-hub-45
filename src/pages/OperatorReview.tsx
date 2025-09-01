@@ -822,8 +822,10 @@ const OperatorReview = () => {
           <div className="lg:col-span-1 hidden lg:block">
             <div className="sticky top-8 space-y-6">
               
-              {/* Navigation Buttons */}
-              <div className="space-y-2">
+              {/* More About Section */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-muted-foreground text-sm">More About {operator.name}</h3>
+                <div className="space-y-2">
                 <Button variant="outline" className="w-full justify-start" asChild>
                   <Link to={`/operators/${operator.id}/promo-code`}>
                     <DollarSign className="w-4 h-4 mr-2" />
@@ -842,6 +844,7 @@ const OperatorReview = () => {
                     Alternatives
                   </Link>
                 </Button>
+                </div>
               </div>
               
               {/* Quick Facts Card */}
