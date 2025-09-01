@@ -5,10 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, Shield, Clock, Users, ArrowRight, CheckCircle, AlertTriangle, ExternalLink, Star, Calendar, FileText, Globe, UserCheck, Award } from 'lucide-react';
-
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Section */}
@@ -42,86 +40,7 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
         {/* Gaming Hubs Section */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Gaming Hubs</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  Online Casinos
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Trusted crypto casinos with provably fair games and fast payouts.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">Provably Fair</Badge>
-                  <Badge variant="outline">Crypto Friendly</Badge>
-                  <Badge variant="outline">Live Games</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  eSports Betting
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Best odds and markets for CS2, Dota 2, and other major esports.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">Live Betting</Badge>
-                  <Badge variant="outline">CS2 Matches</Badge>
-                  <Badge variant="outline">Best Odds</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  Cases
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Analyze case odds, drop tables, and expected returns across games.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">CS2 Cases</Badge>
-                  <Badge variant="outline">Rust Boxes</Badge>
-                  <Badge variant="outline">TF2 Crates</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  Mystery Boxes
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Third-party boxes with verified odds and fairness ratings.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">Knife Boxes</Badge>
-                  <Badge variant="outline">Glove Collections</Badge>
-                  <Badge variant="outline">Rare Skins</Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
+        
 
         {/* Recently Tested Section */}
         <section className="mb-16">
@@ -130,8 +49,7 @@ const Index = () => {
             <p className="text-muted-foreground">Hands-on tested by humans. We deposit, play, and cash out—then publish the results.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((test) => (
-              <Card key={test} className="border-l-4 border-l-success">
+            {[1, 2, 3].map(test => <Card key={test} className="border-l-4 border-l-success">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -157,8 +75,7 @@ const Index = () => {
                     </Button>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </section>
 
@@ -169,13 +86,27 @@ const Index = () => {
             <p className="text-muted-foreground">Meet the experts behind our reviews</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { name: "Sarah Chen", role: "Senior Gaming Analyst", years: "8 years", credentials: "CPA, Former Valve Engineer" },
-              { name: "Marcus Rodriguez", role: "Crypto & Security Expert", years: "6 years", credentials: "CISSP, Blockchain Developer" },
-              { name: "Elena Petrov", role: "Community Manager", years: "5 years", credentials: "CS:GO Semi-Pro, 10k+ Hours" },
-              { name: "David Kim", role: "Data Analyst", years: "4 years", credentials: "PhD Statistics, MIT" }
-            ].map((analyst, index) => (
-              <Card key={index} className="text-center">
+            {[{
+            name: "Sarah Chen",
+            role: "Senior Gaming Analyst",
+            years: "8 years",
+            credentials: "CPA, Former Valve Engineer"
+          }, {
+            name: "Marcus Rodriguez",
+            role: "Crypto & Security Expert",
+            years: "6 years",
+            credentials: "CISSP, Blockchain Developer"
+          }, {
+            name: "Elena Petrov",
+            role: "Community Manager",
+            years: "5 years",
+            credentials: "CS:GO Semi-Pro, 10k+ Hours"
+          }, {
+            name: "David Kim",
+            role: "Data Analyst",
+            years: "4 years",
+            credentials: "PhD Statistics, MIT"
+          }].map((analyst, index) => <Card key={index} className="text-center">
                 <CardContent className="pt-6">
                   <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4"></div>
                   <h4 className="font-semibold mb-1">{analyst.name}</h4>
@@ -191,8 +122,7 @@ const Index = () => {
                     <Button variant="outline" size="sm" className="h-7 text-xs">Steam</Button>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </section>
 
@@ -288,8 +218,7 @@ const Index = () => {
           </div>
           <div className="overflow-x-auto">
             <div className="min-w-full">
-              {['Stake.com', 'CSGORoll', 'DaddySkins', 'Rollbit', 'BC.Game'].map((operator, index) => (
-                <div key={index} className="flex items-center justify-between py-4 border-b">
+              {['Stake.com', 'CSGORoll', 'DaddySkins', 'Rollbit', 'BC.Game'].map((operator, index) => <div key={index} className="flex items-center justify-between py-4 border-b">
                   <div className="flex items-center gap-3 min-w-[150px]">
                     <div className="w-8 h-8 bg-muted rounded"></div>
                     <span className="font-medium">{operator}</span>
@@ -311,8 +240,7 @@ const Index = () => {
                       <UserCheck className="w-3 h-3 mr-1" />Ownership Known
                     </Badge>
                   </div>
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
         </section>
@@ -367,19 +295,22 @@ const Index = () => {
                 </div>
               </div>
               <div className="space-y-3">
-                {[
-                  { name: "SuspiciousSite.com", reason: "Non-payment reports (14 days)" },
-                  { name: "RiggedOdds.net", reason: "Manipulated RNG detected" },
-                  { name: "FakeOperator.gg", reason: "ToS violations, license issues" }
-                ].map((site, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-background rounded-lg">
+                {[{
+                name: "SuspiciousSite.com",
+                reason: "Non-payment reports (14 days)"
+              }, {
+                name: "RiggedOdds.net",
+                reason: "Manipulated RNG detected"
+              }, {
+                name: "FakeOperator.gg",
+                reason: "ToS violations, license issues"
+              }].map((site, index) => <div key={index} className="flex items-center justify-between p-3 bg-background rounded-lg">
                     <div>
                       <span className="font-medium text-destructive">{site.name}</span>
                       <p className="text-sm text-muted-foreground">{site.reason}</p>
                     </div>
                     <Button variant="ghost" size="sm">Details</Button>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </CardContent>
           </Card>
@@ -391,21 +322,29 @@ const Index = () => {
             <h2 className="text-2xl font-bold mb-2">Real Users Say...</h2>
             <div className="flex items-center justify-center gap-2 mb-4">
               <div className="flex">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                ))}
+                {[1, 2, 3, 4, 5].map(star => <Star key={star} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
               </div>
               <span className="text-lg font-semibold">4.6/5</span>
               <span className="text-muted-foreground">(2,847 reviews)</span>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            {[
-              { user: "CryptoTrader_Mike", rating: 5, text: "Fast payouts, transparent odds. Been using for 6 months no issues.", verified: true },
-              { user: "SkinCollector23", rating: 4, text: "Good selection of operators. Love the detailed breakdowns.", verified: false },
-              { user: "ProGamer_Sarah", rating: 5, text: "Saved me from a scam site. Their warnings are spot on.", verified: true }
-            ].map((review, index) => (
-              <Card key={index}>
+            {[{
+            user: "CryptoTrader_Mike",
+            rating: 5,
+            text: "Fast payouts, transparent odds. Been using for 6 months no issues.",
+            verified: true
+          }, {
+            user: "SkinCollector23",
+            rating: 4,
+            text: "Good selection of operators. Love the detailed breakdowns.",
+            verified: false
+          }, {
+            user: "ProGamer_Sarah",
+            rating: 5,
+            text: "Saved me from a scam site. Their warnings are spot on.",
+            verified: true
+          }].map((review, index) => <Card key={index}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
@@ -418,15 +357,12 @@ const Index = () => {
                       </div>
                     </div>
                     <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className={`w-3 h-3 ${star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                      ))}
+                      {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`w-3 h-3 ${star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />)}
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground">{review.text}</p>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
           <div className="text-center">
             <Button variant="outline" className="mr-4">Leave a Review</Button>
@@ -471,11 +407,9 @@ const Index = () => {
           <div className="text-center mb-6">
             <h3 className="text-lg font-semibold mb-4">As Referenced By</h3>
             <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
-              {['TechCrunch', 'Forbes', 'CoinDesk', 'Polygon', 'Kotaku'].map((outlet, index) => (
-                <div key={index} className="text-muted-foreground font-medium text-sm">
+              {['TechCrunch', 'Forbes', 'CoinDesk', 'Polygon', 'Kotaku'].map((outlet, index) => <div key={index} className="text-muted-foreground font-medium text-sm">
                   {outlet}
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
         </section>
@@ -543,8 +477,6 @@ const Index = () => {
       </main>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
