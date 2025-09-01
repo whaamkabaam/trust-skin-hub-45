@@ -219,8 +219,10 @@ const OperatorReview = () => {
               {/* Right - Best Offer */}
               <div className="w-80 flex-shrink-0">
                 <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                  
-                  <CardContent className="space-y-3">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-center text-sm font-medium text-muted-foreground">Best Offer</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0 space-y-4">
                     <div className="text-center">
                       <div className="text-lg font-bold">Free $10 + 3 Cases</div>
                       <div className="text-sm text-muted-foreground">Welcome Bonus</div>
