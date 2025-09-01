@@ -493,7 +493,7 @@ const OperatorReview = () => {
                   <Carousel className="w-full">
                     <CarouselContent className="-ml-2 md:-ml-4">
                       {screenshots.map((screenshot, index) => (
-                        <CarouselItem key={screenshot.id} className="pl-2 md:pl-4 basis-3/4 md:basis-1/2">
+                        <CarouselItem key={screenshot.id} className="pl-2 md:pl-4 basis-3/4 md:basis-1/3">
                           <div className="aspect-[9/16] bg-muted rounded-lg overflow-hidden">
                             <img 
                               src={screenshot.url} 
