@@ -168,8 +168,9 @@ const OnlineCasinoReview = () => {
       {/* Header / Hero */}
       <section className="bg-gradient-to-br from-background to-muted/30 border-b">
         <div className="container mx-auto px-4 py-6 md:py-8">
-          {/* Desktop Layout */}
-          <div className="hidden md:block">
+          
+          {/* Desktop Layout (1024px+) */}
+          <div className="hidden lg:block">
             <div className="flex items-start gap-6 mb-8">
               {/* Left - Site Info */}
               <div className="flex-1">
@@ -335,6 +336,110 @@ const OnlineCasinoReview = () => {
                   </CardContent>
                 </Card>
               </div>
+            </div>
+          </div>
+
+          {/* Tablet Layout (768px-1023px) */}
+          <div className="hidden md:block lg:hidden">
+            <div className="space-y-6">
+              {/* Main Casino Info */}
+              <Card className="bg-gradient-to-br from-background to-muted/30 border-muted/40">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-6 mb-6">
+                    <div className="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center flex-shrink-0 border">
+                      <span className="text-2xl font-bold text-primary">🎰</span>
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-3 mb-4">
+                        <h1 className="text-2xl font-bold">Online Casino Review</h1>
+                        <Badge variant="outline" className="text-blue-600 border-blue-200">Casino</Badge>
+                        <Badge className="bg-green-100 text-green-800">
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Licensed
+                        </Badge>
+                      </div>
+
+                      {/* Ratings Row */}
+                      <div className="grid grid-cols-2 gap-6 mb-6">
+                        <div className="flex items-center gap-2">
+                          <span className="text-muted-foreground text-sm">Our Rating:</span>
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-bold">{scores.overall}/5</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-muted-foreground text-sm">User Rating:</span>
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-bold">{scores.user}/5</span>
+                            <span className="text-muted-foreground text-sm">({userRatings.total})</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tablet Key Facts Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm mb-6 p-4 bg-muted/30 rounded-lg">
+                    <div>
+                      <div className="text-muted-foreground">Established</div>
+                      <div className="font-semibold">2018</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">License</div>
+                      <div className="font-semibold">MGA, UKGC</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Min Deposit</div>
+                      <div className="font-semibold">$20</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Payout Speed</div>
+                      <div className="font-semibold">24-48h</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Support</div>
+                      <div className="font-semibold">24/7 Chat</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Games</div>
+                      <div className="font-semibold">2000+</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Tablet CTA */}
+              <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                <CardContent className="p-6">
+                  <div className="text-center mb-4">
+                    <div className="text-xl font-bold text-primary mb-1">100% up to $500</div>
+                    <div className="text-muted-foreground">+ 200 Free Spins</div>
+                  </div>
+                  
+                  <div className="flex gap-4 items-center mb-4">
+                    <Button className="flex-1 h-12" asChild>
+                      <a href="#visit" rel="noopener noreferrer">
+                        <ExternalLink className="w-5 h-5 mr-2" />
+                        Play Now
+                      </a>
+                    </Button>
+                    
+                    <div className="flex items-center gap-2 px-4 py-3 bg-background/80 rounded-lg border border-dashed border-muted-foreground/30">
+                      <code className="font-mono font-bold text-sm">{promoCode}</code>
+                      <Button size="sm" variant="ghost" onClick={copyPromoCode} className="h-8 w-8 p-0">
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-muted-foreground text-center">
+                    18+ | Terms & Conditions Apply | Play Responsibly
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
