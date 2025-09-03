@@ -191,7 +191,7 @@ const OperatorReview = () => {
                     </div>
 
                     {/* Key Facts */}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-2 gap-4 text-sm mb-6">
                       <div>
                         <span className="text-muted-foreground">Launched:</span>
                         <span className="ml-2 font-medium">2020</span>
@@ -222,6 +222,63 @@ const OperatorReview = () => {
                         </Badge>
                       </div>
                     </div>
+
+                    {/* Optional New Fields */}
+                    {(operator.otherFeatures || operator.gamingModes || operator.games || operator.categories) && (
+                      <div className="space-y-4">
+                        {operator.otherFeatures && (
+                          <div>
+                            <span className="text-muted-foreground font-medium text-sm">Other Features:</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {operator.otherFeatures.map((feature) => (
+                                <Badge key={feature} variant="secondary" className="text-xs">
+                                  {feature}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {operator.gamingModes && (
+                          <div>
+                            <span className="text-muted-foreground font-medium text-sm">Gaming Modes:</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {operator.gamingModes.map((mode) => (
+                                <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
+                                  {mode}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {operator.games && (
+                          <div>
+                            <span className="text-muted-foreground font-medium text-sm">Games:</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {operator.games.map((game) => (
+                                <Badge key={game} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
+                                  {game}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {operator.categories && (
+                          <div>
+                            <span className="text-muted-foreground font-medium text-sm">Categories:</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {operator.categories.map((category) => (
+                                <Badge key={category} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800">
+                                  {category}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
