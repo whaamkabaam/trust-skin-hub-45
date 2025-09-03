@@ -1364,10 +1364,12 @@ const OperatorReview = () => {
                         {Object.entries(userRatings.breakdown).reverse().map(([stars, percentage]) => (
                           <div key={stars} className="flex items-center gap-3 text-sm">
                             <span className="w-8 font-medium">{stars}★</span>
-                            <Progress 
-                              value={percentage} 
-                              className="flex-1 h-3 bg-muted"
-                            />
+                            <div className="flex-1 bg-muted rounded-full h-3 overflow-hidden">
+                              <div 
+                                className="h-full bg-primary rounded-full transition-all duration-300 ease-out" 
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
                             <span className="w-12 text-muted-foreground font-medium">{percentage}%</span>
                           </div>
                         ))}
