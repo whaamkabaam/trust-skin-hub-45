@@ -1599,37 +1599,62 @@ const OperatorReview = () => {
               </Card>
 
 
-              {/* Trust & Status */}
+              {/* Similar Operators */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Trust & Status</CardTitle>
+                  <CardTitle>Similar Operators</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Uptime:</span>
-                    <span className="font-medium text-green-600">99.9%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">SSL:</span>
-                    <span className="font-medium text-green-600">Yes</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-muted-foreground">Recent Big Wins</div>
-                    <div className="space-y-1 text-xs">
-                      <div className="flex justify-between">
-                        <span>AK-47 Redline</span>
-                        <span className="font-medium">$127</span>
+                <CardContent className="space-y-3">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          R
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">Rollbit</div>
+                          <div className="text-xs text-muted-foreground">Similar features</div>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Knife Doppler</span>
-                        <span className="font-medium">$890</span>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.1</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>AWP Dragon Lore</span>
-                        <span className="font-medium">$3,240</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          S
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">Stake</div>
+                          <div className="text-xs text-muted-foreground">Same games</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.3</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          C
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">CSGORoll</div>
+                          <div className="text-xs text-muted-foreground">Similar payouts</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.0</span>
                       </div>
                     </div>
                   </div>
+                  <Button variant="outline" size="sm" className="w-full">
+                    View All Similar Operators
+                  </Button>
                 </CardContent>
               </Card>
 

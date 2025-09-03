@@ -1180,24 +1180,62 @@ const OnlineCasinoReview = () => {
                 </CardContent>
               </Card>
 
-              {/* Trust & Status Card */}
+              {/* Similar Casinos */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Trust & Status</CardTitle>
+                  <CardTitle className="text-lg">Similar Casinos</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Domain Age:</span>
-                    <span className="font-medium">6 years</span>
+                <CardContent className="space-y-3">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          R
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">Royal Casino</div>
+                          <div className="text-xs text-muted-foreground">Similar bonuses</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.2</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          L
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">Lucky Slots</div>
+                          <div className="text-xs text-muted-foreground">Similar games</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.0</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          P
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">Prime Gaming</div>
+                          <div className="text-xs text-muted-foreground">Same license</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.1</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Uptime:</span>
-                    <span className="font-medium text-green-600">99.8%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Complaints:</span>
-                    <span className="font-medium text-green-600">95% resolved</span>
-                  </div>
+                  <Button variant="outline" size="sm" className="w-full">
+                    View All Similar Casinos
+                  </Button>
                 </CardContent>
               </Card>
 
