@@ -637,44 +637,101 @@ const MysteryBoxesArchive = () => {
 
             </div>
 
-            {/* Popular Games Section */}
+            {/* Popular Categories Section */}
             <div>
-              <h3 className="text-2xl font-bold mb-6 text-center">Popular Games & Categories</h3>
-              <div className="grid md:grid-cols-4 gap-4">
+              <h3 className="text-2xl font-bold mb-6 text-center">Popular Mystery Box Categories</h3>
+              <div className="grid md:grid-cols-5 gap-4">
                 <Card className="text-center p-4">
-                  <div className="text-3xl mb-2">🔫</div>
-                  <h4 className="font-semibold mb-2">Counter-Strike 2</h4>
+                  <div className="text-3xl mb-2">📱</div>
+                  <h4 className="font-semibold mb-2">Apple</h4>
                   <p className="text-sm text-muted-foreground">
-                    Premium weapon skins, knife collections, and rare gloves from the world's most popular FPS.
+                    Latest iPhones, MacBooks, Apple Watches, and exclusive Apple accessories.
                   </p>
-                  <Badge variant="outline" className="mt-2">31 boxes</Badge>
+                  <Badge variant="outline" className="mt-2">45 boxes</Badge>
                 </Card>
                 
                 <Card className="text-center p-4">
-                  <div className="text-3xl mb-2">🔨</div>
-                  <h4 className="font-semibold mb-2">Rust</h4>
+                  <div className="text-3xl mb-2">🚗</div>
+                  <h4 className="font-semibold mb-2">Cars</h4>
                   <p className="text-sm text-muted-foreground">
-                    Survival game skins including weapons, clothing, and building materials.
-                  </p>
-                  <Badge variant="outline" className="mt-2">18 boxes</Badge>
-                </Card>
-                
-                <Card className="text-center p-4">
-                  <div className="text-3xl mb-2">⚔️</div>
-                  <h4 className="font-semibold mb-2">Dota 2</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Immortal treasures, rare sets, and exclusive cosmetics for heroes.
+                    Luxury car experiences, model cars, and automotive accessories.
                   </p>
                   <Badge variant="outline" className="mt-2">12 boxes</Badge>
                 </Card>
                 
                 <Card className="text-center p-4">
-                  <div className="text-3xl mb-2">🎯</div>
-                  <h4 className="font-semibold mb-2">Team Fortress 2</h4>
+                  <div className="text-3xl mb-2">🏆</div>
+                  <h4 className="font-semibold mb-2">Collectibles</h4>
                   <p className="text-sm text-muted-foreground">
-                    Unusual hats, strange weapons, and vintage items from the classic shooter.
+                    Rare trading cards, vintage items, and limited edition collectibles.
                   </p>
-                  <Badge variant="outline" className="mt-2">8 boxes</Badge>
+                  <Badge variant="outline" className="mt-2">28 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">🎭</div>
+                  <h4 className="font-semibold mb-2">Funko</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Exclusive Funko Pop figures, chase variants, and limited releases.
+                  </p>
+                  <Badge variant="outline" className="mt-2">19 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">👟</div>
+                  <h4 className="font-semibold mb-2">Hypebeast</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Supreme, Off-White, designer streetwear, and limited sneaker drops.
+                  </p>
+                  <Badge variant="outline" className="mt-2">34 boxes</Badge>
+                </Card>
+              </div>
+              
+              {/* Second row */}
+              <div className="grid md:grid-cols-5 gap-4 mt-4">
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">🧱</div>
+                  <h4 className="font-semibold mb-2">Lego</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Exclusive LEGO sets, rare minifigures, and collector editions.
+                  </p>
+                  <Badge variant="outline" className="mt-2">16 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">🧙‍♂️</div>
+                  <h4 className="font-semibold mb-2">Magic the Gathering</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Rare MTG cards, booster packs, and premium card collections.
+                  </p>
+                  <Badge variant="outline" className="mt-2">22 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">⚡</div>
+                  <h4 className="font-semibold mb-2">Pokemon</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Vintage Pokemon cards, holographic rares, and sealed products.
+                  </p>
+                  <Badge variant="outline" className="mt-2">37 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">💻</div>
+                  <h4 className="font-semibold mb-2">Tech</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Latest gadgets, gaming peripherals, and cutting-edge electronics.
+                  </p>
+                  <Badge variant="outline" className="mt-2">25 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">⌚</div>
+                  <h4 className="font-semibold mb-2">Watches</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Luxury timepieces, smartwatches, and collector watch editions.
+                  </p>
+                  <Badge variant="outline" className="mt-2">14 boxes</Badge>
                 </Card>
               </div>
             </div>
