@@ -128,39 +128,36 @@ const OnlineCasinoReview = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Mobile Sticky Top Bar */}
+      {/* Mobile Sticky Top Bar - Simplified */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b md:hidden">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 flex items-center gap-3">
           <Button variant="ghost" size="sm" asChild>
             <Link to="/operators">
-              <ArrowLeft className="w-4 h-4 mr-1" />
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Link>
           </Button>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">Online Casino Review</span>
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium">{scores.overall}</span>
-            </div>
+          <div className="flex-1">
+            <h1 className="font-semibold text-base">Online Casino Review</h1>
           </div>
-          <Button size="sm" asChild>
-            <a href="#visit" rel="noopener noreferrer">
-              Visit
-            </a>
-          </Button>
         </div>
       </div>
 
-      {/* Breadcrumbs */}
+      {/* Enhanced Breadcrumbs with Last Updated */}
       <div className="border-b bg-muted/20 hidden md:block">
-        <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center gap-2 text-sm">
-            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
-            <span className="text-muted-foreground">›</span>
-            <Link to="/reviews" className="text-muted-foreground hover:text-foreground">Reviews</Link>
-            <span className="text-muted-foreground">›</span>
-            <span className="font-medium">Online Casino Review</span>
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">Home</Link>
+              <span className="text-muted-foreground">›</span>
+              <Link to="/operators" className="text-muted-foreground hover:text-foreground transition-colors">Casino Reviews</Link>
+              <span className="text-muted-foreground">›</span>
+              <span className="font-medium">Online Casino Review</span>
+            </div>
+            <div className="text-xs text-muted-foreground flex items-center gap-2">
+              <Clock className="w-3 h-3" />
+              <span>Last updated: December 15, 2024</span>
+            </div>
           </div>
         </div>
       </div>
