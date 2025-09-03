@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Sparkles, Star, Apple, Package, Zap, Search, TrendingUp, ExternalLink } from 'lucide-react';
+import { Sparkles, Star, Apple, Package, Zap, Search, TrendingUp, ExternalLink, Shield, Clock, Users } from 'lucide-react';
 
 const AppleHero = () => {
   return (
@@ -55,7 +55,7 @@ const AppleHero = () => {
               </p>
 
               {/* Search Bar */}
-              <div className="mb-12">
+              <div className="mb-8">
                 <div className="relative max-w-md">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input 
@@ -63,6 +63,82 @@ const AppleHero = () => {
                     className="pl-12 py-4 text-lg bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-gray-400"
                   />
                 </div>
+              </div>
+
+              {/* Playful Product Categories */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="group cursor-pointer">
+                  <div className="relative overflow-hidden rounded-2xl p-4 min-h-[100px] bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-500 transform transition-all duration-300 hover:scale-105 hover:rotate-1 shadow-lg hover:shadow-2xl">
+                    <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                      <div className="text-2xl mb-2 transform transition-transform group-hover:scale-110">📱</div>
+                      <span className="text-sm font-bold text-center">iPhone</span>
+                    </div>
+                    <div className="absolute top-2 right-2 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                
+                <div className="group cursor-pointer">
+                  <div className="relative overflow-hidden rounded-2xl p-4 min-h-[100px] bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 transform transition-all duration-300 hover:scale-105 hover:-rotate-1 shadow-lg hover:shadow-2xl">
+                    <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                      <div className="text-2xl mb-2 transform transition-transform group-hover:scale-110">💻</div>
+                      <span className="text-sm font-bold text-center">MacBook</span>
+                    </div>
+                    <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                
+                <div className="group cursor-pointer">
+                  <div className="relative overflow-hidden rounded-2xl p-4 min-h-[100px] bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 transform transition-all duration-300 hover:scale-105 hover:rotate-1 shadow-lg hover:shadow-2xl">
+                    <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                      <div className="text-2xl mb-2 transform transition-transform group-hover:scale-110">⌚</div>
+                      <span className="text-sm font-bold text-center">Apple Watch</span>
+                    </div>
+                    <div className="absolute top-2 right-2 w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                
+                <div className="group cursor-pointer">
+                  <div className="relative overflow-hidden rounded-2xl p-4 min-h-[100px] bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 transform transition-all duration-300 hover:scale-105 hover:-rotate-1 shadow-lg hover:shadow-2xl">
+                    <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                      <div className="text-2xl mb-2 transform transition-transform group-hover:scale-110">🎧</div>
+                      <span className="text-sm font-bold text-center">AirPods</span>
+                    </div>
+                    <div className="absolute top-2 right-2 w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Trust Strip */}
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <div className="flex items-center space-x-2 text-white/80 group">
+                  <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium">Authentic Products</span>
+                </div>
+                <div className="flex items-center space-x-2 text-white/80 group">
+                  <Package className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium">Worldwide Shipping</span>
+                </div>
+                <div className="flex items-center space-x-2 text-white/80">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-sm font-medium">24/7 Support</span>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="flex flex-wrap gap-4 mb-8">
+                <Badge className="bg-white/10 text-white border-white/20 px-4 py-2">
+                  <strong className="font-semibold">1M+</strong> boxes opened
+                </Badge>
+                <Badge className="bg-white/10 text-white border-white/20 px-4 py-2">
+                  <strong className="font-semibold">4.8★</strong> customer rating
+                </Badge>
+                <Badge className="bg-white/10 text-white border-white/20 px-4 py-2">
+                  <strong className="font-semibold">$2.5M+</strong> prizes won
+                </Badge>
               </div>
             </div>
 
