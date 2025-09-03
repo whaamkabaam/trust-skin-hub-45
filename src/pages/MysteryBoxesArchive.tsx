@@ -24,8 +24,8 @@ const MysteryBoxesArchive = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [selectedSite, setSelectedSite] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSite, setSelectedSite] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [priceFilters, setPriceFilters] = useState<string[]>([]);
   const [riskFilters, setRiskFilters] = useState<string[]>([]);
 
@@ -41,7 +41,7 @@ const MysteryBoxesArchive = () => {
   };
 
   const sites = [
-    { value: '', label: 'All Sites' },
+    { value: 'all', label: 'All Sites' },
     { value: 'premium-skins', label: 'Premium Skins' },
     { value: 'skin-bay', label: 'Skin Bay' },
     { value: 'case-king', label: 'Case King' },
@@ -52,7 +52,7 @@ const MysteryBoxesArchive = () => {
   ];
 
   const categoryOptions = [
-    { value: '', label: 'All Categories' },
+    { value: 'all', label: 'All Categories' },
     { value: 'knives', label: 'Knife Collections' },
     { value: 'weapons', label: 'Weapon Skins' },
     { value: 'gloves', label: 'Glove Collections' },
@@ -94,15 +94,15 @@ const MysteryBoxesArchive = () => {
   };
 
   const clearAllFilters = () => {
-    setSelectedSite('');
-    setSelectedCategory('');
+    setSelectedSite('all');
+    setSelectedCategory('all');
     setPriceFilters([]);
     setRiskFilters([]);
   };
 
   const activeFilterCount = 
-    (selectedSite ? 1 : 0) + 
-    (selectedCategory ? 1 : 0) + 
+    (selectedSite !== 'all' ? 1 : 0) + 
+    (selectedCategory !== 'all' ? 1 : 0) + 
     priceFilters.length + 
     riskFilters.length;
   const sortOptions = [
