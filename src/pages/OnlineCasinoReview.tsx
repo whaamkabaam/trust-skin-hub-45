@@ -1058,7 +1058,7 @@ const OnlineCasinoReview = () => {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="p-4 border-t text-muted-foreground">
                       {item.a}
-                    </CollipsibleContent>
+                    </CollapsibleContent>
                   </Collapsible>
                 ))}
               </div>
