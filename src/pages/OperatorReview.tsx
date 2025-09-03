@@ -785,71 +785,180 @@ const OperatorReview = () => {
               </div>
               <div className="space-y-4">
                 {siteType === 'Case Site' ? (
-                  <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
-                    <CardContent className="p-6 space-y-6">
-                      <div>
-                        <h3 className="text-lg font-semibold mb-3">Prize Structure & Values</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50 hover-scale">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                          <Gamepad2 className="w-5 h-5 text-yellow-600" />
+                          Prize Structure
+                        </h3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                          {operator.name} offers an extensive catalog of CS:GO and other gaming skins with values ranging from a few cents to several thousand dollars. The platform features over 500 different cases, each containing curated collections of items from various price tiers. Rare items like Dragon Lore AWPs, Karambit Doppler knives, and other coveted skins are available through premium cases with clearly displayed drop rates.
+                          {operator.name} offers an extensive catalog of CS:GO and other gaming skins with values ranging from a few cents to several thousand dollars. The platform features over 500 different cases, each containing curated collections of items from various price tiers.
                         </p>
-                        <p className="text-muted-foreground leading-relaxed mb-4">
-                          The prize pool is constantly updated to reflect current market values, ensuring that users receive items worth their actual trading value. Special limited-time cases featuring exclusive or newly released skins are regularly introduced, giving players access to the latest and most sought-after items in the gaming community.
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <h3 className="text-lg font-semibold mb-3">Withdrawal Process</h3>
-                        <p className="text-muted-foreground leading-relaxed mb-4">
-                          Won skins are immediately added to your account inventory and can be withdrawn through multiple methods. The primary withdrawal option is Steam trading, where automated trade bots deliver items directly to your Steam account within minutes. For users who prefer immediate liquidity, the platform offers an integrated marketplace where skins can be sold for platform credits or cryptocurrency.
-                        </p>
-                        <p className="text-muted-foreground leading-relaxed">
-                          The platform maintains high-quality standards for all items, ensuring that skins are delivered in the exact condition and wear level as advertised. A comprehensive trade history system allows users to track all transactions and maintain detailed records of their wins and withdrawals.
-                        </p>
-                      </div>
+                        <ul className="space-y-2 text-sm">
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
+                            Dragon Lore AWPs
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
+                            Karambit Doppler Knives
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
+                            Exclusive Limited Skins
+                          </li>
+                        </ul>
+                      </CardContent>
+                    </Card>
 
-                      <div className="mt-6 pt-4 border-t border-border/50">
-                        <h4 className="text-base font-semibold mb-3">Case Site Payout Summary</h4>
-                        <div className="space-y-3">
-                          <div>• <strong>Skins Inventory:</strong> All won skins go to your account inventory</div>
-                          <div>• <strong>Steam Trade Flow:</strong> Withdraw skins directly to Steam via trade bot</div>
-                          <div>• <strong>P2P/Market Cashout:</strong> Sell skins on integrated marketplace</div>
+                    <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover-scale">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                          <ExternalLink className="w-5 h-5 text-green-600" />
+                          Withdrawal Process
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          Won skins are immediately added to your account inventory and can be withdrawn through multiple methods. The primary withdrawal option is Steam trading.
+                        </p>
+                        <div className="space-y-2 text-sm">
+                          <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded text-green-800 dark:text-green-300">
+                            <strong>Steam Trade:</strong> Direct delivery via trade bots within minutes
+                          </div>
+                          <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded text-blue-800 dark:text-blue-300">
+                            <strong>Marketplace:</strong> Sell for credits or crypto
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200/50 hover-scale">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                          <DollarSign className="w-5 h-5 text-purple-600" />
+                          Value Guarantee
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          The prize pool is constantly updated to reflect current market values, ensuring that users receive items worth their actual trading value.
+                        </p>
+                        <div className="space-y-3">
+                          <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-300">
+                            Real-time Market Pricing
+                          </Badge>
+                          <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-300">
+                            Quality Assurance
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200/50 hover-scale">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                          <FileText className="w-5 h-5 text-blue-600" />
+                          Trade History
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          A comprehensive trade history system allows users to track all transactions and maintain detailed records of their wins and withdrawals.
+                        </p>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600">100%</div>
+                          <div className="text-sm text-muted-foreground">Transparent Records</div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 ) : (
-                  <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
-                    <CardContent className="p-6 space-y-6">
-                      <div>
-                        <h3 className="text-lg font-semibold mb-3">Physical Prize Categories</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border-amber-200/50 hover-scale">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                          <Gamepad2 className="w-5 h-5 text-amber-600" />
+                          Physical Prizes
+                        </h3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                          The platform features an impressive selection of physical prizes spanning multiple categories including cutting-edge electronics, gaming peripherals, collectibles, and gift cards. Popular items include the latest graphics cards, gaming laptops, mechanical keyboards, premium headsets, and limited-edition collectibles from popular franchises. Gift cards are available for major retailers including Amazon, Steam, PlayStation, and Xbox.
+                          Impressive selection of physical prizes spanning multiple categories including cutting-edge electronics, gaming peripherals, and collectibles.
                         </p>
-                        <p className="text-muted-foreground leading-relaxed mb-4">
-                          Prize values range from $10 gift cards to high-end electronics worth thousands of dollars. The platform regularly updates its inventory to include the newest releases and most requested items from the gaming community. Special seasonal boxes feature holiday-themed prizes and exclusive items not available in regular mystery boxes.
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <h3 className="text-lg font-semibold mb-3">Shipping & Fulfillment</h3>
-                        <p className="text-muted-foreground leading-relaxed mb-4">
-                          {operator.name} maintains partnerships with reliable logistics providers to ensure fast and secure delivery worldwide. Most physical items are shipped within 2-3 business days of winning, with tracking information provided immediately upon dispatch. International shipping is available to over 50 countries, with delivery times typically ranging from 7-14 business days depending on destination.
-                        </p>
-                        <p className="text-muted-foreground leading-relaxed">
-                          For users who prefer immediate value over physical items, the platform offers a conversion system where physical prizes can be exchanged for platform credits at fair market rates. This flexibility allows users to continue playing or save credits for future high-value boxes without waiting for physical delivery.
-                        </p>
-                      </div>
+                        <ul className="space-y-2 text-sm">
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            Gaming Laptops & GPUs
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            Premium Peripherals
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            Limited Collectibles
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            Gift Cards
+                          </li>
+                        </ul>
+                      </CardContent>
+                    </Card>
 
-                      <div className="mt-6 pt-4 border-t border-border/50">
-                        <h4 className="text-base font-semibold mb-3">Mystery Box Payout Summary</h4>
-                        <div className="space-y-3">
-                          <div>• <strong>Prize Types:</strong> Electronics, gaming gear, collectibles, gift cards</div>
-                          <div>• <strong>Ship/Claim Flow:</strong> Physical items shipped worldwide within 7-14 days</div>
-                          <div>• <strong>Swap for Credits:</strong> Convert physical prizes to platform credits</div>
+                    <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover-scale">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                          <Globe className="w-5 h-5 text-green-600" />
+                          Global Shipping
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          Reliable logistics providers ensure fast and secure delivery worldwide. Most items are shipped within 2-3 business days.
+                        </p>
+                        <div className="space-y-2 text-sm">
+                          <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded text-green-800 dark:text-green-300">
+                            <strong>50+ Countries:</strong> International delivery available
+                          </div>
+                          <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded text-blue-800 dark:text-blue-300">
+                            <strong>7-14 Days:</strong> Fast delivery times
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200/50 hover-scale">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                          <DollarSign className="w-5 h-5 text-indigo-600" />
+                          Prize Values
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          Prize values range from $10 gift cards to high-end electronics worth thousands of dollars with regular inventory updates.
+                        </p>
+                        <div className="grid grid-cols-2 gap-2 text-center">
+                          <div>
+                            <div className="text-xl font-bold text-indigo-600">$10+</div>
+                            <div className="text-xs text-muted-foreground">Minimum Value</div>
+                          </div>
+                          <div>
+                            <div className="text-xl font-bold text-indigo-600">$5000+</div>
+                            <div className="text-xs text-muted-foreground">Premium Items</div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200/50 hover-scale">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                          <MessageCircle className="w-5 h-5 text-orange-600" />
+                          Credit Conversion
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          Convert physical prizes to platform credits at fair market rates for continued playing or saving for high-value boxes.
+                        </p>
+                        <div className="text-center">
+                          <Badge variant="secondary" className="bg-orange-100 text-orange-700">
+                            Flexible Options Available
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 )}
               </div>
             </div>
