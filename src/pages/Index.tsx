@@ -5,7 +5,6 @@ import Footer from '@/components/Footer';
 import ExpertTeam from '@/components/ExpertTeam';
 import MethodologySection from '@/components/MethodologySection';
 import TransparencySection from '@/components/TransparencySection';
-import VerificationDashboard from '@/components/VerificationDashboard';
 import UserReviews from '@/components/UserReviews';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -96,9 +95,6 @@ const Index = () => {
 
         {/* Transparency Section */}
         <TransparencySection />
-
-        {/* Verification Dashboard */}
-        <VerificationDashboard />
 
         {/* User Reviews */}
         <UserReviews />
