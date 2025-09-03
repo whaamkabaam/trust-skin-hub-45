@@ -998,7 +998,12 @@ const OperatorReview = () => {
 
             {/* UX & Support */}
             <div id="ux-support-section">
-              <h2 className="text-2xl font-bold mb-4">UX & Support</h2>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Users className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">UX & Support</h2>
+              </div>
               <div className="space-y-4">
                 <Card>
                   <CardContent className="p-6 space-y-4">
@@ -1031,7 +1036,12 @@ const OperatorReview = () => {
 
             {/* Verdict */}
             <div id="verdict-section">
-              <h2 className="text-2xl font-bold mb-4">Verdict</h2>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Verdict</h2>
+              </div>
               <div className="space-y-4">
                 <Card className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-900/20 dark:to-gray-900/20 border-slate-200/50">
                   <CardContent className="p-6 space-y-6">
@@ -1106,7 +1116,12 @@ const OperatorReview = () => {
 
             {/* FAQ Accordion */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
+                  <HelpCircle className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
+              </div>
               {faqItems.map((item, i) => <Collapsible key={i}>
                   <Card>
                     <CollapsibleTrigger className="w-full p-4 text-left flex items-center justify-between hover:bg-muted/50 transition-colors">
@@ -1124,7 +1139,12 @@ const OperatorReview = () => {
 
             {/* Site Comparisons */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Site Comparisons</h2>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Globe className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Site Comparisons</h2>
+              </div>
               <div className="flex flex-wrap gap-3">
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/compare/clash-vs-hellcase">
