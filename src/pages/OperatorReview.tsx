@@ -191,7 +191,7 @@ const OperatorReview = () => {
                     </div>
 
                     {/* Key Facts */}
-                    <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-6">
                       <div>
                         <span className="text-muted-foreground">Launched:</span>
                         <span className="ml-2 font-medium">2020</span>
@@ -210,73 +210,85 @@ const OperatorReview = () => {
                       </div>
                       <div>
                         <span className="text-muted-foreground">Payout:</span>
-                        <span className="ml-2 font-medium">{siteType === 'Case Site' ? 'Skins' : 'Physical | Skins'}</span>
+                        <div className="flex gap-1 mt-1">
+                          {siteType === 'Case Site' ? (
+                            <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                              Skins
+                            </Badge>
+                          ) : (
+                            <>
+                              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                                Physical
+                              </Badge>
+                              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                                Skins
+                              </Badge>
+                            </>
+                          )}
+                        </div>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Provably Fair:</span>
                         <span className="ml-2 font-medium text-green-600">Yes</span>
                       </div>
-                      <div>
-                        <Badge variant="outline" className="px-3 py-2">
-                          18+ / Play Responsibly
-                        </Badge>
-                      </div>
                     </div>
 
-                    {/* Optional New Fields */}
+                    {/* Optional Features - Better organized */}
                     {(operator.otherFeatures || operator.gamingModes || operator.games || operator.categories) && (
-                      <div className="space-y-4">
-                        {operator.otherFeatures && (
-                          <div>
-                            <span className="text-muted-foreground font-medium text-sm">Other Features:</span>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {operator.otherFeatures.map((feature) => (
-                                <Badge key={feature} variant="secondary" className="text-xs">
-                                  {feature}
-                                </Badge>
-                              ))}
+                      <div className="space-y-3 border-t pt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {operator.otherFeatures && (
+                            <div>
+                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Other Features</span>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {operator.otherFeatures.map((feature) => (
+                                  <Badge key={feature} variant="secondary" className="text-xs hover-scale">
+                                    {feature}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        
-                        {operator.gamingModes && (
-                          <div>
-                            <span className="text-muted-foreground font-medium text-sm">Gaming Modes:</span>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {operator.gamingModes.map((mode) => (
-                                <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
-                                  {mode}
-                                </Badge>
-                              ))}
+                          )}
+                          
+                          {operator.gamingModes && (
+                            <div>
+                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Gaming Modes</span>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {operator.gamingModes.map((mode) => (
+                                  <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800 hover-scale">
+                                    {mode}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        
-                        {operator.games && (
-                          <div>
-                            <span className="text-muted-foreground font-medium text-sm">Games:</span>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {operator.games.map((game) => (
-                                <Badge key={game} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
-                                  {game}
-                                </Badge>
-                              ))}
+                          )}
+                          
+                          {operator.games && (
+                            <div>
+                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Games</span>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {operator.games.map((game) => (
+                                  <Badge key={game} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800 hover-scale">
+                                    {game}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        
-                        {operator.categories && (
-                          <div>
-                            <span className="text-muted-foreground font-medium text-sm">Categories:</span>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {operator.categories.map((category) => (
-                                <Badge key={category} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800">
-                                  {category}
-                                </Badge>
-                              ))}
+                          )}
+                          
+                          {operator.categories && (
+                            <div>
+                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Categories</span>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {operator.categories.map((category) => (
+                                  <Badge key={category} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800 hover-scale">
+                                    {category}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
