@@ -1165,23 +1165,6 @@ const OnlineCasinoReview = () => {
           {/* Right Sidebar */}
           <div className="lg:col-span-1 order-first lg:order-last">
             <div className="sticky top-8 space-y-4 sm:space-y-6">
-              {/* Primary CTA Card */}
-              <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                <CardContent className="p-4 sm:p-6 text-center space-y-4">
-                  <div className="text-lg sm:text-xl font-bold">100% up to $500</div>
-                  <div className="text-sm text-muted-foreground">+ 200 Free Spins</div>
-                  <Button className="w-full" size="sm" asChild>
-                    <a href="#visit" rel="noopener noreferrer">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Play Now
-                    </a>
-                  </Button>
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    18+ | Terms & Conditions Apply | Play Responsibly
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* At-a-glance Card */}
               <Card>
                 <CardHeader>
