@@ -370,9 +370,6 @@ const OperatorReview = () => {
                     <Copy className="w-3 h-3" />
                     {promoCodeCopied ? "Copied!" : "Copy Code"}
                   </Button>
-                  <Badge variant="outline" className="flex items-center px-2">
-                    18+
-                  </Badge>
                 </div>
 
                 <Collapsible open={keyFactsOpen} onOpenChange={setKeyFactsOpen}>
@@ -380,12 +377,87 @@ const OperatorReview = () => {
                     Key Facts
                     <ChevronDown className={`w-4 h-4 transition-transform ${keyFactsOpen ? 'rotate-180' : ''}`} />
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-2 mt-3 text-sm">
-                    <div>• Launched 2020</div>
-                    <div>• Payments: Visa, BTC, ETH</div>
-                    <div>• Payout: {siteType === 'Case Site' ? 'Skins' : 'Physical | Skins'}</div>
-                    <div>• Provably Fair: Yes</div>
-                    <div>• KYC: {operator.kycRequired ? 'Required' : 'Not Required'}</div>
+                  <CollapsibleContent className="space-y-3 mt-3">
+                    <div className="space-y-2 text-sm">
+                      <div>• Launched 2020</div>
+                      <div>• Payments: Visa, BTC, ETH</div>
+                      <div className="flex items-center gap-1">
+                        <span>• Payout:</span>
+                        {siteType === 'Case Site' ? (
+                          <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                            Skins
+                          </Badge>
+                        ) : (
+                          <div className="flex gap-1">
+                            <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                              Physical
+                            </Badge>
+                            <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                              Skins
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                      <div>• Provably Fair: Yes</div>
+                      <div>• KYC: {operator.kycRequired ? 'Required' : 'Not Required'}</div>
+                    </div>
+                    
+                    {/* Optional Features - Mobile */}
+                    {(operator.otherFeatures || operator.gamingModes || operator.games || operator.categories) && (
+                      <div className="space-y-3 border-t pt-3 mt-3">
+                        {operator.otherFeatures && (
+                          <div>
+                            <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide block mb-2">Other Features</span>
+                            <div className="flex flex-wrap gap-1">
+                              {operator.otherFeatures.map((feature) => (
+                                <Badge key={feature} variant="secondary" className="text-xs">
+                                  {feature}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {operator.gamingModes && (
+                          <div>
+                            <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide block mb-2">Gaming Modes</span>
+                            <div className="flex flex-wrap gap-1">
+                              {operator.gamingModes.map((mode) => (
+                                <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
+                                  {mode}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {operator.games && (
+                          <div>
+                            <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide block mb-2">Games</span>
+                            <div className="flex flex-wrap gap-1">
+                              {operator.games.map((game) => (
+                                <Badge key={game} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
+                                  {game}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {operator.categories && (
+                          <div>
+                            <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide block mb-2">Categories</span>
+                            <div className="flex flex-wrap gap-1">
+                              {operator.categories.map((category) => (
+                                <Badge key={category} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800">
+                                  {category}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </CollapsibleContent>
                 </Collapsible>
               </CardContent>
