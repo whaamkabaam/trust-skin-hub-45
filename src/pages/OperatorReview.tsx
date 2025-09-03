@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Shield, Clock, CreditCard, Globe, Users, TrendingUp, Star, ChevronDown, CheckCircle, XCircle, AlertTriangle, Copy, Gamepad2, DollarSign, HelpCircle, FileText, MessageCircle } from 'lucide-react';
+import BoxesCatalog from '@/components/BoxesCatalog';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ReviewCard from '@/components/ReviewCard';
@@ -26,6 +27,10 @@ const OperatorReview = () => {
     id: 'what-is',
     title: `What is ${operator.name}?`,
     anchor: 'what-is-section'
+  }, {
+    id: 'catalog',
+    title: 'Boxes & Cases Catalog',
+    anchor: 'catalog'
   }, {
     id: 'games-modes',
     title: 'Games & Modes',
@@ -701,6 +706,36 @@ const OperatorReview = () => {
                   </Carousel>
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Boxes & Cases Catalog */}
+            <div id="catalog" className="space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold">Boxes & Cases Catalog</h2>
+                </div>
+                <Button className="hidden md:block" asChild>
+                  <a href="#all-cases" className="gap-2">
+                    <ExternalLink className="w-4 h-4" />
+                    See all boxes/cases
+                  </a>
+                </Button>
+              </div>
+
+              <BoxesCatalog />
+              
+              {/* Mobile CTA */}
+              <div className="md:hidden mt-4">
+                <Button className="w-full" asChild>
+                  <a href="#all-cases" className="gap-2">
+                    <ExternalLink className="w-4 h-4" />
+                    See all boxes/cases
+                  </a>
+                </Button>
+              </div>
             </div>
 
             {/* Games & Modes */}
