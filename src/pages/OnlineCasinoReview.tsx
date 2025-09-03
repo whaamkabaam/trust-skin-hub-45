@@ -26,33 +26,49 @@ const OnlineCasinoReview = () => {
   const reviews = sampleReviews.filter(r => r.entityId === operator.id);
 
   const sections = [{
-    id: 'what-is',
-    title: 'What is Online Casino Gaming?',
-    anchor: 'what-is-section'
+    id: 'overview',
+    title: 'Overview',
+    anchor: 'overview-section'
   }, {
-    id: 'games-modes',
-    title: 'Games & Modes',
-    anchor: 'games-modes-section'
-  }, {
-    id: 'prizes-payouts',
-    title: 'Prizes & Payouts',
-    anchor: 'prizes-payouts-section'
+    id: 'licensing',
+    title: 'Licensing & Ownership',
+    anchor: 'licensing-section'
   }, {
     id: 'payments',
-    title: 'Payments',
+    title: 'Payments & Payout Speed',
     anchor: 'payments-section'
   }, {
-    id: 'bonuses-promos',
-    title: 'Bonuses & Promos',
-    anchor: 'bonuses-promos-section'
+    id: 'bonuses',
+    title: 'Bonuses & Promo Terms',
+    anchor: 'bonuses-section'
   }, {
-    id: 'fairness-security',
+    id: 'games',
+    title: 'Games & Providers',
+    anchor: 'games-section'
+  }, {
+    id: 'fairness',
     title: 'Fairness & Security',
-    anchor: 'fairness-security-section'
+    anchor: 'fairness-section'
   }, {
-    id: 'ux-support',
-    title: 'UX & Support',
-    anchor: 'ux-support-section'
+    id: 'responsible-gambling',
+    title: 'Responsible Gambling',
+    anchor: 'responsible-gambling-section'
+  }, {
+    id: 'support',
+    title: 'Support & KYC',
+    anchor: 'support-section'
+  }, {
+    id: 'restrictions',
+    title: 'Country Restrictions',
+    anchor: 'restrictions-section'
+  }, {
+    id: 'reviews',
+    title: 'User Reviews',
+    anchor: 'reviews-section'
+  }, {
+    id: 'faq',
+    title: 'FAQ',
+    anchor: 'faq-section'
   }, {
     id: 'verdict',
     title: 'Verdict',
