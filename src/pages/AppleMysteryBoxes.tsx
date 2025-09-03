@@ -123,34 +123,26 @@ const AppleMysteryBoxes = () => {
   }];
 
   // Sample Apple mystery boxes data
-  const appleBoxes = Array.from({
-    length: itemsPerPage
-  }, (_, i) => ({
+  const appleBoxes = Array.from({ length: itemsPerPage }, (_, i) => ({
     id: `apple-box-${i + 1}`,
     name: `${['iPhone Pro Max', 'MacBook Air', 'Apple Watch Ultra', 'AirPods Pro', 'iPad Pro'][i % 5]} Mystery Box ${i + 1}`,
     image: '/img/boxes/apple-mystery-box.jpg',
     category: ['iPhone', 'MacBook', 'Apple Watch', 'AirPods', 'iPad'][i % 5],
     condition: ['New', 'Refurbished', 'Vintage'][i % 3],
+    type: i % 4 === 0 ? 'physical' : 'digital',
     price: Math.round((Math.random() * 1500 + 50) * 100) / 100,
     expectedValue: Math.round((Math.random() * 2000 + 100) * 100) / 100,
     verified: Math.random() > 0.15,
     authenticity: Math.random() > 0.1,
+    provablyFair: Math.random() > 0.3,
     profitRate: Math.round((Math.random() * 80 + 20) * 10) / 10,
     popularity: Math.floor(Math.random() * 3000) + 200,
     operator: ['Apple Direct', 'Tech Vault', 'iBox Mystery', 'Premium Apple', 'Elite Tech'][i % 5],
-    highlights: [{
-      name: 'iPhone 15 Pro Max',
-      rarity: 'Ultra Rare',
-      value: '$1,199'
-    }, {
-      name: 'MacBook Pro M3',
-      rarity: 'Rare',
-      value: '$1,999'
-    }, {
-      name: 'Apple Watch Series 9',
-      rarity: 'Common',
-      value: '$399'
-    }]
+    highlights: [
+      { name: 'iPhone 15 Pro Max', rarity: 'Ultra Rare' },
+      { name: 'MacBook Pro M3', rarity: 'Rare' },
+      { name: 'Apple Watch Series 9', rarity: 'Common' }
+    ]
   }));
   const getRarityColor = (rarity: string) => {
     switch (rarity.toLowerCase()) {
@@ -499,67 +491,102 @@ const AppleMysteryBoxes = () => {
                   "relative overflow-hidden",
                   view === 'list' ? "w-32 flex-shrink-0" : "aspect-square"
                 )}>
-                  <img 
-                    src={box.image} 
-                    alt={box.name} 
-                    className="w-full h-full object-cover rounded group-hover:scale-105 transition-transform duration-200" 
-                  />
-                </div>
-                <CardContent className={cn("p-4 flex-1", view === 'list' && "flex flex-col justify-between")}>
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="outline" className="text-xs">
-                        {getCategoryIcon(box.category)}
-                        <span className="ml-1">{box.category}</span>
-                      </Badge>
-                      {box.verified && <Verified className="w-4 h-4 text-primary" />}
+                  <div className="w-full h-full bg-gradient-card rounded group-hover:scale-105 transition-transform duration-200 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">📱</div>
+                      <div className="font-semibold text-sm">{box.name}</div>
                     </div>
-                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {box.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      By {box.operator}
-                    </p>
-                    
-                    {/* Highlights */}
-                    <div className="space-y-1 mb-4">
-                      {box.highlights.slice(0, 2).map((highlight, idx) => (
-                        <div key={idx} className="flex items-center justify-between text-xs">
-                          <span className="truncate">{highlight.name}</span>
-                          <span className={cn("font-medium", getRarityColor(highlight.rarity))}>
-                            {highlight.value}
+                  </div>
+                  <div className="absolute top-3 left-3">
+                    <Badge variant="secondary">Apple</Badge>
+                  </div>
+                  <div className="absolute top-3 right-3 space-y-1">
+                    {box.verified && (
+                      <Badge className="bg-success text-success-foreground block text-xs">
+                        <Verified className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
+                    )}
+                    {box.provablyFair && (
+                      <Badge className="bg-gaming-blue text-white block text-xs">
+                        <Hash className="w-3 h-3 mr-1" />
+                        Fair
+                      </Badge>
+                    )}
+                  </div>
+                  {box.type === 'physical' && (
+                    <div className="absolute bottom-3 left-3">
+                      <Badge className="bg-warning text-warning-foreground text-xs">
+                        <Package className="w-3 h-3 mr-1" />
+                        Physical
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+
+                <CardContent className={cn("p-4", view === 'list' && "flex-1")}>
+                  {/* Header */}
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-lg mb-1 line-clamp-2">{box.name}</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-primary">${box.price}</span>
+                        <Badge variant="outline" className="text-xs">{box.category}</Badge>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium">EV: ${box.expectedValue}</div>
+                        <div className={cn(
+                          "text-xs",
+                          box.profitRate > 30 ? "text-success" : 
+                          box.profitRate > 10 ? "text-warning" : "text-destructive"
+                        )}>
+                          {box.profitRate}% profit rate
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">By {box.operator}</div>
+                  </div>
+
+                  {/* Highlights */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium mb-2">Featured Items</h4>
+                    <div className="space-y-1">
+                      {box.highlights.slice(0, view === 'list' ? 2 : 3).map((item, index) => (
+                        <div key={index} className="flex items-center justify-between text-sm">
+                          <span className="truncate">{item.name}</span>
+                          <span className={cn("text-xs font-medium", getRarityColor(item.rarity))}>
+                            {item.rarity}
                           </span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-lg font-bold">${box.price}</div>
-                        <div className="text-xs text-muted-foreground">Box Price</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-green-600">
-                          ${box.expectedValue} EV
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {box.profitRate}% profit rate
-                        </div>
-                      </div>
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-2 mb-4 p-2 bg-muted/30 rounded-lg text-xs">
+                    <div className="text-center">
+                      <div className="font-medium">{box.popularity.toLocaleString()}</div>
+                      <div className="text-muted-foreground">Opens</div>
                     </div>
-                    
-                    <div className="flex gap-2">
-                      <Button size="sm" className="flex-1" asChild>
-                        <Link to={`/mystery-boxes/${box.id}`}>
-                          View Details
-                        </Link>
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Package className="w-4 h-4" />
-                      </Button>
+                    <div className="text-center">
+                      <div className={cn(
+                        "font-medium",
+                        box.expectedValue > box.price ? "text-success" : "text-destructive"
+                      )}>
+                        {((box.expectedValue / box.price) * 100).toFixed(0)}%
+                      </div>
+                      <div className="text-muted-foreground">Return</div>
                     </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="flex-1">
+                      View Details
+                    </Button>
+                    <Button size="sm" className="flex-1 bg-gradient-trust">
+                      Open Box
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -567,36 +594,41 @@ const AppleMysteryBoxes = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-center gap-2 mt-8">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} 
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const page = i + 1;
-              return (
-                <Button 
-                  key={page} 
-                  variant={currentPage === page ? 'default' : 'outline'} 
-                  size="sm" 
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </Button>
-              );
-            })}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} 
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
+          <div className="flex items-center justify-between pt-6">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + 1;
+                return (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                );
+              })}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
       </section>
