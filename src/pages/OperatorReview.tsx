@@ -553,7 +553,7 @@ const OperatorReview = () => {
                 </div>
                 <h2 className="text-2xl font-bold">Games & Modes</h2>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex flex-wrap gap-2 mb-4">
                   {['Solo Unbox', 'Battles', 'Upgrade', 'Jackpot', 'Wheel'].map((mode, index) => {
                     const colors = [
@@ -568,6 +568,8 @@ const OperatorReview = () => {
                       </Badge>
                   })}
                 </div>
+
+                {/* Game Mode Cards */}
                 <Card className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900/20 dark:to-blue-900/20 border-blue-200/50">
                   <CardContent className="p-6">
                     <ul className="space-y-3 text-muted-foreground">
@@ -602,6 +604,31 @@ const OperatorReview = () => {
                         <div><strong className="text-foreground">Wheel:</strong> Spin-to-win games with various multipliers</div>
                       </li>
                     </ul>
+                  </CardContent>
+                </Card>
+
+                {/* Detailed Content */}
+                <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-purple-200/50">
+                  <CardContent className="p-6 space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Game Variety & Features</h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Competitive Gaming & Community</h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -768,7 +795,56 @@ const OperatorReview = () => {
                 </div>
                 <h2 className="text-2xl font-bold">Bonuses & Promos</h2>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Bonus Cards Grid */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">🎁</span>
+                        </div>
+                        <h4 className="font-semibold text-green-800">Welcome Bonus</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Free $10 credit + 3 free cases</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">💰</span>
+                        </div>
+                        <h4 className="font-semibold text-blue-800">Rakeback</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Up to 15% daily rakeback on losses</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">📅</span>
+                        </div>
+                        <h4 className="font-semibold text-purple-800">Daily/Weekly</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Daily free case + weekly challenges</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">👥</span>
+                        </div>
+                        <h4 className="font-semibold text-orange-800">Referral</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">5% of friend's deposits for life</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Detailed Content */}
                 <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
                   <CardContent className="p-6 space-y-6">
                     <div>
