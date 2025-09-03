@@ -1360,12 +1360,17 @@ const OperatorReview = () => {
                         </div>
                         <div className="text-sm text-muted-foreground">({userRatings.total})</div>
                       </div>
-                      <div className="space-y-2 flex-1">
-                        {Object.entries(userRatings.breakdown).reverse().map(([stars, percentage]) => <div key={stars} className="flex items-center gap-2 text-sm">
-                            <span className="w-8">{stars}★</span>
-                            <Progress value={percentage} className="flex-1" />
-                            <span className="w-10 text-muted-foreground">{percentage}%</span>
-                          </div>)}
+                      <div className="space-y-3 flex-1 max-w-md">
+                        {Object.entries(userRatings.breakdown).reverse().map(([stars, percentage]) => (
+                          <div key={stars} className="flex items-center gap-3 text-sm">
+                            <span className="w-8 font-medium">{stars}★</span>
+                            <Progress 
+                              value={percentage} 
+                              className="flex-1 h-3 bg-muted"
+                            />
+                            <span className="w-12 text-muted-foreground font-medium">{percentage}%</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                     <Button variant="outline">
