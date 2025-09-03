@@ -340,76 +340,154 @@ const OnlineCasinoReview = () => {
 
           {/* Mobile Layout */}
           <div className="md:hidden">
-            <Card className="mb-4">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 bg-white rounded-lg shadow flex items-center justify-center flex-shrink-0 border">
-                    <span className="text-lg">🎰</span>
+            <div className="space-y-4">
+              {/* Main Casino Card */}
+              <Card className="bg-gradient-to-br from-background to-muted/30">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4 mb-6">
+                    <div className="w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center flex-shrink-0 border">
+                      <span className="text-2xl">🎰</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h1 className="text-xl font-bold leading-tight mb-2">Online Casino Review</h1>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                              Casino
+                            </Badge>
+                            <Badge className="text-xs bg-green-100 text-green-800">
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Licensed
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Mobile Ratings */}
+                      <div className="flex items-center gap-6 text-sm mb-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-muted-foreground">Rating:</span>
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-bold">{scores.overall}</span>
+                            <span className="text-muted-foreground">/5</span>
+                          </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground">({userRatings.total} reviews)</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h1 className="text-xl font-bold">Online Casino Review</h1>
-                      <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
-                        Casino
-                      </Badge>
-                      <Badge className="text-xs bg-green-100 text-green-800">✓</Badge>
+
+                  {/* Mobile CTA */}
+                  <div className="space-y-4">
+                    <div className="text-center p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+                      <div className="text-lg font-bold text-primary mb-1">100% up to $500</div>
+                      <div className="text-sm text-muted-foreground">+ 200 Free Spins</div>
                     </div>
                     
-                    {/* Mobile Ratings */}
-                    <div className="flex items-center gap-4 text-sm">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{scores.overall}</span>
-                        <span className="text-muted-foreground">/5</span>
-                      </div>
-                      <div className="text-muted-foreground">({userRatings.total} reviews)</div>
+                    <Button className="w-full h-12 text-base font-semibold" asChild>
+                      <a href="#visit" rel="noopener noreferrer">
+                        <ExternalLink className="w-5 h-5 mr-2" />
+                        Play Now
+                      </a>
+                    </Button>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-dashed border-muted-foreground/30">
+                      <span className="text-xs text-muted-foreground">Promo Code:</span>
+                      <code className="flex-1 text-center font-mono font-bold">{promoCode}</code>
+                      <Button size="sm" variant="ghost" onClick={copyPromoCode} className="h-8 w-8 p-0">
+                        <Copy className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                </div>
+                </CardContent>
+              </Card>
 
-                <div className="space-y-3">
-                  <Button className="w-full" asChild>
-                    <a href="#visit" rel="noopener noreferrer">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Play Now - 100% up to $500
-                    </a>
-                  </Button>
-                  
-                  <div className="flex items-center gap-2 p-2 bg-muted/30 rounded text-sm">
-                    <code className="flex-1 text-center font-mono">{promoCode}</code>
-                    <Button size="sm" variant="ghost" onClick={copyPromoCode}>
-                      <Copy className="w-3 h-3" />
-                    </Button>
+              {/* Mobile Quick Facts */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Quick Facts</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Founded:</span>
+                      <div className="font-medium">2018</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">License:</span>
+                      <div className="font-medium">MGA, UKGC</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Min Deposit:</span>
+                      <div className="font-medium">$20</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Max Cashout:</span>
+                      <div className="font-medium">$10,000/day</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Avg Payout:</span>
+                      <div className="font-medium">24-48h</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Currencies:</span>
+                      <div className="font-medium">USD, EUR, BTC</div>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Sticky Section Navigation */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b hidden md:block">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-4 lg:gap-6 py-3 overflow-x-auto scrollbar-hide">
-            {sections.map((section) => (
-              <a
-                key={section.id}
-                href={`#${section.anchor}`}
-                className="whitespace-nowrap text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1 px-2 rounded hover:bg-muted/50 flex-shrink-0"
-              >
-                {section.title}
-              </a>
-            ))}
+      {/* Sticky Section Navigation - Hide on mobile/tablet, show mobile nav instead */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b">
+        {/* Desktop Navigation */}
+        <div className="hidden xl:block">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center gap-4 lg:gap-6 py-3 overflow-x-auto scrollbar-hide">
+              {sections.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.anchor}`}
+                  className="whitespace-nowrap text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1 px-2 rounded hover:bg-muted/50 flex-shrink-0"
+                >
+                  {section.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile/Tablet Navigation */}
+        <div className="xl:hidden">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center gap-2 py-2 overflow-x-auto scrollbar-hide">
+              <span className="text-xs text-muted-foreground font-medium whitespace-nowrap mr-2">Sections:</span>
+              {sections.slice(0, 5).map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.anchor}`}
+                  className="whitespace-nowrap text-xs font-medium text-muted-foreground hover:text-foreground transition-colors py-1 px-2 rounded hover:bg-muted/50 flex-shrink-0 bg-muted/30"
+                >
+                  {section.title}
+                </a>
+              ))}
+              <span className="text-xs text-muted-foreground">...</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6 sm:py-8">
-        <div className="grid lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 lg:gap-8">
           {/* Main Content Area */}
-          <div className="lg:col-span-3 space-y-8 sm:space-y-12">
+          <div className="xl:col-span-3 order-2 xl:order-1">
+            <div className="space-y-8 sm:space-y-12">
             
             {/* Overview Section */}
             <section id="overview-section" className="space-y-4 sm:space-y-6">
@@ -1176,11 +1254,12 @@ const OnlineCasinoReview = () => {
                 </p>
               </div>
             </section>
+            </div>
           </div>
 
           {/* Right Sidebar */}
-          <div className="lg:col-span-1 order-first lg:order-last">
-            <div className="sticky top-8 space-y-4 sm:space-y-6">
+          <div className="xl:col-span-1 order-1 xl:order-2">
+            <div className="xl:sticky xl:top-8 space-y-4 sm:space-y-6">
               {/* At-a-glance Card */}
               <Card>
                 <CardHeader>
