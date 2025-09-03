@@ -375,12 +375,12 @@ const OnlineCasinoReview = () => {
       {/* Sticky Section Navigation */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b hidden md:block">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-4 lg:gap-6 py-3 overflow-x-auto scrollbar-hide">
             {sections.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.anchor}`}
-                className="whitespace-nowrap text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1 px-2 rounded hover:bg-muted/50"
+                className="whitespace-nowrap text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1 px-2 rounded hover:bg-muted/50 flex-shrink-0"
               >
                 {section.title}
               </a>
@@ -390,14 +390,14 @@ const OnlineCasinoReview = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="grid lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Main Content Area */}
-          <div className="lg:col-span-3 space-y-12">
+          <div className="lg:col-span-3 space-y-8 sm:space-y-12">
             
             {/* Overview Section */}
-            <section id="overview-section" className="space-y-6">
-              <h2 className="text-2xl font-bold">Overview</h2>
+            <section id="overview-section" className="space-y-4 sm:space-y-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Overview</h2>
               <div className="space-y-4">
                 <p className="text-muted-foreground leading-relaxed">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -428,8 +428,8 @@ const OnlineCasinoReview = () => {
             </section>
 
             {/* Licensing & Ownership */}
-            <section id="licensing-section" className="space-y-6">
-              <h2 className="text-2xl font-bold">Licensing & Ownership</h2>
+            <section id="licensing-section" className="space-y-4 sm:space-y-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Licensing & Ownership</h2>
               
               <div className="space-y-4">
                 <p className="text-muted-foreground leading-relaxed">
@@ -441,21 +441,21 @@ const OnlineCasinoReview = () => {
               </div>
               
               {/* Regulator Seals */}
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <Shield className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-                  <div className="font-semibold">Malta Gaming Authority</div>
-                  <div className="text-sm text-muted-foreground">License: MGA/B2C/394/2017</div>
+                  <Shield className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-blue-600" />
+                  <div className="font-semibold text-sm sm:text-base">Malta Gaming Authority</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">License: MGA/B2C/394/2017</div>
                 </Card>
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <Shield className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                  <div className="font-semibold">UK Gambling Commission</div>
-                  <div className="text-sm text-muted-foreground">License: 39028</div>
+                  <Shield className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-green-600" />
+                  <div className="font-semibold text-sm sm:text-base">UK Gambling Commission</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">License: 39028</div>
                 </Card>
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <Shield className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-                  <div className="font-semibold">Swedish Gambling Authority</div>
-                  <div className="text-sm text-muted-foreground">License: 18-10-024</div>
+                  <Shield className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-purple-600" />
+                  <div className="font-semibold text-sm sm:text-base">Swedish Gambling Authority</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">License: 18-10-024</div>
                 </Card>
               </div>
 
@@ -499,11 +499,11 @@ const OnlineCasinoReview = () => {
               </div>
               
               {/* Payment Methods Grid */}
-              <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
                 {['Visa', 'Mastercard', 'PayPal', 'Skrill', 'Neteller', 'Bitcoin', 'Bank Transfer', 'Apple Pay'].map((method) => (
-                  <div key={method} className="flex flex-col items-center gap-2 p-3 border rounded-lg hover:shadow-sm transition-shadow">
-                    <CreditCard className="w-6 h-6 text-muted-foreground" />
-                    <span className="text-xs font-medium text-center">{method}</span>
+                  <div key={method} className="flex flex-col items-center gap-2 p-2 sm:p-3 border rounded-lg hover:shadow-sm transition-shadow">
+                    <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+                    <span className="text-xs font-medium text-center leading-tight">{method}</span>
                   </div>
                 ))}
               </div>
@@ -511,48 +511,50 @@ const OnlineCasinoReview = () => {
               {/* Payment Methods Table */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Payment Details</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">Payment Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-3 px-2 font-medium">Method</th>
-                          <th className="text-left py-3 px-2 font-medium">Min/Max</th>
-                          <th className="text-left py-3 px-2 font-medium">Fee</th>
-                          <th className="text-left py-3 px-2 font-medium">Avg Payout</th>
-                          <th className="text-left py-3 px-2 font-medium">Notes</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-muted-foreground">
-                        <tr className="border-b">
-                          <td className="py-3 px-2">Credit Cards</td>
-                          <td className="py-3 px-2">$20 / $5,000</td>
-                          <td className="py-3 px-2">0%</td>
-                          <td className="py-3 px-2">24-48h</td>
-                          <td className="py-3 px-2">Visa/Mastercard accepted</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-3 px-2">E-wallets</td>
-                          <td className="py-3 px-2">$10 / $10,000</td>
-                          <td className="py-3 px-2">0%</td>
-                          <td className="py-3 px-2">
-                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                              Instant
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-2">PayPal, Skrill, Neteller</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-3 px-2">Cryptocurrency</td>
-                          <td className="py-3 px-2">$25 / $25,000</td>
-                          <td className="py-3 px-2">Network fee</td>
-                          <td className="py-3 px-2">15min - 2h</td>
-                          <td className="py-3 px-2">Bitcoin, Ethereum, Litecoin</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <div className="overflow-x-auto -mx-1">
+                    <div className="inline-block min-w-full align-middle">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-3 px-1 sm:px-2 font-medium min-w-[80px]">Method</th>
+                            <th className="text-left py-3 px-1 sm:px-2 font-medium min-w-[100px]">Min/Max</th>
+                            <th className="text-left py-3 px-1 sm:px-2 font-medium min-w-[60px]">Fee</th>
+                            <th className="text-left py-3 px-1 sm:px-2 font-medium min-w-[90px]">Avg Payout</th>
+                            <th className="text-left py-3 px-1 sm:px-2 font-medium min-w-[120px] hidden sm:table-cell">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-muted-foreground">
+                          <tr className="border-b">
+                            <td className="py-3 px-1 sm:px-2 font-medium">Credit Cards</td>
+                            <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm">$20 / $5,000</td>
+                            <td className="py-3 px-1 sm:px-2">0%</td>
+                            <td className="py-3 px-1 sm:px-2">24-48h</td>
+                            <td className="py-3 px-1 sm:px-2 hidden sm:table-cell text-xs sm:text-sm">Visa/Mastercard accepted</td>
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-3 px-1 sm:px-2 font-medium">E-wallets</td>
+                            <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm">$10 / $10,000</td>
+                            <td className="py-3 px-1 sm:px-2">0%</td>
+                            <td className="py-3 px-1 sm:px-2">
+                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                                Instant
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-1 sm:px-2 hidden sm:table-cell text-xs sm:text-sm">PayPal, Skrill, Neteller</td>
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-3 px-1 sm:px-2 font-medium">Cryptocurrency</td>
+                            <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm">$25 / $25,000</td>
+                            <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm">Network fee</td>
+                            <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm">15min - 2h</td>
+                            <td className="py-3 px-1 sm:px-2 hidden sm:table-cell text-xs sm:text-sm">Bitcoin, Ethereum, Litecoin</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -571,22 +573,22 @@ const OnlineCasinoReview = () => {
                 </p>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* Welcome Bonus */}
                 <Card className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center justify-between">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base sm:text-lg flex items-center justify-between">
                       Welcome Bonus
-                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">New Players</Badge>
+                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-xs">New Players</Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="text-center p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg">
-                      <div className="text-2xl font-bold">100% up to $500</div>
-                      <div className="text-muted-foreground">+ 200 Free Spins</div>
+                      <div className="text-xl sm:text-2xl font-bold">100% up to $500</div>
+                      <div className="text-sm text-muted-foreground">+ 200 Free Spins</div>
                     </div>
                     <div className="flex items-center gap-2 p-2 bg-muted/50 rounded border border-dashed">
-                      <code className="flex-1 text-center font-mono">WELCOME500</code>
+                      <code className="flex-1 text-center font-mono text-sm">WELCOME500</code>
                       <Button size="sm" variant="ghost">
                         <Copy className="w-3 h-3" />
                       </Button>
@@ -600,19 +602,19 @@ const OnlineCasinoReview = () => {
 
                 {/* No Deposit Bonus */}
                 <Card className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center justify-between">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base sm:text-lg flex items-center justify-between">
                       No Deposit Bonus
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Free</Badge>
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">Free</Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
-                      <div className="text-2xl font-bold">$10 Free</div>
-                      <div className="text-muted-foreground">No deposit required</div>
+                      <div className="text-xl sm:text-2xl font-bold">$10 Free</div>
+                      <div className="text-sm text-muted-foreground">No deposit required</div>
                     </div>
                     <div className="flex items-center gap-2 p-2 bg-muted/50 rounded border border-dashed">
-                      <code className="flex-1 text-center font-mono">NODEPOSIT10</code>
+                      <code className="flex-1 text-center font-mono text-sm">NODEPOSIT10</code>
                       <Button size="sm" variant="ghost">
                         <Copy className="w-3 h-3" />
                       </Button>
@@ -664,17 +666,17 @@ const OnlineCasinoReview = () => {
               </div>
               
               {/* Metrics Row */}
-              <div className="grid grid-cols-3 gap-4">
-                <Card className="text-center p-4">
-                  <div className="text-2xl font-bold text-primary">2,000+</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Card className="text-center p-4 sm:p-6">
+                  <div className="text-xl sm:text-2xl font-bold text-primary">2,000+</div>
                   <div className="text-sm text-muted-foreground">Slots</div>
                 </Card>
-                <Card className="text-center p-4">
-                  <div className="text-2xl font-bold text-green-600">150+</div>
+                <Card className="text-center p-4 sm:p-6">
+                  <div className="text-xl sm:text-2xl font-bold text-green-600">150+</div>
                   <div className="text-sm text-muted-foreground">Live Tables</div>
                 </Card>
-                <Card className="text-center p-4">
-                  <div className="text-2xl font-bold text-blue-600">50+</div>
+                <Card className="text-center p-4 sm:p-6">
+                  <div className="text-xl sm:text-2xl font-bold text-blue-600">50+</div>
                   <div className="text-sm text-muted-foreground">Providers</div>
                 </Card>
               </div>
@@ -682,10 +684,10 @@ const OnlineCasinoReview = () => {
               {/* Provider Grid */}
               <div>
                 <h3 className="font-semibold mb-4">Software Providers</h3>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
                   {['NetEnt', 'Microgaming', 'Evolution', 'Pragmatic Play', 'Play\'n GO', 'Red Tiger', 'Yggdrasil', 'Quickspin', 'Big Time Gaming', 'Blueprint', 'ELK Studios', 'NoLimit City'].map((provider) => (
-                    <div key={provider} className="flex items-center justify-center p-3 border rounded-lg hover:shadow-sm transition-shadow">
-                      <span className="text-xs font-medium text-center">{provider}</span>
+                    <div key={provider} className="flex items-center justify-center p-2 sm:p-3 border rounded-lg hover:shadow-sm transition-shadow min-h-[60px] sm:min-h-[70px]">
+                      <span className="text-xs font-medium text-center leading-tight">{provider}</span>
                     </div>
                   ))}
                 </div>
@@ -716,21 +718,21 @@ const OnlineCasinoReview = () => {
               </div>
               
               {/* Testing Badges */}
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                  <div className="font-semibold">eCOGRA Certified</div>
-                  <div className="text-sm text-muted-foreground">RNG & RTP verified monthly</div>
+                  <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-green-600" />
+                  <div className="font-semibold text-sm sm:text-base">eCOGRA Certified</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">RNG & RTP verified monthly</div>
                 </Card>
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <Shield className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-                  <div className="font-semibold">GLI Tested</div>
-                  <div className="text-sm text-muted-foreground">Gaming systems compliance</div>
+                  <Shield className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-blue-600" />
+                  <div className="font-semibold text-sm sm:text-base">GLI Tested</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Gaming systems compliance</div>
                 </Card>
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <CheckCircle className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-                  <div className="font-semibold">iTech Labs</div>
-                  <div className="text-sm text-muted-foreground">Random Number Generator certified</div>
+                  <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-purple-600" />
+                  <div className="font-semibold text-sm sm:text-base">iTech Labs</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Random Number Generator certified</div>
                 </Card>
               </div>
 
@@ -772,67 +774,69 @@ const OnlineCasinoReview = () => {
                 </p>
               </div>
               
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Available Tools</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-3 px-2 font-medium">Tool</th>
-                          <th className="text-left py-3 px-2 font-medium">Available?</th>
-                          <th className="text-left py-3 px-2 font-medium">Where to Set</th>
-                          <th className="text-left py-3 px-2 font-medium">Notes</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-muted-foreground">
-                        <tr className="border-b">
-                          <td className="py-3 px-2">Deposit Limits</td>
-                          <td className="py-3 px-2">
-                            <CheckCircle className="w-4 h-4 text-green-600" />
-                          </td>
-                          <td className="py-3 px-2">Account Settings</td>
-                          <td className="py-3 px-2">Daily, weekly, monthly</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-3 px-2">Loss Limits</td>
-                          <td className="py-3 px-2">
-                            <CheckCircle className="w-4 h-4 text-green-600" />
-                          </td>
-                          <td className="py-3 px-2">Account Settings</td>
-                          <td className="py-3 px-2">Net loss tracking</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-3 px-2">Time-outs</td>
-                          <td className="py-3 px-2">
-                            <CheckCircle className="w-4 h-4 text-green-600" />
-                          </td>
-                          <td className="py-3 px-2">Responsible Gaming</td>
-                          <td className="py-3 px-2">24h to 6 months</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-3 px-2">Self-exclude</td>
-                          <td className="py-3 px-2">
-                            <CheckCircle className="w-4 h-4 text-green-600" />
-                          </td>
-                          <td className="py-3 px-2">Contact Support</td>
-                          <td className="py-3 px-2">Permanent or timed</td>
-                        </tr>
-                        <tr>
-                          <td className="py-3 px-2">Reality Checks</td>
-                          <td className="py-3 px-2">
-                            <CheckCircle className="w-4 h-4 text-green-600" />
-                          </td>
-                          <td className="py-3 px-2">Game Settings</td>
-                          <td className="py-3 px-2">Pop-up reminders</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base sm:text-lg">Available Tools</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto -mx-1">
+                      <div className="inline-block min-w-full align-middle">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-3 px-1 sm:px-2 font-medium min-w-[100px]">Tool</th>
+                              <th className="text-center py-3 px-1 sm:px-2 font-medium min-w-[80px]">Available?</th>
+                              <th className="text-left py-3 px-1 sm:px-2 font-medium min-w-[90px] hidden sm:table-cell">Where to Set</th>
+                              <th className="text-left py-3 px-1 sm:px-2 font-medium min-w-[100px] hidden md:table-cell">Notes</th>
+                            </tr>
+                          </thead>
+                          <tbody className="text-muted-foreground">
+                            <tr className="border-b">
+                              <td className="py-3 px-1 sm:px-2 font-medium text-xs sm:text-sm">Deposit Limits</td>
+                              <td className="py-3 px-1 sm:px-2 text-center">
+                                <CheckCircle className="w-4 h-4 text-green-600 mx-auto" />
+                              </td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden sm:table-cell">Account Settings</td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden md:table-cell">Daily, weekly, monthly</td>
+                            </tr>
+                            <tr className="border-b">
+                              <td className="py-3 px-1 sm:px-2 font-medium text-xs sm:text-sm">Loss Limits</td>
+                              <td className="py-3 px-1 sm:px-2 text-center">
+                                <CheckCircle className="w-4 h-4 text-green-600 mx-auto" />
+                              </td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden sm:table-cell">Account Settings</td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden md:table-cell">Net loss tracking</td>
+                            </tr>
+                            <tr className="border-b">
+                              <td className="py-3 px-1 sm:px-2 font-medium text-xs sm:text-sm">Time-outs</td>
+                              <td className="py-3 px-1 sm:px-2 text-center">
+                                <CheckCircle className="w-4 h-4 text-green-600 mx-auto" />
+                              </td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden sm:table-cell">Responsible Gaming</td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden md:table-cell">24h to 6 months</td>
+                            </tr>
+                            <tr className="border-b">
+                              <td className="py-3 px-1 sm:px-2 font-medium text-xs sm:text-sm">Self-exclude</td>
+                              <td className="py-3 px-1 sm:px-2 text-center">
+                                <CheckCircle className="w-4 h-4 text-green-600 mx-auto" />
+                              </td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden sm:table-cell">Contact Support</td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden md:table-cell">Permanent or timed</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 px-1 sm:px-2 font-medium text-xs sm:text-sm">Reality Checks</td>
+                              <td className="py-3 px-1 sm:px-2 text-center">
+                                <CheckCircle className="w-4 h-4 text-green-600 mx-auto" />
+                              </td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden sm:table-cell">Game Settings</td>
+                              <td className="py-3 px-1 sm:px-2 text-xs sm:text-sm hidden md:table-cell">Pop-up reminders</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
               {/* External Help Organizations */}
               <div>
@@ -871,29 +875,29 @@ const OnlineCasinoReview = () => {
               </div>
               
               {/* Contact Methods */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <MessageCircle className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-                  <div className="font-semibold">Live Chat</div>
-                  <div className="text-sm text-muted-foreground">24/7 Available</div>
+                  <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-blue-600" />
+                  <div className="font-semibold text-sm sm:text-base">Live Chat</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">24/7 Available</div>
                   <div className="text-xs text-green-600 mt-1">Avg response: 30s</div>
                 </Card>
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <Globe className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                  <div className="font-semibold">Email</div>
-                  <div className="text-sm text-muted-foreground">support@casino.com</div>
+                  <Globe className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-green-600" />
+                  <div className="font-semibold text-sm sm:text-base">Email</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground break-all">support@casino.com</div>
                   <div className="text-xs text-green-600 mt-1">Avg response: 4h</div>
                 </Card>
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <Globe className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-                  <div className="font-semibold">Phone</div>
-                  <div className="text-sm text-muted-foreground">+356 2778 1234</div>
+                  <Globe className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-purple-600" />
+                  <div className="font-semibold text-sm sm:text-base">Phone</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">+356 2778 1234</div>
                   <div className="text-xs text-muted-foreground mt-1">Mon-Fri 9-17 CET</div>
                 </Card>
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
-                  <HelpCircle className="w-8 h-8 mx-auto mb-2 text-orange-600" />
-                  <div className="font-semibold">FAQ</div>
-                  <div className="text-sm text-muted-foreground">Comprehensive guide</div>
+                  <HelpCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-orange-600" />
+                  <div className="font-semibold text-sm sm:text-base">FAQ</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Comprehensive guide</div>
                   <div className="text-xs text-blue-600 mt-1">200+ topics</div>
                 </Card>
               </div>
@@ -901,31 +905,66 @@ const OnlineCasinoReview = () => {
               {/* KYC Timeline */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">KYC Verification Timeline</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">KYC Verification Timeline</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between relative">
-                    <div className="absolute top-4 left-0 right-0 h-0.5 bg-muted"></div>
-                    <div className="flex flex-col items-center relative bg-background px-2">
-                      <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center mb-2">
-                        <FileText className="w-4 h-4 text-white" />
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between relative">
+                    <div className="hidden sm:block absolute top-4 left-0 right-0 h-0.5 bg-muted"></div>
+                    
+                    {/* Mobile: Vertical Layout */}
+                    <div className="sm:hidden space-y-4 w-full">
+                      <div className="flex items-center gap-4 p-3 border rounded-lg">
+                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                          <FileText className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium">Requested</div>
+                          <div className="text-xs text-muted-foreground">Immediate</div>
+                        </div>
                       </div>
-                      <div className="text-sm font-medium">Requested</div>
-                      <div className="text-xs text-muted-foreground">Immediate</div>
+                      <div className="flex items-center gap-4 p-3 border rounded-lg">
+                        <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium">Submitted</div>
+                          <div className="text-xs text-muted-foreground">Within 24h</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 p-3 border rounded-lg">
+                        <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium">Approved</div>
+                          <div className="text-xs text-muted-foreground">1-3 business days</div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-col items-center relative bg-background px-2">
-                      <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center mb-2">
-                        <Clock className="w-4 h-4 text-white" />
+                    
+                    {/* Desktop: Horizontal Layout */}
+                    <div className="hidden sm:flex items-center justify-between w-full relative">
+                      <div className="flex flex-col items-center relative bg-background px-2">
+                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center mb-2">
+                          <FileText className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-sm font-medium">Requested</div>
+                        <div className="text-xs text-muted-foreground">Immediate</div>
                       </div>
-                      <div className="text-sm font-medium">Submitted</div>
-                      <div className="text-xs text-muted-foreground">Within 24h</div>
-                    </div>
-                    <div className="flex flex-col items-center relative bg-background px-2">
-                      <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center mb-2">
-                        <CheckCircle className="w-4 h-4 text-white" />
+                      <div className="flex flex-col items-center relative bg-background px-2">
+                        <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center mb-2">
+                          <Clock className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-sm font-medium">Submitted</div>
+                        <div className="text-xs text-muted-foreground">Within 24h</div>
                       </div>
-                      <div className="text-sm font-medium">Approved</div>
-                      <div className="text-xs text-muted-foreground">1-3 business days</div>
+                      <div className="flex flex-col items-center relative bg-background px-2">
+                        <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center mb-2">
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-sm font-medium">Approved</div>
+                        <div className="text-xs text-muted-foreground">1-3 business days</div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -1124,20 +1163,20 @@ const OnlineCasinoReview = () => {
           </div>
 
           {/* Right Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
+          <div className="lg:col-span-1 order-first lg:order-last">
+            <div className="sticky top-8 space-y-4 sm:space-y-6">
               {/* Primary CTA Card */}
               <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                <CardContent className="p-6 text-center space-y-4">
-                  <div className="text-lg font-bold">100% up to $500</div>
+                <CardContent className="p-4 sm:p-6 text-center space-y-4">
+                  <div className="text-lg sm:text-xl font-bold">100% up to $500</div>
                   <div className="text-sm text-muted-foreground">+ 200 Free Spins</div>
-                  <Button className="w-full" asChild>
+                  <Button className="w-full" size="sm" asChild>
                     <a href="#visit" rel="noopener noreferrer">
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Play Now
                     </a>
                   </Button>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground leading-relaxed">
                     18+ | Terms & Conditions Apply | Play Responsibly
                   </div>
                 </CardContent>
