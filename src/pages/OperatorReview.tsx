@@ -320,6 +320,23 @@ const OperatorReview = () => {
                     </Button>
                   </CardContent>
                 </Card>
+
+                {/* Rate Operator CTA */}
+                <Card className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border-emerald-200/50 mt-4">
+                  <CardContent className="p-4 text-center">
+                    <div className="mb-3">
+                      <div className="flex justify-center mb-2">
+                        <Star className="w-6 h-6 text-emerald-600" />
+                      </div>
+                      <h3 className="font-semibold text-emerald-900 dark:text-emerald-100">Rate this Operator</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Share your experience</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="w-full bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-700 dark:hover:bg-emerald-900/70">
+                      <Star className="w-4 h-4 mr-2" />
+                      Write a Review
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
