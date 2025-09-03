@@ -837,40 +837,7 @@ const OperatorReview = () => {
             <div id="verdict-section">
               <h2 className="text-2xl font-bold mb-4">Verdict</h2>
               <Card>
-                <CardContent className="p-6 space-y-4">
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span>Excellent game variety with fair odds and transparent operations</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span>Fast payouts and multiple withdrawal options including skins and crypto</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span>Strong community presence and responsive customer support</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span>Mobile-friendly platform with intuitive user interface</span>
-                    </li>
-                  </ul>
-                  
-                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <h4 className="font-semibold text-blue-900 mb-2">Who it's for / not for</h4>
-                    <div className="text-sm space-y-2">
-                      <div>
-                        <span className="text-green-600 font-medium">✓ Good for:</span>
-                        <span className="text-blue-800"> Casual gamers, skin traders, bonus hunters</span>
-                      </div>
-                      <div>
-                        <span className="text-red-600 font-medium">✗ Not for:</span>
-                        <span className="text-blue-800"> High-stakes players, users wanting anonymity</span>
-                      </div>
-                    </div>
-                  </div>
-
+                <CardContent className="p-6">
                   <div className="text-center p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
                     <div className="text-3xl font-bold text-primary mb-2">{scores.overall}/5.0</div>
                     <div className="text-muted-foreground">Final Score</div>
