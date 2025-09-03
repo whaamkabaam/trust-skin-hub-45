@@ -1351,38 +1351,74 @@ const OperatorReview = () => {
               
               <Card>
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
+                  <div className="flex flex-col lg:flex-row items-start justify-between gap-6 mb-6">
+                    <div className="flex flex-col md:flex-row items-start gap-6 flex-1">
+                      {/* Overall Rating Display */}
                       <div className="text-center">
-                        <div className="text-3xl font-bold">{scores.user}</div>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />)}
+                        <div className="text-4xl font-bold mb-2">{scores.user}</div>
+                        <div className="flex justify-center mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star 
+                              key={i} 
+                              className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                            />
+                          ))}
                         </div>
-                        <div className="text-sm text-muted-foreground">({userRatings.total})</div>
+                        <div className="text-sm text-muted-foreground">
+                          Based on {userRatings.total} reviews
+                        </div>
                       </div>
-                      <div className="space-y-3 flex-1 max-w-md">
-                        {Object.entries(userRatings.breakdown).reverse().map(([stars, percentage]) => (
-                          <div key={stars} className="flex items-center gap-3 text-sm">
-                            <span className="w-8 font-medium">{stars}★</span>
-                            <div className="flex-1 bg-muted rounded-full h-3 overflow-hidden">
-                              <div 
-                                className="h-full bg-primary rounded-full transition-all duration-300 ease-out" 
-                                style={{ width: `${percentage}%` }}
-                              />
-                            </div>
-                            <span className="w-12 text-muted-foreground font-medium">{percentage}%</span>
-                          </div>
-                        ))}
+                      
+                      {/* Rating Breakdown with Progress Bars */}
+                      <div className="flex-1 min-w-0 w-full md:max-w-md">
+                        <div className="space-y-3">
+                          {[5, 4, 3, 2, 1].map((starCount) => {
+                            const percentage = userRatings.breakdown[starCount] || 0;
+                            return (
+                              <div key={starCount} className="flex items-center gap-3">
+                                <div className="flex items-center gap-1 w-12">
+                                  <span className="text-sm font-medium">{starCount}</span>
+                                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                </div>
+                                <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full transition-all duration-500 ease-out"
+                                    style={{ 
+                                      width: `${percentage}%`,
+                                      minWidth: percentage > 0 ? '4px' : '0px'
+                                    }}
+                                  />
+                                </div>
+                                <span className="text-sm text-muted-foreground w-10 text-right">
+                                  {percentage}%
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
-                    <Button variant="outline">
+                    
+                    {/* Write Review Button */}
+                    <Button variant="outline" className="shrink-0">
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Write a Review
                     </Button>
                   </div>
                   
-                  <div className="space-y-4">
-                    {reviews.slice(0, 3).map(review => <ReviewCard key={review.id} review={review} />)}
+                  {/* Reviews List */}
+                  <div className="space-y-4 border-t pt-6">
+                    {reviews.slice(0, 3).map(review => (
+                      <ReviewCard key={review.id} review={review} />
+                    ))}
+                    
+                    {reviews.length > 3 && (
+                      <div className="text-center pt-4">
+                        <Button variant="outline">
+                          View All {reviews.length} Reviews
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
