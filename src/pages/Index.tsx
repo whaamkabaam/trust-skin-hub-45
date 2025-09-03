@@ -87,6 +87,340 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Mystery Box Sites */}
+        <section className="mb-16">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Mystery Box Sites</h2>
+              <p className="text-muted-foreground">Top verified mystery box platforms with proven fair algorithms</p>
+            </div>
+            <Button variant="outline" size="sm">
+              All Mystery Box Sites <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Hypedrop",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 905,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Battles", "Upgrader", "Custom Boxes", "Crash"],
+                paymentMethods: ["💳", "🅱️", "💰"]
+              },
+              {
+                name: "CSGORoll",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 652,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Battles", "Upgrader", "Roulette", "Crash"],
+                paymentMethods: ["💳", "🅱️", "💰"]
+              },
+              {
+                name: "CSGOEmpire",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 832,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Battles", "Upgrader", "Roulette", "Crash"],
+                paymentMethods: ["💳", "🅱️", "💰"]
+              }
+            ].map((site, index) => (
+              <Card key={index} className="border">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold text-lg">
+                        {site.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold">{site.name}</h3>
+                          {site.verified && <Badge variant="secondary" className="bg-success/10 text-success text-xs">Verified</Badge>}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{site.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-1 mb-4">
+                    <Star className="w-4 h-4 fill-warning text-warning" />
+                    <span className="font-medium">{site.rating}</span>
+                    <Badge variant="outline" className="ml-1 text-xs">{site.reviews}</Badge>
+                  </div>
+
+                  <div className="space-y-3 mb-4">
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Accepts:</p>
+                      <div className="flex gap-1">
+                        {site.paymentMethods.map((method, i) => (
+                          <span key={i} className="text-lg">{method}</span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Key Features</p>
+                      <div className="space-y-1">
+                        {site.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-2 text-xs">
+                            <CheckCircle className="w-3 h-3 text-success" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 pt-2">
+                      {site.games.map((game, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">{game}</Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="flex-1">
+                      Read Review
+                    </Button>
+                    <Button size="sm" className="flex-1">
+                      Visit Site <ExternalLink className="w-3 h-3 ml-1" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Skin Case Sites */}
+        <section className="mb-16">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Skin Sites</h2>
+              <p className="text-muted-foreground">Verified CS2 case opening platforms with transparent odds</p>
+            </div>
+            <Button variant="outline" size="sm">
+              All Skin Sites <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Hellcase",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 1542,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Battles", "Upgrader", "Roulette", "Crash"],
+                paymentMethods: ["💳", "🅱️", "💰"]
+              },
+              {
+                name: "CSGORoll",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 652,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Battles", "Upgrader", "Roulette", "Crash"],
+                paymentMethods: ["💳", "🅱️", "💰"]
+              },
+              {
+                name: "CSGOEmpire",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 832,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Battles", "Upgrader", "Roulette", "Crash"],
+                paymentMethods: ["💳", "🅱️", "💰"]
+              }
+            ].map((site, index) => (
+              <Card key={index} className="border">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold text-lg">
+                        {site.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold">{site.name}</h3>
+                          {site.verified && <Badge variant="secondary" className="bg-success/10 text-success text-xs">Verified</Badge>}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{site.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-1 mb-4">
+                    <Star className="w-4 h-4 fill-warning text-warning" />
+                    <span className="font-medium">{site.rating}</span>
+                    <Badge variant="outline" className="ml-1 text-xs">{site.reviews}</Badge>
+                  </div>
+
+                  <div className="space-y-3 mb-4">
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Accepts:</p>
+                      <div className="flex gap-1">
+                        {site.paymentMethods.map((method, i) => (
+                          <span key={i} className="text-lg">{method}</span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Key Features</p>
+                      <div className="space-y-1">
+                        {site.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-2 text-xs">
+                            <CheckCircle className="w-3 h-3 text-success" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 pt-2">
+                      {site.games.map((game, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">{game}</Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="flex-1">
+                      Read Review
+                    </Button>
+                    <Button size="sm" className="flex-1">
+                      Visit Site <ExternalLink className="w-3 h-3 ml-1" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Online Casinos */}
+        <section className="mb-16">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Online Casinos</h2>
+              <p className="text-muted-foreground">Licensed online casinos with verified payout rates</p>
+            </div>
+            <Button variant="outline" size="sm">
+              All Online Casinos <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Stake Casino",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 3000,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Slots", "Blackjack", "Roulette", "Crash", "Plinko"],
+                paymentMethods: ["💳", "🅱️", "💰"],
+                liveGames: true
+              },
+              {
+                name: "Stake Casino",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 3000,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Slots", "Blackjack", "Roulette", "Crash", "Plinko"],
+                paymentMethods: ["💳", "🅱️", "💰"],
+                liveGames: true
+              },
+              {
+                name: "Stake Casino",
+                description: "Premium CS2 case opening site with verified drops",
+                rating: 4.5,
+                reviews: 3000,
+                verified: true,
+                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
+                games: ["Slots", "Blackjack", "Roulette", "Crash", "Plinko"],
+                paymentMethods: ["💳", "🅱️", "💰"],
+                liveGames: true
+              }
+            ].map((site, index) => (
+              <Card key={index} className="border">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold text-lg">
+                        {site.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold">{site.name}</h3>
+                          {site.verified && <Badge variant="secondary" className="bg-success/10 text-success text-xs">Verified</Badge>}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{site.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-1 mb-4">
+                    <Star className="w-4 h-4 fill-warning text-warning" />
+                    <span className="font-medium">{site.rating}</span>
+                    <Badge variant="outline" className="ml-1 text-xs">{site.reviews}+</Badge>
+                  </div>
+
+                  <div className="space-y-3 mb-4">
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Accepts:</p>
+                      <div className="flex gap-1">
+                        {site.paymentMethods.map((method, i) => (
+                          <span key={i} className="text-lg">{method}</span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Key Features</p>
+                      <div className="space-y-1">
+                        {site.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-2 text-xs">
+                            <CheckCircle className="w-3 h-3 text-success" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 pt-2">
+                      {site.games.map((game, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">{game}</Badge>
+                      ))}
+                      {site.liveGames && <Badge variant="secondary" className="text-xs">Live Games</Badge>}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="flex-1">
+                      Read Review
+                    </Button>
+                    <Button size="sm" className="flex-1">
+                      Visit Site <ExternalLink className="w-3 h-3 ml-1" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
         {/* Expert Team Section */}
         <ExpertTeam />
 
