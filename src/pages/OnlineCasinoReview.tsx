@@ -400,11 +400,13 @@ const OnlineCasinoReview = () => {
               <h2 className="text-2xl font-bold">Overview</h2>
               <div className="space-y-4">
                 <p className="text-muted-foreground leading-relaxed">
-                  This comprehensive online casino offers a premium gaming experience with over 2,000 games from top providers. 
-                  Licensed by the Malta Gaming Authority, it provides secure gameplay with fast payouts and 24/7 customer support.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  Players can enjoy slots, live dealer games, and table games with generous bonuses and a rewarding VIP program.
+                  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.
                 </p>
                 
                 {/* Mode Chips */}
@@ -428,6 +430,15 @@ const OnlineCasinoReview = () => {
             {/* Licensing & Ownership */}
             <section id="licensing-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Licensing & Ownership</h2>
+              
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.
+                </p>
+              </div>
               
               {/* Regulator Seals */}
               <div className="grid md:grid-cols-3 gap-4">
@@ -480,6 +491,12 @@ const OnlineCasinoReview = () => {
             {/* Payments & Payout Speed */}
             <section id="payments-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Payments & Payout Speed</h2>
+              
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
               
               {/* Payment Methods Grid */}
               <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
@@ -544,6 +561,15 @@ const OnlineCasinoReview = () => {
             {/* Bonuses & Promo Terms */}
             <section id="bonuses-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Bonuses & Promo Terms</h2>
+              
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+              </div>
               
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Welcome Bonus */}
@@ -631,6 +657,12 @@ const OnlineCasinoReview = () => {
             <section id="games-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Games & Providers</h2>
               
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
+              
               {/* Metrics Row */}
               <div className="grid grid-cols-3 gap-4">
                 <Card className="text-center p-4">
@@ -676,6 +708,12 @@ const OnlineCasinoReview = () => {
             {/* Fairness & Security */}
             <section id="fairness-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Fairness & Security</h2>
+              
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
               
               {/* Testing Badges */}
               <div className="grid md:grid-cols-3 gap-4">
@@ -727,6 +765,12 @@ const OnlineCasinoReview = () => {
             {/* Responsible Gambling Tools */}
             <section id="responsible-gambling-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Responsible Gambling Tools</h2>
+              
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
               
               <Card>
                 <CardHeader>
@@ -820,6 +864,12 @@ const OnlineCasinoReview = () => {
             <section id="support-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Support & KYC Experience</h2>
               
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
+              
               {/* Contact Methods */}
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
@@ -886,6 +936,12 @@ const OnlineCasinoReview = () => {
             <section id="restrictions-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Country/State Restrictions</h2>
               
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
+              
               <Card className="bg-amber-50 border-amber-200">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
@@ -918,70 +974,16 @@ const OnlineCasinoReview = () => {
               </Collapsible>
             </section>
 
-            {/* Our Tests */}
-            <section id="tests-section" className="space-y-6">
-              <h2 className="text-2xl font-bold">Our Tests</h2>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Deposit Timeline */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Deposit Test</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Registration</span>
-                        <span className="text-sm text-muted-foreground">2min</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">KYC Upload</span>
-                        <span className="text-sm text-muted-foreground">5min</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Deposit Processing</span>
-                        <span className="text-sm text-green-600 font-medium">Instant</span>
-                      </div>
-                      <div className="pt-2 border-t">
-                        <div className="text-sm font-medium">Notes:</div>
-                        <div className="text-sm text-muted-foreground">PayPal deposit processed immediately. Bonus credited automatically.</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Withdrawal Timeline */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Withdrawal Test</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Request Submitted</span>
-                        <span className="text-sm text-muted-foreground">Day 1</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Processing</span>
-                        <span className="text-sm text-muted-foreground">Day 1-2</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Funds Received</span>
-                        <span className="text-sm text-green-600 font-medium">Day 2</span>
-                      </div>
-                      <div className="pt-2 border-t">
-                        <div className="text-sm font-medium">Notes:</div>
-                        <div className="text-sm text-muted-foreground">$500 withdrawal via Skrill. No additional verification required.</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </section>
 
             {/* User Reviews & Ratings */}
             <section id="reviews-section" className="space-y-6">
               <h2 className="text-2xl font-bold">User Reviews & Ratings</h2>
+              
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
               
               <div className="grid md:grid-cols-3 gap-6">
                 {/* Rating Overview */}
@@ -1050,6 +1052,12 @@ const OnlineCasinoReview = () => {
               <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
               
               <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
+              
+              <div className="space-y-4">
                 {faqItems.map((item, index) => (
                   <Collapsible key={index}>
                     <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border rounded-lg hover:bg-muted/50 transition-colors text-left">
@@ -1067,6 +1075,12 @@ const OnlineCasinoReview = () => {
             {/* Verdict & Alternatives */}
             <section id="verdict-section" className="space-y-6">
               <h2 className="text-2xl font-bold">Verdict & Alternatives</h2>
+              
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+              </div>
               
               <Card className="bg-muted/30">
                 <CardContent className="p-6">
