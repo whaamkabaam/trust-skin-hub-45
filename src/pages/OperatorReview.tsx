@@ -769,52 +769,36 @@ const OperatorReview = () => {
                 <h2 className="text-2xl font-bold">Bonuses & Promos</h2>
               </div>
               <div className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover:shadow-lg transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">🎁</span>
-                        </div>
-                        <h4 className="font-semibold text-green-800">Welcome Bonus</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Free $10 credit + 3 free cases</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50 hover:shadow-lg transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">💰</span>
-                        </div>
-                        <h4 className="font-semibold text-blue-800">Rakeback</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Up to 15% daily rakeback on losses</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200/50 hover:shadow-lg transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">📅</span>
-                        </div>
-                        <h4 className="font-semibold text-purple-800">Daily/Weekly</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Daily free case + weekly challenges</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200/50 hover:shadow-lg transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">👥</span>
-                        </div>
-                        <h4 className="font-semibold text-orange-800">Referral</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground">5% of friend's deposits for life</p>
-                    </CardContent>
-                  </Card>
-                </div>
+                <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
+                  <CardContent className="p-6 space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Welcome Package & First Deposit Bonuses</h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Loyalty Programs & VIP Benefits</h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus. Omnis voluptas assumenda est, omnis dolor repellendus.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Promotional Events & Seasonal Offers</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
 
@@ -822,30 +806,37 @@ const OperatorReview = () => {
             <div id="fairness-security-section">
               <h2 className="text-2xl font-bold mb-4">Fairness & Security</h2>
               <div className="space-y-4">
-                <Card>
-                  <CardContent className="p-6 space-y-4">
+                <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50">
+                  <CardContent className="p-6 space-y-6">
                     <div>
-                      <h4 className="font-semibold mb-2 flex items-center">
-                        <Shield className="w-5 h-5 mr-2 text-green-600" />
-                        Provably Fair System
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        All games use cryptographic hashing to ensure fairness. Players can verify each outcome 
-                        using the provided seeds and algorithms. Drop rates are transparently displayed.
+                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <Shield className="w-4 h-4 text-white" />
+                        </div>
+                        Provably Fair Gaming & Transparency
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
                       </p>
                     </div>
+                    
                     <div>
-                      <h4 className="font-semibold mb-2">Drop Rates Transparency</h4>
-                      <p className="text-sm text-muted-foreground">
-                        All case and game odds are clearly displayed. Rare item chances range from 0.1% to 15% 
-                        depending on the case type.
+                      <h3 className="text-lg font-semibold mb-3">Security Measures & Data Protection</h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
                       </p>
                     </div>
+
                     <div>
-                      <h4 className="font-semibold mb-2">KYC/AML & Licensing</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {operator.kycRequired ? 'KYC verification required for withdrawals over $1,000.' : 'No KYC required for most transactions.'} 
-                        Platform operates under Curacao gaming license #8048/JAZ.
+                      <h3 className="text-lg font-semibold mb-3">Licensing & Regulatory Compliance</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
                       </p>
                     </div>
                   </CardContent>
@@ -889,14 +880,40 @@ const OperatorReview = () => {
             {/* Verdict */}
             <div id="verdict-section">
               <h2 className="text-2xl font-bold mb-4">Verdict</h2>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="text-center p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-                    <div className="text-3xl font-bold text-primary mb-2">{scores.overall}/5.0</div>
-                    <div className="text-muted-foreground">Final Score</div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="space-y-4">
+                <Card className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-900/20 dark:to-gray-900/20 border-slate-200/50">
+                  <CardContent className="p-6 space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Overall Assessment</h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Pros & Cons Summary</h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="text-center p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+                      <div className="text-3xl font-bold text-primary mb-2">{scores.overall}/5.0</div>
+                      <div className="text-muted-foreground">Final Score</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
             {/* User Reviews & Ratings */}
