@@ -372,14 +372,843 @@ const OnlineCasinoReview = () => {
         </div>
       </section>
 
-      {/* Rest of the content structure remains similar but adapted for casino context */}
+      {/* Sticky Section Navigation */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b hidden md:block">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
+            {sections.map((section) => (
+              <a
+                key={section.id}
+                href={`#${section.anchor}`}
+                className="whitespace-nowrap text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1 px-2 rounded hover:bg-muted/50"
+              >
+                {section.title}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold mb-4">Online Casino Review Content</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            This is a comprehensive review template for online casinos, featuring detailed analysis of games, 
-            bonuses, payment methods, security, and user experience.
-          </p>
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Main Content Area */}
+          <div className="lg:col-span-3 space-y-12">
+            
+            {/* Overview Section */}
+            <section id="overview-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Overview</h2>
+              <div className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  This comprehensive online casino offers a premium gaming experience with over 2,000 games from top providers. 
+                  Licensed by the Malta Gaming Authority, it provides secure gameplay with fast payouts and 24/7 customer support.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Players can enjoy slots, live dealer games, and table games with generous bonuses and a rewarding VIP program.
+                </p>
+                
+                {/* Mode Chips */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
+                    <Gamepad2 className="w-4 h-4 mr-1" />
+                    Casino
+                  </Badge>
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <Users className="w-4 h-4 mr-1" />
+                    Live Dealer
+                  </Badge>
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    <TrendingUp className="w-4 h-4 mr-1" />
+                    Sportsbook
+                  </Badge>
+                </div>
+              </div>
+            </section>
+
+            {/* Licensing & Ownership */}
+            <section id="licensing-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Licensing & Ownership</h2>
+              
+              {/* Regulator Seals */}
+              <div className="grid md:grid-cols-3 gap-4">
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <Shield className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+                  <div className="font-semibold">Malta Gaming Authority</div>
+                  <div className="text-sm text-muted-foreground">License: MGA/B2C/394/2017</div>
+                </Card>
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <Shield className="w-8 h-8 mx-auto mb-2 text-green-600" />
+                  <div className="font-semibold">UK Gambling Commission</div>
+                  <div className="text-sm text-muted-foreground">License: 39028</div>
+                </Card>
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <Shield className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+                  <div className="font-semibold">Swedish Gambling Authority</div>
+                  <div className="text-sm text-muted-foreground">License: 18-10-024</div>
+                </Card>
+              </div>
+
+              {/* Company Facts Accordion */}
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <span className="font-medium">Company Information</span>
+                  <ChevronDown className="w-4 h-4 transition-transform" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-t">
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Parent Company:</span>
+                      <span className="ml-2 text-muted-foreground">Gaming Innovations Ltd</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Registration:</span>
+                      <span className="ml-2 text-muted-foreground">C81112 (Malta)</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Headquarters:</span>
+                      <span className="ml-2 text-muted-foreground">St. Julian's, Malta</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Sister Sites:</span>
+                      <span className="ml-2 text-muted-foreground">CasinoSibling.com, SpinPartner.com</span>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </section>
+
+            {/* Payments & Payout Speed */}
+            <section id="payments-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Payments & Payout Speed</h2>
+              
+              {/* Payment Methods Grid */}
+              <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+                {['Visa', 'Mastercard', 'PayPal', 'Skrill', 'Neteller', 'Bitcoin', 'Bank Transfer', 'Apple Pay'].map((method) => (
+                  <div key={method} className="flex flex-col items-center gap-2 p-3 border rounded-lg hover:shadow-sm transition-shadow">
+                    <CreditCard className="w-6 h-6 text-muted-foreground" />
+                    <span className="text-xs font-medium text-center">{method}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Payment Methods Table */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Payment Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-2 font-medium">Method</th>
+                          <th className="text-left py-3 px-2 font-medium">Min/Max</th>
+                          <th className="text-left py-3 px-2 font-medium">Fee</th>
+                          <th className="text-left py-3 px-2 font-medium">Avg Payout</th>
+                          <th className="text-left py-3 px-2 font-medium">Notes</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-muted-foreground">
+                        <tr className="border-b">
+                          <td className="py-3 px-2">Credit Cards</td>
+                          <td className="py-3 px-2">$20 / $5,000</td>
+                          <td className="py-3 px-2">0%</td>
+                          <td className="py-3 px-2">24-48h</td>
+                          <td className="py-3 px-2">Visa/Mastercard accepted</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-3 px-2">E-wallets</td>
+                          <td className="py-3 px-2">$10 / $10,000</td>
+                          <td className="py-3 px-2">0%</td>
+                          <td className="py-3 px-2">
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              Instant
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-2">PayPal, Skrill, Neteller</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-3 px-2">Cryptocurrency</td>
+                          <td className="py-3 px-2">$25 / $25,000</td>
+                          <td className="py-3 px-2">Network fee</td>
+                          <td className="py-3 px-2">15min - 2h</td>
+                          <td className="py-3 px-2">Bitcoin, Ethereum, Litecoin</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+
+            {/* Bonuses & Promo Terms */}
+            <section id="bonuses-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Bonuses & Promo Terms</h2>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Welcome Bonus */}
+                <Card className="hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      Welcome Bonus
+                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">New Players</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="text-center p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg">
+                      <div className="text-2xl font-bold">100% up to $500</div>
+                      <div className="text-muted-foreground">+ 200 Free Spins</div>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded border border-dashed">
+                      <code className="flex-1 text-center font-mono">WELCOME500</code>
+                      <Button size="sm" variant="ghost">
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      <div>Min Dep: $20 • Wagering: 35x • Max Bet: $5</div>
+                      <div>Expiry: 30 days • Non-sticky bonus</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* No Deposit Bonus */}
+                <Card className="hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      No Deposit Bonus
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Free</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                      <div className="text-2xl font-bold">$10 Free</div>
+                      <div className="text-muted-foreground">No deposit required</div>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded border border-dashed">
+                      <code className="flex-1 text-center font-mono">NODEPOSIT10</code>
+                      <Button size="sm" variant="ghost">
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      <div>Wagering: 50x • Max Cashout: $100</div>
+                      <div>Expiry: 7 days • Selected games only</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Full Terms Accordion */}
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <span className="font-medium">Full Bonus Terms & Conditions</span>
+                  <ChevronDown className="w-4 h-4 transition-transform" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-t space-y-4 text-sm text-muted-foreground">
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">Game Contributions</h4>
+                    <ul className="space-y-1">
+                      <li>• Slots: 100%</li>
+                      <li>• Table Games: 10%</li>
+                      <li>• Live Casino: 10%</li>
+                      <li>• Video Poker: 5%</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">Excluded Games</h4>
+                    <p>Progressive jackpot slots, certain high RTP games, and all skill-based games are excluded from bonus play.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">Geographic Restrictions</h4>
+                    <p>Bonuses not available to players from UK, US, France, and other restricted jurisdictions.</p>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </section>
+
+            {/* Games & Providers */}
+            <section id="games-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Games & Providers</h2>
+              
+              {/* Metrics Row */}
+              <div className="grid grid-cols-3 gap-4">
+                <Card className="text-center p-4">
+                  <div className="text-2xl font-bold text-primary">2,000+</div>
+                  <div className="text-sm text-muted-foreground">Slots</div>
+                </Card>
+                <Card className="text-center p-4">
+                  <div className="text-2xl font-bold text-green-600">150+</div>
+                  <div className="text-sm text-muted-foreground">Live Tables</div>
+                </Card>
+                <Card className="text-center p-4">
+                  <div className="text-2xl font-bold text-blue-600">50+</div>
+                  <div className="text-sm text-muted-foreground">Providers</div>
+                </Card>
+              </div>
+
+              {/* Provider Grid */}
+              <div>
+                <h3 className="font-semibold mb-4">Software Providers</h3>
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                  {['NetEnt', 'Microgaming', 'Evolution', 'Pragmatic Play', 'Play\'n GO', 'Red Tiger', 'Yggdrasil', 'Quickspin', 'Big Time Gaming', 'Blueprint', 'ELK Studios', 'NoLimit City'].map((provider) => (
+                    <div key={provider} className="flex items-center justify-center p-3 border rounded-lg hover:shadow-sm transition-shadow">
+                      <span className="text-xs font-medium text-center">{provider}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* RTP Policy Callout */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-300">
+                      RTP Policy
+                    </Badge>
+                    <span className="font-medium">Maximum RTP</span>
+                    <div className="text-sm text-muted-foreground">All games run at maximum theoretical RTP as certified by providers</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+
+            {/* Fairness & Security */}
+            <section id="fairness-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Fairness & Security</h2>
+              
+              {/* Testing Badges */}
+              <div className="grid md:grid-cols-3 gap-4">
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-600" />
+                  <div className="font-semibold">eCOGRA Certified</div>
+                  <div className="text-sm text-muted-foreground">RNG & RTP verified monthly</div>
+                </Card>
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <Shield className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+                  <div className="font-semibold">GLI Tested</div>
+                  <div className="text-sm text-muted-foreground">Gaming systems compliance</div>
+                </Card>
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <CheckCircle className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+                  <div className="font-semibold">iTech Labs</div>
+                  <div className="text-sm text-muted-foreground">Random Number Generator certified</div>
+                </Card>
+              </div>
+
+              {/* Security Checklist */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Security Features</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>256-bit SSL encryption for all transactions</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>GDPR compliant data protection policies</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>Player funds held in segregated accounts</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>Two-factor authentication available</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+
+            {/* Responsible Gambling Tools */}
+            <section id="responsible-gambling-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Responsible Gambling Tools</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Available Tools</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-2 font-medium">Tool</th>
+                          <th className="text-left py-3 px-2 font-medium">Available?</th>
+                          <th className="text-left py-3 px-2 font-medium">Where to Set</th>
+                          <th className="text-left py-3 px-2 font-medium">Notes</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-muted-foreground">
+                        <tr className="border-b">
+                          <td className="py-3 px-2">Deposit Limits</td>
+                          <td className="py-3 px-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          </td>
+                          <td className="py-3 px-2">Account Settings</td>
+                          <td className="py-3 px-2">Daily, weekly, monthly</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-3 px-2">Loss Limits</td>
+                          <td className="py-3 px-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          </td>
+                          <td className="py-3 px-2">Account Settings</td>
+                          <td className="py-3 px-2">Net loss tracking</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-3 px-2">Time-outs</td>
+                          <td className="py-3 px-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          </td>
+                          <td className="py-3 px-2">Responsible Gaming</td>
+                          <td className="py-3 px-2">24h to 6 months</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-3 px-2">Self-exclude</td>
+                          <td className="py-3 px-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          </td>
+                          <td className="py-3 px-2">Contact Support</td>
+                          <td className="py-3 px-2">Permanent or timed</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-2">Reality Checks</td>
+                          <td className="py-3 px-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          </td>
+                          <td className="py-3 px-2">Game Settings</td>
+                          <td className="py-3 px-2">Pop-up reminders</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* External Help Organizations */}
+              <div>
+                <h3 className="font-semibold mb-4">External Help Organizations</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Card className="p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <ExternalLink className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <div className="font-medium">GamCare</div>
+                        <div className="text-sm text-muted-foreground">UK support & counseling</div>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card className="p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <ExternalLink className="w-5 h-5 text-green-600" />
+                      <div>
+                        <div className="font-medium">Gamblers Anonymous</div>
+                        <div className="text-sm text-muted-foreground">International support groups</div>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            </section>
+
+            {/* Support & KYC Experience */}
+            <section id="support-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Support & KYC Experience</h2>
+              
+              {/* Contact Methods */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <MessageCircle className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+                  <div className="font-semibold">Live Chat</div>
+                  <div className="text-sm text-muted-foreground">24/7 Available</div>
+                  <div className="text-xs text-green-600 mt-1">Avg response: 30s</div>
+                </Card>
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <Globe className="w-8 h-8 mx-auto mb-2 text-green-600" />
+                  <div className="font-semibold">Email</div>
+                  <div className="text-sm text-muted-foreground">support@casino.com</div>
+                  <div className="text-xs text-green-600 mt-1">Avg response: 4h</div>
+                </Card>
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <Globe className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+                  <div className="font-semibold">Phone</div>
+                  <div className="text-sm text-muted-foreground">+356 2778 1234</div>
+                  <div className="text-xs text-muted-foreground mt-1">Mon-Fri 9-17 CET</div>
+                </Card>
+                <Card className="p-4 text-center hover:shadow-md transition-shadow">
+                  <HelpCircle className="w-8 h-8 mx-auto mb-2 text-orange-600" />
+                  <div className="font-semibold">FAQ</div>
+                  <div className="text-sm text-muted-foreground">Comprehensive guide</div>
+                  <div className="text-xs text-blue-600 mt-1">200+ topics</div>
+                </Card>
+              </div>
+
+              {/* KYC Timeline */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">KYC Verification Timeline</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between relative">
+                    <div className="absolute top-4 left-0 right-0 h-0.5 bg-muted"></div>
+                    <div className="flex flex-col items-center relative bg-background px-2">
+                      <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center mb-2">
+                        <FileText className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="text-sm font-medium">Requested</div>
+                      <div className="text-xs text-muted-foreground">Immediate</div>
+                    </div>
+                    <div className="flex flex-col items-center relative bg-background px-2">
+                      <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center mb-2">
+                        <Clock className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="text-sm font-medium">Submitted</div>
+                      <div className="text-xs text-muted-foreground">Within 24h</div>
+                    </div>
+                    <div className="flex flex-col items-center relative bg-background px-2">
+                      <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center mb-2">
+                        <CheckCircle className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="text-sm font-medium">Approved</div>
+                      <div className="text-xs text-muted-foreground">1-3 business days</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+
+            {/* Country/State Restrictions */}
+            <section id="restrictions-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Country/State Restrictions</h2>
+              
+              <Card className="bg-amber-50 border-amber-200">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
+                    <div>
+                      <div className="font-medium text-amber-900">Geographic Restrictions Apply</div>
+                      <div className="text-sm text-amber-700 mt-1">
+                        This casino is not available in certain jurisdictions. Check local laws before playing.
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <span className="font-medium">View Restricted Countries</span>
+                  <ChevronDown className="w-4 h-4 transition-transform" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-t">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground">
+                    {['United States', 'United Kingdom', 'France', 'Germany', 'Spain', 'Italy', 'Netherlands', 'Belgium', 'Australia', 'Canada', 'Israel', 'Turkey'].map((country) => (
+                      <div key={country} className="flex items-center gap-2">
+                        <XCircle className="w-4 h-4 text-red-500" />
+                        <span>{country}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </section>
+
+            {/* Our Tests */}
+            <section id="tests-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Our Tests</h2>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Deposit Timeline */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Deposit Test</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Registration</span>
+                        <span className="text-sm text-muted-foreground">2min</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">KYC Upload</span>
+                        <span className="text-sm text-muted-foreground">5min</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Deposit Processing</span>
+                        <span className="text-sm text-green-600 font-medium">Instant</span>
+                      </div>
+                      <div className="pt-2 border-t">
+                        <div className="text-sm font-medium">Notes:</div>
+                        <div className="text-sm text-muted-foreground">PayPal deposit processed immediately. Bonus credited automatically.</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Withdrawal Timeline */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Withdrawal Test</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Request Submitted</span>
+                        <span className="text-sm text-muted-foreground">Day 1</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Processing</span>
+                        <span className="text-sm text-muted-foreground">Day 1-2</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Funds Received</span>
+                        <span className="text-sm text-green-600 font-medium">Day 2</span>
+                      </div>
+                      <div className="pt-2 border-t">
+                        <div className="text-sm font-medium">Notes:</div>
+                        <div className="text-sm text-muted-foreground">$500 withdrawal via Skrill. No additional verification required.</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </section>
+
+            {/* User Reviews & Ratings */}
+            <section id="reviews-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">User Reviews & Ratings</h2>
+              
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Rating Overview */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Overall Rating</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <div className="text-4xl font-bold text-primary mb-2">{scores.user}</div>
+                    <div className="flex justify-center mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                      ))}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{userRatings.total} reviews</div>
+                  </CardContent>
+                </Card>
+
+                {/* Rating Breakdown */}
+                <Card className="md:col-span-2">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Rating Breakdown</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {Object.entries(userRatings.breakdown).reverse().map(([rating, percentage]) => (
+                        <div key={rating} className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 w-12">
+                            <span className="text-sm">{rating}</span>
+                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          </div>
+                          <div className="flex-1">
+                            <Progress value={percentage} className="h-2" />
+                          </div>
+                          <div className="text-sm text-muted-foreground w-12 text-right">{percentage}%</div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Filter Chips */}
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="cursor-pointer hover:bg-muted">All Reviews</Badge>
+                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Payouts</Badge>
+                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Bonus Terms</Badge>
+                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Support</Badge>
+                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Games</Badge>
+              </div>
+
+              {/* Sample Reviews */}
+              <div className="space-y-4">
+                {reviews.slice(0, 3).map((review) => (
+                  <ReviewCard key={review.id} review={review} showEntityName={false} />
+                ))}
+              </div>
+              
+              <div className="text-center">
+                <Button variant="outline">View All Reviews</Button>
+              </div>
+            </section>
+
+            {/* FAQ */}
+            <section id="faq-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
+              
+              <div className="space-y-4">
+                {faqItems.map((item, index) => (
+                  <Collapsible key={index}>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border rounded-lg hover:bg-muted/50 transition-colors text-left">
+                      <span className="font-medium">{item.q}</span>
+                      <ChevronDown className="w-4 h-4 transition-transform flex-shrink-0 ml-2" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="p-4 border-t text-muted-foreground">
+                      {item.a}
+                    </CollipsibleContent>
+                  </Collapsible>
+                ))}
+              </div>
+            </section>
+
+            {/* Verdict & Alternatives */}
+            <section id="verdict-section" className="space-y-6">
+              <h2 className="text-2xl font-bold">Verdict & Alternatives</h2>
+              
+              <Card className="bg-muted/30">
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="text-lg font-semibold">Our Verdict</div>
+                    <ul className="space-y-2 text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>Excellent game selection with top-tier software providers</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>Fast withdrawal processing and multiple payment options</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <span>High wagering requirements on bonus offers could be improved</span>
+                      </li>
+                    </ul>
+                    <div className="pt-4">
+                      <Button variant="outline" className="w-full md:w-auto">
+                        Compare Similar Casinos
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Disclosure */}
+              <div className="text-xs text-muted-foreground space-y-2">
+                <p>
+                  <strong>Affiliate Disclosure:</strong> This review contains affiliate links. We may earn a commission 
+                  when you sign up or make a deposit, at no additional cost to you.
+                </p>
+                <p>
+                  <strong>Methodology:</strong> Our reviews are based on extensive testing, research, and analysis. 
+                  Learn more about our <a href="#" className="text-primary hover:underline">review methodology</a>.
+                </p>
+              </div>
+            </section>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {/* Primary CTA Card */}
+              <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                <CardContent className="p-6 text-center space-y-4">
+                  <div className="text-lg font-bold">100% up to $500</div>
+                  <div className="text-sm text-muted-foreground">+ 200 Free Spins</div>
+                  <Button className="w-full" asChild>
+                    <a href="#visit" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Play Now
+                    </a>
+                  </Button>
+                  <div className="text-xs text-muted-foreground">
+                    18+ | Terms & Conditions Apply | Play Responsibly
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* At-a-glance Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Quick Facts</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Founded:</span>
+                    <span className="font-medium">2018</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">License:</span>
+                    <span className="font-medium">MGA, UKGC</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Min Deposit:</span>
+                    <span className="font-medium">$20</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Max Cashout:</span>
+                    <span className="font-medium">$10,000/day</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Avg Payout:</span>
+                    <span className="font-medium">24-48h</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Currencies:</span>
+                    <span className="font-medium">USD, EUR, BTC</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Languages:</span>
+                    <span className="font-medium">15+</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Trust & Status Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Trust & Status</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Domain Age:</span>
+                    <span className="font-medium">6 years</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Uptime:</span>
+                    <span className="font-medium text-green-600">99.8%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Complaints:</span>
+                    <span className="font-medium text-green-600">95% resolved</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Links */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Quick Links</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <a href="#bonuses-section" className="block text-sm text-primary hover:underline py-1">
+                    → Bonuses & Promotions
+                  </a>
+                  <a href="#payments-section" className="block text-sm text-primary hover:underline py-1">
+                    → Payment Methods
+                  </a>
+                  <a href="#games-section" className="block text-sm text-primary hover:underline py-1">
+                    → Games & Providers
+                  </a>
+                  <a href="#support-section" className="block text-sm text-primary hover:underline py-1">
+                    → Customer Support
+                  </a>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
 
