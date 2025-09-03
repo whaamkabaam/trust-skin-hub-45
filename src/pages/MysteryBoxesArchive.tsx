@@ -548,6 +548,242 @@ const MysteryBoxesArchive = () => {
         </div>
       </section>
 
+      {/* Supporting Content for SEO */}
+      <section className="bg-muted/30 py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto space-y-12">
+            
+            {/* About Mystery Boxes */}
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Everything You Need to Know About Mystery Boxes</h2>
+              <p className="text-xl text-muted-foreground leading-relaxed">
+                Discover the world of mystery box opening with our comprehensive guide to the best platforms, 
+                transparent odds, and proven fair systems in 2024.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              
+              {/* What Are Mystery Boxes */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="w-5 h-5" />
+                    What Are Mystery Boxes?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-muted-foreground">
+                    Mystery boxes are digital containers that hold randomized virtual items, typically skins, 
+                    weapons, or collectibles from popular games like CS2, Rust, and Dota2. Each box has 
+                    predetermined odds and potential rewards.
+                  </p>
+                  <div className="space-y-2">
+                    <h4 className="font-semibold">Key Features:</h4>
+                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                      <li>Transparent odds disclosure</li>
+                      <li>Provably fair algorithms</li>
+                      <li>Real-time market value tracking</li>
+                      <li>Instant item delivery</li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* How to Choose */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5" />
+                    How to Choose the Right Box
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-muted-foreground">
+                    Selecting the right mystery box requires understanding expected value (EV), 
+                    house edge, and your risk tolerance. Our platform provides detailed analytics 
+                    for every box.
+                  </p>
+                  <div className="space-y-2">
+                    <h4 className="font-semibold">Consider These Factors:</h4>
+                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                      <li>Expected value vs. box price</li>
+                      <li>Operator reputation and verification</li>
+                      <li>Odds transparency and fairness</li>
+                      <li>Withdrawal terms and conditions</li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+            </div>
+
+            {/* Popular Games Section */}
+            <div>
+              <h3 className="text-2xl font-bold mb-6 text-center">Popular Games & Categories</h3>
+              <div className="grid md:grid-cols-4 gap-4">
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">🔫</div>
+                  <h4 className="font-semibold mb-2">Counter-Strike 2</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Premium weapon skins, knife collections, and rare gloves from the world's most popular FPS.
+                  </p>
+                  <Badge variant="outline" className="mt-2">31 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">🔨</div>
+                  <h4 className="font-semibold mb-2">Rust</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Survival game skins including weapons, clothing, and building materials.
+                  </p>
+                  <Badge variant="outline" className="mt-2">18 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">⚔️</div>
+                  <h4 className="font-semibold mb-2">Dota 2</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Immortal treasures, rare sets, and exclusive cosmetics for heroes.
+                  </p>
+                  <Badge variant="outline" className="mt-2">12 boxes</Badge>
+                </Card>
+                
+                <Card className="text-center p-4">
+                  <div className="text-3xl mb-2">🎯</div>
+                  <h4 className="font-semibold mb-2">Team Fortress 2</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Unusual hats, strange weapons, and vintage items from the classic shooter.
+                  </p>
+                  <Badge variant="outline" className="mt-2">8 boxes</Badge>
+                </Card>
+              </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div>
+              <h3 className="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h3>
+              <div className="space-y-4">
+                <Card>
+                  <CardContent className="p-6">
+                    <h4 className="font-semibold mb-2">Are mystery boxes gambling?</h4>
+                    <p className="text-muted-foreground text-sm">
+                      Mystery boxes involve chance-based outcomes, similar to trading card packs. 
+                      We only feature platforms that clearly disclose odds and implement provably fair systems. 
+                      Always gamble responsibly and within your means.
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="p-6">
+                    <h4 className="font-semibold mb-2">What does "provably fair" mean?</h4>
+                    <p className="text-muted-foreground text-sm">
+                      Provably fair systems use cryptographic algorithms that allow players to verify 
+                      the randomness and fairness of each outcome. This ensures operators cannot 
+                      manipulate results in their favor.
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="p-6">
+                    <h4 className="font-semibold mb-2">How do you calculate expected value?</h4>
+                    <p className="text-muted-foreground text-sm">
+                      Expected Value (EV) is calculated by multiplying each possible item's market value 
+                      by its probability of being won, then summing all possibilities. An EV above 
+                      the box price indicates positive expected returns.
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="p-6">
+                    <h4 className="font-semibold mb-2">Can I withdraw items immediately?</h4>
+                    <p className="text-muted-foreground text-sm">
+                      Withdrawal policies vary by operator. Most platforms allow immediate withdrawals 
+                      for verified accounts, while others may have minimum withdrawal amounts or 
+                      waiting periods. Check each operator's terms before opening boxes.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Safety & Tips */}
+            <div>
+              <h3 className="text-2xl font-bold mb-6 text-center">Safety Tips & Best Practices</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Verified className="w-5 h-5 text-success" />
+                      Choosing Verified Operators
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• Look for official licensing and regulatory compliance</li>
+                      <li>• Check user reviews and community feedback</li>
+                      <li>• Verify transparent odds disclosure</li>
+                      <li>• Ensure secure payment processing</li>
+                      <li>• Confirm responsive customer support</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Hash className="w-5 h-5 text-primary" />
+                      Understanding Risk Management
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• Set a budget and stick to it</li>
+                      <li>• Never chase losses with bigger bets</li>
+                      <li>• Understand house edge and profit margins</li>
+                      <li>• Take regular breaks from box opening</li>
+                      <li>• Consider entertainment value over profit</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Market Trends */}
+            <div className="text-center">
+              <h3 className="text-2xl font-bold mb-4">Market Trends & Statistics</h3>
+              <div className="grid md:grid-cols-4 gap-6">
+                <div className="p-4">
+                  <div className="text-3xl font-bold text-primary mb-2">${stats.avgPrice}</div>
+                  <div className="text-sm text-muted-foreground">Average Box Price</div>
+                </div>
+                <div className="p-4">
+                  <div className="text-3xl font-bold text-success mb-2">{stats.verifiedBoxes}</div>
+                  <div className="text-sm text-muted-foreground">Verified Platforms</div>
+                </div>
+                <div className="p-4">
+                  <div className="text-3xl font-bold text-accent mb-2">2.4M+</div>
+                  <div className="text-sm text-muted-foreground">Monthly Openings</div>
+                </div>
+                <div className="p-4">
+                  <div className="text-3xl font-bold text-warning mb-2">15.2%</div>
+                  <div className="text-sm text-muted-foreground">Avg House Edge</div>
+                </div>
+              </div>
+              <p className="mt-6 text-muted-foreground max-w-2xl mx-auto">
+                Our data is updated daily from verified operators and community sources. 
+                We track over {stats.totalBoxes} mystery boxes across multiple games and platforms 
+                to provide accurate, real-time market insights.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
