@@ -24,6 +24,10 @@ const MysteryBoxesArchive = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [selectedSite, setSelectedSite] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [priceFilters, setPriceFilters] = useState<string[]>([]);
+  const [riskFilters, setRiskFilters] = useState<string[]>([]);
 
   const itemsPerPage = 12;
   const totalBoxes = 89;
@@ -36,20 +40,71 @@ const MysteryBoxesArchive = () => {
     newThisWeek: 5
   };
 
-  const categories = [
-    { name: 'All Mystery Boxes', count: 89, href: '/mystery-boxes' },
-    { name: 'Apple Mystery Boxes', count: 45, href: '/mystery-boxes/apple' },
-    { name: 'Knife Collections', count: 23, href: '/mystery-boxes?type=knives' },
-    { name: 'Weapon Skins', count: 31, href: '/mystery-boxes?type=weapons' },
-    { name: 'Glove Collections', count: 12, href: '/mystery-boxes?type=gloves' },
-    { name: 'Sticker Packs', count: 8, href: '/mystery-boxes?type=stickers' },
-    { name: 'Premium Boxes', count: 15, href: '/mystery-boxes?premium=true' },
-    { name: 'Provably Fair', count: 67, href: '/mystery-boxes?fair=true' },
-    { name: 'Physical Items', count: 6, href: '/mystery-boxes?physical=true' }
+  const sites = [
+    { value: '', label: 'All Sites' },
+    { value: 'premium-skins', label: 'Premium Skins' },
+    { value: 'skin-bay', label: 'Skin Bay' },
+    { value: 'case-king', label: 'Case King' },
+    { value: 'box-empire', label: 'Box Empire' },
+    { value: 'mystery-co', label: 'Mystery Co' },
+    { value: 'skin-vault', label: 'Skin Vault' },
+    { value: 'drop-zone', label: 'Drop Zone' }
   ];
 
-  const gameFilters = ['CS2', 'Rust', 'TF2', 'Dota2'];
-  const typeFilters = ['Knives', 'Weapons', 'Gloves', 'Stickers', 'Mixed'];
+  const categoryOptions = [
+    { value: '', label: 'All Categories' },
+    { value: 'knives', label: 'Knife Collections' },
+    { value: 'weapons', label: 'Weapon Skins' },
+    { value: 'gloves', label: 'Glove Collections' },
+    { value: 'stickers', label: 'Sticker Packs' },
+    { value: 'mixed', label: 'Mixed Items' },
+    { value: 'premium', label: 'Premium Boxes' },
+    { value: 'apple', label: 'Apple Products' }
+  ];
+
+  const priceOptions = [
+    { value: 'under-25', label: 'Under $25' },
+    { value: '25-50', label: '$25 - $50' },
+    { value: '50-100', label: '$50 - $100' },
+    { value: '100-200', label: '$100 - $200' },
+    { value: 'over-200', label: 'Over $200' }
+  ];
+
+  const riskOptions = [
+    { value: 'low', label: 'Low Risk' },
+    { value: 'medium', label: 'Medium Risk' },
+    { value: 'high', label: 'High Risk' },
+    { value: 'extreme', label: 'Extreme Risk' }
+  ];
+
+  const handlePriceToggle = (price: string) => {
+    setPriceFilters(prev => 
+      prev.includes(price) 
+        ? prev.filter(p => p !== price)
+        : [...prev, price]
+    );
+  };
+
+  const handleRiskToggle = (risk: string) => {
+    setRiskFilters(prev => 
+      prev.includes(risk) 
+        ? prev.filter(r => r !== risk)
+        : [...prev, risk]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setSelectedSite('');
+    setSelectedCategory('');
+    setPriceFilters([]);
+    setRiskFilters([]);
+  };
+
+  const activeFilterCount = 
+    (selectedSite ? 1 : 0) + 
+    (selectedCategory ? 1 : 0) + 
+    priceFilters.length + 
+    riskFilters.length;
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
     { value: 'price-low', label: 'Price: Low to High' },
@@ -129,80 +184,79 @@ const MysteryBoxesArchive = () => {
                   </SheetDescription>
                 </SheetHeader>
                 <div className="mt-6 space-y-6">
-                  {/* Mobile filter content - same structure as desktop but vertical */}
+                  {/* Mobile Site Filter */}
                   <div>
-                    <Label className="text-sm font-medium mb-3 block">Categories</Label>
-                    <div className="space-y-2">
-                      {categories.slice(0, 6).map((category) => (
-                        <a
-                          key={category.name}
-                          href={category.href}
-                          className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
-                        >
-                          <span className="text-sm">{category.name}</span>
-                          <Badge variant="outline" className="text-xs">{category.count}</Badge>
-                        </a>
-                      ))}
-                    </div>
+                    <Label className="text-sm font-medium mb-3 block">Site</Label>
+                    <Select value={selectedSite} onValueChange={setSelectedSite}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select site" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sites.map((site) => (
+                          <SelectItem key={site.value} value={site.value}>
+                            {site.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
+                  {/* Mobile Category Filter */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Category</Label>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categoryOptions.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Mobile Price Toggles */}
                   <div>
                     <Label className="text-sm font-medium mb-3 block">Price Range</Label>
-                    <div className="px-2">
-                      <Slider
-                        value={priceRange}
-                        onValueChange={setPriceRange}
-                        max={200}
-                        step={1}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-sm text-muted-foreground mt-2">
-                        <span>${priceRange[0]}</span>
-                        <span>${priceRange[1]}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium mb-3 block">Games</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {gameFilters.map((game) => (
-                        <div key={game} className="flex items-center space-x-2">
-                          <Checkbox id={`mobile-game-${game}`} />
-                          <Label htmlFor={`mobile-game-${game}`} className="text-sm">{game}</Label>
+                    <div className="space-y-2">
+                      {priceOptions.map((price) => (
+                        <div key={price.value} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`mobile-price-${price.value}`}
+                            checked={priceFilters.includes(price.value)}
+                            onCheckedChange={() => handlePriceToggle(price.value)}
+                          />
+                          <Label htmlFor={`mobile-price-${price.value}`} className="text-sm">
+                            {price.label}
+                          </Label>
                         </div>
                       ))}
                     </div>
                   </div>
 
+                  {/* Mobile Risk Toggles */}
                   <div>
-                    <Label className="text-sm font-medium mb-3 block">Features</Label>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="mobile-verified" />
-                        <Label htmlFor="mobile-verified" className="text-sm flex items-center gap-1">
-                          <Verified className="w-3 h-3" />
-                          Verified only
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="mobile-provably-fair" />
-                        <Label htmlFor="mobile-provably-fair" className="text-sm flex items-center gap-1">
-                          <Hash className="w-3 h-3" />
-                          Provably fair
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="mobile-physical" />
-                        <Label htmlFor="mobile-physical" className="text-sm flex items-center gap-1">
-                          <Package className="w-3 h-3" />
-                          Physical items
-                        </Label>
-                      </div>
+                    <Label className="text-sm font-medium mb-3 block">Risk Level</Label>
+                    <div className="space-y-2">
+                      {riskOptions.map((risk) => (
+                        <div key={risk.value} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`mobile-risk-${risk.value}`}
+                            checked={riskFilters.includes(risk.value)}
+                            onCheckedChange={() => handleRiskToggle(risk.value)}
+                          />
+                          <Label htmlFor={`mobile-risk-${risk.value}`} className="text-sm">
+                            {risk.label}
+                          </Label>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  <Button variant="outline" className="w-full" size="sm">
+                  <Button variant="outline" className="w-full" size="sm" onClick={clearAllFilters}>
                     Clear all filters
                   </Button>
                 </div>
@@ -214,113 +268,78 @@ const MysteryBoxesArchive = () => {
           <div className="hidden md:block">
             <Card>
               <CardContent className="p-6">
-                <div className="grid lg:grid-cols-6 md:grid-cols-3 gap-6">
+                <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-6">
                   
-                  {/* Categories */}
+                  {/* Site Dropdown */}
                   <div>
-                    <Label className="text-sm font-semibold mb-3 block">Categories</Label>
+                    <Label className="text-sm font-semibold mb-3 block">By Site</Label>
+                    <Select value={selectedSite} onValueChange={setSelectedSite}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="All Sites" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sites.map((site) => (
+                          <SelectItem key={site.value} value={site.value}>
+                            {site.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Category Dropdown */}
+                  <div>
+                    <Label className="text-sm font-semibold mb-3 block">By Category</Label>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categoryOptions.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Price Toggles */}
+                  <div>
+                    <Label className="text-sm font-semibold mb-3 block">By Price</Label>
                     <div className="space-y-2 max-h-32 overflow-y-auto">
-                      {categories.slice(0, 4).map((category) => (
-                        <a
-                          key={category.name}
-                          href={category.href}
-                          className="flex items-center justify-between py-1 px-2 rounded hover:bg-muted/50 transition-colors text-xs"
-                        >
-                          <span className="truncate">{category.name.replace('Mystery Boxes', '').replace('Boxes', '').trim()}</span>
-                          <Badge variant="outline" className="text-xs ml-1">{category.count}</Badge>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Price Range */}
-                  <div>
-                    <Label className="text-sm font-semibold mb-3 block">Price Range</Label>
-                    <div className="px-1">
-                      <Slider
-                        value={priceRange}
-                        onValueChange={setPriceRange}
-                        max={200}
-                        step={5}
-                        className="w-full mb-2"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>${priceRange[0]}</span>
-                        <span>${priceRange[1]}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Games */}
-                  <div>
-                    <Label className="text-sm font-semibold mb-3 block">Games</Label>
-                    <div className="space-y-2">
-                      {gameFilters.map((game) => (
-                        <div key={game} className="flex items-center space-x-2">
-                          <Checkbox id={`game-${game}`} className="h-3 w-3" />
-                          <Label htmlFor={`game-${game}`} className="text-xs">{game}</Label>
+                      {priceOptions.map((price) => (
+                        <div key={price.value} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`price-${price.value}`} 
+                            className="h-3 w-3"
+                            checked={priceFilters.includes(price.value)}
+                            onCheckedChange={() => handlePriceToggle(price.value)}
+                          />
+                          <Label htmlFor={`price-${price.value}`} className="text-xs">
+                            {price.label}
+                          </Label>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Box Types */}
+                  {/* Risk Toggles */}
                   <div>
-                    <Label className="text-sm font-semibold mb-3 block">Box Type</Label>
+                    <Label className="text-sm font-semibold mb-3 block">By Risk</Label>
                     <div className="space-y-2">
-                      {typeFilters.slice(0, 4).map((type) => (
-                        <div key={type} className="flex items-center space-x-2">
-                          <Checkbox id={`type-${type}`} className="h-3 w-3" />
-                          <Label htmlFor={`type-${type}`} className="text-xs">{type}</Label>
+                      {riskOptions.map((risk) => (
+                        <div key={risk.value} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`risk-${risk.value}`} 
+                            className="h-3 w-3"
+                            checked={riskFilters.includes(risk.value)}
+                            onCheckedChange={() => handleRiskToggle(risk.value)}
+                          />
+                          <Label htmlFor={`risk-${risk.value}`} className="text-xs">
+                            {risk.label}
+                          </Label>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Features */}
-                  <div>
-                    <Label className="text-sm font-semibold mb-3 block">Features</Label>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="verified-h" className="h-3 w-3" />
-                        <Label htmlFor="verified-h" className="text-xs flex items-center gap-1">
-                          <Verified className="w-3 h-3" />
-                          Verified
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="fair-h" className="h-3 w-3" />
-                        <Label htmlFor="fair-h" className="text-xs flex items-center gap-1">
-                          <Hash className="w-3 h-3" />
-                          Provably Fair
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="physical-h" className="h-3 w-3" />
-                        <Label htmlFor="physical-h" className="text-xs flex items-center gap-1">
-                          <Package className="w-3 h-3" />
-                          Physical
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="positive-ev-h" className="h-3 w-3" />
-                        <Label htmlFor="positive-ev-h" className="text-xs">Positive EV</Label>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Top Operators */}
-                  <div>
-                    <Label className="text-sm font-semibold mb-3 block">Top Operators</Label>
-                    <div className="space-y-1">
-                      {['Premium Skins', 'Skin Bay', 'Case King', 'Box Empire'].map((operator) => (
-                        <a
-                          key={operator}
-                          href={`/mystery-boxes?operator=${operator.toLowerCase().replace(' ', '-')}`}
-                          className="block text-xs text-accent hover:underline py-1"
-                        >
-                          {operator}
-                        </a>
                       ))}
                     </div>
                   </div>
@@ -329,9 +348,9 @@ const MysteryBoxesArchive = () => {
                 
                 <div className="flex items-center justify-between mt-6 pt-4 border-t">
                   <div className="text-sm text-muted-foreground">
-                    Active filters: <Badge variant="secondary" className="ml-1">0</Badge>
+                    Active filters: <Badge variant="secondary" className="ml-1">{activeFilterCount}</Badge>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={clearAllFilters}>
                     Clear all filters
                   </Button>
                 </div>
