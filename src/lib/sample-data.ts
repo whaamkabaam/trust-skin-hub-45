@@ -22,7 +22,11 @@ export const sampleOperators: Operator[] = [
     kycRequired: false,
     countries: ['Global except restricted'],
     url: 'https://stake.com',
-    verified: true
+    verified: true,
+    otherFeatures: ['Drop feed', 'Community Chat', 'Free play drop'],
+    gamingModes: ['Roulette', 'Jackpot', 'Coinflip'],
+    games: ['Slots', 'Blackjack', 'Roulette', 'Live games', 'Plinko', 'Mines', 'Crash'],
+    categories: ['CS2', 'Dota2', 'Rust']
   },
   {
     id: 'csgoroll',
@@ -45,7 +49,11 @@ export const sampleOperators: Operator[] = [
     kycRequired: false,
     countries: ['Global except US'],
     url: 'https://csgoroll.com',
-    verified: true
+    verified: true,
+    otherFeatures: ['Drop feed', 'Custom boxes'],
+    gamingModes: ['Battles', 'Upgrader', 'Coinflip', 'Roulette'],
+    games: ['Crash', 'Mines'],
+    categories: ['CS2', 'Team Fortress 2']
   },
   {
     id: 'daddyskins',

@@ -11,6 +11,10 @@ interface OperatorReviewHeroProps {
     verified: boolean;
     url: string;
     modes: string[];
+    otherFeatures?: string[];
+    gamingModes?: string[];
+    games?: string[];
+    categories?: string[];
   };
   scores: {
     overall: number;

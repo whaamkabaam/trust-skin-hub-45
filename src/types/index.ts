@@ -20,6 +20,11 @@ export interface Operator {
   countries: string[];
   url: string;
   verified: boolean;
+  // Optional new fields
+  otherFeatures?: string[];
+  gamingModes?: string[];
+  games?: string[];
+  categories?: string[];
 }
 
 export interface Case {

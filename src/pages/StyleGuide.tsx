@@ -431,14 +431,18 @@ const StyleGuide = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="border rounded-lg overflow-hidden">
-                    <OperatorReviewHero 
-                      operator={{
-                        id: 'csgoroll',
-                        name: 'CSGORoll',
-                        verified: true,
-                        url: 'https://csgoroll.com',
-                        modes: ['Case Opening', 'Upgrader']
-                      }}
+                      <OperatorReviewHero 
+                        operator={{
+                          id: 'csgoroll',
+                          name: 'CSGORoll',
+                          verified: true,
+                          url: 'https://csgoroll.com',
+                          modes: ['Case Opening', 'Upgrader'],
+                          otherFeatures: ['Drop feed', 'Custom boxes'],
+                          gamingModes: ['Battles', 'Coinflip'],
+                          games: ['Crash', 'Mines'],
+                          categories: ['CS2', 'Rust']
+                        }}
                       scores={{
                         overall: 4.3,
                         user: 3.7
