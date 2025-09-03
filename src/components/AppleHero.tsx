@@ -41,9 +41,9 @@ const AppleHero = () => {
 
               {/* Main Headline */}
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                Unbox the Latest
+                Apple Mystery Boxes
                 <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent block">
-                  Apple Products
+                  in September 2025
                 </span>
               </h1>
 
