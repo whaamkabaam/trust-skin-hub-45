@@ -880,8 +880,84 @@ const OperatorReview = () => {
 
             {/* Fairness & Security */}
             <div id="fairness-security-section">
-              <h2 className="text-2xl font-bold mb-4">Fairness & Security</h2>
-              <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Fairness & Security</h2>
+              </div>
+              <div className="space-y-6">
+                {/* Security Cards Grid */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <Shield className="w-3 h-3 text-white" />
+                        </div>
+                        <h4 className="font-semibold text-green-800">Provably Fair</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Cryptographic verification for all outcomes</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">🔒</span>
+                        </div>
+                        <h4 className="font-semibold text-blue-800">SSL Security</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">256-bit encryption for all transactions</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">📜</span>
+                        </div>
+                        <h4 className="font-semibold text-purple-800">Licensed</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Regulated under Curacao gaming license</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">🛡️</span>
+                        </div>
+                        <h4 className="font-semibold text-orange-800">Anti-Fraud</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Advanced fraud detection systems</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 border-teal-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">🔐</span>
+                        </div>
+                        <h4 className="font-semibold text-teal-800">Data Protection</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">GDPR compliant data handling</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 border-rose-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-rose-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">⚖️</span>
+                        </div>
+                        <h4 className="font-semibold text-rose-800">Responsible Gaming</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Tools to promote safe gaming habits</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Detailed Content */}
                 <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50">
                   <CardContent className="p-6 space-y-6">
                     <div>
