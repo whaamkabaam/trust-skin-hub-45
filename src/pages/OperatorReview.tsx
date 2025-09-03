@@ -608,28 +608,81 @@ const OperatorReview = () => {
             </div>
 
             {/* Prizes & Payouts */}
-            <div id="prizes-payouts-section">
-              <h2 className="text-2xl font-bold mb-4">Prizes & Payouts</h2>
+            <div id="prizes-payouts-section" className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Prizes & Payouts</h2>
+              </div>
               <div className="space-y-4">
-                {siteType === 'Case Site' ? <Card>
-                    <CardHeader>
-                      <CardTitle>Case Site Payouts</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>• <strong>Skins Inventory:</strong> All won skins go to your account inventory</div>
-                      <div>• <strong>Steam Trade Flow:</strong> Withdraw skins directly to Steam via trade bot</div>
-                      <div>• <strong>P2P/Market Cashout:</strong> Sell skins on integrated marketplace</div>
+                {siteType === 'Case Site' ? (
+                  <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
+                    <CardContent className="p-6 space-y-6">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-3">Prize Structure & Values</h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          {operator.name} offers an extensive catalog of CS:GO and other gaming skins with values ranging from a few cents to several thousand dollars. The platform features over 500 different cases, each containing curated collections of items from various price tiers. Rare items like Dragon Lore AWPs, Karambit Doppler knives, and other coveted skins are available through premium cases with clearly displayed drop rates.
+                        </p>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          The prize pool is constantly updated to reflect current market values, ensuring that users receive items worth their actual trading value. Special limited-time cases featuring exclusive or newly released skins are regularly introduced, giving players access to the latest and most sought-after items in the gaming community.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-semibold mb-3">Withdrawal Process</h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          Won skins are immediately added to your account inventory and can be withdrawn through multiple methods. The primary withdrawal option is Steam trading, where automated trade bots deliver items directly to your Steam account within minutes. For users who prefer immediate liquidity, the platform offers an integrated marketplace where skins can be sold for platform credits or cryptocurrency.
+                        </p>
+                        <p className="text-muted-foreground leading-relaxed">
+                          The platform maintains high-quality standards for all items, ensuring that skins are delivered in the exact condition and wear level as advertised. A comprehensive trade history system allows users to track all transactions and maintain detailed records of their wins and withdrawals.
+                        </p>
+                      </div>
+
+                      <div className="mt-6 pt-4 border-t border-border/50">
+                        <h4 className="text-base font-semibold mb-3">Case Site Payout Summary</h4>
+                        <div className="space-y-3">
+                          <div>• <strong>Skins Inventory:</strong> All won skins go to your account inventory</div>
+                          <div>• <strong>Steam Trade Flow:</strong> Withdraw skins directly to Steam via trade bot</div>
+                          <div>• <strong>P2P/Market Cashout:</strong> Sell skins on integrated marketplace</div>
+                        </div>
+                      </div>
                     </CardContent>
-                  </Card> : <Card>
-                    <CardHeader>
-                      <CardTitle>Mystery Box Payouts</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>• <strong>Prize Types:</strong> Electronics, gaming gear, collectibles, gift cards</div>
-                      <div>• <strong>Ship/Claim Flow:</strong> Physical items shipped worldwide within 7-14 days</div>
-                      <div>• <strong>Swap for Credits:</strong> Convert physical prizes to platform credits</div>
+                  </Card>
+                ) : (
+                  <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
+                    <CardContent className="p-6 space-y-6">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-3">Physical Prize Categories</h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          The platform features an impressive selection of physical prizes spanning multiple categories including cutting-edge electronics, gaming peripherals, collectibles, and gift cards. Popular items include the latest graphics cards, gaming laptops, mechanical keyboards, premium headsets, and limited-edition collectibles from popular franchises. Gift cards are available for major retailers including Amazon, Steam, PlayStation, and Xbox.
+                        </p>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          Prize values range from $10 gift cards to high-end electronics worth thousands of dollars. The platform regularly updates its inventory to include the newest releases and most requested items from the gaming community. Special seasonal boxes feature holiday-themed prizes and exclusive items not available in regular mystery boxes.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-semibold mb-3">Shipping & Fulfillment</h3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                          {operator.name} maintains partnerships with reliable logistics providers to ensure fast and secure delivery worldwide. Most physical items are shipped within 2-3 business days of winning, with tracking information provided immediately upon dispatch. International shipping is available to over 50 countries, with delivery times typically ranging from 7-14 business days depending on destination.
+                        </p>
+                        <p className="text-muted-foreground leading-relaxed">
+                          For users who prefer immediate value over physical items, the platform offers a conversion system where physical prizes can be exchanged for platform credits at fair market rates. This flexibility allows users to continue playing or save credits for future high-value boxes without waiting for physical delivery.
+                        </p>
+                      </div>
+
+                      <div className="mt-6 pt-4 border-t border-border/50">
+                        <h4 className="text-base font-semibold mb-3">Mystery Box Payout Summary</h4>
+                        <div className="space-y-3">
+                          <div>• <strong>Prize Types:</strong> Electronics, gaming gear, collectibles, gift cards</div>
+                          <div>• <strong>Ship/Claim Flow:</strong> Physical items shipped worldwide within 7-14 days</div>
+                          <div>• <strong>Swap for Credits:</strong> Convert physical prizes to platform credits</div>
+                        </div>
+                      </div>
                     </CardContent>
-                  </Card>}
+                  </Card>
+                )}
               </div>
             </div>
 
