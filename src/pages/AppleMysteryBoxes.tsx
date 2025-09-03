@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Grid, List, Package, Hash, Verified, TrendingUp, Calendar, Smartphone, Laptop, Watch, Headphones } from 'lucide-react';
+import { Search, Grid, List, Package, Hash, Verified, TrendingUp, Calendar, Smartphone, Laptop, Watch, Headphones, ChevronDown, Filter, SlidersHorizontal } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AppleHero from '@/components/AppleHero';
@@ -13,6 +13,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 const AppleMysteryBoxes = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,7 +22,11 @@ const AppleMysteryBoxes = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [priceRange, setPriceRange] = useState([0, 2000]);
-  const [returnsRange, setReturnsRange] = useState([45, 75]);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [selectedSite, setSelectedSite] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [priceFilters, setPriceFilters] = useState<string[]>([]);
+  const [riskFilters, setRiskFilters] = useState<string[]>([]);
   const itemsPerPage = 12;
   const totalBoxes = 45;
   const totalPages = Math.ceil(totalBoxes / itemsPerPage);
@@ -30,41 +36,72 @@ const AppleMysteryBoxes = () => {
     verifiedBoxes: 42,
     newThisWeek: 3
   };
-  const categories = [{
-    name: 'All Apple Boxes',
-    count: 45,
-    href: '/mystery-boxes/apple'
-  }, {
-    name: 'iPhone Collection',
-    count: 15,
-    href: '/mystery-boxes/apple?type=iphone'
-  }, {
-    name: 'MacBook Mystery',
-    count: 8,
-    href: '/mystery-boxes/apple?type=macbook'
-  }, {
-    name: 'Apple Watch Box',
-    count: 10,
-    href: '/mystery-boxes/apple?type=watch'
-  }, {
-    name: 'AirPods & Audio',
-    count: 7,
-    href: '/mystery-boxes/apple?type=audio'
-  }, {
-    name: 'iPad Collection',
-    count: 5,
-    href: '/mystery-boxes/apple?type=ipad'
-  }, {
-    name: 'Accessories Pack',
-    count: 12,
-    href: '/mystery-boxes/apple?type=accessories'
-  }, {
-    name: 'Vintage Apple',
-    count: 6,
-    href: '/mystery-boxes/apple?vintage=true'
-  }];
-  const productFilters = ['iPhone', 'MacBook', 'Apple Watch', 'AirPods', 'iPad', 'Accessories'];
-  const conditionFilters = ['New', 'Refurbished', 'Vintage', 'Mixed'];
+
+  const sites = [
+    { value: 'all', label: 'All Sites' },
+    { value: 'apple-direct', label: 'Apple Direct' },
+    { value: 'tech-vault', label: 'Tech Vault' },
+    { value: 'ibox-mystery', label: 'iBox Mystery' },
+    { value: 'premium-apple', label: 'Premium Apple' },
+    { value: 'elite-tech', label: 'Elite Tech' },
+    { value: 'apple-outlet', label: 'Apple Outlet' }
+  ];
+
+  const categoryOptions = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'iphone', label: 'iPhone Collection' },
+    { value: 'macbook', label: 'MacBook Mystery' },
+    { value: 'apple-watch', label: 'Apple Watch Box' },
+    { value: 'airpods', label: 'AirPods & Audio' },
+    { value: 'ipad', label: 'iPad Collection' },
+    { value: 'accessories', label: 'Accessories Pack' },
+    { value: 'vintage', label: 'Vintage Apple' }
+  ];
+
+  const priceOptions = [
+    { value: 'under-100', label: 'Under $100' },
+    { value: '100-300', label: '$100 - $300' },
+    { value: '300-500', label: '$300 - $500' },
+    { value: '500-1000', label: '$500 - $1000' },
+    { value: 'over-1000', label: 'Over $1000' }
+  ];
+
+  const riskOptions = [
+    { value: 'low', label: 'Low Risk' },
+    { value: 'medium', label: 'Medium Risk' },
+    { value: 'high', label: 'High Risk' },
+    { value: 'extreme', label: 'Extreme Risk' }
+  ];
+
+  const handlePriceToggle = (price: string) => {
+    setPriceFilters(prev => 
+      prev.includes(price) 
+        ? prev.filter(p => p !== price)
+        : [...prev, price]
+    );
+  };
+
+  const handleRiskToggle = (risk: string) => {
+    setRiskFilters(prev => 
+      prev.includes(risk) 
+        ? prev.filter(r => r !== risk)
+        : [...prev, risk]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setSelectedSite('all');
+    setSelectedCategory('all');
+    setPriceFilters([]);
+    setRiskFilters([]);
+  };
+
+  const activeFilterCount = 
+    (selectedSite !== 'all' ? 1 : 0) + 
+    (selectedCategory !== 'all' ? 1 : 0) + 
+    priceFilters.length + 
+    riskFilters.length;
+
   const sortOptions = [{
     value: 'newest',
     label: 'Newest First'
@@ -162,237 +199,405 @@ const AppleMysteryBoxes = () => {
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Filters */}
-          <aside className="lg:w-80 space-y-6">
-            {/* Apple Product Tags */}
+        {/* Horizontal Filters */}
+        <div className="mb-8">
+          {/* Mobile Filters Toggle */}
+          <div className="md:hidden mb-6">
+            <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters & Categories
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80">
+                <SheetHeader>
+                  <SheetTitle>Filters</SheetTitle>
+                  <SheetDescription>
+                    Filter Apple mystery boxes by your preferences
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="mt-6 space-y-6">
+                  {/* Mobile Site Filter */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Site</Label>
+                    <Select value={selectedSite} onValueChange={setSelectedSite}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select site" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sites.map((site) => (
+                          <SelectItem key={site.value} value={site.value}>
+                            {site.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Mobile Category Filter */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Category</Label>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categoryOptions.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Mobile Price Toggles */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Price Range</Label>
+                    <div className="space-y-2">
+                      {priceOptions.map((price) => (
+                        <div key={price.value} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`mobile-price-${price.value}`}
+                            checked={priceFilters.includes(price.value)}
+                            onCheckedChange={() => handlePriceToggle(price.value)}
+                          />
+                          <Label htmlFor={`mobile-price-${price.value}`} className="text-sm">
+                            {price.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mobile Risk Toggles */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Risk Level</Label>
+                    <div className="space-y-2">
+                      {riskOptions.map((risk) => (
+                        <div key={risk.value} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`mobile-risk-${risk.value}`}
+                            checked={riskFilters.includes(risk.value)}
+                            onCheckedChange={() => handleRiskToggle(risk.value)}
+                          />
+                          <Label htmlFor={`mobile-risk-${risk.value}`} className="text-sm">
+                            {risk.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button variant="outline" className="w-full" size="sm" onClick={clearAllFilters}>
+                    Clear all filters
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop Horizontal Filters */}
+          <div className="hidden md:block">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Hash className="w-5 h-5" />
-                  Apple Products
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {productFilters.map(product => (
-                    <Badge 
-                      key={product} 
-                      variant="outline" 
-                      className="cursor-pointer hover:bg-muted text-xs"
-                    >
-                      {product}
-                    </Badge>
+              <CardContent className="p-6">
+                <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-6">
+                  
+                  {/* Site Dropdown */}
+                  <div>
+                    <Label className="text-sm font-semibold mb-3 block">By Site</Label>
+                    <Select value={selectedSite} onValueChange={setSelectedSite}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="All Sites" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sites.map((site) => (
+                          <SelectItem key={site.value} value={site.value}>
+                            {site.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Category Dropdown */}
+                  <div>
+                    <Label className="text-sm font-semibold mb-3 block">By Category</Label>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categoryOptions.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Price Toggles */}
+                  <div>
+                    <Label className="text-sm font-semibold mb-3 block">By Price</Label>
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {priceOptions.map((price) => (
+                        <div key={price.value} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`price-${price.value}`} 
+                            className="h-3 w-3"
+                            checked={priceFilters.includes(price.value)}
+                            onCheckedChange={() => handlePriceToggle(price.value)}
+                          />
+                          <Label htmlFor={`price-${price.value}`} className="text-xs">
+                            {price.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Risk Toggles */}
+                  <div>
+                    <Label className="text-sm font-semibold mb-3 block">By Risk</Label>
+                    <div className="space-y-2">
+                      {riskOptions.map((risk) => (
+                        <div key={risk.value} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`risk-${risk.value}`} 
+                            className="h-3 w-3"
+                            checked={riskFilters.includes(risk.value)}
+                            onCheckedChange={() => handleRiskToggle(risk.value)}
+                          />
+                          <Label htmlFor={`risk-${risk.value}`} className="text-xs">
+                            {risk.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+                
+                <div className="flex items-center justify-between mt-6 pt-4 border-t">
+                  <div className="text-sm text-muted-foreground">
+                    Active filters: <Badge variant="secondary" className="ml-1">{activeFilterCount}</Badge>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={clearAllFilters}>
+                    Clear all filters
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Popular Apple Items */}
+        <div className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Hash className="w-5 h-5" />
+                Popular Apple Items & Tags
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-3">
+                {[
+                  'iPhone 15 Pro Max', 'MacBook Pro M3', 'Apple Watch Ultra 2', 'AirPods Pro 2', 
+                  'iPad Pro M2', 'Mac Studio', 'Studio Display', 'Magic Keyboard', 
+                  'Apple Pencil', 'MagSafe'
+                ].map((item) => (
+                  <Link
+                    key={item}
+                    to={`/mystery-boxes/apple?tag=${item.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="group"
+                  >
+                    <Card className="hover:shadow-md transition-all duration-200 hover:-translate-y-1 h-full">
+                      <CardContent className="p-3 text-center">
+                        <div className="space-y-2">
+                          <div className="h-8 w-8 mx-auto rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Hash className="h-4 w-4 text-primary" />
+                          </div>
+                          <h3 className="font-medium text-xs group-hover:text-primary transition-colors leading-tight">
+                            {item}
+                          </h3>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
+        <div className="space-y-6">
+          {/* Results Header */}
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">
+                {searchQuery ? `Search results for "${searchQuery}"` : 'Apple Mystery Boxes'}
+              </h2>
+              <p className="text-muted-foreground">
+                Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalBoxes)} of {totalBoxes} boxes
+              </p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+                </SelectContent>
+              </Select>
 
-            {/* Price Range Filter */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Price Range</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Slider value={priceRange} onValueChange={setPriceRange} max={2000} min={0} step={50} className="w-full" />
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>${priceRange[0]}</span>
-                    <span>${priceRange[1]}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Risk Level Filter */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Risk Level</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="relative">
-                    <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
-                    <Slider 
-                      defaultValue={[30]} 
-                      max={100} 
-                      min={0} 
-                      step={10} 
-                      className="absolute top-0 w-full"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Low</span>
-                    <span>Medium</span>
-                    <span>High</span>
-                    <span>Extreme</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Returns Rate Filter */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Returns Rate</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="relative">
-                    <div className="h-2 w-full rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500"></div>
-                    <Slider 
-                      value={returnsRange} 
-                      onValueChange={setReturnsRange}
-                      max={100} 
-                      min={40} 
-                      step={5} 
-                      className="absolute top-0 w-full"
-                    />
-                  </div>
-                  
-                  {/* Tick marks and labels */}
-                  <div className="relative">
-                    <div className="flex justify-between items-end h-4">
-                      {/* Generate marks for 40% to 100% in 5% increments */}
-                      {Array.from({ length: 13 }, (_, i) => {
-                        const value = 40 + (i * 5);
-                        const isMainTick = value % 10 === 0;
-                        return (
-                          <div key={value} className="flex flex-col items-center">
-                            <div className={`bg-muted-foreground ${isMainTick ? 'h-3 w-px' : 'h-1.5 w-px'}`}></div>
-                            {isMainTick && (
-                              <span className="text-xs text-muted-foreground mt-1">{value}%</span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  
-                  {/* Selected Range Display */}
-                  <div className="text-center">
-                    <span className="text-sm font-medium">{returnsRange[0]}% - {returnsRange[1]}%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-          </aside>
-
-          {/* Main Content Area */}
-          <main className="flex-1">
-            {/* Results Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div>
-                <h2 className="text-2xl font-bold">Apple Mystery Boxes</h2>
-                <p className="text-muted-foreground">
-                  Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalBoxes)} of {totalBoxes} boxes
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sortOptions.map(option => <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>)}
-                  </SelectContent>
-                </Select>
-                <div className="flex rounded-lg border">
-                  <Button variant={view === 'grid' ? 'default' : 'ghost'} size="sm" onClick={() => setView('grid')} className="rounded-r-none">
-                    <Grid className="w-4 h-4" />
-                  </Button>
-                  <Button variant={view === 'list' ? 'default' : 'ghost'} size="sm" onClick={() => setView('list')} className="rounded-l-none">
-                    <List className="w-4 h-4" />
-                  </Button>
-                </div>
+              {/* View Toggle */}
+              <div className="flex items-center border rounded-lg">
+                <Button
+                  variant={view === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setView('grid')}
+                  className="rounded-r-none"
+                >
+                  <Grid className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={view === 'list' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setView('list')}
+                  className="rounded-l-none"
+                >
+                  <List className="w-4 h-4" />
+                </Button>
               </div>
             </div>
+          </div>
 
-            {/* Apple Boxes Grid */}
-            <div className={cn("gap-6 mb-8", view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'space-y-4')}>
-              {appleBoxes.map(box => <Card key={box.id} className={cn("group hover:shadow-lg transition-all duration-300", view === 'list' && "flex flex-row")}>
-                  <div className={cn(view === 'list' ? 'w-48 flex-shrink-0' : 'aspect-square')}>
-                    <img src={box.image} alt={box.name} className="w-full h-full object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300" />
+          {/* Results Grid/List */}
+          <div className={cn(
+            "gap-6",
+            view === 'grid' 
+              ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
+              : "flex flex-col space-y-4"
+          )}>
+            {appleBoxes.map((box) => (
+              <Card key={box.id} className={cn(
+                "group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1",
+                view === 'list' && "flex-row"
+              )}>
+                <div className={cn(
+                  "relative overflow-hidden",
+                  view === 'list' ? "w-32 flex-shrink-0" : "aspect-square"
+                )}>
+                  <img 
+                    src={box.image} 
+                    alt={box.name} 
+                    className="w-full h-full object-cover rounded group-hover:scale-105 transition-transform duration-200" 
+                  />
+                </div>
+                <CardContent className={cn("p-4 flex-1", view === 'list' && "flex flex-col justify-between")}>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant="outline" className="text-xs">
+                        {getCategoryIcon(box.category)}
+                        <span className="ml-1">{box.category}</span>
+                      </Badge>
+                      {box.verified && <Verified className="w-4 h-4 text-primary" />}
+                    </div>
+                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                      {box.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      By {box.operator}
+                    </p>
+                    
+                    {/* Highlights */}
+                    <div className="space-y-1 mb-4">
+                      {box.highlights.slice(0, 2).map((highlight, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-xs">
+                          <span className="truncate">{highlight.name}</span>
+                          <span className={cn("font-medium", getRarityColor(highlight.rarity))}>
+                            {highlight.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <CardContent className={cn("p-4 flex-1", view === 'list' && "flex flex-col justify-between")}>
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge variant="outline" className="text-xs">
-                          {getCategoryIcon(box.category)}
-                          <span className="ml-1">{box.category}</span>
-                        </Badge>
-                        {box.verified && <Verified className="w-4 h-4 text-primary" />}
-                      </div>
-                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                        {box.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        By {box.operator}
-                      </p>
-                      
-                      {/* Highlights */}
-                      <div className="space-y-1 mb-4">
-                        {box.highlights.slice(0, 2).map((highlight, idx) => <div key={idx} className="flex items-center justify-between text-xs">
-                            <span className="truncate">{highlight.name}</span>
-                            <span className={cn("font-medium", getRarityColor(highlight.rarity))}>
-                              {highlight.value}
-                            </span>
-                          </div>)}
-                      </div>
-                    </div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-lg font-bold">${box.price}</div>
-                          <div className="text-xs text-muted-foreground">Box Price</div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-lg font-bold">${box.price}</div>
+                        <div className="text-xs text-muted-foreground">Box Price</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-green-600">
+                          ${box.expectedValue} EV
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm font-medium text-green-600">
-                            ${box.expectedValue} EV
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {box.profitRate}% profit rate
-                          </div>
+                        <div className="text-xs text-muted-foreground">
+                          {box.profitRate}% profit rate
                         </div>
                       </div>
-                      
-                      <div className="flex gap-2">
-                        <Button size="sm" className="flex-1" asChild>
-                          <Link to={`/mystery-boxes/${box.id}`}>
-                            View Details
-                          </Link>
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Package className="w-4 h-4" />
-                        </Button>
-                      </div>
                     </div>
-                  </CardContent>
-                </Card>)}
-            </div>
+                    
+                    <div className="flex gap-2">
+                      <Button size="sm" className="flex-1" asChild>
+                        <Link to={`/mystery-boxes/${box.id}`}>
+                          View Details
+                        </Link>
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Package className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-            {/* Pagination */}
-            <div className="flex items-center justify-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>
-                Previous
-              </Button>
-              {Array.from({
-              length: Math.min(5, totalPages)
-            }, (_, i) => {
+          {/* Pagination */}
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} 
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const page = i + 1;
-              return <Button key={page} variant={currentPage === page ? 'default' : 'outline'} size="sm" onClick={() => setCurrentPage(page)}>
-                    {page}
-                  </Button>;
+              return (
+                <Button 
+                  key={page} 
+                  variant={currentPage === page ? 'default' : 'outline'} 
+                  size="sm" 
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </Button>
+              );
             })}
-              <Button variant="outline" size="sm" onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>
-                Next
-              </Button>
-            </div>
-          </main>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} 
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </section>
 
