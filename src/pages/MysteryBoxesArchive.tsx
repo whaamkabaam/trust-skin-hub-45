@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Grid, List, Package, Hash, Verified, TrendingUp, Calendar } from 'lucide-react';
+import { Search, Grid, List, Package, Hash, Verified, TrendingUp, Calendar, ChevronDown, Filter, SlidersHorizontal } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import MysteryBoxHero from '@/components/MysteryBoxHero';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const MysteryBoxesArchive = () => {
@@ -20,6 +23,8 @@ const MysteryBoxesArchive = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [priceRange, setPriceRange] = useState([0, 200]);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersCollapsed, setFiltersCollapsed] = useState(window.innerWidth < 768); // Collapsed on mobile by default
 
   const itemsPerPage = 12;
   const totalBoxes = 89;
@@ -102,60 +107,42 @@ const MysteryBoxesArchive = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-gradient-card border-b">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl font-bold mb-4">Mystery Boxes & Collections</h1>
-            <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
-              Discover {stats.totalBoxes} verified mystery boxes with transparent odds, 
-              provably fair systems, and detailed value analysis. From knife collections to rare skins.
-            </p>
-            
-            {/* Search */}
-            <div className="relative mb-8">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-              <Input
-                placeholder="Search mystery boxes by type, operator, or contents..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-3 text-lg"
-              />
-            </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{stats.totalBoxes}</div>
-                <div className="text-sm text-muted-foreground">Total boxes</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-success">${stats.avgPrice}</div>
-                <div className="text-sm text-muted-foreground">Avg price</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-accent">{stats.verifiedBoxes}</div>
-                <div className="text-sm text-muted-foreground">Verified</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-warning">{stats.newThisWeek}</div>
-                <div className="text-sm text-muted-foreground">New this week</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <MysteryBoxHero />
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar Filters */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
+            {/* Mobile Filters Toggle */}
+            <div className="lg:hidden mb-6">
+              <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filters & Categories
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-80">
+                  <SheetHeader>
+                    <SheetTitle>Filters</SheetTitle>
+                    <SheetDescription>
+                      Filter mystery boxes by your preferences
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-6">
               {/* Categories */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Categories</CardTitle>
-                </CardHeader>
+                <Collapsible defaultOpen={!filtersCollapsed}>
+                  <CardHeader>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <CardTitle className="text-lg">Categories</CardTitle>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </CardHeader>
+                  <CollapsibleContent>
                 <CardContent className="space-y-2">
                   {categories.map((category) => (
                     <a
@@ -168,13 +155,22 @@ const MysteryBoxesArchive = () => {
                     </a>
                   ))}
                 </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
 
               {/* Price Range Filter */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Price Range</CardTitle>
-                </CardHeader>
+                <Collapsible defaultOpen={!filtersCollapsed}>
+                  <CardHeader>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <CardTitle className="text-lg">Price Range</CardTitle>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </CardHeader>
+                  <CollapsibleContent>
                 <CardContent className="space-y-4">
                   <div className="px-2">
                     <Slider
@@ -190,13 +186,22 @@ const MysteryBoxesArchive = () => {
                     </div>
                   </div>
                 </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
 
               {/* Filters */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Filters</CardTitle>
-                </CardHeader>
+                <Collapsible defaultOpen={!filtersCollapsed}>
+                  <CardHeader>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <CardTitle className="text-lg">Filters</CardTitle>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </CardHeader>
+                  <CollapsibleContent>
                 <CardContent className="space-y-6">
                   {/* Games */}
                   <div>
@@ -265,13 +270,22 @@ const MysteryBoxesArchive = () => {
                     Clear all filters
                   </Button>
                 </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
 
               {/* Top Operators */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Top Operators</CardTitle>
-                </CardHeader>
+                <Collapsible defaultOpen={!filtersCollapsed}>
+                  <CardHeader>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <CardTitle className="text-lg">Top Operators</CardTitle>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </CardHeader>
+                  <CollapsibleContent>
                 <CardContent className="space-y-2">
                   {['Premium Skins', 'Skin Bay', 'Case King', 'Box Empire'].map((operator) => (
                     <a
@@ -283,6 +297,178 @@ const MysteryBoxesArchive = () => {
                     </a>
                   ))}
                 </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
+              </Card>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+
+            {/* Desktop Filters */}
+            <div className="hidden lg:block sticky top-8 space-y-6">
+              {/* Desktop filters content - same as above but without Sheet wrapper */}
+              <Card>
+                <Collapsible defaultOpen={true}>
+                  <CardHeader>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <CardTitle className="text-lg">Categories</CardTitle>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </CardHeader>
+                  <CollapsibleContent>
+                <CardContent className="space-y-2">
+                  {categories.map((category) => (
+                    <a
+                      key={category.name}
+                      href={category.href}
+                      className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <span className="text-sm">{category.name}</span>
+                      <Badge variant="outline" className="text-xs">{category.count}</Badge>
+                    </a>
+                  ))}
+                </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
+              </Card>
+
+              <Card>
+                <Collapsible defaultOpen={true}>
+                  <CardHeader>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <CardTitle className="text-lg">Price Range</CardTitle>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </CardHeader>
+                  <CollapsibleContent>
+                <CardContent className="space-y-4">
+                  <div className="px-2">
+                    <Slider
+                      value={priceRange}
+                      onValueChange={setPriceRange}
+                      max={200}
+                      step={1}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                      <span>${priceRange[0]}</span>
+                      <span>${priceRange[1]}</span>
+                    </div>
+                  </div>
+                </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
+              </Card>
+
+              <Card>
+                <Collapsible defaultOpen={true}>
+                  <CardHeader>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <CardTitle className="text-lg">Filters</CardTitle>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </CardHeader>
+                  <CollapsibleContent>
+                <CardContent className="space-y-6">
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Games</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {gameFilters.map((game) => (
+                        <div key={game} className="flex items-center space-x-2">
+                          <Checkbox id={`game-${game}`} />
+                          <Label htmlFor={`game-${game}`} className="text-sm">{game}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Box Type</Label>
+                    <div className="space-y-2">
+                      {typeFilters.map((type) => (
+                        <div key={type} className="flex items-center space-x-2">
+                          <Checkbox id={`type-${type}`} />
+                          <Label htmlFor={`type-${type}`} className="text-sm">{type}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="verified" />
+                      <Label htmlFor="verified" className="text-sm flex items-center gap-1">
+                        <Verified className="w-3 h-3" />
+                        Verified only
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="provably-fair" />
+                      <Label htmlFor="provably-fair" className="text-sm flex items-center gap-1">
+                        <Hash className="w-3 h-3" />
+                        Provably fair
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="physical" />
+                      <Label htmlFor="physical" className="text-sm flex items-center gap-1">
+                        <Package className="w-3 h-3" />
+                        Physical items
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="positive-ev" />
+                      <Label htmlFor="positive-ev" className="text-sm">Positive expected value</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="high-profit" />
+                      <Label htmlFor="high-profit" className="text-sm">High profit rate (30%+)</Label>
+                    </div>
+                  </div>
+
+                  <Button variant="outline" className="w-full" size="sm">
+                    Clear all filters
+                  </Button>
+                </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
+              </Card>
+
+              <Card>
+                <Collapsible defaultOpen={true}>
+                  <CardHeader>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <CardTitle className="text-lg">Top Operators</CardTitle>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </CardHeader>
+                  <CollapsibleContent>
+                <CardContent className="space-y-2">
+                  {['Premium Skins', 'Skin Bay', 'Case King', 'Box Empire'].map((operator) => (
+                    <a
+                      key={operator}
+                      href={`/mystery-boxes?operator=${operator.toLowerCase().replace(' ', '-')}`}
+                      className="block text-sm text-accent hover:underline py-1"
+                    >
+                      {operator}
+                    </a>
+                  ))}
+                </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
             </div>
           </div>
@@ -337,23 +523,6 @@ const MysteryBoxesArchive = () => {
               </div>
             </div>
 
-            {/* Featured Box */}
-            <Card className="bg-gradient-hero text-white">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
-                      <Package className="w-5 h-5" />
-                      Featured: Premium Knife Collection
-                    </h3>
-                    <p className="text-white/90">Guaranteed knife in every box • Provably fair • 35% profit rate</p>
-                  </div>
-                  <Button variant="secondary" className="bg-white text-primary hover:bg-white/90">
-                    Open Box
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Results Grid/List */}
             <div className={cn(
