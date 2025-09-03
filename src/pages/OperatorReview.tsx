@@ -483,12 +483,33 @@ const OperatorReview = () => {
                 <h2 className="text-2xl font-bold">What is {operator.name}?</h2>
               </div>
               <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200/50">
-                <CardContent className="p-6">
-                  <p className="text-muted-foreground leading-relaxed">
-                    {operator.name} is a popular {siteType.toLowerCase()} platform that offers various gaming modes 
-                    including case openings, skin upgrades, and jackpot games. Launched in 2020, it has built a strong 
-                    reputation for fair gameplay and reliable payouts.
-                  </p>
+                <CardContent className="p-6 space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Platform Overview</h3>
+                    <p className="text-muted-foreground leading-relaxed mb-4">
+                      {operator.name} is a {siteType.toLowerCase()} that launched in 2020, establishing itself as one of the prominent platforms in the CS:GO and gaming skin ecosystem. The platform specializes in providing users with an exciting and transparent way to acquire rare gaming items through various game modes including case openings, battles, and upgrades.
+                    </p>
+                    <p className="text-muted-foreground leading-relaxed mb-4">
+                      What sets {operator.name} apart from many competitors is their commitment to provably fair gaming mechanics, ensuring that every case opening and game result can be verified by users. The platform operates under proper licensing and maintains a strong reputation within the gaming community, with over 100,000 active users worldwide.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Core Features & Functionality</h3>
+                    <p className="text-muted-foreground leading-relaxed mb-4">
+                      The platform offers a comprehensive suite of gaming modes beyond traditional case opening. Users can engage in competitive case battles against other players, participate in jackpot games with community pools, and use the upgrade system to trade lower-value items for potentially higher-value ones. The user interface is designed with both desktop and mobile users in mind, ensuring a seamless experience across all devices.
+                    </p>
+                    <p className="text-muted-foreground leading-relaxed mb-4">
+                      Security and user protection are prioritized through multiple layers of verification and encryption. The platform implements industry-standard security measures including SSL encryption, secure payment processing, and regular security audits. Additionally, responsible gaming features are built into the platform to help users maintain healthy gaming habits.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Target Audience & Community</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {operator.name} caters to a diverse range of users, from casual gamers looking for entertainment to serious skin traders seeking high-value items. The platform maintains an active community through Discord servers, social media channels, and in-platform chat features. Regular promotions, tournaments, and community events help foster engagement and provide additional value to users beyond the core gaming experience.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </div>
