@@ -366,58 +366,59 @@ const OperatorReview = () => {
           </div>
 
           {/* Category Ratings - Bottom of Hero */}
-          <div className="bg-muted/30 rounded-lg p-4">
+          <div className="bg-gradient-to-r from-purple-50 via-blue-50 to-green-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-green-900/20 rounded-xl p-6 border border-purple-200/50 dark:border-purple-800/50">
+            <h3 className="text-center font-semibold mb-4 text-foreground">Rating Breakdown</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 justify-center max-w-4xl mx-auto">
               <div className="flex justify-center">
-                <Badge variant="secondary" className="w-full flex flex-col items-center justify-center py-3 bg-muted border min-h-[60px]">
-                  <span className="text-xs text-muted-foreground mb-1">Trust:</span>
+                <Badge className="w-full flex flex-col items-center justify-center py-3 bg-gradient-to-br from-emerald-500 to-green-600 text-white border-0 min-h-[60px] hover:scale-105 transition-transform cursor-pointer">
+                  <span className="text-xs opacity-90 mb-1">Trust:</span>
                   <div className="flex items-center justify-center gap-1">
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <Star className="w-3 h-3 fill-white text-white" />
                     <span className="font-bold text-sm">4.5/5</span>
                   </div>
                 </Badge>
               </div>
               <div className="flex justify-center">
-                <Badge variant="secondary" className="w-full flex flex-col items-center justify-center py-3 bg-muted border min-h-[60px]">
-                  <span className="text-xs text-muted-foreground mb-1">Value:</span>
+                <Badge className="w-full flex flex-col items-center justify-center py-3 bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-0 min-h-[60px] hover:scale-105 transition-transform cursor-pointer">
+                  <span className="text-xs opacity-90 mb-1">Value:</span>
                   <div className="flex items-center justify-center gap-1">
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <Star className="w-3 h-3 fill-white text-white" />
                     <span className="font-bold text-sm">4.5/5</span>
                   </div>
                 </Badge>
               </div>
               <div className="flex justify-center">
-                <Badge variant="secondary" className="w-full flex flex-col items-center justify-center py-3 bg-muted border min-h-[60px]">
-                  <span className="text-xs text-muted-foreground mb-1">Payments:</span>
+                <Badge className="w-full flex flex-col items-center justify-center py-3 bg-gradient-to-br from-purple-500 to-pink-600 text-white border-0 min-h-[60px] hover:scale-105 transition-transform cursor-pointer">
+                  <span className="text-xs opacity-90 mb-1">Payments:</span>
                   <div className="flex items-center justify-center gap-1">
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <Star className="w-3 h-3 fill-white text-white" />
                     <span className="font-bold text-sm">3.5/5</span>
                   </div>
                 </Badge>
               </div>
               <div className="flex justify-center">
-                <Badge variant="secondary" className="w-full flex flex-col items-center justify-center py-3 bg-muted border min-h-[60px]">
-                  <span className="text-xs text-muted-foreground mb-1">Offering:</span>
+                <Badge className="w-full flex flex-col items-center justify-center py-3 bg-gradient-to-br from-orange-500 to-red-500 text-white border-0 min-h-[60px] hover:scale-105 transition-transform cursor-pointer">
+                  <span className="text-xs opacity-90 mb-1">Offering:</span>
                   <div className="flex items-center justify-center gap-1">
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <Star className="w-3 h-3 fill-white text-white" />
                     <span className="font-bold text-sm">4.0/5</span>
                   </div>
                 </Badge>
               </div>
               <div className="flex justify-center">
-                <Badge variant="secondary" className="w-full flex flex-col items-center justify-center py-3 bg-muted border min-h-[60px]">
-                  <span className="text-xs text-muted-foreground mb-1">UX & Tools:</span>
+                <Badge className="w-full flex flex-col items-center justify-center py-3 bg-gradient-to-br from-cyan-500 to-teal-600 text-white border-0 min-h-[60px] hover:scale-105 transition-transform cursor-pointer">
+                  <span className="text-xs opacity-90 mb-1">UX & Tools:</span>
                   <div className="flex items-center justify-center gap-1">
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <Star className="w-3 h-3 fill-white text-white" />
                     <span className="font-bold text-sm">4.5/5</span>
                   </div>
                 </Badge>
               </div>
               <div className="flex justify-center">
-                <Badge variant="secondary" className="w-full flex flex-col items-center justify-center py-3 bg-muted border min-h-[60px]">
-                  <span className="text-xs text-muted-foreground mb-1">Support:</span>
+                <Badge className="w-full flex flex-col items-center justify-center py-3 bg-gradient-to-br from-rose-500 to-pink-600 text-white border-0 min-h-[60px] hover:scale-105 transition-transform cursor-pointer">
+                  <span className="text-xs opacity-90 mb-1">Support:</span>
                   <div className="flex items-center justify-center gap-1">
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <Star className="w-3 h-3 fill-white text-white" />
                     <span className="font-bold text-sm">3.5/5</span>
                   </div>
                 </Badge>
@@ -437,24 +438,24 @@ const OperatorReview = () => {
             {/* Desktop Pros & Cons */}
             <div className="hidden md:block">
               <div className="grid md:grid-cols-2 gap-6 mb-8">
-                <Card className="border-green-200 bg-green-50/50">
+                <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-green-700 flex items-center">
+                    <CardTitle className="text-emerald-700 flex items-center">
                       <CheckCircle className="w-5 h-5 mr-2" />
                       PROS
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {operator.pros.map((pro, i) => <li key={i} className="flex items-start gap-2 text-sm">
-                          <span className="text-green-600 font-bold mt-0.5">+</span>
+                          <span className="text-emerald-600 font-bold mt-0.5 w-4 h-4 bg-emerald-100 rounded-full flex items-center justify-center text-xs">+</span>
                           <span>{pro}</span>
                         </li>)}
                     </ul>
                   </CardContent>
                 </Card>
 
-                <Card className="border-red-200 bg-red-50/50">
+                <Card className="border-red-200 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-red-700 flex items-center">
                       <XCircle className="w-5 h-5 mr-2" />
@@ -462,9 +463,9 @@ const OperatorReview = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {operator.cons.map((con, i) => <li key={i} className="flex items-start gap-2 text-sm">
-                          <span className="text-red-600 font-bold mt-0.5">–</span>
+                          <span className="text-red-600 font-bold mt-0.5 w-4 h-4 bg-red-100 rounded-full flex items-center justify-center text-xs">–</span>
                           <span>{con}</span>
                         </li>)}
                     </ul>
@@ -474,27 +475,39 @@ const OperatorReview = () => {
             </div>
 
             {/* What is [Site]? */}
-            <div id="what-is-section">
-              <h2 className="text-2xl font-bold mb-4">What is {operator.name}?</h2>
-              <div className="prose prose-gray max-w-none">
-                <p className="text-muted-foreground mb-4">
-                  {operator.name} is a popular {siteType.toLowerCase()} platform that offers various gaming modes 
-                  including case openings, skin upgrades, and jackpot games. Launched in 2020, it has built a strong 
-                  reputation for fair gameplay and reliable payouts.
-                </p>
+            <div id="what-is-section" className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <HelpCircle className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">What is {operator.name}?</h2>
               </div>
+              <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200/50">
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground leading-relaxed">
+                    {operator.name} is a popular {siteType.toLowerCase()} platform that offers various gaming modes 
+                    including case openings, skin upgrades, and jackpot games. Launched in 2020, it has built a strong 
+                    reputation for fair gameplay and reliable payouts.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Screenshots Gallery */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Screenshots</h2>
-              <Card>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Screenshots</h2>
+              </div>
+              <Card className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 border-pink-200/50">
                 <CardContent className="p-6">
                   <Carousel className="w-full">
                     <CarouselContent className="-ml-2 md:-ml-4">
                       {screenshots.map((screenshot, index) => (
                         <CarouselItem key={screenshot.id} className="pl-2 md:pl-4 basis-3/4 md:basis-1/3">
-                          <div className="aspect-[9/16] bg-muted rounded-lg overflow-hidden">
+                          <div className="aspect-[9/16] bg-muted rounded-lg overflow-hidden hover:scale-105 transition-transform cursor-pointer border-2 border-transparent hover:border-pink-300">
                             <img 
                               src={screenshot.url} 
                               alt={screenshot.alt}
@@ -512,23 +525,64 @@ const OperatorReview = () => {
             </div>
 
             {/* Games & Modes */}
-            <div id="games-modes-section">
-              <h2 className="text-2xl font-bold mb-4">Games & Modes</h2>
+            <div id="games-modes-section" className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <Gamepad2 className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Games & Modes</h2>
+              </div>
               <div className="space-y-4">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {['Solo Unbox', 'Battles', 'Upgrade', 'Jackpot', 'Wheel'].map(mode => <Badge key={mode} variant="outline" className="px-3 py-1">
-                      {mode}
-                    </Badge>)}
+                  {['Solo Unbox', 'Battles', 'Upgrade', 'Jackpot', 'Wheel'].map((mode, index) => {
+                    const colors = [
+                      'bg-gradient-to-r from-blue-500 to-indigo-600 text-white',
+                      'bg-gradient-to-r from-emerald-500 to-green-600 text-white',
+                      'bg-gradient-to-r from-purple-500 to-pink-600 text-white',
+                      'bg-gradient-to-r from-orange-500 to-red-600 text-white',
+                      'bg-gradient-to-r from-cyan-500 to-teal-600 text-white'
+                    ];
+                    return <Badge key={mode} className={`px-3 py-2 border-0 ${colors[index]} hover:scale-105 transition-transform cursor-pointer`}>
+                        {mode}
+                      </Badge>
+                  })}
                 </div>
-                <div className="prose prose-gray max-w-none">
-                  <ul className="space-y-2 text-muted-foreground">
-                    <li><strong>Solo Unbox:</strong> Open cases individually with guaranteed drops</li>
-                    <li><strong>Battles:</strong> Compete against other players in case opening duels</li>
-                    <li><strong>Upgrade:</strong> Trade lower-value skins for higher-value ones</li>
-                    <li><strong>Jackpot:</strong> Pool-based games with rotating prizes</li>
-                    <li><strong>Wheel:</strong> Spin-to-win games with various multipliers</li>
-                  </ul>
-                </div>
+                <Card className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900/20 dark:to-blue-900/20 border-blue-200/50">
+                  <CardContent className="p-6">
+                    <ul className="space-y-3 text-muted-foreground">
+                      <li className="flex items-start gap-3">
+                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-blue-600 text-xs font-bold">1</span>
+                        </div>
+                        <div><strong className="text-foreground">Solo Unbox:</strong> Open cases individually with guaranteed drops</div>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-emerald-600 text-xs font-bold">2</span>
+                        </div>
+                        <div><strong className="text-foreground">Battles:</strong> Compete against other players in case opening duels</div>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-purple-600 text-xs font-bold">3</span>
+                        </div>
+                        <div><strong className="text-foreground">Upgrade:</strong> Trade lower-value skins for higher-value ones</div>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-orange-600 text-xs font-bold">4</span>
+                        </div>
+                        <div><strong className="text-foreground">Jackpot:</strong> Pool-based games with rotating prizes</div>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <div className="w-6 h-6 bg-cyan-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-cyan-600 text-xs font-bold">5</span>
+                        </div>
+                        <div><strong className="text-foreground">Wheel:</strong> Spin-to-win games with various multipliers</div>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
               </div>
             </div>
 
@@ -559,27 +613,73 @@ const OperatorReview = () => {
             </div>
 
             {/* Payments */}
-            <div id="payments-section">
-              <h2 className="text-2xl font-bold mb-4">Payments</h2>
+            <div id="payments-section" className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                  <CreditCard className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Payments</h2>
+              </div>
               <div className="space-y-4">
-                <Card>
-                  <CardContent className="p-6 space-y-4">
+                <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50">
+                  <CardContent className="p-6 space-y-6">
                     <div>
-                      <h4 className="font-semibold mb-2">Deposit Methods & Limits</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• Credit/Debit Cards (Visa, Mastercard): $10 - $5,000</li>
-                        <li>• Bitcoin (BTC): $25 - $10,000</li>
-                        <li>• Ethereum (ETH): $25 - $10,000</li>
-                        <li>• Skins: Variable based on market value</li>
-                      </ul>
+                      <h4 className="font-semibold mb-3 flex items-center gap-2">
+                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">💳</span>
+                        </div>
+                        Deposit Methods & Limits
+                      </h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <span className="text-sm">Credit/Debit Cards (Visa, Mastercard)</span>
+                          <Badge className="bg-blue-100 text-blue-800 border-0">$10 - $5,000</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <span className="text-sm">Bitcoin (BTC)</span>
+                          <Badge className="bg-orange-100 text-orange-800 border-0">$25 - $10,000</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <span className="text-sm">Ethereum (ETH)</span>
+                          <Badge className="bg-purple-100 text-purple-800 border-0">$25 - $10,000</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <span className="text-sm">Skins</span>
+                          <Badge className="bg-green-100 text-green-800 border-0">Variable</Badge>
+                        </div>
+                      </div>
                     </div>
+                    <Separator />
                     <div>
-                      <h4 className="font-semibold mb-2">Withdrawal Timeframes & Fees</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• Skins: Instant - 24 hours, 0% fee</li>
-                        <li>• Cryptocurrency: 1-6 hours, 1-3% fee</li>
-                        <li>• Physical items: 7-14 days shipping, $5-15 fee</li>
-                      </ul>
+                      <h4 className="font-semibold mb-3 flex items-center gap-2">
+                        <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">⏱️</span>
+                        </div>
+                        Withdrawal Timeframes & Fees
+                      </h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <div>
+                            <span className="text-sm font-medium">Skins</span>
+                            <p className="text-xs text-muted-foreground">Instant - 24 hours</p>
+                          </div>
+                          <Badge className="bg-green-100 text-green-800 border-0">0% fee</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <div>
+                            <span className="text-sm font-medium">Cryptocurrency</span>
+                            <p className="text-xs text-muted-foreground">1-6 hours</p>
+                          </div>
+                          <Badge className="bg-yellow-100 text-yellow-800 border-0">1-3% fee</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <div>
+                            <span className="text-sm font-medium">Physical items</span>
+                            <p className="text-xs text-muted-foreground">7-14 days shipping</p>
+                          </div>
+                          <Badge className="bg-red-100 text-red-800 border-0">$5-15 fee</Badge>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -587,31 +687,56 @@ const OperatorReview = () => {
             </div>
 
             {/* Bonuses & Promos */}
-            <div id="bonuses-promos-section">
-              <h2 className="text-2xl font-bold mb-4">Bonuses & Promos</h2>
+            <div id="bonuses-promos-section" className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Bonuses & Promos</h2>
+              </div>
               <div className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Card>
+                  <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover:shadow-lg transition-shadow">
                     <CardContent className="p-4">
-                      <h4 className="font-semibold mb-2">Welcome Bonus</h4>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">🎁</span>
+                        </div>
+                        <h4 className="font-semibold text-green-800">Welcome Bonus</h4>
+                      </div>
                       <p className="text-sm text-muted-foreground">Free $10 credit + 3 free cases</p>
                     </CardContent>
                   </Card>
-                  <Card>
+                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50 hover:shadow-lg transition-shadow">
                     <CardContent className="p-4">
-                      <h4 className="font-semibold mb-2">Rakeback</h4>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">💰</span>
+                        </div>
+                        <h4 className="font-semibold text-blue-800">Rakeback</h4>
+                      </div>
                       <p className="text-sm text-muted-foreground">Up to 15% daily rakeback on losses</p>
                     </CardContent>
                   </Card>
-                  <Card>
+                  <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200/50 hover:shadow-lg transition-shadow">
                     <CardContent className="p-4">
-                      <h4 className="font-semibold mb-2">Daily/Weekly</h4>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">📅</span>
+                        </div>
+                        <h4 className="font-semibold text-purple-800">Daily/Weekly</h4>
+                      </div>
                       <p className="text-sm text-muted-foreground">Daily free case + weekly challenges</p>
                     </CardContent>
                   </Card>
-                  <Card>
+                  <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200/50 hover:shadow-lg transition-shadow">
                     <CardContent className="p-4">
-                      <h4 className="font-semibold mb-2">Referral</h4>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">👥</span>
+                        </div>
+                        <h4 className="font-semibold text-orange-800">Referral</h4>
+                      </div>
                       <p className="text-sm text-muted-foreground">5% of friend's deposits for life</p>
                     </CardContent>
                   </Card>
