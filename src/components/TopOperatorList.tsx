@@ -77,9 +77,23 @@ const TopOperatorList = ({ title, subtitle, operators }: TopOperatorListProps) =
                   </div>
                   
                   <div className="flex items-center gap-2 flex-wrap">
-                    {operator.tags.map((tag) => (
-                      <Badge key={tag} variant="outline">{tag}</Badge>
-                    ))}
+                    {operator.tags.map((tag, tagIndex) => {
+                      const colorClasses = [
+                        'bg-primary/10 text-primary border-primary/20',
+                        'bg-green-100 text-green-700 border-green-200',
+                        'bg-blue-100 text-blue-700 border-blue-200',
+                        'bg-purple-100 text-purple-700 border-purple-200',
+                        'bg-orange-100 text-orange-700 border-orange-200',
+                        'bg-pink-100 text-pink-700 border-pink-200'
+                      ];
+                      const colorClass = colorClasses[tagIndex % colorClasses.length];
+                      
+                      return (
+                        <Badge key={tag} variant="outline" className={colorClass}>
+                          {tag}
+                        </Badge>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

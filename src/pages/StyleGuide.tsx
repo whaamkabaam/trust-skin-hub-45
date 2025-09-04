@@ -761,7 +761,7 @@ const StyleGuide = () => {
                       specialFeature: `🎁 ${op.specialFeature}`,
                       specialValue: `${op.specialValue} boxes! 🔥`,
                       payoutSpeed: `⚡ ${op.payoutSpeed}`,
-                      tags: op.tags.map(tag => `🎪 ${tag}`)
+                      tags: op.tags
                     }))}
                   />
                 </CardContent>
@@ -782,7 +782,7 @@ const StyleGuide = () => {
                       specialFeature: `🎯 ${op.specialFeature}`,
                       specialValue: `${op.specialValue} cases! 💥`,
                       payoutSpeed: `🚀 ${op.payoutSpeed}`,
-                      tags: op.tags.map(tag => `⚡ ${tag}`)
+                      tags: op.tags
                     }))}
                   />
                 </CardContent>
@@ -803,7 +803,7 @@ const StyleGuide = () => {
                       specialFeature: `🎮 ${op.specialFeature}`,
                       specialValue: `${op.specialValue} games! 🎯`,
                       payoutSpeed: `💨 ${op.payoutSpeed}`,
-                      tags: op.tags.map(tag => `🎪 ${tag}`)
+                      tags: op.tags
                     }))}
                   />
                 </CardContent>
