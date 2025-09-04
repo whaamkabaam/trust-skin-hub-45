@@ -750,13 +750,19 @@ const StyleGuide = () => {
             <TabsContent value="mystery-box" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Top Mystery Box Operators</CardTitle>
+                  <CardTitle>🎁 Top Mystery Box Operators 🎁</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <TopOperatorList
-                    title="Top Mystery Box Operators"
-                    subtitle="Discover the most trusted platforms for mystery box openings, ranked by community reviews and box selection"
-                    operators={mysteryBoxOperators}
+                    title="🎁 Epic Mystery Box Champions! 🏆"
+                    subtitle="🎮 Get ready for the ultimate unboxing adventure! These legendary platforms will blow your mind with insane drops! 🤯✨"
+                    operators={mysteryBoxOperators.map(op => ({
+                      ...op,
+                      specialFeature: `🎁 ${op.specialFeature}`,
+                      specialValue: `${op.specialValue} boxes! 🔥`,
+                      payoutSpeed: `⚡ ${op.payoutSpeed}`,
+                      tags: op.tags.map(tag => `🎪 ${tag}`)
+                    }))}
                   />
                 </CardContent>
               </Card>
@@ -765,13 +771,19 @@ const StyleGuide = () => {
             <TabsContent value="skin-sites" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Top Skin Trading Sites</CardTitle>
+                  <CardTitle>🔫 Top Skin Trading Sites 🔫</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <TopOperatorList
-                    title="Top Skin Trading Platforms"
-                    subtitle="Most trusted platforms for skin trading, case opening, and marketplace activities"
-                    operators={skinSiteOperators}
+                    title="🚀 Legendary Skin Trading Empires! 🎨"
+                    subtitle="💎 Where skins become dreams! Trade, open cases, and collect the rarest items in the galaxy! 🌟"
+                    operators={skinSiteOperators.map(op => ({
+                      ...op,
+                      specialFeature: `🎯 ${op.specialFeature}`,
+                      specialValue: `${op.specialValue} cases! 💥`,
+                      payoutSpeed: `🚀 ${op.payoutSpeed}`,
+                      tags: op.tags.map(tag => `⚡ ${tag}`)
+                    }))}
                   />
                 </CardContent>
               </Card>
@@ -780,13 +792,19 @@ const StyleGuide = () => {
             <TabsContent value="casino-sites" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Top Casino Sites</CardTitle>
+                  <CardTitle>🎰 Top Casino Sites 🎰</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <TopOperatorList
-                    title="Top Online Casino Platforms"
-                    subtitle="Leading casino sites with the best games, bonuses, and security for online gambling"
-                    operators={casinoSiteOperators}
+                    title="🎲 Ultimate Casino Paradise! 💰"
+                    subtitle="🔥 Roll the dice at these incredible gaming destinations! Jackpots, thrills, and non-stop action awaits! 🎊"
+                    operators={casinoSiteOperators.map(op => ({
+                      ...op,
+                      specialFeature: `🎮 ${op.specialFeature}`,
+                      specialValue: `${op.specialValue} games! 🎯`,
+                      payoutSpeed: `💨 ${op.payoutSpeed}`,
+                      tags: op.tags.map(tag => `🎪 ${tag}`)
+                    }))}
                   />
                 </CardContent>
               </Card>
