@@ -76,7 +76,7 @@ const CaseCard = ({ case: caseData, view = 'grid' }: CaseCardProps) => {
                   </span>
                   <span className="text-xs text-muted-foreground">min</span>
                 </div>
-                <Badge className={getOddsDisclosureColor(caseData.oddsDisclosed)} variant="outline">
+                <Badge className={getOddsDisclosureColor(caseData.oddsDisclosed)}>
                   {caseData.oddsDisclosed}
                 </Badge>
               </div>
