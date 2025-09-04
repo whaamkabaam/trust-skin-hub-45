@@ -13,6 +13,10 @@ import SkinsHero from '@/components/SkinsHero';
 import AppleHero from '@/components/AppleHero';
 import MysteryBoxHero from '@/components/MysteryBoxHero';
 import OperatorReviewHero from '@/components/OperatorReviewHero';
+import ExpertTeam from '@/components/ExpertTeam';
+import MethodologySection from '@/components/MethodologySection';
+import TransparencySection from '@/components/TransparencySection';
+import UserReviews from '@/components/UserReviews';
 import TopOperatorList from '@/components/TopOperatorList';
 import TrustIndicator from '@/components/TrustIndicator';
 import RatingBadge from '@/components/RatingBadge';
@@ -458,15 +462,15 @@ const StyleGuide = () => {
                           games: ['Crash', 'Mines'],
                           categories: ['CS2', 'Rust']
                         }}
-                      scores={{
-                        overall: 4.3,
-                        user: 3.7
-                      }}
-                      userRatings={{
-                        total: 1284
-                      }}
-                      promoCode="XYZ123"
-                    />
+                        scores={{
+                          overall: 4.3,
+                          user: 3.7
+                        }}
+                        userRatings={{
+                          total: 1284
+                        }}
+                        promoCode="SAVE20"
+                      />
                   </div>
                 </CardContent>
               </Card>
@@ -928,6 +932,75 @@ const StyleGuide = () => {
               </div>
             </CardContent>
           </Card>
+        </section>
+
+        {/* EEAT Components */}
+        <section className="space-y-8">
+          <div>
+            <h2 className="text-3xl font-bold mb-4 text-primary">EEAT Components</h2>
+            <p className="text-muted-foreground mb-8">Expertise, Authoritativeness, and Trustworthiness components for homepage</p>
+          </div>
+
+          <Tabs defaultValue="expert-team" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="expert-team">Expert Team</TabsTrigger>
+              <TabsTrigger value="methodology">Methodology</TabsTrigger>
+              <TabsTrigger value="transparency">Transparency</TabsTrigger>
+              <TabsTrigger value="user-reviews">User Reviews</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="expert-team" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Expert Team Section</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden">
+                    <ExpertTeam />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="methodology" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Methodology Section</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden">
+                    <MethodologySection />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="transparency" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Transparency Section</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden">
+                    <TransparencySection />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="user-reviews" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>User Reviews Section</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden">
+                    <UserReviews />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </section>
 
       </div>
