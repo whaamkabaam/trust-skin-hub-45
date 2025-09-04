@@ -98,12 +98,28 @@ const OperatorCard = ({
         {/* Modes (for both views) */}
         <div className={cn("mb-4", isListView && "flex-shrink-0")}>
           <div className="flex flex-wrap gap-1">
-            {operator.modes.slice(0, isListView ? 2 : 4).map(mode => <Badge key={mode} variant="outline" className="text-xs">
-                {mode}
-              </Badge>)}
-            {operator.modes.length > (isListView ? 2 : 4) && <Badge variant="outline" className="text-xs text-muted-foreground">
+            {operator.modes.slice(0, isListView ? 2 : 4).map((mode, modeIndex) => {
+              const colorClasses = [
+                'bg-primary/10 text-primary border-primary/20',
+                'bg-green-100 text-green-700 border-green-200',
+                'bg-blue-100 text-blue-700 border-blue-200',
+                'bg-purple-100 text-purple-700 border-purple-200',
+                'bg-orange-100 text-orange-700 border-orange-200',
+                'bg-pink-100 text-pink-700 border-pink-200'
+              ];
+              const colorClass = colorClasses[modeIndex % colorClasses.length];
+              
+              return (
+                <Badge key={mode} variant="outline" className={`text-xs ${colorClass}`}>
+                  {mode}
+                </Badge>
+              );
+            })}
+            {operator.modes.length > (isListView ? 2 : 4) && (
+              <Badge variant="outline" className="text-xs text-muted-foreground">
                 +{operator.modes.length - (isListView ? 2 : 4)}
-              </Badge>}
+              </Badge>
+            )}
           </div>
         </div>
 
