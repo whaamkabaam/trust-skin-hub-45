@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import Hero from '@/components/Hero';
 import SkinsHero from '@/components/SkinsHero';
 import AppleHero from '@/components/AppleHero';
+import MysteryBoxHero from '@/components/MysteryBoxHero';
 import OperatorReviewHero from '@/components/OperatorReviewHero';
 import TopOperatorList from '@/components/TopOperatorList';
 import TrustIndicator from '@/components/TrustIndicator';
@@ -381,6 +382,7 @@ const StyleGuide = () => {
             <TabsList>
               <TabsTrigger value="main">Main Hero</TabsTrigger>
               <TabsTrigger value="skins">Skins Hero</TabsTrigger>
+              <TabsTrigger value="mystery-boxes">Mystery Boxes Hero</TabsTrigger>
               <TabsTrigger value="apple">Apple Hero</TabsTrigger>
               <TabsTrigger value="operator-review">Operator Review</TabsTrigger>
             </TabsList>
@@ -406,6 +408,19 @@ const StyleGuide = () => {
                 <CardContent>
                   <div className="border rounded-lg overflow-hidden">
                     <SkinsHero />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="mystery-boxes" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Mystery Boxes General Hero</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden">
+                    <MysteryBoxHero />
                   </div>
                 </CardContent>
               </Card>
