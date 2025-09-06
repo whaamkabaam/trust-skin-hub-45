@@ -52,9 +52,9 @@ export function AdminSidebar() {
   const location = useLocation();
 
   return (
-    <div className="w-64 bg-sidebar border-r border-sidebar-border">
-      <div className="p-6">
-        <div className="flex items-center gap-2 mb-8">
+    <div className="w-64 bg-sidebar border-r border-sidebar-border h-full overflow-hidden">
+      <div className="h-full flex flex-col p-6">
+        <div className="flex items-center gap-2 mb-8 flex-shrink-0">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">U</span>
           </div>
@@ -64,7 +64,7 @@ export function AdminSidebar() {
           </div>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="space-y-2 flex-1 overflow-y-auto">
           {sidebarItems.map((item) => {
             const isActive = location.pathname === item.href || 
               (item.href !== '/admin' && location.pathname.startsWith(item.href));
@@ -74,7 +74,7 @@ export function AdminSidebar() {
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0',
                   isActive
                     ? 'bg-sidebar-accent text-sidebar-accent-foreground'
                     : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground'

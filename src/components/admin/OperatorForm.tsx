@@ -100,8 +100,12 @@ export function OperatorForm({
 
   // Auto-save functionality
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
-    if (onAutoSave) {
-      await onAutoSave(data);
+    if (onAutoSave && typeof onAutoSave === 'function') {
+      try {
+        await onAutoSave(data);
+      } catch (error) {
+        console.error('Auto-save failed:', error);
+      }
     }
   }, [onAutoSave]);
 

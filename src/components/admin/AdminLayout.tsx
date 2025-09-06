@@ -5,11 +5,15 @@ import { AdminHeader } from './AdminHeader';
 export function AdminLayout() {
   return (
     <div className="flex h-screen bg-background">
-      <AdminSidebar />
+      <div className="flex-shrink-0">
+        <AdminSidebar />
+      </div>
       <div className="flex-1 flex flex-col overflow-hidden">
         <AdminHeader />
         <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
+          <div className="max-w-none">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
