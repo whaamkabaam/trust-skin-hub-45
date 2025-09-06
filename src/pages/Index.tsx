@@ -10,9 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, Shield, Clock, Users, ArrowRight, CheckCircle, AlertTriangle, ExternalLink, Star, Calendar, FileText, Globe, UserCheck, Award, Database, Target, Zap } from 'lucide-react';
-import { usePublicOperators } from '@/hooks/usePublicOperators';
+import { usePublicOperatorsQuery } from '@/hooks/usePublicOperatorsQuery';
 const Index = () => {
-  const { stats, loading } = usePublicOperators();
+  const { data, isLoading } = usePublicOperatorsQuery({});
+  const stats = data?.stats || { totalOperators: 0, avgTrustScore: 0, verifiedOperators: 0, newThisMonth: 0 };
+  const loading = isLoading;
   
   return <div className="min-h-screen bg-background">
       <Header />

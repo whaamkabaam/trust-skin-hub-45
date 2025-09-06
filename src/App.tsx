@@ -1,6 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { ErrorBoundary, AdminErrorBoundary } from '@/components/ErrorBoundary';
@@ -30,15 +29,12 @@ import SEOManager from "./pages/admin/SEOManager";
 import ReviewsManager from "./pages/admin/ReviewsManager";
 import AdminUsers from "./pages/admin/AdminUsers";
 
-const queryClient = new QueryClient();
-
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <HelmetProvider>
-      <TooltipProvider>
-        <Toaster />
-        <ErrorBoundary>
-          <BrowserRouter>
+  <HelmetProvider>
+    <TooltipProvider>
+      <Toaster />
+      <ErrorBoundary>
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/skins" element={<Skins />} />
@@ -73,12 +69,11 @@ const App = () => (
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </ErrorBoundary>
-      </TooltipProvider>
-    </HelmetProvider>
-  </QueryClientProvider>
+          </Routes>
+        </BrowserRouter>
+      </ErrorBoundary>
+    </TooltipProvider>
+  </HelmetProvider>
 );
 
 export default App;
