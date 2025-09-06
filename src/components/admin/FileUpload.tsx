@@ -51,10 +51,11 @@ export function FileUpload({
         await supabase.from('media_assets').insert({
           url: publicUrl,
           type: file.type,
-          operator_id: null, // Will be set when operator is created
+          operator_id: null, // Will be associated with operator later
           alt_text: file.name,
           caption: ''
         });
+        console.log('Media asset entry created successfully');
       } catch (dbError) {
         console.warn('Failed to create media asset entry:', dbError);
         // Continue with upload success even if DB entry fails

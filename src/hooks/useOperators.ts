@@ -115,11 +115,22 @@ export function useOperators() {
 
   const autoSaveOperator = async (id: string, data: Partial<OperatorFormData>) => {
     try {
+      // Clean the data same way as form submission
+      const cleanedData = {
+        ...data,
+        categories: data.categories?.filter(c => c.trim() !== '') || [],
+        pros: data.pros?.filter(p => p.trim() !== '') || [],
+        cons: data.cons?.filter(c => c.trim() !== '') || [],
+        supported_countries: data.supported_countries?.filter(c => c.trim() !== '') || [],
+        // Convert empty strings to null for timestamp fields
+        scheduled_publish_at: data.scheduled_publish_at === '' ? null : data.scheduled_publish_at,
+      };
+
       const { error } = await supabase
         .from('operators')
         .update({
-          ...data,
-          draft_data: data,
+          ...cleanedData,
+          draft_data: cleanedData,
           last_auto_saved_at: new Date().toISOString()
         })
         .eq('id', id);

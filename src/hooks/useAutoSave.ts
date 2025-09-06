@@ -66,7 +66,15 @@ export function useAutoSave<T>({
     const performSave = async () => {
       try {
         setSaveState('saving');
-        await onSave(debouncedData);
+        
+        // Clean the data before saving
+        const cleanedData = {
+          ...debouncedData,
+          // Convert empty strings to null for timestamp fields
+          scheduled_publish_at: (debouncedData as any).scheduled_publish_at === '' ? null : (debouncedData as any).scheduled_publish_at,
+        };
+        
+        await onSave(cleanedData);
         setSaveState('saved');
         setLastSaved(new Date());
         clearDraft();

@@ -85,7 +85,7 @@ export type Database = {
           caption: string | null
           created_at: string
           id: string
-          operator_id: string
+          operator_id: string | null
           order_number: number | null
           type: string
           updated_at: string
@@ -96,7 +96,7 @@ export type Database = {
           caption?: string | null
           created_at?: string
           id?: string
-          operator_id: string
+          operator_id?: string | null
           order_number?: number | null
           type: string
           updated_at?: string
@@ -107,7 +107,7 @@ export type Database = {
           caption?: string | null
           created_at?: string
           id?: string
-          operator_id?: string
+          operator_id?: string | null
           order_number?: number | null
           type?: string
           updated_at?: string
