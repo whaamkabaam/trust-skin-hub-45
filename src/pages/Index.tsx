@@ -8,6 +8,8 @@ import TransparencySection from '@/components/TransparencySection';
 import UserReviews from '@/components/UserReviews';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { LogIn } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, Shield, Clock, Users, ArrowRight, CheckCircle, AlertTriangle, ExternalLink, Star, Calendar, FileText, Globe, UserCheck, Award, Database, Target, Zap } from 'lucide-react';
 import { usePublicOperatorsQuery } from '@/hooks/usePublicOperatorsQuery';
@@ -17,7 +19,19 @@ const Index = () => {
   const loading = isLoading;
   
   return <div className="min-h-screen bg-background">
-      <Header />
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container flex h-16 items-center justify-between">
+          <Link to="/" className="text-xl font-bold">
+            GambleGuardian
+          </Link>
+          <Link to="/auth">
+            <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <LogIn className="h-4 w-4" />
+              Admin Login
+            </Button>
+          </Link>
+        </div>
+      </header>
       
       {/* Hero Section */}
       <Hero />

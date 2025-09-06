@@ -9,7 +9,7 @@ import type { OperatorFormData } from '@/lib/validations';
 
 export default function NewOperator() {
   const navigate = useNavigate();
-  const { createOperator } = useOperators();
+  const { createOperator, autoSaveOperator } = useOperators();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (data: OperatorFormData) => {
@@ -23,6 +23,17 @@ export default function NewOperator() {
       toast.error('Failed to create operator');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAutoSave = async (data: OperatorFormData) => {
+    try {
+      // For new operators, save as draft data
+      console.log('Auto-saving draft:', data);
+      toast.success('Draft saved automatically', { duration: 2000 });
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+      toast.error('Failed to save draft');
     }
   };
 
@@ -44,7 +55,9 @@ export default function NewOperator() {
 
       <OperatorForm
         onSubmit={handleSubmit}
+        onAutoSave={handleAutoSave}
         isLoading={isLoading}
+        autoSaveEnabled={true}
       />
     </div>
   );

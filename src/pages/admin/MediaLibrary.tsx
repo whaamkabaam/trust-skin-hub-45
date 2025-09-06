@@ -14,13 +14,13 @@ import { Upload, Image, Edit, Trash2, Search, Grid, List } from 'lucide-react';
 
 export default function MediaLibrary() {
   const { operators } = useOperators();
-  const [selectedOperatorId, setSelectedOperatorId] = useState<string>('');
+  const [selectedOperatorId, setSelectedOperatorId] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [editingAsset, setEditingAsset] = useState<any>(null);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
 
-  const { assets, loading, uploadAsset, updateAsset, deleteAsset } = useMedia(selectedOperatorId || undefined);
+  const { assets, loading, uploadAsset, updateAsset, deleteAsset } = useMedia(selectedOperatorId === 'all' ? undefined : selectedOperatorId);
 
   const filteredAssets = assets.filter(asset =>
     asset.alt_text?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -29,7 +29,7 @@ export default function MediaLibrary() {
   );
 
   const handleUpload = async (file: File) => {
-    if (!selectedOperatorId) {
+    if (!selectedOperatorId || selectedOperatorId === 'all') {
       alert('Please select an operator first');
       return;
     }
@@ -77,13 +77,29 @@ export default function MediaLibrary() {
                   </SelectContent>
                 </Select>
               </div>
-              {selectedOperatorId && (
+              {selectedOperatorId && selectedOperatorId !== 'all' && (
                 <EnhancedFileUpload
                   label="Upload Media Files"
                   accept="image/*,video/*,audio/*"
                   maxSize={50 * 1024 * 1024} // 50MB
-                  onUpload={(url) => {
-                    setIsUploadDialogOpen(false);
+                  onUpload={async (url) => {
+                    try {
+                      // Extract file info from URL and create media asset
+                      const fileName = url.split('/').pop() || 'uploaded-file';
+                      const fileType = fileName.includes('.') ? fileName.split('.').pop() : 'unknown';
+                      
+                      // Create a FormData-like object for the upload function
+                      const mockFile = {
+                        name: fileName,
+                        type: `image/${fileType}`,
+                        url: url
+                      } as any;
+                      
+                      await uploadAsset(mockFile, selectedOperatorId);
+                      setIsUploadDialogOpen(false);
+                    } catch (error) {
+                      console.error('Failed to create media asset:', error);
+                    }
                   }}
                 />
               )}
@@ -115,7 +131,7 @@ export default function MediaLibrary() {
                 <SelectValue placeholder="All operators" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All operators</SelectItem>
+                <SelectItem value="all">All operators</SelectItem>
                 {operators.map(operator => (
                   <SelectItem key={operator.id} value={operator.id}>
                     {operator.name}

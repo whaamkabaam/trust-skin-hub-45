@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { ErrorBoundary, AdminErrorBoundary } from '@/components/ErrorBoundary';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 import Index from "./pages/Index";
 import OperatorReview from "./pages/OperatorReview";
@@ -28,6 +29,7 @@ import MediaLibrary from "./pages/admin/MediaLibrary";
 import SEOManager from "./pages/admin/SEOManager";
 import ReviewsManager from "./pages/admin/ReviewsManager";
 import AdminUsers from "./pages/admin/AdminUsers";
+import Auth from "./pages/Auth";
 
 const App = () => (
   <HelmetProvider>
@@ -49,12 +51,15 @@ const App = () => (
             <Route path="/mystery-boxes/operators" element={<MysteryBoxOperators />} />
             <Route path="/mystery-boxes/:id" element={<MysteryBoxDetail />} />
             <Route path="/style-guide" element={<StyleGuide />} />
+            <Route path="/auth" element={<Auth />} />
             
             {/* Admin Routes */}
             <Route path="/admin" element={
-              <AdminErrorBoundary>
-                <AdminLayout />
-              </AdminErrorBoundary>
+              <ProtectedRoute>
+                <AdminErrorBoundary>
+                  <AdminLayout />
+                </AdminErrorBoundary>
+              </ProtectedRoute>
             }>
               <Route index element={<AdminDashboard />} />
               <Route path="operators" element={<OperatorsList />} />
