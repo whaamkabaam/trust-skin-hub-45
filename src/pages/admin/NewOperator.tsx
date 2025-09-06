@@ -4,6 +4,7 @@ import { useOperators } from '@/hooks/useOperators';
 import { OperatorForm } from '@/components/admin/OperatorForm';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 import type { OperatorFormData } from '@/lib/validations';
 
 export default function NewOperator() {
@@ -18,6 +19,7 @@ export default function NewOperator() {
       navigate('/admin/operators');
     } catch (error) {
       console.error('Failed to create operator:', error);
+      toast.error('Failed to create operator');
     } finally {
       setIsLoading(false);
     }

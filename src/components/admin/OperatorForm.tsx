@@ -21,19 +21,6 @@ interface OperatorFormProps {
 }
 
 export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormProps) {
-  const [categories, setCategories] = useState<string[]>(
-    (initialData?.categories as string[]) || ['']
-  );
-  const [pros, setPros] = useState<string[]>(
-    (initialData?.pros as string[]) || ['']
-  );
-  const [cons, setCons] = useState<string[]>(
-    (initialData?.cons as string[]) || ['']
-  );
-  const [countries, setCountries] = useState<string[]>(
-    (initialData?.supported_countries as string[]) || ['']
-  );
-
   const {
     register,
     handleSubmit,
@@ -87,6 +74,10 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
   });
 
   const ratings = watch('ratings');
+  const categories = watch('categories');
+  const pros = watch('pros');
+  const cons = watch('cons');
+  const countries = watch('supported_countries');
 
   const generateSlug = (name: string) => {
     return name
@@ -106,24 +97,27 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
     // Filter out empty strings from arrays
     const cleanedData = {
       ...data,
-      categories: categories.filter(c => c.trim() !== ''),
-      pros: pros.filter(p => p.trim() !== ''),
-      cons: cons.filter(c => c.trim() !== ''),
-      supported_countries: countries.filter(c => c.trim() !== ''),
+      categories: data.categories.filter(c => c.trim() !== ''),
+      pros: data.pros.filter(p => p.trim() !== ''),
+      cons: data.cons.filter(c => c.trim() !== ''),
+      supported_countries: data.supported_countries.filter(c => c.trim() !== ''),
     };
     return onSubmit(cleanedData);
   };
 
-  const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>) => {
-    setter(prev => [...prev, '']);
+  const addArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries') => {
+    const currentArray = watch(fieldName);
+    setValue(fieldName, [...currentArray, '']);
   };
 
-  const removeArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number) => {
-    setter(prev => prev.filter((_, i) => i !== index));
+  const removeArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries', index: number) => {
+    const currentArray = watch(fieldName);
+    setValue(fieldName, currentArray.filter((_, i) => i !== index));
   };
 
-  const updateArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number, value: string) => {
-    setter(prev => prev.map((item, i) => i === index ? value : item));
+  const updateArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries', index: number, value: string) => {
+    const currentArray = watch(fieldName);
+    setValue(fieldName, currentArray.map((item, i) => i === index ? value : item));
   };
 
   return (
@@ -243,14 +237,14 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
             <div key={index} className="flex gap-2">
               <Input
                 value={category}
-                onChange={(e) => updateArrayItem(setCategories, index, e.target.value)}
+                onChange={(e) => updateArrayItem('categories', index, e.target.value)}
                 placeholder="Category name"
               />
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
-                onClick={() => removeArrayItem(setCategories, index)}
+                onClick={() => removeArrayItem('categories', index)}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -259,7 +253,7 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
           <Button
             type="button"
             variant="outline"
-            onClick={() => addArrayItem(setCategories)}
+            onClick={() => addArrayItem('categories')}
             className="w-full"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -279,14 +273,14 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
               <div key={index} className="flex gap-2">
                 <Input
                   value={pro}
-                  onChange={(e) => updateArrayItem(setPros, index, e.target.value)}
+                  onChange={(e) => updateArrayItem('pros', index, e.target.value)}
                   placeholder="Positive aspect"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   size="icon"
-                  onClick={() => removeArrayItem(setPros, index)}
+                  onClick={() => removeArrayItem('pros', index)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -295,7 +289,7 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
             <Button
               type="button"
               variant="outline"
-              onClick={() => addArrayItem(setPros)}
+              onClick={() => addArrayItem('pros')}
               className="w-full"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -313,14 +307,14 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
               <div key={index} className="flex gap-2">
                 <Input
                   value={con}
-                  onChange={(e) => updateArrayItem(setCons, index, e.target.value)}
+                  onChange={(e) => updateArrayItem('cons', index, e.target.value)}
                   placeholder="Negative aspect"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   size="icon"
-                  onClick={() => removeArrayItem(setCons, index)}
+                  onClick={() => removeArrayItem('cons', index)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -329,7 +323,7 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
             <Button
               type="button"
               variant="outline"
-              onClick={() => addArrayItem(setCons)}
+              onClick={() => addArrayItem('cons')}
               className="w-full"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -338,6 +332,41 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
           </CardContent>
         </Card>
       </div>
+
+      {/* Supported Countries */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Supported Countries</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {countries.map((country, index) => (
+            <div key={index} className="flex gap-2">
+              <Input
+                value={country}
+                onChange={(e) => updateArrayItem('supported_countries', index, e.target.value)}
+                placeholder="Country name"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => removeArrayItem('supported_countries', index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => addArrayItem('supported_countries')}
+            className="w-full"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Country
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Text Content */}
       <Card>
@@ -384,14 +413,16 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
           <div className="flex items-center space-x-2">
             <Switch
               id="kyc_required"
-              {...register('kyc_required')}
+              checked={watch('kyc_required')}
+              onCheckedChange={(checked) => setValue('kyc_required', checked)}
             />
             <Label htmlFor="kyc_required">KYC Required</Label>
           </div>
           <div className="flex items-center space-x-2">
             <Switch
               id="published"
-              {...register('published')}
+              checked={watch('published')}
+              onCheckedChange={(checked) => setValue('published', checked)}
             />
             <Label htmlFor="published">Published</Label>
           </div>
