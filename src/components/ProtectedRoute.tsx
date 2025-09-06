@@ -15,8 +15,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     const checkAdminStatus = async (userId: string) => {
+      console.log('Checking admin status for user:', userId);
       try {
         const { data, error } = await supabase.rpc('is_admin');
+        console.log('Admin status result:', { data, error });
         if (error) {
           console.error('Error checking admin status:', error);
           setIsAdmin(false);
@@ -31,12 +33,16 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        console.log('Auth state changed:', { event, session: !!session });
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          await checkAdminStatus(session.user.id);
+          // Use setTimeout to defer the admin check and prevent deadlock
+          setTimeout(() => {
+            checkAdminStatus(session.user.id);
+          }, 0);
         } else {
           setIsAdmin(null);
         }
@@ -45,12 +51,16 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', { session: !!session });
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await checkAdminStatus(session.user.id);
+        // Use setTimeout to defer the admin check and prevent deadlock
+        setTimeout(() => {
+          checkAdminStatus(session.user.id);
+        }, 0);
       } else {
         setIsAdmin(null);
       }
