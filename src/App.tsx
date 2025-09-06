@@ -19,8 +19,10 @@ import Skins from "./pages/Skins";
 import NotFound from "./pages/NotFound";
 import StyleGuide from "./pages/StyleGuide";
 import { AdminLayout } from "./components/admin/AdminLayout";
-
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import OperatorsList from "./pages/admin/OperatorsList";
+import NewOperator from "./pages/admin/NewOperator";
+import EditOperator from "./pages/admin/EditOperator";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,9 @@ const App = () => (
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
+              <Route path="operators" element={<OperatorsList />} />
+              <Route path="operators/new" element={<NewOperator />} />
+              <Route path="operators/:id" element={<EditOperator />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
