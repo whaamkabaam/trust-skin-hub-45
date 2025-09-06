@@ -11,6 +11,8 @@ import { Plus, Trash2 } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
 import { useState } from 'react';
+import { FileUpload } from './FileUpload';
+import { RichTextEditor } from './RichTextEditor';
 
 type Operator = Tables<'operators'>;
 
@@ -155,17 +157,12 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="logo_url">Logo URL</Label>
-              <Input
-                id="logo_url"
-                {...register('logo_url')}
-                placeholder="https://example.com/logo.png"
-              />
-              {errors.logo_url && (
-                <p className="text-sm text-destructive mt-1">{errors.logo_url.message}</p>
-              )}
-            </div>
+            <FileUpload
+              label="Operator Logo"
+              currentUrl={watch('logo_url')}
+              onUpload={(url) => setValue('logo_url', url)}
+              accept="image/*"
+            />
             <div>
               <Label htmlFor="tracking_link">Tracking Link</Label>
               <Input
@@ -192,17 +189,12 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
                 <p className="text-sm text-destructive mt-1">{errors.launch_year.message}</p>
               )}
             </div>
-            <div>
-              <Label htmlFor="hero_image_url">Hero Image URL</Label>
-              <Input
-                id="hero_image_url"
-                {...register('hero_image_url')}
-                placeholder="https://example.com/hero.jpg"
-              />
-              {errors.hero_image_url && (
-                <p className="text-sm text-destructive mt-1">{errors.hero_image_url.message}</p>
-              )}
-            </div>
+          <FileUpload
+            label="Hero Image"
+            currentUrl={watch('hero_image_url')}
+            onUpload={(url) => setValue('hero_image_url', url)}
+            accept="image/*"
+          />
           </div>
         </CardContent>
       </Card>
@@ -374,32 +366,31 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
         <CardHeader>
           <CardTitle>Content</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div>
-            <Label htmlFor="verdict">Verdict</Label>
-            <Textarea
-              id="verdict"
-              {...register('verdict')}
-              placeholder="Overall verdict about the operator"
-              rows={3}
+            <Label>Verdict</Label>
+            <RichTextEditor
+              value={watch('verdict') || ''}
+              onChange={(value) => setValue('verdict', value)}
+              placeholder="Overall verdict about the operator..."
             />
           </div>
+          
           <div>
-            <Label htmlFor="bonus_terms">Bonus Terms</Label>
-            <Textarea
-              id="bonus_terms"
-              {...register('bonus_terms')}
-              placeholder="Details about bonus terms and conditions"
-              rows={3}
+            <Label>Bonus Terms</Label>
+            <RichTextEditor
+              value={watch('bonus_terms') || ''}
+              onChange={(value) => setValue('bonus_terms', value)}
+              placeholder="Details about bonus terms and conditions..."
             />
           </div>
+          
           <div>
-            <Label htmlFor="fairness_info">Fairness Information</Label>
-            <Textarea
-              id="fairness_info"
-              {...register('fairness_info')}
-              placeholder="Information about fairness and provability"
-              rows={3}
+            <Label>Fairness Information</Label>
+            <RichTextEditor
+              value={watch('fairness_info') || ''}
+              onChange={(value) => setValue('fairness_info', value)}
+              placeholder="Information about fairness and provability..."
             />
           </div>
         </CardContent>

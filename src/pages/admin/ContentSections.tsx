@@ -1,39 +1,46 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, FileText } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ContentSectionManager } from '@/components/admin/ContentSectionManager';
+import { useOperators } from '@/hooks/useOperators';
 
 export default function ContentSections() {
+  const { operators } = useOperators();
+  const [selectedOperatorId, setSelectedOperatorId] = useState<string>('');
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Content Sections</h1>
-          <p className="text-muted-foreground">Manage content sections for operator pages</p>
+          <p className="text-muted-foreground">Manage content sections for operators</p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Section
-        </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Content Management
-          </CardTitle>
-          <CardDescription>
-            Create and manage rich content sections for operator reviews
-          </CardDescription>
+          <CardTitle>Select Operator</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Content sections management coming soon</p>
-            <p className="text-sm">Create rich text content for operator pages</p>
-          </div>
+          <Select value={selectedOperatorId} onValueChange={setSelectedOperatorId}>
+            <SelectTrigger className="w-full max-w-md">
+              <SelectValue placeholder="Choose an operator to manage content..." />
+            </SelectTrigger>
+            <SelectContent>
+              {operators.map(operator => (
+                <SelectItem key={operator.id} value={operator.id}>
+                  {operator.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </CardContent>
       </Card>
+
+      {selectedOperatorId && (
+        <ContentSectionManager operatorId={selectedOperatorId} />
+      )}
     </div>
   );
 }
