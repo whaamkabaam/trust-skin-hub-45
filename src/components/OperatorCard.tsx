@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Operator, FeeLevel } from '@/types';
 import { cn } from '@/lib/utils';
+import { LazyImage } from '@/components/LazyImage';
 interface OperatorCardProps {
   operator: Operator;
   view?: 'grid' | 'list';
@@ -40,11 +41,19 @@ const OperatorCard = ({
       <CardContent className={cn("p-6", isListView && "flex-1 flex items-center gap-6")}>
         {/* Logo & Header */}
         <div className={cn("flex items-start gap-4 mb-4", isListView && "mb-0 flex-shrink-0")}>
-          <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-            <span className="text-lg font-semibold text-primary">
-              {operator.name.charAt(0)}
-            </span>
-          </div>
+          {operator.logo ? (
+            <LazyImage
+              src={operator.logo}
+              alt={`${operator.name} logo`}
+              className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+            />
+          ) : (
+            <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-lg font-semibold text-primary">
+                {operator.name.charAt(0)}
+              </span>
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-lg truncate">{operator.name}</h3>

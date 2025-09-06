@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
+import { ErrorBoundary, AdminErrorBoundary } from '@/components/ErrorBoundary';
 
 import Index from "./pages/Index";
 import OperatorReview from "./pages/OperatorReview";
@@ -36,8 +37,9 @@ const App = () => (
     <HelmetProvider>
       <TooltipProvider>
         <Toaster />
-        <BrowserRouter>
-        <Routes>
+        <ErrorBoundary>
+          <BrowserRouter>
+          <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/skins" element={<Skins />} />
             <Route path="/operators" element={<OperatorsArchive />} />
@@ -53,7 +55,11 @@ const App = () => (
             <Route path="/style-guide" element={<StyleGuide />} />
             
             {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route path="/admin" element={
+              <AdminErrorBoundary>
+                <AdminLayout />
+              </AdminErrorBoundary>
+            }>
               <Route index element={<AdminDashboard />} />
               <Route path="operators" element={<OperatorsList />} />
               <Route path="operators/new" element={<NewOperator />} />
@@ -67,8 +73,9 @@ const App = () => (
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+            </Routes>
+          </BrowserRouter>
+        </ErrorBoundary>
       </TooltipProvider>
     </HelmetProvider>
   </QueryClientProvider>

@@ -23,12 +23,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, MoreHorizontal } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { TableSkeleton } from '@/components/ui/skeleton';
+import { ConfirmDialog, BulkConfirmDialog } from '@/components/ConfirmDialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function OperatorsList() {
   const { operators, loading, deleteOperator } = useOperators();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedOperators, setSelectedOperators] = useState<Set<string>>(new Set());
 
   const filteredOperators = operators.filter((operator) =>
     operator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -39,13 +49,45 @@ export default function OperatorsList() {
     await deleteOperator(id);
   };
 
+  const handleBulkDelete = async () => {
+    for (const id of selectedOperators) {
+      await deleteOperator(id);
+    }
+    setSelectedOperators(new Set());
+  };
+
+  const handleSelectAll = () => {
+    if (selectedOperators.size === filteredOperators.length) {
+      setSelectedOperators(new Set());
+    } else {
+      setSelectedOperators(new Set(filteredOperators.map(op => op.id)));
+    }
+  };
+
+  const toggleOperatorSelection = (id: string) => {
+    const newSelection = new Set(selectedOperators);
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
+    setSelectedOperators(newSelection);
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading operators...</p>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Operators</h1>
+            <p className="text-muted-foreground">Manage your gambling operators</p>
+          </div>
+          <Button disabled>
+            <Plus className="h-4 w-4 mr-2" />
+            New Operator
+          </Button>
         </div>
+        <TableSkeleton rows={8} />
       </div>
     );
   }
@@ -65,7 +107,7 @@ export default function OperatorsList() {
         </Button>
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-between">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -75,12 +117,39 @@ export default function OperatorsList() {
             className="pl-8"
           />
         </div>
+        
+        {selectedOperators.size > 0 && (
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">
+              {selectedOperators.size} selected
+            </span>
+            <BulkConfirmDialog
+              title="Delete Operators"
+              description="Are you sure you want to delete {count} operators? This action cannot be undone."
+              onConfirm={handleBulkDelete}
+              selectedCount={selectedOperators.size}
+              variant="destructive"
+              confirmText="Delete All"
+            >
+              <Button variant="destructive" size="sm">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Selected
+              </Button>
+            </BulkConfirmDialog>
+          </div>
+        )}
       </div>
 
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={selectedOperators.size === filteredOperators.length && filteredOperators.length > 0}
+                  onCheckedChange={handleSelectAll}
+                />
+              </TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Slug</TableHead>
               <TableHead>Status</TableHead>
@@ -92,7 +161,7 @@ export default function OperatorsList() {
           <TableBody>
             {filteredOperators.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-8">
                   <div className="text-muted-foreground">
                     {searchTerm ? 'No operators found matching your search.' : 'No operators yet.'}
                   </div>
@@ -109,6 +178,12 @@ export default function OperatorsList() {
             ) : (
               filteredOperators.map((operator) => (
                 <TableRow key={operator.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedOperators.has(operator.id)}
+                      onCheckedChange={() => toggleOperatorSelection(operator.id)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">
                     <div className="flex items-center space-x-2">
                       {operator.logo_url && (
@@ -149,30 +224,36 @@ export default function OperatorsList() {
                           <Edit className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
+                      <ConfirmDialog
+                        title="Delete Operator"
+                        description={`Are you sure you want to delete "${operator.name}"? This action cannot be undone.`}
+                        onConfirm={() => handleDelete(operator.id)}
+                        variant="destructive"
+                        confirmText="Delete"
+                      >
+                        <Button variant="ghost" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </ConfirmDialog>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm">
-                            <Trash2 className="h-4 w-4" />
+                            <MoreHorizontal className="h-4 w-4" />
                           </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Operator</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete "{operator.name}"? This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(operator.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link to={`/admin/operators/${operator.id}/content`}>
+                              Manage Content
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link to={`/admin/operators/${operator.id}/seo`}>
+                              SEO Settings
+                            </Link>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </TableCell>
                 </TableRow>

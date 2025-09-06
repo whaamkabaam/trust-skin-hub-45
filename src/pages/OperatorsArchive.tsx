@@ -12,7 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { usePublicOperators } from '@/hooks/usePublicOperators';
+import { usePublicOperatorsQuery } from '@/hooks/usePublicOperatorsQuery';
+import { OperatorListSkeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 const OperatorsArchive = () => {
@@ -30,9 +31,28 @@ const OperatorsArchive = () => {
     trustScore: [0, 5] as [number, number]
   });
 
-  const { operators: allOperators, loading, error, totalCount, stats } = usePublicOperators();
-  
   const itemsPerPage = 12;
+  
+  const { 
+    data, 
+    isLoading, 
+    error, 
+    isError,
+    refetch 
+  } = usePublicOperatorsQuery({
+    search: searchQuery,
+    page: currentPage,
+    limit: itemsPerPage,
+    sortBy: sortBy,
+    games: filters.games,
+    modes: filters.modes,
+    kycRequired: filters.kycRequired,
+    verified: filters.verified
+  });
+
+  const operators = data?.operators || [];
+  const totalCount = data?.totalCount || 0;
+  const stats = data?.stats || { totalOperators: 0, avgTrustScore: 0, verifiedOperators: 0, newThisMonth: 0 };
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const categories = [
@@ -48,15 +68,16 @@ const OperatorsArchive = () => {
   const modeFilters = ['Cases', 'Crash', 'Coinflip', 'Roulette', 'Upgrader', 'Contracts'];
   const feeFilters = ['Very Low', 'Low', 'Medium', 'High', 'Very High'];
 
-  // Filter operators based on search and filters
-  const filteredOperators = allOperators
-    .filter(operator => {
-      if (searchQuery && !operator.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
-      }
-      return true;
-    })
-    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  // Reset page when search changes
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,7 +110,7 @@ const OperatorsArchive = () => {
               <Input
                 placeholder="Search operators by name, features, or payment methods..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="pl-10 pr-4 py-3 text-lg"
               />
             </div>
@@ -287,17 +308,22 @@ const OperatorsArchive = () => {
               sortBy={sortBy}
               onSortChange={setSortBy}
               filters={filters}
-              onFiltersChange={setFilters}
+              onFiltersChange={handleFilterChange}
             />
 
             {/* Results Grid/List */}
-            {loading ? (
-              <div className="text-center py-8">
-                <p>Loading operators...</p>
+            {isLoading ? (
+              <OperatorListSkeleton count={itemsPerPage} view={view} />
+            ) : isError ? (
+              <div className="text-center py-8 space-y-4">
+                <p className="text-destructive">Error loading operators: {error?.message}</p>
+                <Button onClick={() => refetch()} variant="outline">
+                  Try again
+                </Button>
               </div>
-            ) : error ? (
+            ) : operators.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-destructive">Error: {error}</p>
+                <p className="text-muted-foreground">No operators found.</p>
               </div>
             ) : (
               <div className={cn(
@@ -306,7 +332,7 @@ const OperatorsArchive = () => {
                   ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
                   : "flex flex-col space-y-4"
               )}>
-                {filteredOperators.map((operator) => (
+                {operators.map((operator) => (
                   <OperatorCard 
                     key={operator.id} 
                     operator={operator} 
