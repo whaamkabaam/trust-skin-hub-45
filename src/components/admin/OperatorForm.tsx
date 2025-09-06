@@ -131,13 +131,15 @@ export function OperatorForm({
   };
 
   const handleFormSubmit = (data: OperatorFormData) => {
-    // Filter out empty strings from arrays
+    // Filter out empty strings from arrays and clean timestamp fields
     const cleanedData = {
       ...data,
       categories: data.categories.filter(c => c.trim() !== ''),
       pros: data.pros.filter(p => p.trim() !== ''),
       cons: data.cons.filter(c => c.trim() !== ''),
       supported_countries: data.supported_countries.filter(c => c.trim() !== ''),
+      // Convert empty strings to null for timestamp fields
+      scheduled_publish_at: data.scheduled_publish_at === '' ? null : data.scheduled_publish_at,
     };
     return onSubmit(cleanedData);
   };

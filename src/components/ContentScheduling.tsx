@@ -46,7 +46,7 @@ export function ContentScheduling({
     if (newStatus === 'published') {
       onStatusChange(newStatus, new Date().toISOString());
     } else {
-      onStatusChange(newStatus);
+      onStatusChange(newStatus, null);
     }
   };
 

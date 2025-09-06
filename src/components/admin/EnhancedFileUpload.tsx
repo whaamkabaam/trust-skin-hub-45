@@ -96,6 +96,20 @@ export function EnhancedFileUpload({
         .from('operator-media')
         .getPublicUrl(data.path);
 
+      // Create media asset entry in database
+      try {
+        await supabase.from('media_assets').insert({
+          url: publicUrl,
+          type: file.type,
+          operator_id: null, // Will be set when operator is created
+          alt_text: file.name,
+          caption: ''
+        });
+      } catch (dbError) {
+        console.warn('Failed to create media asset entry:', dbError);
+        // Continue with upload success even if DB entry fails
+      }
+
       // Update to completed state
       setUploads(prev => {
         const newMap = new Map(prev);
