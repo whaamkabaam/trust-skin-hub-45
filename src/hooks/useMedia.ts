@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 export interface MediaAsset {
   id: string;
@@ -17,7 +17,7 @@ export interface MediaAsset {
 export function useMedia(operatorId?: string) {
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  
 
   const fetchAssets = async () => {
     try {
@@ -33,11 +33,7 @@ export function useMedia(operatorId?: string) {
       setAssets(data || []);
     } catch (error) {
       console.error('Error fetching media assets:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load media assets',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load media assets');
     } finally {
       setLoading(false);
     }
@@ -73,19 +69,12 @@ export function useMedia(operatorId?: string) {
       if (error) throw error;
 
       setAssets(prev => [data, ...prev]);
-      toast({
-        title: 'Success',
-        description: 'Media uploaded successfully',
-      });
+      toast.success('Media uploaded successfully');
 
       return data;
     } catch (error) {
       console.error('Error uploading media:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to upload media',
-        variant: 'destructive',
-      });
+      toast.error('Failed to upload media');
       throw error;
     }
   };
@@ -102,19 +91,12 @@ export function useMedia(operatorId?: string) {
       if (error) throw error;
 
       setAssets(prev => prev.map(asset => asset.id === id ? data : asset));
-      toast({
-        title: 'Success',
-        description: 'Media updated successfully',
-      });
+      toast.success('Media updated successfully');
 
       return data;
     } catch (error) {
       console.error('Error updating media:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update media',
-        variant: 'destructive',
-      });
+      toast.error('Failed to update media');
       throw error;
     }
   };
@@ -144,17 +126,10 @@ export function useMedia(operatorId?: string) {
       if (error) throw error;
 
       setAssets(prev => prev.filter(asset => asset.id !== id));
-      toast({
-        title: 'Success',
-        description: 'Media deleted successfully',
-      });
+      toast.success('Media deleted successfully');
     } catch (error) {
       console.error('Error deleting media:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete media',
-        variant: 'destructive',
-      });
+      toast.error('Failed to delete media');
       throw error;
     }
   };

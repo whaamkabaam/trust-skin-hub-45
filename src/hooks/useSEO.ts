@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 export interface SEOMetadata {
   id: string;
@@ -27,7 +27,6 @@ export interface SEOFormData {
 export function useSEO(operatorId: string) {
   const [metadata, setMetadata] = useState<SEOMetadata | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const fetchSEO = async () => {
     try {
@@ -42,11 +41,7 @@ export function useSEO(operatorId: string) {
       setMetadata(data);
     } catch (error) {
       console.error('Error fetching SEO metadata:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load SEO metadata',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load SEO metadata');
     } finally {
       setLoading(false);
     }
@@ -96,19 +91,12 @@ export function useSEO(operatorId: string) {
       }
 
       setMetadata(data);
-      toast({
-        title: 'Success',
-        description: 'SEO metadata saved successfully',
-      });
+      toast.success('SEO metadata saved successfully');
 
       return data;
     } catch (error) {
       console.error('Error saving SEO metadata:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save SEO metadata',
-        variant: 'destructive',
-      });
+      toast.error('Failed to save SEO metadata');
       throw error;
     }
   };

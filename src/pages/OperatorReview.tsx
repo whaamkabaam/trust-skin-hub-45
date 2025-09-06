@@ -18,6 +18,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { usePublicOperator } from '@/hooks/usePublicOperator';
 import { usePublicReviews } from '@/hooks/usePublicReviews';
 import { SEOHead } from '@/components/SEOHead';
+import { ContentSectionRenderer } from '@/components/ContentSectionRenderer';
 const OperatorReview = () => {
   const { id: slug } = useParams<{ id: string }>();
   const [tocOpen, setTocOpen] = useState(false);
@@ -1768,6 +1769,19 @@ const OperatorReview = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Content Sections */}
+            {contentSections && contentSections.length > 0 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold">Additional Information</h2>
+                </div>
+                <ContentSectionRenderer sections={contentSections} />
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 export interface Review {
   id: string;
@@ -23,7 +23,6 @@ export interface ReviewFormData {
 export function useReviews(operatorId?: string) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const fetchReviews = async () => {
     try {
@@ -39,11 +38,7 @@ export function useReviews(operatorId?: string) {
       setReviews((data || []) as Review[]);
     } catch (error) {
       console.error('Error fetching reviews:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load reviews',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load reviews');
     } finally {
       setLoading(false);
     }
@@ -63,19 +58,12 @@ export function useReviews(operatorId?: string) {
       if (error) throw error;
 
       setReviews(prev => [data as Review, ...prev]);
-      toast({
-        title: 'Success',
-        description: 'Review created successfully',
-      });
+      toast.success('Review created successfully');
 
       return data;
     } catch (error) {
       console.error('Error creating review:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create review',
-        variant: 'destructive',
-      });
+      toast.error('Failed to create review');
       throw error;
     }
   };
@@ -95,19 +83,12 @@ export function useReviews(operatorId?: string) {
         review.id === reviewId ? data as Review : review
       ));
 
-      toast({
-        title: 'Success',
-        description: `Review ${status} successfully`,
-      });
+      toast.success(`Review ${status} successfully`);
 
       return data;
     } catch (error) {
       console.error('Error updating review status:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update review status',
-        variant: 'destructive',
-      });
+      toast.error('Failed to update review status');
       throw error;
     }
   };
@@ -127,19 +108,12 @@ export function useReviews(operatorId?: string) {
         review.id === reviewId ? data as Review : review
       ));
 
-      toast({
-        title: 'Success',
-        description: 'Review updated successfully',
-      });
+      toast.success('Review updated successfully');
 
       return data;
     } catch (error) {
       console.error('Error updating review:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update review',
-        variant: 'destructive',
-      });
+      toast.error('Failed to update review');
       throw error;
     }
   };
@@ -154,17 +128,10 @@ export function useReviews(operatorId?: string) {
       if (error) throw error;
 
       setReviews(prev => prev.filter(review => review.id !== reviewId));
-      toast({
-        title: 'Success',
-        description: 'Review deleted successfully',
-      });
+      toast.success('Review deleted successfully');
     } catch (error) {
       console.error('Error deleting review:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete review',
-        variant: 'destructive',
-      });
+      toast.error('Failed to delete review');
       throw error;
     }
   };
@@ -185,19 +152,12 @@ export function useReviews(operatorId?: string) {
           : review
       ));
 
-      toast({
-        title: 'Success',
-        description: `${reviewIds.length} reviews ${status} successfully`,
-      });
+      toast.success(`${reviewIds.length} reviews ${status} successfully`);
 
       return data;
     } catch (error) {
       console.error('Error bulk updating reviews:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update reviews',
-        variant: 'destructive',
-      });
+      toast.error('Failed to update reviews');
       throw error;
     }
   };
