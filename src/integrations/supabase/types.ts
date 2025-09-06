@@ -14,164 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
-      cases: {
+      admin_users: {
         Row: {
-          created_at: string | null
-          deposit_limits_credit_debit: string | null
-          deposit_limits_crypto: string | null
-          deposit_limits_skins: string | null
-          game: string | null
-          id: number
-          image_url: string | null
-          min_price: number | null
-          name: string
-          odds_disclosed: boolean | null
-          operator_id: number | null
-          overall_min_deposit: number | null
-          prize_value_max: number | null
-          prize_value_min: number | null
-          withdrawal_fee_crypto: number | null
-          withdrawal_fee_fiat: number | null
-          withdrawal_fee_skins: number | null
-          withdrawal_time_crypto: string | null
-          withdrawal_time_fiat: string | null
-          withdrawal_time_skins: string | null
+          created_at: string
+          email: string
+          id: string
+          role: string
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
-          deposit_limits_credit_debit?: string | null
-          deposit_limits_crypto?: string | null
-          deposit_limits_skins?: string | null
-          game?: string | null
-          id?: number
-          image_url?: string | null
-          min_price?: number | null
-          name: string
-          odds_disclosed?: boolean | null
-          operator_id?: number | null
-          overall_min_deposit?: number | null
-          prize_value_max?: number | null
-          prize_value_min?: number | null
-          withdrawal_fee_crypto?: number | null
-          withdrawal_fee_fiat?: number | null
-          withdrawal_fee_skins?: number | null
-          withdrawal_time_crypto?: string | null
-          withdrawal_time_fiat?: string | null
-          withdrawal_time_skins?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          role?: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
-          deposit_limits_credit_debit?: string | null
-          deposit_limits_crypto?: string | null
-          deposit_limits_skins?: string | null
-          game?: string | null
-          id?: number
-          image_url?: string | null
-          min_price?: number | null
-          name?: string
-          odds_disclosed?: boolean | null
-          operator_id?: number | null
-          overall_min_deposit?: number | null
-          prize_value_max?: number | null
-          prize_value_min?: number | null
-          withdrawal_fee_crypto?: number | null
-          withdrawal_fee_fiat?: number | null
-          withdrawal_fee_skins?: number | null
-          withdrawal_time_crypto?: string | null
-          withdrawal_time_fiat?: string | null
-          withdrawal_time_skins?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cases_operator_id_fkey"
-            columns: ["operator_id"]
-            isOneToOne: false
-            referencedRelation: "operators"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      "cases.gg": {
-        Row: {
-          all_items: Json | null
-          box_image: string | null
-          box_name: string | null
-          box_price: number | null
-          box_url: string | null
-          category: string | null
-          data_source: string | null
-          ev_to_price_ratio: number | null
-          expected_value_percent: number | null
-          floor_rate_percent: number | null
-          id: number
-          jackpot_items: Json | null
-          last_updated: string | null
-          standard_deviation_percent: number | null
-          tags: Json | null
-          unwanted_items: Json | null
-          volatility_bucket: string | null
-        }
-        Insert: {
-          all_items?: Json | null
-          box_image?: string | null
-          box_name?: string | null
-          box_price?: number | null
-          box_url?: string | null
-          category?: string | null
-          data_source?: string | null
-          ev_to_price_ratio?: number | null
-          expected_value_percent?: number | null
-          floor_rate_percent?: number | null
-          id: number
-          jackpot_items?: Json | null
-          last_updated?: string | null
-          standard_deviation_percent?: number | null
-          tags?: Json | null
-          unwanted_items?: Json | null
-          volatility_bucket?: string | null
-        }
-        Update: {
-          all_items?: Json | null
-          box_image?: string | null
-          box_name?: string | null
-          box_price?: number | null
-          box_url?: string | null
-          category?: string | null
-          data_source?: string | null
-          ev_to_price_ratio?: number | null
-          expected_value_percent?: number | null
-          floor_rate_percent?: number | null
-          id?: number
-          jackpot_items?: Json | null
-          last_updated?: string | null
-          standard_deviation_percent?: number | null
-          tags?: Json | null
-          unwanted_items?: Json | null
-          volatility_bucket?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          role?: string
+          updated_at?: string
         }
         Relationships: []
       }
       content_sections: {
         Row: {
-          content: string | null
-          heading: string | null
-          id: number
-          operator_id: number | null
-          section_key: string | null
+          created_at: string
+          heading: string
+          id: string
+          operator_id: string
+          order_number: number | null
+          rich_text_content: string | null
+          section_key: string
+          updated_at: string
         }
         Insert: {
-          content?: string | null
-          heading?: string | null
-          id?: number
-          operator_id?: number | null
-          section_key?: string | null
+          created_at?: string
+          heading: string
+          id?: string
+          operator_id: string
+          order_number?: number | null
+          rich_text_content?: string | null
+          section_key: string
+          updated_at?: string
         }
         Update: {
-          content?: string | null
-          heading?: string | null
-          id?: number
-          operator_id?: number | null
-          section_key?: string | null
+          created_at?: string
+          heading?: string
+          id?: string
+          operator_id?: string
+          order_number?: number | null
+          rich_text_content?: string | null
+          section_key?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -183,143 +79,38 @@ export type Database = {
           },
         ]
       }
-      hypedrop: {
-        Row: {
-          all_items: Json | null
-          box_image: string | null
-          box_name: string | null
-          box_price: number | null
-          box_url: string | null
-          category: string | null
-          data_source: string | null
-          ev_to_price_ratio: number | null
-          expected_value_percent: number | null
-          floor_rate_percent: number | null
-          id: number
-          jackpot_items: Json | null
-          last_updated: string | null
-          standard_deviation_percent: number | null
-          tags: Json | null
-          unwanted_items: Json | null
-          volatility_bucket: string | null
-        }
-        Insert: {
-          all_items?: Json | null
-          box_image?: string | null
-          box_name?: string | null
-          box_price?: number | null
-          box_url?: string | null
-          category?: string | null
-          data_source?: string | null
-          ev_to_price_ratio?: number | null
-          expected_value_percent?: number | null
-          floor_rate_percent?: number | null
-          id: number
-          jackpot_items?: Json | null
-          last_updated?: string | null
-          standard_deviation_percent?: number | null
-          tags?: Json | null
-          unwanted_items?: Json | null
-          volatility_bucket?: string | null
-        }
-        Update: {
-          all_items?: Json | null
-          box_image?: string | null
-          box_name?: string | null
-          box_price?: number | null
-          box_url?: string | null
-          category?: string | null
-          data_source?: string | null
-          ev_to_price_ratio?: number | null
-          expected_value_percent?: number | null
-          floor_rate_percent?: number | null
-          id?: number
-          jackpot_items?: Json | null
-          last_updated?: string | null
-          standard_deviation_percent?: number | null
-          tags?: Json | null
-          unwanted_items?: Json | null
-          volatility_bucket?: string | null
-        }
-        Relationships: []
-      }
-      luxdrop: {
-        Row: {
-          all_items: Json | null
-          box_image: string | null
-          box_name: string | null
-          box_price: number | null
-          box_url: string | null
-          category: string | null
-          data_source: string | null
-          ev_to_price_ratio: number | null
-          expected_value_percent: number | null
-          floor_rate_percent: number | null
-          id: number
-          jackpot_items: Json | null
-          last_updated: string | null
-          standard_deviation_percent: number | null
-          tags: Json | null
-          unwanted_items: Json | null
-          volatility_bucket: string | null
-        }
-        Insert: {
-          all_items?: Json | null
-          box_image?: string | null
-          box_name?: string | null
-          box_price?: number | null
-          box_url?: string | null
-          category?: string | null
-          data_source?: string | null
-          ev_to_price_ratio?: number | null
-          expected_value_percent?: number | null
-          floor_rate_percent?: number | null
-          id: number
-          jackpot_items?: Json | null
-          last_updated?: string | null
-          standard_deviation_percent?: number | null
-          tags?: Json | null
-          unwanted_items?: Json | null
-          volatility_bucket?: string | null
-        }
-        Update: {
-          all_items?: Json | null
-          box_image?: string | null
-          box_name?: string | null
-          box_price?: number | null
-          box_url?: string | null
-          category?: string | null
-          data_source?: string | null
-          ev_to_price_ratio?: number | null
-          expected_value_percent?: number | null
-          floor_rate_percent?: number | null
-          id?: number
-          jackpot_items?: Json | null
-          last_updated?: string | null
-          standard_deviation_percent?: number | null
-          tags?: Json | null
-          unwanted_items?: Json | null
-          volatility_bucket?: string | null
-        }
-        Relationships: []
-      }
       media_assets: {
         Row: {
-          id: number
-          operator_id: number | null
-          type: string | null
+          alt_text: string | null
+          caption: string | null
+          created_at: string
+          id: string
+          operator_id: string
+          order_number: number | null
+          type: string
+          updated_at: string
           url: string
         }
         Insert: {
-          id?: number
-          operator_id?: number | null
-          type?: string | null
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          id?: string
+          operator_id: string
+          order_number?: number | null
+          type: string
+          updated_at?: string
           url: string
         }
         Update: {
-          id?: number
-          operator_id?: number | null
-          type?: string | null
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          id?: string
+          operator_id?: string
+          order_number?: number | null
+          type?: string
+          updated_at?: string
           url?: string
         }
         Relationships: [
@@ -332,238 +123,153 @@ export type Database = {
           },
         ]
       }
-      mystery_boxes: {
-        Row: {
-          case_id: number | null
-          category: string | null
-          id: number
-          type: string | null
-        }
-        Insert: {
-          case_id?: number | null
-          category?: string | null
-          id?: number
-          type?: string | null
-        }
-        Update: {
-          case_id?: number | null
-          category?: string | null
-          id?: number
-          type?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mystery_boxes_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "cases"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       operators: {
         Row: {
+          bonus_terms: string | null
           categories: string[] | null
           cons: string[] | null
-          created_at: string | null
-          gaming_modes: string[] | null
-          id: number
+          created_at: string
+          fairness_info: string | null
+          hero_image_url: string | null
+          id: string
+          kyc_required: boolean | null
           launch_year: number | null
           logo_url: string | null
           name: string
-          offering_rating: number | null
-          other_features: string[] | null
-          overall_rating: number | null
-          payment_methods: string[] | null
-          payments_rating: number | null
-          payout_methods: string[] | null
-          promo_code: string | null
           pros: string[] | null
-          shipping_regions: string[] | null
-          shipping_time: string | null
-          support_rating: number | null
+          published: boolean | null
+          published_at: string | null
+          ratings: Json | null
+          slug: string
+          supported_countries: string[] | null
           tracking_link: string | null
-          trust_rating: number | null
-          updated_at: string | null
-          ux_rating: number | null
-          value_rating: number | null
+          updated_at: string
           verdict: string | null
-          welcome_offer: string | null
         }
         Insert: {
+          bonus_terms?: string | null
           categories?: string[] | null
           cons?: string[] | null
-          created_at?: string | null
-          gaming_modes?: string[] | null
-          id?: number
+          created_at?: string
+          fairness_info?: string | null
+          hero_image_url?: string | null
+          id?: string
+          kyc_required?: boolean | null
           launch_year?: number | null
           logo_url?: string | null
           name: string
-          offering_rating?: number | null
-          other_features?: string[] | null
-          overall_rating?: number | null
-          payment_methods?: string[] | null
-          payments_rating?: number | null
-          payout_methods?: string[] | null
-          promo_code?: string | null
           pros?: string[] | null
-          shipping_regions?: string[] | null
-          shipping_time?: string | null
-          support_rating?: number | null
+          published?: boolean | null
+          published_at?: string | null
+          ratings?: Json | null
+          slug: string
+          supported_countries?: string[] | null
           tracking_link?: string | null
-          trust_rating?: number | null
-          updated_at?: string | null
-          ux_rating?: number | null
-          value_rating?: number | null
+          updated_at?: string
           verdict?: string | null
-          welcome_offer?: string | null
         }
         Update: {
+          bonus_terms?: string | null
           categories?: string[] | null
           cons?: string[] | null
-          created_at?: string | null
-          gaming_modes?: string[] | null
-          id?: number
+          created_at?: string
+          fairness_info?: string | null
+          hero_image_url?: string | null
+          id?: string
+          kyc_required?: boolean | null
           launch_year?: number | null
           logo_url?: string | null
           name?: string
-          offering_rating?: number | null
-          other_features?: string[] | null
-          overall_rating?: number | null
-          payment_methods?: string[] | null
-          payments_rating?: number | null
-          payout_methods?: string[] | null
-          promo_code?: string | null
           pros?: string[] | null
-          shipping_regions?: string[] | null
-          shipping_time?: string | null
-          support_rating?: number | null
+          published?: boolean | null
+          published_at?: string | null
+          ratings?: Json | null
+          slug?: string
+          supported_countries?: string[] | null
           tracking_link?: string | null
-          trust_rating?: number | null
-          updated_at?: string | null
-          ux_rating?: number | null
-          value_rating?: number | null
+          updated_at?: string
           verdict?: string | null
-          welcome_offer?: string | null
         }
         Relationships: []
       }
       reviews: {
         Row: {
-          content: string | null
-          created_at: string | null
-          entity_id: number
-          entity_type: string | null
-          id: number
-          rating: number | null
+          content: string
+          created_at: string
+          id: string
+          operator_id: string
+          rating: number
+          status: string | null
+          updated_at: string
           user_id: string | null
         }
         Insert: {
-          content?: string | null
-          created_at?: string | null
-          entity_id: number
-          entity_type?: string | null
-          id?: number
-          rating?: number | null
+          content: string
+          created_at?: string
+          id?: string
+          operator_id: string
+          rating: number
+          status?: string | null
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
-          content?: string | null
-          created_at?: string | null
-          entity_id?: number
-          entity_type?: string | null
-          id?: number
-          rating?: number | null
+          content?: string
+          created_at?: string
+          id?: string
+          operator_id?: string
+          rating?: number
+          status?: string | null
+          updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
-      }
-      rillabox: {
-        Row: {
-          all_items: Json | null
-          box_image: string | null
-          box_name: string | null
-          box_price: number | null
-          box_url: string | null
-          category: string | null
-          data_source: string | null
-          ev_to_price_ratio: number | null
-          expected_value_percent: number | null
-          floor_rate_percent: number | null
-          id: number
-          jackpot_items: Json | null
-          last_updated: string | null
-          standard_deviation_percent: number | null
-          tags: Json | null
-          unwanted_items: Json | null
-          volatility_bucket: string | null
-        }
-        Insert: {
-          all_items?: Json | null
-          box_image?: string | null
-          box_name?: string | null
-          box_price?: number | null
-          box_url?: string | null
-          category?: string | null
-          data_source?: string | null
-          ev_to_price_ratio?: number | null
-          expected_value_percent?: number | null
-          floor_rate_percent?: number | null
-          id: number
-          jackpot_items?: Json | null
-          last_updated?: string | null
-          standard_deviation_percent?: number | null
-          tags?: Json | null
-          unwanted_items?: Json | null
-          volatility_bucket?: string | null
-        }
-        Update: {
-          all_items?: Json | null
-          box_image?: string | null
-          box_name?: string | null
-          box_price?: number | null
-          box_url?: string | null
-          category?: string | null
-          data_source?: string | null
-          ev_to_price_ratio?: number | null
-          expected_value_percent?: number | null
-          floor_rate_percent?: number | null
-          id?: number
-          jackpot_items?: Json | null
-          last_updated?: string | null
-          standard_deviation_percent?: number | null
-          tags?: Json | null
-          unwanted_items?: Json | null
-          volatility_bucket?: string | null
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "reviews_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: false
+            referencedRelation: "operators"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seo_metadata: {
         Row: {
-          created_at: string | null
-          id: number
+          created_at: string
+          id: string
           meta_description: string | null
           meta_title: string | null
+          operator_id: string
           schema_data: Json | null
-          slug: string
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
-          id?: number
+          created_at?: string
+          id?: string
           meta_description?: string | null
           meta_title?: string | null
+          operator_id: string
           schema_data?: Json | null
-          slug: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
-          id?: number
+          created_at?: string
+          id?: string
           meta_description?: string | null
           meta_title?: string | null
+          operator_id?: string
           schema_data?: Json | null
-          slug?: string
+          updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "seo_metadata_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: true
+            referencedRelation: "operators"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
