@@ -1,4 +1,4 @@
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Plus, Trash2 } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
+import { useState } from 'react';
 
 type Operator = Tables<'operators'>;
 
@@ -20,10 +21,22 @@ interface OperatorFormProps {
 }
 
 export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormProps) {
+  const [categories, setCategories] = useState<string[]>(
+    (initialData?.categories as string[]) || ['']
+  );
+  const [pros, setPros] = useState<string[]>(
+    (initialData?.pros as string[]) || ['']
+  );
+  const [cons, setCons] = useState<string[]>(
+    (initialData?.cons as string[]) || ['']
+  );
+  const [countries, setCountries] = useState<string[]>(
+    (initialData?.supported_countries as string[]) || ['']
+  );
+
   const {
     register,
     handleSubmit,
-    control,
     watch,
     setValue,
     formState: { errors },
@@ -73,11 +86,6 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
     },
   });
 
-  const categoriesArray = useFieldArray({ control, name: 'categories' });
-  const prosArray = useFieldArray({ control, name: 'pros' });
-  const consArray = useFieldArray({ control, name: 'cons' });
-  const countriesArray = useFieldArray({ control, name: 'supported_countries' });
-
   const ratings = watch('ratings');
 
   const generateSlug = (name: string) => {
@@ -94,8 +102,32 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
     setValue('slug', generateSlug(name));
   };
 
+  const handleFormSubmit = (data: OperatorFormData) => {
+    // Filter out empty strings from arrays
+    const cleanedData = {
+      ...data,
+      categories: categories.filter(c => c.trim() !== ''),
+      pros: pros.filter(p => p.trim() !== ''),
+      cons: cons.filter(c => c.trim() !== ''),
+      supported_countries: countries.filter(c => c.trim() !== ''),
+    };
+    return onSubmit(cleanedData);
+  };
+
+  const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+    setter(prev => [...prev, '']);
+  };
+
+  const removeArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number) => {
+    setter(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number, value: string) => {
+    setter(prev => prev.map((item, i) => i === index ? value : item));
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* Basic Information */}
       <Card>
         <CardHeader>
@@ -207,17 +239,18 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
           <CardTitle>Categories</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {categoriesArray.fields.map((field, index) => (
-            <div key={field.id} className="flex gap-2">
+          {categories.map((category, index) => (
+            <div key={index} className="flex gap-2">
               <Input
-                {...register(`categories.${index}`)}
+                value={category}
+                onChange={(e) => updateArrayItem(setCategories, index, e.target.value)}
                 placeholder="Category name"
               />
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
-                onClick={() => categoriesArray.remove(index)}
+                onClick={() => removeArrayItem(setCategories, index)}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -226,7 +259,7 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
           <Button
             type="button"
             variant="outline"
-            onClick={() => categoriesArray.append('')}
+            onClick={() => addArrayItem(setCategories)}
             className="w-full"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -242,17 +275,18 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
             <CardTitle>Pros</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {prosArray.fields.map((field, index) => (
-              <div key={field.id} className="flex gap-2">
+            {pros.map((pro, index) => (
+              <div key={index} className="flex gap-2">
                 <Input
-                  {...register(`pros.${index}`)}
+                  value={pro}
+                  onChange={(e) => updateArrayItem(setPros, index, e.target.value)}
                   placeholder="Positive aspect"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   size="icon"
-                  onClick={() => prosArray.remove(index)}
+                  onClick={() => removeArrayItem(setPros, index)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -261,7 +295,7 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
             <Button
               type="button"
               variant="outline"
-              onClick={() => prosArray.append('')}
+              onClick={() => addArrayItem(setPros)}
               className="w-full"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -275,17 +309,18 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
             <CardTitle>Cons</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {consArray.fields.map((field, index) => (
-              <div key={field.id} className="flex gap-2">
+            {cons.map((con, index) => (
+              <div key={index} className="flex gap-2">
                 <Input
-                  {...register(`cons.${index}`)}
+                  value={con}
+                  onChange={(e) => updateArrayItem(setCons, index, e.target.value)}
                   placeholder="Negative aspect"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   size="icon"
-                  onClick={() => consArray.remove(index)}
+                  onClick={() => removeArrayItem(setCons, index)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -294,7 +329,7 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
             <Button
               type="button"
               variant="outline"
-              onClick={() => consArray.append('')}
+              onClick={() => addArrayItem(setCons)}
               className="w-full"
             >
               <Plus className="h-4 w-4 mr-2" />
