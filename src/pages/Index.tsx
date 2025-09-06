@@ -10,7 +10,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, Shield, Clock, Users, ArrowRight, CheckCircle, AlertTriangle, ExternalLink, Star, Calendar, FileText, Globe, UserCheck, Award, Database, Target, Zap } from 'lucide-react';
+import { usePublicOperators } from '@/hooks/usePublicOperators';
 const Index = () => {
+  const { stats, loading } = usePublicOperators();
+  
   return <div className="min-h-screen bg-background">
       <Header />
       
@@ -23,7 +26,7 @@ const Index = () => {
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
             <div className="flex items-center gap-2">
               <Database className="h-4 w-4 text-primary" />
-              <span className="font-medium">87 operators monitored</span>
+              <span className="font-medium">{loading ? '...' : stats.totalOperators} operators monitored</span>
             </div>
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-success" />

@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { sampleOperators } from '@/lib/sample-data';
+import { usePublicOperators } from '@/hooks/usePublicOperators';
 import { cn } from '@/lib/utils';
 
 const OperatorsArchive = () => {
@@ -30,16 +30,10 @@ const OperatorsArchive = () => {
     trustScore: [0, 5] as [number, number]
   });
 
+  const { operators: allOperators, loading, error, totalCount, stats } = usePublicOperators();
+  
   const itemsPerPage = 12;
-  const totalOperators = 47; // Simulated total
-  const totalPages = Math.ceil(totalOperators / itemsPerPage);
-
-  const stats = {
-    totalOperators: 47,
-    avgTrustScore: 4.2,
-    verifiedOperators: 38,
-    newThisMonth: 3
-  };
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const categories = [
     { name: 'All Operators', count: 47, href: '/operators' },
@@ -54,20 +48,15 @@ const OperatorsArchive = () => {
   const modeFilters = ['Cases', 'Crash', 'Coinflip', 'Roulette', 'Upgrader', 'Contracts'];
   const feeFilters = ['Very Low', 'Low', 'Medium', 'High', 'Very High'];
 
-  // Simulate filtered operators (extend sample data for demo)
-  const allOperators = [
-    ...sampleOperators,
-    ...Array.from({ length: Math.max(0, itemsPerPage - sampleOperators.length) }, (_, i) => ({
-      ...sampleOperators[i % sampleOperators.length],
-      id: `operator-${i + sampleOperators.length}`,
-      name: `${sampleOperators[i % sampleOperators.length].name} ${i + 1}`
-    }))
-  ];
-
-  const filteredOperators = allOperators.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Filter operators based on search and filters
+  const filteredOperators = allOperators
+    .filter(operator => {
+      if (searchQuery && !operator.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+      return true;
+    })
+    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="min-h-screen bg-background">
@@ -268,7 +257,7 @@ const OperatorsArchive = () => {
                   {searchQuery ? `Search results for "${searchQuery}"` : 'All Operators'}
                 </h2>
                 <p className="text-muted-foreground">
-                  Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalOperators)} of {totalOperators} operators
+                  Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} operators
                 </p>
               </div>
 
@@ -302,20 +291,30 @@ const OperatorsArchive = () => {
             />
 
             {/* Results Grid/List */}
-            <div className={cn(
-              "gap-6",
-              view === 'grid' 
-                ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
-                : "flex flex-col space-y-4"
-            )}>
-              {filteredOperators.map((operator) => (
-                <OperatorCard 
-                  key={operator.id} 
-                  operator={operator} 
-                  view={view}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div className="text-center py-8">
+                <p>Loading operators...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <p className="text-destructive">Error: {error}</p>
+              </div>
+            ) : (
+              <div className={cn(
+                "gap-6",
+                view === 'grid' 
+                  ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
+                  : "flex flex-col space-y-4"
+              )}>
+                {filteredOperators.map((operator) => (
+                  <OperatorCard 
+                    key={operator.id} 
+                    operator={operator} 
+                    view={view}
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
             <div className="flex items-center justify-between pt-6">

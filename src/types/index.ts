@@ -1,7 +1,9 @@
 export interface Operator {
   id: string;
   name: string;
+  slug?: string;
   logo: string;
+  hero_image_url?: string;
   verdict: string;
   overallRating: number;
   feeLevel: 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';
@@ -20,6 +22,18 @@ export interface Operator {
   countries: string[];
   url: string;
   verified: boolean;
+  launch_year?: number;
+  ratings?: {
+    overall?: number;
+    trust?: number;
+    value?: number;
+    ux?: number;
+    support?: number;
+    offering?: number;
+    payments?: number;
+  };
+  bonus_terms?: string;
+  fairness_info?: string;
   // Optional new fields
   otherFeatures?: string[];
   gamingModes?: string[];

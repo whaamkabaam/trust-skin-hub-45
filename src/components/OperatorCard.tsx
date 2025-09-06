@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Star, CreditCard, Smartphone, Bitcoin, TrendingUp, HelpCircle, ExternalLink, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -144,23 +145,31 @@ const OperatorCard = ({
 
             {/* Action buttons */}
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex-1">
-                Read Review
+              <Button variant="outline" size="sm" className="flex-1" asChild>
+                <Link to={`/operators/${operator.slug || operator.id}`}>
+                  Read Review
+                </Link>
               </Button>
-              <Button size="sm" className="flex-1">
-                <ExternalLink className="h-4 w-4 mr-1" />
-                Visit Site
+              <Button size="sm" className="flex-1" asChild>
+                <a href={operator.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4 mr-1" />
+                  Visit Site
+                </a>
               </Button>
             </div>
           </div>}
 
         {isListView && <div className="flex gap-2 w-full">
-            <Button variant="outline" size="sm" className="flex-1">
-              Read Review
+            <Button variant="outline" size="sm" className="flex-1" asChild>
+              <Link to={`/operators/${operator.slug || operator.id}`}>
+                Read Review
+              </Link>
             </Button>
-            <Button size="sm" className="flex-1">
-              <ExternalLink className="h-4 w-4 mr-1" />
-              Visit Site
+            <Button size="sm" className="flex-1" asChild>
+              <a href={operator.url} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-4 w-4 mr-1" />
+                Visit Site
+              </a>
             </Button>
           </div>}
       </CardFooter>

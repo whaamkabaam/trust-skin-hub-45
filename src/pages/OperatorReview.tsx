@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Shield, Clock, CreditCard, Globe, Users, TrendingUp, Star, ChevronDown, CheckCircle, XCircle, AlertTriangle, Copy, Gamepad2, DollarSign, HelpCircle, FileText, MessageCircle } from 'lucide-react';
 import BoxesCatalog from '@/components/BoxesCatalog';
 import Header from '@/components/Header';
@@ -15,14 +15,43 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { sampleOperators, sampleReviews } from '@/lib/sample-data';
+import { usePublicOperator } from '@/hooks/usePublicOperator';
+import { usePublicReviews } from '@/hooks/usePublicReviews';
+import { SEOHead } from '@/components/SEOHead';
 const OperatorReview = () => {
+  const { id: slug } = useParams<{ id: string }>();
   const [tocOpen, setTocOpen] = useState(false);
   const [promoCodeCopied, setPromoCodeCopied] = useState(false);
   const [keyFactsOpen, setKeyFactsOpen] = useState(false);
   const [prosConsOpen, setProsConsOpen] = useState(false);
-  const operator = sampleOperators[0]; // Clash.gg example
-  const reviews = sampleReviews.filter(r => r.entityId === operator.id);
+  
+  const { operator, contentSections, seoMetadata, loading, error } = usePublicOperator(slug || '');
+  const { reviews } = usePublicReviews(operator?.id || '');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-12">
+          <p>Loading operator...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !operator) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-12">
+          <p className="text-destructive">{error || 'Operator not found'}</p>
+          <Link to="/operators" className="text-accent hover:underline">← Back to operators</Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
   const sections = [{
     id: 'what-is',
     title: `What is ${operator.name}?`,
@@ -105,7 +134,37 @@ const OperatorReview = () => {
     { id: 5, url: "/placeholder.svg", alt: "Game lobby" },
     { id: 6, url: "/placeholder.svg", alt: "Withdrawal interface" }
   ];
+
+  // SEO content
+  const seoTitle = seoMetadata?.meta_title || `${operator.name} Review - CS2 Trading Platform`;
+  const seoDescription = seoMetadata?.meta_description || `In-depth review of ${operator.name}. Find out about fees, security, features, and user experiences.`;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    itemReviewed: {
+      '@type': 'Organization',
+      name: operator.name,
+      url: operator.url
+    },
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: scores.overall,
+      bestRating: 5
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'CS2 Trading Reviews'
+    }
+  };
+  
   return <div className="min-h-screen bg-background">
+      <SEOHead
+        title={seoTitle}
+        description={seoDescription}
+        ogTitle={seoTitle}
+        ogDescription={seoDescription}
+        structuredData={structuredData}
+      />
       <Header />
       
       {/* Mobile Sticky Top Bar */}
@@ -199,7 +258,7 @@ const OperatorReview = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-6">
                       <div>
                         <span className="text-muted-foreground">Launched:</span>
-                        <span className="ml-2 font-medium">2020</span>
+                        <span className="ml-2 font-medium">{operator.launch_year || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Payments:</span>
@@ -216,20 +275,9 @@ const OperatorReview = () => {
                       <div>
                         <span className="text-muted-foreground">Payout:</span>
                         <div className="flex gap-1 mt-1">
-                          {siteType === 'Case Site' ? (
-                            <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
-                              Skins
-                            </Badge>
-                          ) : (
-                            <>
-                              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
-                                Physical
-                              </Badge>
-                              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
-                                Skins
-                              </Badge>
-                            </>
-                          )}
+                          <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                            {operator.payoutSpeed}
+                          </Badge>
                         </div>
                       </div>
                       <div>
