@@ -14,7 +14,7 @@ import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import { Plus, Star, Filter, Check, X, Edit, Trash2, MessageSquare } from 'lucide-react';
 
 export default function ReviewsManager() {
-  const { operators } = useOperators();
+  const { operators, loading: operatorsLoading } = useOperators();
   const [selectedOperatorId, setSelectedOperatorId] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
@@ -28,6 +28,14 @@ export default function ReviewsManager() {
   });
 
   const { reviews, loading, createReview, updateReviewStatus, updateReview, deleteReview, bulkUpdateStatus } = useReviews(selectedOperatorId || undefined);
+
+  if (operatorsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   const filteredReviews = reviews.filter(review => 
     statusFilter === 'all' || review.status === statusFilter

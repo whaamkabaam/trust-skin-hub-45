@@ -28,12 +28,13 @@ export default function NewOperator() {
 
   const handleAutoSave = async (data: OperatorFormData) => {
     try {
-      // For new operators, save as draft data
-      console.log('Auto-saving draft:', data);
-      toast.success('Draft saved automatically', { duration: 2000 });
+      // For new operators, we create a draft with a temporary ID
+      // This allows users to come back and continue editing
+      const draftId = 'draft-' + Date.now();
+      localStorage.setItem(`operator-draft-${draftId}`, JSON.stringify(data));
     } catch (error) {
       console.error('Auto-save failed:', error);
-      toast.error('Failed to save draft');
+      throw error;
     }
   };
 
