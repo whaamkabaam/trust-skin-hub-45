@@ -15,7 +15,7 @@ import { Plus, Star, Filter, Check, X, Edit, Trash2, MessageSquare } from 'lucid
 
 export default function ReviewsManager() {
   const { operators, loading: operatorsLoading } = useOperators();
-  const [selectedOperatorId, setSelectedOperatorId] = useState<string>('');
+  const [selectedOperatorId, setSelectedOperatorId] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -27,7 +27,7 @@ export default function ReviewsManager() {
     status: 'approved' as const,
   });
 
-  const { reviews, loading, createReview, updateReviewStatus, updateReview, deleteReview, bulkUpdateStatus } = useReviews(selectedOperatorId || undefined);
+  const { reviews, loading, createReview, updateReviewStatus, updateReview, deleteReview, bulkUpdateStatus } = useReviews(selectedOperatorId === 'all' ? undefined : selectedOperatorId);
 
   if (operatorsLoading) {
     return (
@@ -164,7 +164,7 @@ export default function ReviewsManager() {
                 <SelectValue placeholder="All operators" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All operators</SelectItem>
+                <SelectItem value="all">All operators</SelectItem>
                 {operators.map(operator => (
                   <SelectItem key={operator.id} value={operator.id}>
                     {operator.name}

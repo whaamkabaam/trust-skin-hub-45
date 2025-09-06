@@ -28,11 +28,15 @@ export default function ContentSections() {
               <SelectValue placeholder="Choose an operator to manage content..." />
             </SelectTrigger>
             <SelectContent>
-              {operators.map(operator => (
-                <SelectItem key={operator.id} value={operator.id}>
-                  {operator.name}
-                </SelectItem>
-              ))}
+              {operators.length === 0 ? (
+                <SelectItem value="none" disabled>No operators available</SelectItem>
+              ) : (
+                operators.map(operator => (
+                  <SelectItem key={operator.id} value={operator.id}>
+                    {operator.name}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </CardContent>
