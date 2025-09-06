@@ -129,10 +129,12 @@ export type Database = {
           categories: string[] | null
           cons: string[] | null
           created_at: string
+          draft_data: Json | null
           fairness_info: string | null
           hero_image_url: string | null
           id: string
           kyc_required: boolean | null
+          last_auto_saved_at: string | null
           launch_year: number | null
           logo_url: string | null
           name: string
@@ -151,10 +153,12 @@ export type Database = {
           categories?: string[] | null
           cons?: string[] | null
           created_at?: string
+          draft_data?: Json | null
           fairness_info?: string | null
           hero_image_url?: string | null
           id?: string
           kyc_required?: boolean | null
+          last_auto_saved_at?: string | null
           launch_year?: number | null
           logo_url?: string | null
           name: string
@@ -173,10 +177,12 @@ export type Database = {
           categories?: string[] | null
           cons?: string[] | null
           created_at?: string
+          draft_data?: Json | null
           fairness_info?: string | null
           hero_image_url?: string | null
           id?: string
           kyc_required?: boolean | null
+          last_auto_saved_at?: string | null
           launch_year?: number | null
           logo_url?: string | null
           name?: string

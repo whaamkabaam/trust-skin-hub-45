@@ -91,6 +91,24 @@ export function useOperators() {
     }
   };
 
+  const autoSaveOperator = async (id: string, data: Partial<OperatorFormData>) => {
+    try {
+      const { error } = await supabase
+        .from('operators')
+        .update({
+          ...data,
+          draft_data: data,
+          last_auto_saved_at: new Date().toISOString()
+        })
+        .eq('id', id);
+      
+      if (error) throw error;
+    } catch (err) {
+      console.error('Auto-save failed:', err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchOperators();
   }, []);
@@ -102,6 +120,7 @@ export function useOperators() {
     createOperator,
     updateOperator,
     deleteOperator,
+    autoSaveOperator,
     refetch: fetchOperators,
   };
 }

@@ -10,7 +10,7 @@ import type { OperatorFormData } from '@/lib/validations';
 export default function EditOperator() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { updateOperator } = useOperators();
+  const { updateOperator, autoSaveOperator } = useOperators();
   const { operator, loading: operatorLoading } = useOperator(id);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,6 +27,12 @@ export default function EditOperator() {
       toast.error('Failed to update operator');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAutoSave = async (data: OperatorFormData) => {
+    if (id) {
+      await autoSaveOperator(id, data);
     }
   };
 
@@ -72,6 +78,7 @@ export default function EditOperator() {
       <OperatorForm
         initialData={operator}
         onSubmit={handleSubmit}
+        onAutoSave={handleAutoSave}
         isLoading={isLoading}
       />
     </div>

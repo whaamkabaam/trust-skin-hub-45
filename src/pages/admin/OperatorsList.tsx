@@ -34,6 +34,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { SeedDataButton } from '@/components/admin/SeedDataButton';
 
 export default function OperatorsList() {
   const { operators, loading, deleteOperator } = useOperators();
@@ -99,12 +100,15 @@ export default function OperatorsList() {
           <h1 className="text-2xl font-bold">Operators</h1>
           <p className="text-muted-foreground">Manage your gambling operators</p>
         </div>
-        <Button asChild>
-          <Link to="/admin/operators/new">
-            <Plus className="h-4 w-4 mr-2" />
-            New Operator
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <SeedDataButton />
+          <Button asChild>
+            <Link to="/admin/operators/new">
+              <Plus className="h-4 w-4 mr-2" />
+              New Operator
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center justify-between">

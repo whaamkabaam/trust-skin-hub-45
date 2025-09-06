@@ -7,28 +7,39 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
-import { useState } from 'react';
-import { FileUpload } from './FileUpload';
+import { useState, useCallback } from 'react';
+import { EnhancedFileUpload } from './EnhancedFileUpload';
 import { RichTextEditor } from './RichTextEditor';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { SaveStateIndicator } from '@/components/SaveStateIndicator';
 
 type Operator = Tables<'operators'>;
 
 interface OperatorFormProps {
   initialData?: Operator | null;
   onSubmit: (data: OperatorFormData) => Promise<void>;
+  onAutoSave?: (data: OperatorFormData) => Promise<void>;
   isLoading?: boolean;
+  autoSaveEnabled?: boolean;
 }
 
-export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormProps) {
+export function OperatorForm({ 
+  initialData, 
+  onSubmit, 
+  onAutoSave, 
+  isLoading, 
+  autoSaveEnabled = true 
+}: OperatorFormProps) {
   const {
     register,
     handleSubmit,
     watch,
     setValue,
     formState: { errors },
+    getValues,
   } = useForm<OperatorFormData>({
     resolver: zodResolver(operatorSchema),
     defaultValues: initialData ? {
@@ -80,6 +91,21 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
   const pros = watch('pros');
   const cons = watch('cons');
   const countries = watch('supported_countries');
+  const formData = watch();
+
+  // Auto-save functionality
+  const handleAutoSave = useCallback(async (data: OperatorFormData) => {
+    if (onAutoSave) {
+      await onAutoSave(data);
+    }
+  }, [onAutoSave]);
+
+  const { saveState, lastSaved, forceSave } = useAutoSave({
+    data: formData,
+    onSave: handleAutoSave,
+    enabled: autoSaveEnabled && !!onAutoSave,
+    storageKey: initialData?.id || 'new-operator'
+  });
 
   const generateSlug = (name: string) => {
     return name
@@ -157,7 +183,7 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FileUpload
+            <EnhancedFileUpload
               label="Operator Logo"
               currentUrl={watch('logo_url')}
               onUpload={(url) => setValue('logo_url', url)}
@@ -189,7 +215,7 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
                 <p className="text-sm text-destructive mt-1">{errors.launch_year.message}</p>
               )}
             </div>
-          <FileUpload
+          <EnhancedFileUpload
             label="Hero Image"
             currentUrl={watch('hero_image_url')}
             onUpload={(url) => setValue('hero_image_url', url)}
@@ -421,10 +447,28 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
         </CardContent>
       </Card>
 
-      <div className="flex justify-end gap-4">
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
-        </Button>
+      <div className="flex justify-between items-center">
+        <SaveStateIndicator 
+          saveState={saveState} 
+          lastSaved={lastSaved}
+          className="flex-1"
+        />
+        <div className="flex gap-2">
+          {autoSaveEnabled && onAutoSave && (
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={forceSave}
+              disabled={saveState === 'saving'}
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Save Now
+            </Button>
+          )}
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
+          </Button>
+        </div>
       </div>
     </form>
   );
