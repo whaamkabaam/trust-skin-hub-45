@@ -66,112 +66,54 @@ export function EnhancedFileUpload({
 
   const uploadFile = async (file: File) => {
     const fileId = `${Date.now()}_${file.name}`;
-    const controller = new AbortController();
     
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `operator-media/${fileName}`;
+    const filePath = `${fileName}`;
 
     // Initialize upload state
     setUploads(prev => new Map(prev).set(fileId, {
       file,
       status: 'uploading',
-      progress: { loaded: 0, total: file.size, percentage: 0, speed: 0, timeRemaining: Infinity },
-      controller
+      progress: { loaded: 0, total: file.size, percentage: 0, speed: 0, timeRemaining: Infinity }
     }));
 
     uploadStartTime.current = Date.now();
 
     try {
-      // Create a custom upload with progress tracking
-      const xhr = new XMLHttpRequest();
-      
-      return new Promise<void>((resolve, reject) => {
-        xhr.upload.addEventListener('progress', (event) => {
-          if (event.lengthComputable) {
-            const loaded = event.loaded;
-            const total = event.total;
-            const percentage = Math.round((loaded / total) * 100);
-            
-            // Calculate upload speed
-            const elapsed = (Date.now() - uploadStartTime.current) / 1000; // seconds
-            const speed = loaded / elapsed; // bytes per second
-            const remaining = (total - loaded) / speed; // seconds remaining
-            
-            setUploads(prev => {
-              const newMap = new Map(prev);
-              const upload = newMap.get(fileId);
-              if (upload) {
-                newMap.set(fileId, {
-                  ...upload,
-                  progress: { loaded, total, percentage, speed, timeRemaining: remaining }
-                });
-              }
-              return newMap;
-            });
-          }
+      // Use Supabase client for upload with progress simulation
+      const { data, error } = await supabase.storage
+        .from('operator-media')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
         });
 
-        xhr.addEventListener('load', async () => {
-          if (xhr.status === 200) {
-            try {
-              // Get the public URL
-              const { data: { publicUrl } } = supabase.storage
-                .from('operator-media')
-                .getPublicUrl(filePath);
+      if (error) throw error;
 
-              setUploads(prev => {
-                const newMap = new Map(prev);
-                newMap.set(fileId, {
-                  ...prev.get(fileId)!,
-                  status: 'completed',
-                  url: publicUrl
-                });
-                return newMap;
-              });
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('operator-media')
+        .getPublicUrl(data.path);
 
-              if (!multiple) {
-                setPreview(publicUrl);
-                onUpload(publicUrl);
-              }
-              
-              toast.success('File uploaded successfully');
-              resolve();
-            } catch (error) {
-              throw error;
-            }
-          } else {
-            throw new Error(`Upload failed with status ${xhr.status}`);
-          }
+      // Update to completed state
+      setUploads(prev => {
+        const newMap = new Map(prev);
+        newMap.set(fileId, {
+          ...prev.get(fileId)!,
+          status: 'completed',
+          url: publicUrl,
+          progress: { loaded: file.size, total: file.size, percentage: 100, speed: 0, timeRemaining: 0 }
         });
-
-        xhr.addEventListener('error', () => {
-          reject(new Error('Upload failed'));
-        });
-
-        xhr.addEventListener('abort', () => {
-          setUploads(prev => {
-            const newMap = new Map(prev);
-            newMap.delete(fileId);
-            return newMap;
-          });
-        });
-
-        // Prepare the upload
-        const formData = new FormData();
-        formData.append('file', file);
-
-        // Use Supabase storage API endpoint directly
-        xhr.open('POST', `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/operator-media/${fileName}`);
-        xhr.setRequestHeader('Authorization', `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`);
-        xhr.setRequestHeader('apikey', import.meta.env.VITE_SUPABASE_ANON_KEY);
-        
-        controller.signal.addEventListener('abort', () => {
-          xhr.abort();
-        });
-
-        xhr.send(file);
+        return newMap;
       });
+
+      if (!multiple) {
+        setPreview(publicUrl);
+        onUpload(publicUrl);
+      }
+      
+      toast.success('File uploaded successfully');
     } catch (error) {
       setUploads(prev => {
         const newMap = new Map(prev);
@@ -187,7 +129,8 @@ export function EnhancedFileUpload({
       });
       
       console.error('Upload error:', error);
-      toast.error('Failed to upload file');
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      toast.error(`Failed to upload file: ${errorMessage}`);
       throw error;
     }
   };

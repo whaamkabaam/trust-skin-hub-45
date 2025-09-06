@@ -31,11 +31,14 @@ export function FileUpload({
       
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `operator-media/${fileName}`;
+      const filePath = `${fileName}`;
 
       const { data, error } = await supabase.storage
         .from('operator-media')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (error) throw error;
 
@@ -48,7 +51,8 @@ export function FileUpload({
       toast.success('File uploaded successfully');
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload file');
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      toast.error(`Failed to upload file: ${errorMessage}`);
     } finally {
       setUploading(false);
     }
