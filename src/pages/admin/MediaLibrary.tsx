@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useMedia } from '@/hooks/useMedia';
 import { useOperators } from '@/hooks/useOperators';
-import { FileUpload } from '@/components/admin/FileUpload';
+import { EnhancedFileUpload } from '@/components/admin/EnhancedFileUpload';
 import { Upload, Image, Edit, Trash2, Search, Grid, List } from 'lucide-react';
 
 export default function MediaLibrary() {
@@ -78,17 +78,14 @@ export default function MediaLibrary() {
                 </Select>
               </div>
               {selectedOperatorId && (
-                <div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleUpload(file);
-                    }}
-                    className="w-full p-2 border border-input rounded-md"
-                  />
-                </div>
+                <EnhancedFileUpload
+                  label="Upload Media Files"
+                  accept="image/*,video/*,audio/*"
+                  maxSize={50 * 1024 * 1024} // 50MB
+                  onUpload={(url) => {
+                    setIsUploadDialogOpen(false);
+                  }}
+                />
               )}
             </div>
           </DialogContent>

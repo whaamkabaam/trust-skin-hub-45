@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
@@ -7,6 +8,7 @@ import type { OperatorFormData } from '@/lib/validations';
 type Operator = Tables<'operators'>;
 
 export function useOperators() {
+  const queryClient = useQueryClient();
   const [operators, setOperators] = useState<Operator[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +42,13 @@ export function useOperators() {
 
       if (error) throw error;
       
+      // Optimistic update
       setOperators(prev => [newOperator, ...prev]);
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ['operators'] });
+      queryClient.invalidateQueries({ queryKey: ['public-operators'] });
+      
       toast.success('Operator created successfully');
       return newOperator;
     } catch (err) {
@@ -61,9 +69,16 @@ export function useOperators() {
 
       if (error) throw error;
       
+      // Optimistic update
       setOperators(prev => 
         prev.map(op => op.id === id ? updatedOperator : op)
       );
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ['operators'] });
+      queryClient.invalidateQueries({ queryKey: ['public-operators'] });
+      queryClient.invalidateQueries({ queryKey: ['operator', id] });
+      
       toast.success('Operator updated successfully');
       return updatedOperator;
     } catch (err) {
@@ -82,7 +97,14 @@ export function useOperators() {
 
       if (error) throw error;
       
+      // Optimistic update
       setOperators(prev => prev.filter(op => op.id !== id));
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ['operators'] });
+      queryClient.invalidateQueries({ queryKey: ['public-operators'] });
+      queryClient.invalidateQueries({ queryKey: ['operator', id] });
+      
       toast.success('Operator deleted successfully');
     } catch (err) {
       console.error('Error deleting operator:', err);

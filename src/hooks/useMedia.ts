@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/lib/toast';
 
@@ -15,6 +16,7 @@ export interface MediaAsset {
 }
 
 export function useMedia(operatorId?: string) {
+  const queryClient = useQueryClient();
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -68,7 +70,13 @@ export function useMedia(operatorId?: string) {
 
       if (error) throw error;
 
+      // Optimistic update
       setAssets(prev => [data, ...prev]);
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ['media', operatorId] });
+      queryClient.invalidateQueries({ queryKey: ['media'] });
+      
       toast.success('Media uploaded successfully');
 
       return data;
@@ -90,7 +98,13 @@ export function useMedia(operatorId?: string) {
 
       if (error) throw error;
 
+      // Optimistic update
       setAssets(prev => prev.map(asset => asset.id === id ? data : asset));
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ['media', operatorId] });
+      queryClient.invalidateQueries({ queryKey: ['media'] });
+      
       toast.success('Media updated successfully');
 
       return data;
@@ -125,7 +139,13 @@ export function useMedia(operatorId?: string) {
 
       if (error) throw error;
 
+      // Optimistic update
       setAssets(prev => prev.filter(asset => asset.id !== id));
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ['media', operatorId] });
+      queryClient.invalidateQueries({ queryKey: ['media'] });
+      
       toast.success('Media deleted successfully');
     } catch (error) {
       console.error('Error deleting media:', error);

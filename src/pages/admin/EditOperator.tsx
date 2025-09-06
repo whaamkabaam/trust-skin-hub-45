@@ -80,6 +80,7 @@ export default function EditOperator() {
         onSubmit={handleSubmit}
         onAutoSave={handleAutoSave}
         isLoading={isLoading}
+        autoSaveEnabled={true}
       />
     </div>
   );

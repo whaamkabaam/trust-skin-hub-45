@@ -139,9 +139,12 @@ export type Database = {
           logo_url: string | null
           name: string
           pros: string[] | null
+          publish_status: string | null
           published: boolean | null
           published_at: string | null
           ratings: Json | null
+          scheduled_publish_at: string | null
+          search_vector: unknown | null
           slug: string
           supported_countries: string[] | null
           tracking_link: string | null
@@ -163,9 +166,12 @@ export type Database = {
           logo_url?: string | null
           name: string
           pros?: string[] | null
+          publish_status?: string | null
           published?: boolean | null
           published_at?: string | null
           ratings?: Json | null
+          scheduled_publish_at?: string | null
+          search_vector?: unknown | null
           slug: string
           supported_countries?: string[] | null
           tracking_link?: string | null
@@ -187,9 +193,12 @@ export type Database = {
           logo_url?: string | null
           name?: string
           pros?: string[] | null
+          publish_status?: string | null
           published?: boolean | null
           published_at?: string | null
           ratings?: Json | null
+          scheduled_publish_at?: string | null
+          search_vector?: unknown | null
           slug?: string
           supported_countries?: string[] | null
           tracking_link?: string | null

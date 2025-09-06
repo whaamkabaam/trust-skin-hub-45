@@ -33,6 +33,8 @@ export const operatorSchema = z.object({
   }),
   kyc_required: z.boolean().default(false),
   published: z.boolean().default(false),
+  publish_status: z.string().optional(),
+  scheduled_publish_at: z.string().optional(),
 });
 
 export type OperatorFormData = z.infer<typeof operatorSchema>;

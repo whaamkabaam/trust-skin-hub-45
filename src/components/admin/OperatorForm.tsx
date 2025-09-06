@@ -15,6 +15,7 @@ import { EnhancedFileUpload } from './EnhancedFileUpload';
 import { RichTextEditor } from './RichTextEditor';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { SaveStateIndicator } from '@/components/SaveStateIndicator';
+import { ContentScheduling } from '@/components/ContentScheduling';
 
 type Operator = Tables<'operators'>;
 
@@ -67,6 +68,8 @@ export function OperatorForm({
       },
       kyc_required: initialData.kyc_required || false,
       published: initialData.published || false,
+      publish_status: (initialData as any).publish_status || 'draft',
+      scheduled_publish_at: (initialData as any).scheduled_publish_at || '',
     } : {
       categories: [],
       pros: [],
@@ -83,6 +86,8 @@ export function OperatorForm({
       },
       kyc_required: false,
       published: false,
+      publish_status: 'draft',
+      scheduled_publish_at: '',
     },
   });
 
@@ -446,6 +451,22 @@ export function OperatorForm({
           </div>
         </CardContent>
       </Card>
+
+      {/* Content Scheduling */}
+      <ContentScheduling
+        publishStatus={(watch() as any).publish_status || 'draft'}
+        publishedAt={(initialData as any)?.published_at}
+        scheduledPublishAt={(watch() as any).scheduled_publish_at}
+        onStatusChange={(status, scheduledDate) => {
+          setValue('publish_status' as any, status);
+          if (scheduledDate) {
+            setValue('scheduled_publish_at' as any, scheduledDate);
+          }
+          if (status === 'published') {
+            setValue('published', true);
+          }
+        }}
+      />
 
       <div className="flex justify-between items-center">
         <SaveStateIndicator 
