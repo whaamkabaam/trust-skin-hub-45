@@ -16,6 +16,7 @@ export default function NewOperator() {
     try {
       setIsLoading(true);
       await createOperator(data);
+      toast.success('Operator created successfully');
       navigate('/admin/operators');
     } catch (error) {
       console.error('Failed to create operator:', error);

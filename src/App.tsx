@@ -23,6 +23,11 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import OperatorsList from "./pages/admin/OperatorsList";
 import NewOperator from "./pages/admin/NewOperator";
 import EditOperator from "./pages/admin/EditOperator";
+import ContentSections from "./pages/admin/ContentSections";
+import MediaLibrary from "./pages/admin/MediaLibrary";
+import SEOManager from "./pages/admin/SEOManager";
+import ReviewsManager from "./pages/admin/ReviewsManager";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +58,11 @@ const App = () => (
               <Route path="operators" element={<OperatorsList />} />
               <Route path="operators/new" element={<NewOperator />} />
               <Route path="operators/:id" element={<EditOperator />} />
+              <Route path="content" element={<ContentSections />} />
+              <Route path="media" element={<MediaLibrary />} />
+              <Route path="seo" element={<SEOManager />} />
+              <Route path="reviews" element={<ReviewsManager />} />
+              <Route path="users" element={<AdminUsers />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

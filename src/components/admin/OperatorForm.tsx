@@ -88,8 +88,8 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
       .trim();
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
+  const handleNameChange = (name: string) => {
+    setValue('name', name);
     setValue('slug', generateSlug(name));
   };
 
@@ -133,7 +133,8 @@ export function OperatorForm({ initialData, onSubmit, isLoading }: OperatorFormP
               <Label htmlFor="name">Name *</Label>
               <Input
                 id="name"
-                {...register('name', { onChange: handleNameChange })}
+                {...register('name')}
+                onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="Operator name"
               />
               {errors.name && (

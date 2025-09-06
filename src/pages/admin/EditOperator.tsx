@@ -4,6 +4,7 @@ import { useOperators, useOperator } from '@/hooks/useOperators';
 import { OperatorForm } from '@/components/admin/OperatorForm';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 import type { OperatorFormData } from '@/lib/validations';
 
 export default function EditOperator() {
@@ -19,9 +20,11 @@ export default function EditOperator() {
     try {
       setIsLoading(true);
       await updateOperator(id, data);
+      toast.success('Operator updated successfully');
       navigate('/admin/operators');
     } catch (error) {
       console.error('Failed to update operator:', error);
+      toast.error('Failed to update operator');
     } finally {
       setIsLoading(false);
     }
