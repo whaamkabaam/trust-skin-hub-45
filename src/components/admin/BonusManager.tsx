@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Trash2, Plus } from 'lucide-react';
 import { OperatorBonus } from '@/hooks/useOperatorExtensions';
+import { toast } from 'sonner';
 
 interface BonusManagerProps {
   bonuses: OperatorBonus[];
@@ -54,7 +55,11 @@ export function BonusManager({ bonuses, onSave, operatorId }: BonusManagerProps)
   };
 
   const handleSave = () => {
-    onSave(localBonuses);
+    if (typeof onSave === 'function') {
+      onSave(localBonuses);
+    } else {
+      toast.error('Save function not available');
+    }
   };
 
   return (

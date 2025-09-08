@@ -33,6 +33,10 @@ export function FileUpload({
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${fileName}`;
 
+      // Create a temporary preview URL immediately
+      const tempUrl = URL.createObjectURL(file);
+      setPreview(tempUrl);
+
       const { data, error } = await supabase.storage
         .from('operator-media')
         .upload(filePath, file, {
@@ -40,11 +44,19 @@ export function FileUpload({
           upsert: false
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Storage upload error:', error);
+        throw new Error(error.message || 'Upload failed');
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('operator-media')
         .getPublicUrl(data.path);
+
+      // Replace temp URL with actual URL
+      URL.revokeObjectURL(tempUrl);
+      setPreview(publicUrl);
+      onUpload(publicUrl);
 
       // Create media asset entry in database
       try {
@@ -61,11 +73,10 @@ export function FileUpload({
         // Continue with upload success even if DB entry fails
       }
 
-      setPreview(publicUrl);
-      onUpload(publicUrl);
       toast.success('File uploaded successfully');
     } catch (error) {
       console.error('Upload error:', error);
+      setPreview(null); // Reset preview on error
       const errorMessage = error instanceof Error ? error.message : 'Upload failed';
       toast.error(`Failed to upload file: ${errorMessage}`);
     } finally {
@@ -82,7 +93,12 @@ export function FileUpload({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { [accept]: [] },
+    accept: accept === 'image/*' ? {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/gif': ['.gif'],
+      'image/webp': ['.webp']
+    } : { [accept]: [] },
     maxSize,
     multiple: false,
   });

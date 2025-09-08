@@ -28,7 +28,8 @@ const ASSET_TYPES = [
   { value: 'logo', label: 'Logo' },
   { value: 'banner', label: 'Banner' },
   { value: 'gallery', label: 'Gallery Image' },
-  { value: 'hero', label: 'Hero Image' }
+  { value: 'hero', label: 'Hero Image' },
+  { value: 'mystery_box', label: 'Mystery Box' }
 ];
 
 export function MediaAssetManager({ operatorId }: MediaAssetManagerProps) {

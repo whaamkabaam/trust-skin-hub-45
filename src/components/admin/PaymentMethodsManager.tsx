@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Trash2, Plus } from 'lucide-react';
 import { OperatorPayment } from '@/hooks/useOperatorExtensions';
+import { toast } from 'sonner';
 
 interface PaymentMethodsManagerProps {
   payments: OperatorPayment[];
@@ -51,7 +52,11 @@ export function PaymentMethodsManager({ payments, onSave, operatorId }: PaymentM
   };
 
   const handleSave = () => {
-    onSave(localPayments);
+    if (typeof onSave === 'function') {
+      onSave(localPayments);
+    } else {
+      toast.error('Save function not available');
+    }
   };
 
   const depositMethods = localPayments.filter(p => p.method_type === 'deposit');
