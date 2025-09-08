@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, Save, Globe } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useStaticContent } from '@/hooks/useStaticContent';
 import { toast } from '@/lib/toast';
 import { EnhancedFileUpload } from './EnhancedFileUpload';
@@ -29,6 +29,7 @@ import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
 
 type Operator = Tables<'operators'>;
 
@@ -174,6 +175,46 @@ export function OperatorForm({
 
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
   const [isPublishing, setIsPublishing] = useState(false);
+
+  // Stabilize extension manager props to prevent crashes during re-renders
+  const stableExtensionProps = useMemo(() => ({
+    bonuses: {
+      operatorId: effectiveOperatorId,
+      bonuses,
+      onSave: saveBonuses,
+      disabled: isPublishing || publishLoading
+    },
+    payments: {
+      operatorId: effectiveOperatorId,
+      payments,
+      onSave: savePayments,
+      disabled: isPublishing || publishLoading
+    },
+    security: {
+      operatorId: effectiveOperatorId,
+      security,
+      onSave: saveSecurity,
+      disabled: isPublishing || publishLoading
+    },
+    faqs: {
+      operatorId: effectiveOperatorId,
+      faqs,
+      onSave: saveFaqs,
+      disabled: isPublishing || publishLoading
+    }
+  }), [
+    effectiveOperatorId,
+    bonuses,
+    payments,
+    security,
+    faqs,
+    saveBonuses,
+    savePayments,
+    saveSecurity,
+    saveFaqs,
+    isPublishing,
+    publishLoading
+  ]);
 
   const handlePublish = async () => {
     if (!initialData?.id) {
@@ -695,11 +736,23 @@ export function OperatorForm({
 
         <TabsContent value="bonuses" className="space-y-6">
           {effectiveOperatorId ? (
-            <BonusManager 
-              operatorId={effectiveOperatorId} 
-              bonuses={bonuses}
-              onSave={saveBonuses}
-            />
+            <ExtensionErrorBoundary type="Bonuses">
+              {(isPublishing || publishLoading) ? (
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
+                      <p className="text-muted-foreground">Publishing in progress... Please wait.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <BonusManager 
+                  key={`bonuses-${effectiveOperatorId}`}
+                  {...stableExtensionProps.bonuses}
+                />
+              )}
+            </ExtensionErrorBoundary>
           ) : (
             <Card>
               <CardContent className="p-6">
@@ -711,11 +764,23 @@ export function OperatorForm({
 
         <TabsContent value="payments" className="space-y-6">
           {effectiveOperatorId ? (
-            <PaymentMethodsManager 
-              operatorId={effectiveOperatorId}
-              payments={payments}
-              onSave={savePayments}
-            />
+            <ExtensionErrorBoundary type="Payment Methods">
+              {(isPublishing || publishLoading) ? (
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
+                      <p className="text-muted-foreground">Publishing in progress... Please wait.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <PaymentMethodsManager 
+                  key={`payments-${effectiveOperatorId}`}
+                  {...stableExtensionProps.payments}
+                />
+              )}
+            </ExtensionErrorBoundary>
           ) : (
             <Card>
               <CardContent className="p-6">
@@ -727,11 +792,23 @@ export function OperatorForm({
 
         <TabsContent value="security" className="space-y-6">
           {effectiveOperatorId ? (
-            <SecurityManager 
-              operatorId={effectiveOperatorId}
-              security={security}
-              onSave={saveSecurity}
-            />
+            <ExtensionErrorBoundary type="Security">
+              {(isPublishing || publishLoading) ? (
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
+                      <p className="text-muted-foreground">Publishing in progress... Please wait.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <SecurityManager 
+                  key={`security-${effectiveOperatorId}`}
+                  {...stableExtensionProps.security}
+                />
+              )}
+            </ExtensionErrorBoundary>
           ) : (
             <Card>
               <CardContent className="p-6">
@@ -743,11 +820,23 @@ export function OperatorForm({
 
         <TabsContent value="faqs" className="space-y-6">
           {effectiveOperatorId ? (
-            <FAQManager 
-              operatorId={effectiveOperatorId}
-              faqs={faqs}
-              onSave={saveFaqs}
-            />
+            <ExtensionErrorBoundary type="FAQs">
+              {(isPublishing || publishLoading) ? (
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
+                      <p className="text-muted-foreground">Publishing in progress... Please wait.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <FAQManager 
+                  key={`faqs-${effectiveOperatorId}`}
+                  {...stableExtensionProps.faqs}
+                />
+              )}
+            </ExtensionErrorBoundary>
           ) : (
             <Card>
               <CardContent className="p-6">

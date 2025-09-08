@@ -13,9 +13,10 @@ interface SecurityManagerProps {
   security: OperatorSecurity | null;
   onSave: (security: OperatorSecurity) => void;
   operatorId: string;
+  disabled?: boolean;
 }
 
-export function SecurityManager({ security, onSave, operatorId }: SecurityManagerProps) {
+export function SecurityManager({ security, onSave, operatorId, disabled = false }: SecurityManagerProps) {
   const [localSecurity, setLocalSecurity] = useState<OperatorSecurity>(
     security || {
       operator_id: operatorId,
@@ -55,6 +56,11 @@ export function SecurityManager({ security, onSave, operatorId }: SecurityManage
   };
 
   const handleSave = () => {
+    if (disabled) {
+      toast.error('Cannot save while publishing is in progress');
+      return;
+    }
+    
     if (typeof onSave === 'function') {
       onSave(localSecurity);
     } else {
@@ -193,7 +199,7 @@ export function SecurityManager({ security, onSave, operatorId }: SecurityManage
           />
         </div>
 
-        <Button onClick={handleSave} className="w-full">
+        <Button onClick={handleSave} className="w-full" disabled={disabled}>
           Save Security Settings
         </Button>
       </CardContent>

@@ -13,6 +13,7 @@ interface PaymentMethodsManagerProps {
   payments: OperatorPayment[];
   onSave: (payments: OperatorPayment[]) => void;
   operatorId: string;
+  disabled?: boolean;
 }
 
 const paymentMethods = [
@@ -22,7 +23,7 @@ const paymentMethods = [
   'bank_transfer', 'paysafecard', 'google_pay', 'apple_pay'
 ];
 
-export function PaymentMethodsManager({ payments, onSave, operatorId }: PaymentMethodsManagerProps) {
+export function PaymentMethodsManager({ payments, onSave, operatorId, disabled = false }: PaymentMethodsManagerProps) {
   const [localPayments, setLocalPayments] = useState<OperatorPayment[]>(payments);
 
   const addPayment = (type: 'deposit' | 'withdrawal') => {
@@ -52,6 +53,11 @@ export function PaymentMethodsManager({ payments, onSave, operatorId }: PaymentM
   };
 
   const handleSave = () => {
+    if (disabled) {
+      toast.error('Cannot save while publishing is in progress');
+      return;
+    }
+    
     if (typeof onSave === 'function') {
       onSave(localPayments);
     } else {
@@ -239,7 +245,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId }: PaymentM
           </div>
         </div>
 
-        <Button onClick={handleSave} className="w-full">
+        <Button onClick={handleSave} className="w-full" disabled={disabled}>
           Save Payment Methods
         </Button>
       </CardContent>

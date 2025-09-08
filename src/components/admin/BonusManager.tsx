@@ -14,6 +14,7 @@ interface BonusManagerProps {
   bonuses: OperatorBonus[];
   onSave: (bonuses: OperatorBonus[]) => void;
   operatorId: string;
+  disabled?: boolean;
 }
 
 const bonusTypes = [
@@ -26,7 +27,7 @@ const bonusTypes = [
   { value: 'freeplay', label: 'Free Play' },
 ];
 
-export function BonusManager({ bonuses, onSave, operatorId }: BonusManagerProps) {
+export function BonusManager({ bonuses, onSave, operatorId, disabled = false }: BonusManagerProps) {
   const [localBonuses, setLocalBonuses] = useState<OperatorBonus[]>(bonuses);
 
   const addBonus = () => {
@@ -55,6 +56,11 @@ export function BonusManager({ bonuses, onSave, operatorId }: BonusManagerProps)
   };
 
   const handleSave = () => {
+    if (disabled) {
+      toast.error('Cannot save while publishing is in progress');
+      return;
+    }
+    
     if (typeof onSave === 'function') {
       onSave(localBonuses);
     } else {
@@ -146,11 +152,11 @@ export function BonusManager({ bonuses, onSave, operatorId }: BonusManagerProps)
         ))}
 
         <div className="flex gap-2">
-          <Button onClick={addBonus} variant="outline">
+          <Button onClick={addBonus} variant="outline" disabled={disabled}>
             <Plus className="h-4 w-4 mr-2" />
             Add Bonus
           </Button>
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} disabled={disabled}>
             Save Bonuses
           </Button>
         </div>

@@ -14,6 +14,7 @@ interface FAQManagerProps {
   faqs: OperatorFAQ[];
   onSave: (faqs: OperatorFAQ[]) => void;
   operatorId: string;
+  disabled?: boolean;
 }
 
 const faqCategories = [
@@ -24,7 +25,7 @@ const faqCategories = [
   { value: 'support', label: 'Support' },
 ];
 
-export function FAQManager({ faqs, onSave, operatorId }: FAQManagerProps) {
+export function FAQManager({ faqs, onSave, operatorId, disabled = false }: FAQManagerProps) {
   const [localFaqs, setLocalFaqs] = useState<OperatorFAQ[]>(faqs);
 
   const addFaq = () => {
@@ -71,6 +72,11 @@ export function FAQManager({ faqs, onSave, operatorId }: FAQManagerProps) {
   };
 
   const handleSave = () => {
+    if (disabled) {
+      toast.error('Cannot save while publishing is in progress');
+      return;
+    }
+    
     if (typeof onSave === 'function') {
       // Ensure order numbers are correct
       const orderedFaqs = localFaqs.map((faq, index) => ({
@@ -167,11 +173,11 @@ export function FAQManager({ faqs, onSave, operatorId }: FAQManagerProps) {
         ))}
 
         <div className="flex gap-2">
-          <Button onClick={addFaq} variant="outline">
+          <Button onClick={addFaq} variant="outline" disabled={disabled}>
             <Plus className="h-4 w-4 mr-2" />
             Add FAQ
           </Button>
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} disabled={disabled}>
             Save FAQs
           </Button>
         </div>
