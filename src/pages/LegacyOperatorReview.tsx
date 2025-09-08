@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Shield, Clock, CreditCard, Globe, Users, TrendingUp, Star, ChevronDown, CheckCircle, XCircle, AlertTriangle, Copy, Gamepad2, DollarSign, HelpCircle, FileText, MessageCircle } from 'lucide-react';
 import BoxesCatalog from '@/components/BoxesCatalog';
@@ -15,14 +16,89 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { sampleOperators, sampleReviews } from '@/lib/sample-data';
+import { usePublicOperatorLegacy } from '@/hooks/usePublicOperatorLegacy';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+
 const OperatorReview = () => {
+  const { id } = useParams<{ id: string }>();
+  const { operator, scores, promoCode, screenshots, faqItems, reviews, loading, error } = usePublicOperatorLegacy(id || '');
+  
   const [tocOpen, setTocOpen] = useState(false);
   const [promoCodeCopied, setPromoCodeCopied] = useState(false);
   const [keyFactsOpen, setKeyFactsOpen] = useState(false);
   const [prosConsOpen, setProsConsOpen] = useState(false);
-  const operator = sampleOperators[0]; // Clash.gg example
-  const reviews = sampleReviews.filter(r => r.entityId === operator.id);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <LoadingSpinner />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !operator) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h1 className="text-2xl font-bold mb-4">Operator Not Found</h1>
+          <p className="text-muted-foreground mb-4">The operator you're looking for doesn't exist or isn't published.</p>
+          <Button asChild>
+            <Link to="/operators">Back to Operators</Link>
+          </Button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+const OperatorReview = () => {
+  const { id } = useParams<{ id: string }>();
+  const { operator, scores, promoCode, screenshots, faqItems, reviews, loading, error } = usePublicOperatorLegacy(id || '');
+  
+  const [tocOpen, setTocOpen] = useState(false);
+  const [promoCodeCopied, setPromoCodeCopied] = useState(false);
+  const [keyFactsOpen, setKeyFactsOpen] = useState(false);
+  const [prosConsOpen, setProsConsOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <LoadingSpinner />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !operator) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h1 className="text-2xl font-bold mb-4">Operator Not Found</h1>
+          <p className="text-muted-foreground mb-4">The operator you're looking for doesn't exist or isn't published.</p>
+          <Button asChild>
+            <Link to="/operators">Back to Operators</Link>
+          </Button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const copyPromoCode = () => {
+    navigator.clipboard.writeText(promoCode);
+    setPromoCodeCopied(true);
+    setTimeout(() => setPromoCodeCopied(false), 2000);
+  };
+
+  // Remove the hardcoded data assignments since they're now from the hook
   const sections = [{
     id: 'what-is',
     title: `What is ${operator.name}?`,
@@ -60,21 +136,7 @@ const OperatorReview = () => {
     title: 'Verdict',
     anchor: 'verdict-section'
   }];
-  const scores = {
-    overall: 4.3,
-    user: 3.7,
-    trust: 4.2,
-    fees: 4.0,
-    ux: 4.5,
-    support: 3.8,
-    speed: 4.6
-  };
-  const promoCode = "XYZ123";
-  const copyPromoCode = () => {
-    navigator.clipboard.writeText(promoCode);
-    setPromoCodeCopied(true);
-    setTimeout(() => setPromoCodeCopied(false), 2000);
-  };
+  
   const siteType = operator.modes.includes('Case Opening') ? 'Case Site' : 'Mystery Box';
   const userRatings = {
     total: 1284,
@@ -86,26 +148,9 @@ const OperatorReview = () => {
       1: 3
     }
   };
-  const faqItems = [{
-    q: `Is ${operator.name} legit?`,
-    a: `Yes, ${operator.name} is a legitimate platform with proper security measures and verified payouts.`
-  }, {
-    q: "How do payouts work?",
-    a: "Payouts are processed within 24-48 hours via Steam trade or direct shipping for physical items."
-  }, {
-    q: "What are the fees and limits?",
-    a: "Deposit fees start at 0%, withdrawal fees vary by method. Minimum deposit is $10."
-  }];
 
-  const screenshots = [
-    { id: 1, url: "/placeholder.svg", alt: "Clash.gg mobile homepage" },
-    { id: 2, url: "/placeholder.svg", alt: "Case opening interface" },
-    { id: 3, url: "/placeholder.svg", alt: "User dashboard" },
-    { id: 4, url: "/placeholder.svg", alt: "Payment methods" },
-    { id: 5, url: "/placeholder.svg", alt: "Game lobby" },
-    { id: 6, url: "/placeholder.svg", alt: "Withdrawal interface" }
-  ];
-  return <div className="min-h-screen bg-background">
+  return (
+    <div className="min-h-screen bg-background">
       <Header />
       
       {/* Mobile Sticky Top Bar */}
@@ -1743,6 +1788,7 @@ const OperatorReview = () => {
       </div>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
 export default OperatorReview;

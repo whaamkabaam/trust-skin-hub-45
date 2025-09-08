@@ -52,9 +52,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/skins" element={<Skins />} />
             <Route path="/operators" element={<OperatorsArchive />} />
-            <Route path="/operators/:id" element={<OperatorReview />} />
+            <Route path="/operators/:id" element={<LegacyOperatorReview />} />
+            <Route path="/operators/:id/new" element={<OperatorReview />} />
             <Route path="/operators/:id/review" element={<ReviewRedirect />} />
-            <Route path="/operators/:id/legacy" element={<LegacyOperatorReview />} />
             <Route path="/casino-review" element={<OnlineCasinoReview />} />
             <Route path="/cases" element={<CasesArchive />} />
             <Route path="/cases/:id" element={<CaseDetail />} />

@@ -1,0 +1,126 @@
+import { useState, useEffect } from 'react';
+import { usePublicOperator } from './usePublicOperator';
+import { usePublicOperatorExtensions } from './usePublicOperatorExtensions';
+import { usePublicReviews } from './usePublicReviews';
+
+interface LegacyScores {
+  overall: number;
+  user: number;
+  trust: number;
+  fees: number;
+  ux: number;
+  support: number;
+  speed: number;
+}
+
+interface LegacyScreenshot {
+  url: string;
+  alt: string;
+}
+
+interface LegacyOperatorData {
+  operator: any | null;
+  scores: LegacyScores;
+  promoCode: string;
+  screenshots: LegacyScreenshot[];
+  faqItems: any[];
+  reviews: any[];
+  loading: boolean;
+  error: string | null;
+}
+
+export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { 
+    operator, 
+    mediaAssets, 
+    loading: operatorLoading, 
+    error: operatorError 
+  } = usePublicOperator(slug);
+  
+  const { 
+    faqs, 
+    loading: extensionsLoading, 
+    error: extensionsError 
+  } = usePublicOperatorExtensions(slug);
+  
+  const { 
+    reviews, 
+    loading: reviewsLoading, 
+    error: reviewsError 
+  } = usePublicReviews(operator?.id || '');
+
+  // Transform CMS data to legacy format
+  const transformedData = {
+    operator: operator ? {
+      ...operator,
+      id: operator.slug || operator.id,
+      logo: operator.logo_url || operator.logo,
+      overallRating: operator.ratings?.overall || 0,
+      feeLevel: 'Medium', // Default or derive from ratings
+      paymentMethods: ['skins', 'crypto'], // Default or from CMS
+      modes: operator.categories || [],
+      pros: operator.pros || [],
+      cons: operator.cons || [],
+      trustScore: operator.ratings?.trust || 0,
+      fees: {
+        deposit: 0,
+        withdrawal: 2,
+        trading: 3
+      },
+      payoutSpeed: operator.withdrawal_time_crypto || '10-30 minutes',
+      kycRequired: operator.kycRequired || false,
+      countries: operator.supported_countries || operator.countries || [],
+      url: operator.tracking_link || operator.url || '#',
+      verified: operator.verification_status === 'verified' || operator.verified,
+      otherFeatures: [],
+      gamingModes: [],
+      games: [],
+      categories: operator.categories || []
+    } : null,
+
+    scores: {
+      overall: operator?.ratings?.overall || 0,
+      user: operator?.ratings?.overall || 0,
+      trust: operator?.ratings?.trust || 0,
+      fees: operator?.ratings?.value || 0,
+      ux: operator?.ratings?.ux || 0,
+      support: operator?.ratings?.support || 0,
+      speed: operator?.ratings?.payments || 0
+    },
+
+    promoCode: operator?.promo_code || 'SAVE20',
+
+    screenshots: mediaAssets
+      ?.filter(asset => asset.type === 'screenshot')
+      ?.map(asset => ({
+        url: asset.url,
+        alt: asset.alt_text || 'Screenshot'
+      })) || [],
+
+    faqItems: faqs?.map(faq => ({
+      id: faq.id,
+      q: faq.question,
+      a: faq.answer,
+      category: faq.category || 'General'
+    })) || [],
+
+    reviews: reviews || []
+  };
+
+  useEffect(() => {
+    const isLoading = operatorLoading || extensionsLoading || reviewsLoading;
+    const hasError = operatorError || extensionsError || reviewsError;
+    
+    setLoading(isLoading);
+    setError(hasError);
+  }, [operatorLoading, extensionsLoading, reviewsLoading, operatorError, extensionsError, reviewsError]);
+
+  return {
+    ...transformedData,
+    loading,
+    error
+  };
+}
