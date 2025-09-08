@@ -32,6 +32,7 @@ import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FormErrorBoundary } from './FormErrorBoundary';
 import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
+import { TabErrorBoundary } from './TabErrorBoundary';
 
 type Operator = Tables<'operators'>;
 
@@ -173,41 +174,42 @@ export function OperatorForm({
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
   const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
   
-  // Check if this specific operator is being published
-  const isThisOperatorPublishing = globalIsPublishing && publishingOperatorId === initialData?.id;
-
   const { saveState, lastSaved, forceSave } = useAutoSave({
     data: formData,
     onSave: handleAutoSave,
-    enabled: autoSaveEnabled && !!onAutoSave && !isThisOperatorPublishing && !publishLoading,
+    enabled: autoSaveEnabled && !!onAutoSave && !publishLoading,
     storageKey: initialData?.id || 'new-operator'
   });
 
-  // Stabilize extension manager props to prevent crashes during re-renders
+  // Stabilize extension manager props with static keys to prevent React reconciliation issues
   const stableExtensionProps = useMemo(() => ({
     bonuses: {
+      key: 'bonuses-manager',
       operatorId: effectiveOperatorId,
       bonuses,
       onSave: saveBonuses,
-      disabled: publishLoading || publishingState || isThisOperatorPublishing
+      disabled: publishLoading || publishingState
     },
     payments: {
+      key: 'payments-manager',
       operatorId: effectiveOperatorId,
       payments,
       onSave: savePayments,
-      disabled: publishLoading || publishingState || isThisOperatorPublishing
+      disabled: publishLoading || publishingState
     },
     security: {
+      key: 'security-manager',
       operatorId: effectiveOperatorId,
       security,
       onSave: saveSecurity,
-      disabled: publishLoading || publishingState || isThisOperatorPublishing
+      disabled: publishLoading || publishingState
     },
     faqs: {
+      key: 'faqs-manager',
       operatorId: effectiveOperatorId,
       faqs,
       onSave: saveFaqs,
-      disabled: publishLoading || publishingState || isThisOperatorPublishing
+      disabled: publishLoading || publishingState
     }
   }), [
     effectiveOperatorId,
@@ -220,32 +222,32 @@ export function OperatorForm({
     saveSecurity,
     saveFaqs,
     publishLoading,
-    publishingState,
-    isThisOperatorPublishing
+    publishingState
   ]);
 
 
-  // Stable callback for ContentScheduling that prevents race conditions
+  // Simplified status change handler that prevents race conditions
   const handleStatusChange = useCallback((status: string, scheduledDate?: string) => {
-    // For published status, use form submission workflow instead of direct state change
-    if (status === 'published') {
-      // Trigger form submission with published flag
-      const currentData = getValues();
-      handleSubmit((data) => onSubmit({ ...data, published: true }))();
-      return;
-    }
-    
-    // Handle other status changes normally
-    if (status === 'scheduled' && scheduledDate) {
-      setValue('publish_status' as any, status);
-      setValue('scheduled_publish_at' as any, scheduledDate);
-    } else {
-      setValue('publish_status' as any, status);
-      if (scheduledDate) {
+    try {
+      console.log('ContentScheduling status change:', { status, scheduledDate, operatorId: initialData?.id });
+      
+      // Handle all status changes through form values only - no direct submission
+      if (status === 'scheduled' && scheduledDate) {
+        setValue('publish_status' as any, status);
         setValue('scheduled_publish_at' as any, scheduledDate);
+      } else {
+        setValue('publish_status' as any, status);
+        if (status === 'published') {
+          setValue('published', true);
+        }
+        if (scheduledDate) {
+          setValue('scheduled_publish_at' as any, scheduledDate);
+        }
       }
+    } catch (error) {
+      console.error('Error in handleStatusChange:', error);
     }
-  }, [setValue, getValues, handleSubmit, onSubmit]);
+  }, [setValue, initialData?.id]);
 
   const generateSlug = (name: string) => {
     return name
@@ -736,115 +738,39 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="bonuses" className="space-y-6">
-          {effectiveOperatorId ? (
-            <ExtensionErrorBoundary type="Bonuses">
-              {(publishLoading || isThisOperatorPublishing) ? (
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
-                      <p className="text-muted-foreground">Publishing in progress... Please wait.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <BonusManager 
-                  key={`bonuses-${effectiveOperatorId}-${isThisOperatorPublishing ? 'publishing' : 'normal'}`}
-                  {...stableExtensionProps.bonuses}
-                />
-              )}
-            </ExtensionErrorBoundary>
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Please save the operator first to manage bonuses.</p>
-              </CardContent>
-            </Card>
-          )}
+          <TabErrorBoundary tabName="Bonuses">
+            <BonusManager 
+              key={stableExtensionProps.bonuses.key}
+              {...stableExtensionProps.bonuses} 
+            />
+          </TabErrorBoundary>
         </TabsContent>
 
         <TabsContent value="payments" className="space-y-6">
-          {effectiveOperatorId ? (
-            <ExtensionErrorBoundary type="Payment Methods">
-              {(publishLoading || isThisOperatorPublishing) ? (
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
-                      <p className="text-muted-foreground">Publishing in progress... Please wait.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <PaymentMethodsManager 
-                  key={`payments-${effectiveOperatorId}-${isThisOperatorPublishing ? 'publishing' : 'normal'}`}
-                  {...stableExtensionProps.payments}
-                />
-              )}
-            </ExtensionErrorBoundary>
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Please save the operator first to manage payments.</p>
-              </CardContent>
-            </Card>
-          )}
+          <TabErrorBoundary tabName="Payments">
+            <PaymentMethodsManager 
+              key={stableExtensionProps.payments.key}
+              {...stableExtensionProps.payments} 
+            />
+          </TabErrorBoundary>
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
-          {effectiveOperatorId ? (
-            <ExtensionErrorBoundary type="Security">
-              {(publishLoading || isThisOperatorPublishing) ? (
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
-                      <p className="text-muted-foreground">Publishing in progress... Please wait.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <SecurityManager 
-                  key={`security-${effectiveOperatorId}-${isThisOperatorPublishing ? 'publishing' : 'normal'}`}
-                  {...stableExtensionProps.security}
-                />
-              )}
-            </ExtensionErrorBoundary>
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Please save the operator first to manage security.</p>
-              </CardContent>
-            </Card>
-          )}
+          <TabErrorBoundary tabName="Security">
+            <SecurityManager 
+              key={stableExtensionProps.security.key}
+              {...stableExtensionProps.security} 
+            />
+          </TabErrorBoundary>
         </TabsContent>
 
         <TabsContent value="faqs" className="space-y-6">
-          {effectiveOperatorId ? (
-            <ExtensionErrorBoundary type="FAQs">
-              {(publishLoading || isThisOperatorPublishing) ? (
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
-                      <p className="text-muted-foreground">Publishing in progress... Please wait.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <FAQManager 
-                  key={`faqs-${effectiveOperatorId}-${isThisOperatorPublishing ? 'publishing' : 'normal'}`}
-                  {...stableExtensionProps.faqs}
-                />
-              )}
-            </ExtensionErrorBoundary>
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Please save the operator first to manage FAQs.</p>
-              </CardContent>
-            </Card>
-          )}
+          <TabErrorBoundary tabName="FAQs">
+            <FAQManager 
+              key={stableExtensionProps.faqs.key}
+              {...stableExtensionProps.faqs} 
+            />
+          </TabErrorBoundary>
         </TabsContent>
 
         <TabsContent value="seo" className="space-y-6">

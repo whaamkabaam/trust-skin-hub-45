@@ -119,67 +119,73 @@ export function useOperatorExtensions(operatorId: string) {
     }
   }, [operatorId]);
 
-  // Save bonuses
+  // Save bonuses with stable reference and defensive programming
   const saveBonuses = useCallback(async (bonusData: OperatorBonus[]) => {
-    // Skip if currently publishing to prevent conflicts
-    if (isPublishing && publishingOperatorId === operatorId) {
-      console.log('Skipping bonuses save during publishing');
-      return;
-    }
-    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing bonuses');
       return;
     }
     
     try {
+      console.log('Saving bonuses for operator:', operatorId, bonusData);
+      
       // Delete existing bonuses
-      await supabase.from('operator_bonuses').delete().eq('operator_id', operatorId);
+      const { error: deleteError } = await supabase
+        .from('operator_bonuses')
+        .delete()
+        .eq('operator_id', operatorId);
+      
+      if (deleteError) throw deleteError;
       
       // Insert new bonuses
-      if (bonusData.length > 0) {
-        const { error } = await supabase.from('operator_bonuses').insert(bonusData);
-        if (error) throw error;
+      if (bonusData && bonusData.length > 0) {
+        const { error: insertError } = await supabase
+          .from('operator_bonuses')
+          .insert(bonusData);
+        if (insertError) throw insertError;
       }
       
-      setBonuses(bonusData);
+      setBonuses(bonusData || []);
       toast.success('Bonuses saved successfully');
     } catch (error) {
       console.error('Error saving bonuses:', error);
       toast.error('Failed to save bonuses');
     }
-  }, [operatorId, isPublishing, publishingOperatorId]);
+  }, [operatorId]);
 
-  // Save payments
+  // Save payments with stable reference and defensive programming
   const savePayments = useCallback(async (paymentData: OperatorPayment[]) => {
-    // Skip if currently publishing to prevent conflicts
-    if (isPublishing && publishingOperatorId === operatorId) {
-      console.log('Skipping payments save during publishing');
-      return;
-    }
-    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing payment methods');
       return;
     }
     
     try {
+      console.log('Saving payments for operator:', operatorId, paymentData);
+      
       // Delete existing payments
-      await supabase.from('operator_payments').delete().eq('operator_id', operatorId);
+      const { error: deleteError } = await supabase
+        .from('operator_payments')
+        .delete()
+        .eq('operator_id', operatorId);
+      
+      if (deleteError) throw deleteError;
       
       // Insert new payments
-      if (paymentData.length > 0) {
-        const { error } = await supabase.from('operator_payments').insert(paymentData);
-        if (error) throw error;
+      if (paymentData && paymentData.length > 0) {
+        const { error: insertError } = await supabase
+          .from('operator_payments')
+          .insert(paymentData);
+        if (insertError) throw insertError;
       }
       
-      setPayments(paymentData);
+      setPayments(paymentData || []);
       toast.success('Payment methods saved successfully');
     } catch (error) {
       console.error('Error saving payments:', error);
       toast.error('Failed to save payment methods');
     }
-  }, [operatorId, isPublishing, publishingOperatorId]);
+  }, [operatorId]);
 
   // Save features
   const saveFeatures = useCallback(async (featureData: OperatorFeature[]) => {
@@ -212,20 +218,21 @@ export function useOperatorExtensions(operatorId: string) {
     }
   }, [operatorId, isPublishing, publishingOperatorId]);
 
-  // Save security
+  // Save security with stable reference and defensive programming
   const saveSecurity = useCallback(async (securityData: OperatorSecurity) => {
-    // Skip if currently publishing to prevent conflicts
-    if (isPublishing && publishingOperatorId === operatorId) {
-      console.log('Skipping security save during publishing');
-      return;
-    }
-    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing security');
       return;
     }
     
     try {
+      console.log('Saving security for operator:', operatorId, securityData);
+      
+      if (!securityData) {
+        console.error('No security data provided');
+        return;
+      }
+      
       const { error } = await supabase
         .from('operator_security')
         .upsert({ ...securityData, operator_id: operatorId });
@@ -238,38 +245,41 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving security:', error);
       toast.error('Failed to save security settings');
     }
-  }, [operatorId, isPublishing, publishingOperatorId]);
+  }, [operatorId]);
 
-  // Save FAQs
+  // Save FAQs with stable reference and defensive programming
   const saveFaqs = useCallback(async (faqData: OperatorFAQ[]) => {
-    // Skip if currently publishing to prevent conflicts
-    if (isPublishing && publishingOperatorId === operatorId) {
-      console.log('Skipping FAQs save during publishing');
-      return;
-    }
-    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing FAQs');
       return;
     }
     
     try {
+      console.log('Saving FAQs for operator:', operatorId, faqData);
+      
       // Delete existing FAQs
-      await supabase.from('operator_faqs').delete().eq('operator_id', operatorId);
+      const { error: deleteError } = await supabase
+        .from('operator_faqs')
+        .delete()
+        .eq('operator_id', operatorId);
+      
+      if (deleteError) throw deleteError;
       
       // Insert new FAQs
-      if (faqData.length > 0) {
-        const { error } = await supabase.from('operator_faqs').insert(faqData);
-        if (error) throw error;
+      if (faqData && faqData.length > 0) {
+        const { error: insertError } = await supabase
+          .from('operator_faqs')
+          .insert(faqData);
+        if (insertError) throw insertError;
       }
       
-      setFaqs(faqData);
+      setFaqs(faqData || []);
       toast.success('FAQs saved successfully');
     } catch (error) {
       console.error('Error saving FAQs:', error);
       toast.error('Failed to save FAQs');
     }
-  }, [operatorId, isPublishing, publishingOperatorId]);
+  }, [operatorId]);
 
   useEffect(() => {
     isMountedRef.current = true;

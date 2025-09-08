@@ -49,6 +49,7 @@ export function ContentScheduling({
 
   const handleStatusChange = (newStatus: string) => {
     try {
+      console.log('ContentScheduling handleStatusChange:', { newStatus, currentStatus: publishStatus });
       setSelectedStatus(newStatus);
       
       if (newStatus === 'scheduled') {
@@ -56,10 +57,15 @@ export function ContentScheduling({
         return;
       }
       
-      if (newStatus === 'published') {
-        onStatusChange?.(newStatus, new Date().toISOString());
+      // Defensive check for onStatusChange function
+      if (typeof onStatusChange === 'function') {
+        if (newStatus === 'published') {
+          onStatusChange(newStatus, new Date().toISOString());
+        } else {
+          onStatusChange(newStatus, undefined);
+        }
       } else {
-        onStatusChange?.(newStatus, undefined);
+        console.error('onStatusChange is not a function:', onStatusChange);
       }
     } catch (error) {
       console.error('Error handling status change:', error);
@@ -71,7 +77,14 @@ export function ContentScheduling({
       if (!scheduledDate || !scheduledTime) return;
       
       const combinedDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
-      onStatusChange?.('scheduled', combinedDateTime.toISOString());
+      console.log('ContentScheduling handleScheduleSubmit:', { scheduledDate, scheduledTime, combinedDateTime });
+      
+      // Defensive check for onStatusChange function
+      if (typeof onStatusChange === 'function') {
+        onStatusChange('scheduled', combinedDateTime.toISOString());
+      } else {
+        console.error('onStatusChange is not a function in handleScheduleSubmit:', onStatusChange);
+      }
     } catch (error) {
       console.error('Error scheduling content:', error);
     }
