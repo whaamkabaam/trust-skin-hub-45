@@ -59,8 +59,14 @@ export default function EditOperator() {
   };
 
   const handleAutoSave = async (data: OperatorFormData) => {
-    if (id) {
+    if (!id) return;
+    
+    try {
+      // Auto-save should NEVER trigger publishing
       await autoSaveOperator(id, data);
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+      // Don't show error toast for auto-save failures
     }
   };
 

@@ -416,6 +416,7 @@ export function useOperatorExtensions(operatorId: string) {
     security,
     faqs,
     loading,
+    isExtensionActive,
     // Return defensive wrapper functions with stable references
     saveBonuses: safeSaveBonuses,
     savePayments: safeSavePayments,

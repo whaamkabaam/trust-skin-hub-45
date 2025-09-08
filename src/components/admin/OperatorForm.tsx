@@ -33,6 +33,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FormErrorBoundary } from './FormErrorBoundary';
 import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
 import { TabErrorBoundary } from './TabErrorBoundary';
+import { AutoSaveErrorBoundary } from './AutoSaveErrorBoundary';
 
 type Operator = Tables<'operators'>;
 
@@ -158,16 +159,19 @@ export function OperatorForm({
     saveFeatures,
     saveSecurity,
     saveFaqs,
-    setExtensionActive
+    setExtensionActive,
+    isExtensionActive
   } = useOperatorExtensions(effectiveOperatorId);
 
-  // Auto-save functionality
+  // Auto-save functionality - NEVER triggers publishing
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
     if (onAutoSave && typeof onAutoSave === 'function') {
       try {
+        // Ensure we're only saving form data, never triggering publish
         await onAutoSave(data);
       } catch (error) {
         console.error('Auto-save failed:', error);
+        // Silent failure for auto-save to prevent disrupting user experience
       }
     }
   }, [onAutoSave]);
@@ -178,7 +182,7 @@ export function OperatorForm({
   const { saveState, lastSaved, forceSave, pauseAutoSave } = useAutoSave({
     data: formData,
     onSave: handleAutoSave,
-    enabled: autoSaveEnabled && !!onAutoSave && !publishLoading,
+    enabled: autoSaveEnabled && !!onAutoSave && !publishLoading && !publishingState && !isExtensionActive,
     storageKey: initialData?.id || 'new-operator'
   });
 
@@ -317,7 +321,8 @@ export function OperatorForm({
 
   return (
     <FormErrorBoundary>
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <AutoSaveErrorBoundary onReset={() => setExtensionActive(false)}>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -878,6 +883,7 @@ export function OperatorForm({
        </div>
 
       </form>
+      </AutoSaveErrorBoundary>
     </FormErrorBoundary>
   );
 }

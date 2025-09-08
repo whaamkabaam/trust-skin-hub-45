@@ -106,14 +106,23 @@ export function useAutoSave<T>({
           scheduled_publish_at: (debouncedData as any).scheduled_publish_at === '' ? null : (debouncedData as any).scheduled_publish_at,
         };
         
-        // Enhanced safety check for save function
-        if (typeof onSave === 'function') {
-          await onSave(cleanedData);
-          setSaveState('saved');
-          setLastSaved(new Date());
-          clearDraft();
+        // Enhanced safety check for save function with detailed validation
+        if (onSave && typeof onSave === 'function') {
+          try {
+            await onSave(cleanedData);
+            setSaveState('saved');
+            setLastSaved(new Date());
+            clearDraft();
+          } catch (saveError) {
+            console.error('onSave function threw an error:', saveError);
+            throw saveError;
+          }
         } else {
-          console.warn('onSave is not a function or is undefined, skipping auto-save');
+          console.warn('onSave is not a function or is undefined, skipping auto-save', { 
+            onSave, 
+            type: typeof onSave,
+            isFunction: typeof onSave === 'function'
+          });
           setSaveState('idle');
           return;
         }
@@ -158,14 +167,20 @@ export function useAutoSave<T>({
   const forceSave = useCallback(async () => {
     try {
       setSaveState('saving');
-      await onSave(data);
-      setSaveState('saved');
-      setLastSaved(new Date());
-      clearDraft();
       
-      saveTimeoutRef.current = setTimeout(() => {
-        setSaveState('idle');
-      }, 2000);
+      if (onSave && typeof onSave === 'function') {
+        await onSave(data);
+        setSaveState('saved');
+        setLastSaved(new Date());
+        clearDraft();
+        
+        saveTimeoutRef.current = setTimeout(() => {
+          setSaveState('idle');
+        }, 2000);
+      } else {
+        console.warn('forceSave: onSave function not available');
+        setSaveState('error');
+      }
     } catch (error) {
       console.error('Force save failed:', error);
       setSaveState('error');
