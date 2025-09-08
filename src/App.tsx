@@ -24,6 +24,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import OperatorsList from "./pages/admin/OperatorsList";
 import NewOperator from "./pages/admin/NewOperator";
 import EditOperator from "./pages/admin/EditOperator";
+import OperatorContent from "./pages/admin/OperatorContent";
+import OperatorMedia from "./pages/admin/OperatorMedia";
+import OperatorSEO from "./pages/admin/OperatorSEO";
 import ContentSections from "./pages/admin/ContentSections";
 import MediaLibrary from "./pages/admin/MediaLibrary";
 import SEOManager from "./pages/admin/SEOManager";
@@ -66,6 +69,9 @@ const App = () => (
               <Route path="operators" element={<OperatorsList />} />
               <Route path="operators/new" element={<NewOperator />} />
               <Route path="operators/:id" element={<EditOperator />} />
+              <Route path="operators/:id/content" element={<OperatorContent />} />
+              <Route path="operators/:id/media" element={<OperatorMedia />} />
+              <Route path="operators/:id/seo" element={<OperatorSEO />} />
               <Route path="publishing" element={<PublishingManager />} />
               <Route path="content" element={<ContentSections />} />
               <Route path="media" element={<MediaLibrary />} />
