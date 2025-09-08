@@ -77,15 +77,21 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false }: FAQMa
       return;
     }
     
-    if (typeof onSave === 'function') {
-      // Ensure order numbers are correct
-      const orderedFaqs = localFaqs.map((faq, index) => ({
-        ...faq,
-        order_number: index,
-      }));
-      onSave(orderedFaqs);
-    } else {
-      toast.error('Save function not available');
+    try {
+      if (typeof onSave === 'function') {
+        // Ensure order numbers are correct
+        const orderedFaqs = localFaqs.map((faq, index) => ({
+          ...faq,
+          order_number: index,
+        }));
+        onSave(orderedFaqs);
+      } else {
+        console.error('Save function not available for FAQs');
+        toast.error('Save function not available');
+      }
+    } catch (error) {
+      console.error('Error saving FAQs:', error);
+      toast.error('Failed to save FAQs');
     }
   };
 

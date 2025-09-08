@@ -61,10 +61,16 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false }: 
       return;
     }
     
-    if (typeof onSave === 'function') {
-      onSave(localBonuses);
-    } else {
-      toast.error('Save function not available');
+    try {
+      if (typeof onSave === 'function') {
+        onSave(localBonuses);
+      } else {
+        console.error('Save function not available for bonuses');
+        toast.error('Save function not available');
+      }
+    } catch (error) {
+      console.error('Error saving bonuses:', error);
+      toast.error('Failed to save bonuses');
     }
   };
 

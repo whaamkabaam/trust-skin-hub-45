@@ -58,10 +58,16 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       return;
     }
     
-    if (typeof onSave === 'function') {
-      onSave(localPayments);
-    } else {
-      toast.error('Save function not available');
+    try {
+      if (typeof onSave === 'function') {
+        onSave(localPayments);
+      } else {
+        console.error('Save function not available for payments');
+        toast.error('Save function not available');
+      }
+    } catch (error) {
+      console.error('Error saving payments:', error);
+      toast.error('Failed to save payments');
     }
   };
 

@@ -61,10 +61,16 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
       return;
     }
     
-    if (typeof onSave === 'function') {
-      onSave(localSecurity);
-    } else {
-      toast.error('Save function not available');
+    try {
+      if (typeof onSave === 'function') {
+        onSave(localSecurity);
+      } else {
+        console.error('Save function not available for security');
+        toast.error('Save function not available');
+      }
+    } catch (error) {
+      console.error('Error saving security:', error);
+      toast.error('Failed to save security settings');
     }
   };
 

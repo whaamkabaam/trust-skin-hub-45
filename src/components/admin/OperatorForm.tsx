@@ -30,6 +30,7 @@ import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FormErrorBoundary } from './FormErrorBoundary';
 import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
 
 type Operator = Tables<'operators'>;
@@ -169,31 +170,18 @@ export function OperatorForm({
     }
   }, [onAutoSave]);
 
-  const { saveState, lastSaved, forceSave } = useAutoSave({
-    data: formData,
-    onSave: handleAutoSave,
-    enabled: autoSaveEnabled && !!onAutoSave,
-    storageKey: initialData?.id || 'new-operator'
-  });
-
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
-  const [isPublishing, setIsPublishing] = useState(false);
   const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
   
   // Check if this specific operator is being published
   const isThisOperatorPublishing = globalIsPublishing && publishingOperatorId === initialData?.id;
 
-  // Separate state for publishing UI status that syncs with form data
-  const currentFormStatus = watch('publish_status') || 'draft';
-  const [publishingUIStatus, setPublishingUIStatus] = useState(currentFormStatus);
-
-  // Synchronize UI status with form data after updates complete
-  useEffect(() => {
-    // Only sync if not currently publishing to avoid race conditions
-    if (!isThisOperatorPublishing && !isPublishing) {
-      setPublishingUIStatus(currentFormStatus);
-    }
-  }, [currentFormStatus, isThisOperatorPublishing, isPublishing]);
+  const { saveState, lastSaved, forceSave } = useAutoSave({
+    data: formData,
+    onSave: handleAutoSave,
+    enabled: autoSaveEnabled && !!onAutoSave && !isThisOperatorPublishing && !publishLoading,
+    storageKey: initialData?.id || 'new-operator'
+  });
 
   // Stabilize extension manager props to prevent crashes during re-renders
   const stableExtensionProps = useMemo(() => ({
@@ -201,25 +189,25 @@ export function OperatorForm({
       operatorId: effectiveOperatorId,
       bonuses,
       onSave: saveBonuses,
-      disabled: isPublishing || publishLoading || publishingState || isThisOperatorPublishing
+      disabled: publishLoading || publishingState || isThisOperatorPublishing
     },
     payments: {
       operatorId: effectiveOperatorId,
       payments,
       onSave: savePayments,
-      disabled: isPublishing || publishLoading || publishingState || isThisOperatorPublishing
+      disabled: publishLoading || publishingState || isThisOperatorPublishing
     },
     security: {
       operatorId: effectiveOperatorId,
       security,
       onSave: saveSecurity,
-      disabled: isPublishing || publishLoading || publishingState || isThisOperatorPublishing
+      disabled: publishLoading || publishingState || isThisOperatorPublishing
     },
     faqs: {
       operatorId: effectiveOperatorId,
       faqs,
       onSave: saveFaqs,
-      disabled: isPublishing || publishLoading || publishingState || isThisOperatorPublishing
+      disabled: publishLoading || publishingState || isThisOperatorPublishing
     }
   }), [
     effectiveOperatorId,
@@ -231,9 +219,9 @@ export function OperatorForm({
     savePayments,
     saveSecurity,
     saveFaqs,
-    isPublishing,
     publishLoading,
-    publishingState
+    publishingState,
+    isThisOperatorPublishing
   ]);
 
 
@@ -303,7 +291,8 @@ export function OperatorForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <FormErrorBoundary>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -749,7 +738,7 @@ export function OperatorForm({
         <TabsContent value="bonuses" className="space-y-6">
           {effectiveOperatorId ? (
             <ExtensionErrorBoundary type="Bonuses">
-              {(isPublishing || publishLoading || isThisOperatorPublishing) ? (
+              {(publishLoading || isThisOperatorPublishing) ? (
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center">
@@ -777,7 +766,7 @@ export function OperatorForm({
         <TabsContent value="payments" className="space-y-6">
           {effectiveOperatorId ? (
             <ExtensionErrorBoundary type="Payment Methods">
-              {(isPublishing || publishLoading || isThisOperatorPublishing) ? (
+              {(publishLoading || isThisOperatorPublishing) ? (
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center">
@@ -805,7 +794,7 @@ export function OperatorForm({
         <TabsContent value="security" className="space-y-6">
           {effectiveOperatorId ? (
             <ExtensionErrorBoundary type="Security">
-              {(isPublishing || publishLoading || isThisOperatorPublishing) ? (
+              {(publishLoading || isThisOperatorPublishing) ? (
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center">
@@ -833,7 +822,7 @@ export function OperatorForm({
         <TabsContent value="faqs" className="space-y-6">
           {effectiveOperatorId ? (
             <ExtensionErrorBoundary type="FAQs">
-              {(isPublishing || publishLoading || isThisOperatorPublishing) ? (
+              {(publishLoading || isThisOperatorPublishing) ? (
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center">
@@ -909,7 +898,7 @@ export function OperatorForm({
       {/* Content Scheduling */}
       <ContentScheduling
         key={`scheduling-${initialData?.id || 'new'}`}
-        publishStatus={publishingUIStatus || 'draft'}
+        publishStatus={watch('publish_status') || 'draft'}
         publishedAt={(initialData as any)?.published_at || undefined}
         scheduledPublishAt={(watch() as any).scheduled_publish_at || undefined}
         onStatusChange={handleStatusChange}
@@ -940,5 +929,6 @@ export function OperatorForm({
        </div>
 
       </form>
+    </FormErrorBoundary>
   );
 }
