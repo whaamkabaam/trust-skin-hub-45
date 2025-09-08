@@ -55,42 +55,6 @@ const OperatorReview = () => {
       </div>
     );
   }
-const OperatorReview = () => {
-  const { id } = useParams<{ id: string }>();
-  const { operator, scores, promoCode, screenshots, faqItems, reviews, loading, error } = usePublicOperatorLegacy(id || '');
-  
-  const [tocOpen, setTocOpen] = useState(false);
-  const [promoCodeCopied, setPromoCodeCopied] = useState(false);
-  const [keyFactsOpen, setKeyFactsOpen] = useState(false);
-  const [prosConsOpen, setProsConsOpen] = useState(false);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
-          <LoadingSpinner />
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (error || !operator) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Operator Not Found</h1>
-          <p className="text-muted-foreground mb-4">The operator you're looking for doesn't exist or isn't published.</p>
-          <Button asChild>
-            <Link to="/operators">Back to Operators</Link>
-          </Button>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   const copyPromoCode = () => {
     navigator.clipboard.writeText(promoCode);

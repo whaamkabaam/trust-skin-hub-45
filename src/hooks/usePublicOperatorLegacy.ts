@@ -14,6 +14,7 @@ interface LegacyScores {
 }
 
 interface LegacyScreenshot {
+  id: string;
   url: string;
   alt: string;
 }
@@ -57,7 +58,7 @@ export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
     operator: operator ? {
       ...operator,
       id: operator.slug || operator.id,
-      logo: operator.logo_url || operator.logo,
+      logo: operator.logo,
       overallRating: operator.ratings?.overall || 0,
       feeLevel: 'Medium', // Default or derive from ratings
       paymentMethods: ['skins', 'crypto'], // Default or from CMS
@@ -70,11 +71,11 @@ export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
         withdrawal: 2,
         trading: 3
       },
-      payoutSpeed: operator.withdrawal_time_crypto || '10-30 minutes',
+      payoutSpeed: '10-30 minutes',
       kycRequired: operator.kycRequired || false,
-      countries: operator.supported_countries || operator.countries || [],
-      url: operator.tracking_link || operator.url || '#',
-      verified: operator.verification_status === 'verified' || operator.verified,
+      countries: operator.countries || [],
+      url: operator.url || '#',
+      verified: operator.verified || false,
       otherFeatures: [],
       gamingModes: [],
       games: [],
@@ -91,11 +92,12 @@ export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
       speed: operator?.ratings?.payments || 0
     },
 
-    promoCode: operator?.promo_code || 'SAVE20',
+    promoCode: (operator as any)?.promo_code || 'SAVE20',
 
     screenshots: mediaAssets
       ?.filter(asset => asset.type === 'screenshot')
       ?.map(asset => ({
+        id: asset.id,
         url: asset.url,
         alt: asset.alt_text || 'Screenshot'
       })) || [],
