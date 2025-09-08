@@ -145,7 +145,7 @@ export function ContentSectionManager({ operatorId }: ContentSectionManagerProps
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={saveSections} disabled={loading}>
+          <Button type="button" onClick={saveSections} disabled={loading}>
             {loading ? 'Saving...' : 'Save All'}
           </Button>
         </div>
@@ -186,6 +186,7 @@ export function ContentSectionManager({ operatorId }: ContentSectionManagerProps
                   </div>
                 </div>
                 <Button
+                  type="button"
                   variant="destructive"
                   size="sm"
                   onClick={() => removeSection(index)}

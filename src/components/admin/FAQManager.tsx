@@ -141,14 +141,16 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
                   
                   <div className="flex gap-1">
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => moveFaq(index, 'up')}
+                       type="button"
+                       variant="outline"
+                       size="sm"
+                       onClick={() => moveFaq(index, 'up')}
                       disabled={index === 0}
                     >
                       ↑
                     </Button>
                     <Button
+                      type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => moveFaq(index, 'down')}
@@ -157,6 +159,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
                       ↓
                     </Button>
                     <Button
+                      type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => removeFaq(index)}
@@ -190,11 +193,11 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
         ))}
 
         <div className="flex gap-2">
-          <Button onClick={addFaq} variant="outline" disabled={disabled}>
+          <Button type="button" onClick={addFaq} variant="outline" disabled={disabled}>
             <Plus className="h-4 w-4 mr-2" />
             Add FAQ
           </Button>
-          <Button onClick={handleSave} disabled={disabled}>
+          <Button type="button" onClick={handleSave} disabled={disabled}>
             Save FAQs
           </Button>
         </div>

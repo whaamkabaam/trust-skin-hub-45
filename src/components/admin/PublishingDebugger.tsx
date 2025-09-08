@@ -51,6 +51,7 @@ export function PublishingDebugger({ operatorId }: PublishingDebuggerProps) {
       <CardContent className="space-y-4">
         <div className="flex gap-2">
           <Button 
+            type="button"
             onClick={testGeneration}
             disabled={isDebugging || loading}
             variant="outline"
@@ -58,6 +59,7 @@ export function PublishingDebugger({ operatorId }: PublishingDebuggerProps) {
             Test Generation
           </Button>
           <Button 
+            type="button"
             onClick={testPublishing}
             disabled={isDebugging || loading}
           >

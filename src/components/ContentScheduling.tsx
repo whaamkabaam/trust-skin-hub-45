@@ -167,6 +167,7 @@ export function ContentScheduling({
                 </div>
               </div>
               <Button 
+                type="button"
                 onClick={handleScheduleSubmit} 
                 disabled={!scheduledDate || !scheduledTime}
                 className="w-full"

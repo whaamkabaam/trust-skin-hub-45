@@ -167,7 +167,7 @@ export function MediaAssetManager({ operatorId }: MediaAssetManagerProps) {
         <CardTitle className="flex items-center justify-between">
           Media Assets
           {assets.length === 0 && (
-            <Button onClick={addSampleAssets} variant="outline" size="sm">
+            <Button type="button" onClick={addSampleAssets} variant="outline" size="sm">
               Add Sample Assets
             </Button>
           )}
@@ -221,7 +221,7 @@ export function MediaAssetManager({ operatorId }: MediaAssetManagerProps) {
               />
             </div>
           </div>
-          <Button onClick={addAsset} disabled={uploading}>
+          <Button type="button" onClick={addAsset} disabled={uploading}>
             <Upload className="w-4 h-4 mr-2" />
             Add Asset
           </Button>
@@ -253,6 +253,7 @@ export function MediaAssetManager({ operatorId }: MediaAssetManagerProps) {
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium capitalize">{asset.type}</span>
                         <Button
+                          type="button"
                           variant="ghost"
                           size="sm"
                           onClick={() => removeAsset(asset.id)}

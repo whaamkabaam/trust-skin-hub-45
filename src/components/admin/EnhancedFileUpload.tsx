@@ -249,6 +249,7 @@ export function EnhancedFileUpload({
                   <div className="flex items-center gap-1">
                     {upload.status === 'uploading' && (
                       <Button
+                        type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => pauseUpload(fileId)}

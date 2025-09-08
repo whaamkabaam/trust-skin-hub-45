@@ -100,7 +100,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Deposit Methods</h3>
-            <Button onClick={() => addPayment('deposit')} variant="outline" size="sm">
+            <Button type="button" onClick={() => addPayment('deposit')} variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-2" />
               Add Deposit Method
             </Button>
@@ -186,6 +186,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
                         <Label>Available</Label>
                       </div>
                       <Button
+                        type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => removePayment(globalIndex)}
@@ -204,7 +205,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Withdrawal Methods</h3>
-            <Button onClick={() => addPayment('withdrawal')} variant="outline" size="sm">
+            <Button type="button" onClick={() => addPayment('withdrawal')} variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-2" />
               Add Withdrawal Method
             </Button>
@@ -253,6 +254,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
                         <Label>Available</Label>
                       </div>
                       <Button
+                        type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => removePayment(globalIndex)}
@@ -267,7 +269,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
           </div>
         </div>
 
-        <Button onClick={handleSave} className="w-full" disabled={disabled}>
+        <Button type="button" onClick={handleSave} className="w-full" disabled={disabled}>
           Save Payment Methods
         </Button>
       </CardContent>

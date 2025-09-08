@@ -138,7 +138,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
               </Button>
             </div>
           ))}
-          <Button onClick={addCertification} variant="outline" size="sm">
+          <Button type="button" onClick={addCertification} variant="outline" size="sm">
             <Plus className="h-4 w-4 mr-2" />
             Add Certification
           </Button>
@@ -210,7 +210,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
           />
         </div>
 
-        <Button onClick={handleSave} className="w-full" disabled={disabled}>
+        <Button type="button" onClick={handleSave} className="w-full" disabled={disabled}>
           Save Security Settings
         </Button>
       </CardContent>

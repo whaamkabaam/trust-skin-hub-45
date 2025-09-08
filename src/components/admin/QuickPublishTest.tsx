@@ -51,6 +51,7 @@ export function QuickPublishTest() {
         )}
         
         <Button 
+          type="button"
           onClick={testPublish} 
           disabled={loading}
           className="w-full"

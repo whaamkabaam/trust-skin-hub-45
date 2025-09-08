@@ -121,10 +121,11 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
                     onCheckedChange={(checked) => updateBonus(index, { is_active: checked })}
                   />
                   <Label>Active</Label>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeBonus(index)}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => removeBonus(index)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -174,11 +175,11 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
         ))}
 
         <div className="flex gap-2">
-          <Button onClick={addBonus} variant="outline" disabled={disabled}>
+          <Button type="button" onClick={addBonus} variant="outline" disabled={disabled}>
             <Plus className="h-4 w-4 mr-2" />
             Add Bonus
           </Button>
-          <Button onClick={handleSave} disabled={disabled}>
+          <Button type="button" onClick={handleSave} disabled={disabled}>
             Save Bonuses
           </Button>
         </div>
