@@ -183,6 +183,9 @@ export function OperatorForm({
   // Check if this specific operator is being published
   const isThisOperatorPublishing = globalIsPublishing && publishingOperatorId === initialData?.id;
 
+  // Separate state for publishing UI status that doesn't affect form state
+  const [publishingUIStatus, setPublishingUIStatus] = useState(watch('publish_status') || 'draft');
+
   // Stabilize extension manager props to prevent crashes during re-renders
   const stableExtensionProps = useMemo(() => ({
     bonuses: {
@@ -243,6 +246,8 @@ export function OperatorForm({
     try {
       const success = await publishStaticContent(initialData.id);
       if (success) {
+        // Update UI status without affecting form state
+        setPublishingUIStatus('published');
         toast.success('Static content published successfully! Your operator review page is now live.');
       } else {
         toast.error('Failed to publish static content. Please try again.');
@@ -254,6 +259,23 @@ export function OperatorForm({
       setIsPublishing(false);
     }
   };
+
+  // Stable callback for ContentScheduling that doesn't trigger form re-renders
+  const handleStatusChange = useCallback((status: string, scheduledDate?: string) => {
+    // Update form fields only for scheduling, not for published status
+    if (status === 'scheduled' && scheduledDate) {
+      setValue('publish_status' as any, status);
+      setValue('scheduled_publish_at' as any, scheduledDate);
+    } else if (status !== 'published') {
+      setValue('publish_status' as any, status);
+      if (scheduledDate) {
+        setValue('scheduled_publish_at' as any, scheduledDate);
+      }
+    }
+    
+    // Always update UI status
+    setPublishingUIStatus(status);
+  }, [setValue]);
 
   const generateSlug = (name: string) => {
     return name
@@ -904,18 +926,10 @@ export function OperatorForm({
 
       {/* Content Scheduling */}
       <ContentScheduling
-        publishStatus={(watch() as any).publish_status || 'draft'}
+        publishStatus={publishingUIStatus}
         publishedAt={(initialData as any)?.published_at}
         scheduledPublishAt={(watch() as any).scheduled_publish_at}
-        onStatusChange={(status, scheduledDate) => {
-          setValue('publish_status' as any, status);
-          if (scheduledDate) {
-            setValue('scheduled_publish_at' as any, scheduledDate);
-          }
-          if (status === 'published') {
-            setValue('published', true);
-          }
-        }}
+        onStatusChange={handleStatusChange}
       />
 
       <div className="flex justify-between items-center">
