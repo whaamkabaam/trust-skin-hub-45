@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useOperators, useOperator } from '@/hooks/useOperators';
 import { OperatorForm } from '@/components/admin/OperatorForm';
@@ -13,12 +13,31 @@ export default function EditOperator() {
   const { updateOperator, autoSaveOperator } = useOperators();
   const { operator, loading: operatorLoading } = useOperator(id);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  
+  // Stable reference to operator data during publishing operations
+  const stableOperatorRef = useRef<typeof operator>(null);
+  const stableOperator = useMemo(() => {
+    if (isPublishing && stableOperatorRef.current) {
+      return stableOperatorRef.current;
+    }
+    if (operator) {
+      stableOperatorRef.current = operator;
+    }
+    return operator;
+  }, [operator, isPublishing]);
 
   const handleSubmit = async (data: OperatorFormData) => {
     if (!id) return;
     
     try {
       setIsLoading(true);
+      
+      // Set publishing state if this is a publish operation
+      if (data.published === true) {
+        setIsPublishing(true);
+      }
+      
       await updateOperator(id, data);
       toast.success('Operator updated successfully');
       navigate('/admin/operators');
@@ -27,6 +46,7 @@ export default function EditOperator() {
       toast.error('Failed to update operator');
     } finally {
       setIsLoading(false);
+      setIsPublishing(false);
     }
   };
 
@@ -47,7 +67,7 @@ export default function EditOperator() {
     );
   }
 
-  if (!operator) {
+  if (!stableOperator) {
     return (
       <div className="text-center py-8">
         <h2 className="text-xl font-semibold mb-2">Operator not found</h2>
@@ -71,16 +91,17 @@ export default function EditOperator() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold">Edit Operator</h1>
-          <p className="text-muted-foreground">Editing {operator.name}</p>
+          <p className="text-muted-foreground">Editing {stableOperator.name}</p>
         </div>
       </div>
 
       <OperatorForm
-        initialData={operator}
+        initialData={stableOperator}
         onSubmit={handleSubmit}
         onAutoSave={handleAutoSave}
-        isLoading={isLoading}
+        isLoading={isLoading || isPublishing}
         autoSaveEnabled={true}
+        publishingState={isPublishing}
       />
     </div>
   );

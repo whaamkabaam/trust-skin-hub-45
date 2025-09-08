@@ -39,6 +39,7 @@ interface OperatorFormProps {
   onAutoSave?: (data: OperatorFormData) => Promise<void>;
   isLoading?: boolean;
   autoSaveEnabled?: boolean;
+  publishingState?: boolean;
 }
 
 export function OperatorForm({ 
@@ -46,7 +47,8 @@ export function OperatorForm({
   onSubmit, 
   onAutoSave, 
   isLoading, 
-  autoSaveEnabled = true 
+  autoSaveEnabled = true,
+  publishingState = false
 }: OperatorFormProps) {
   const {
     register,
@@ -182,25 +184,25 @@ export function OperatorForm({
       operatorId: effectiveOperatorId,
       bonuses,
       onSave: saveBonuses,
-      disabled: isPublishing || publishLoading
+      disabled: isPublishing || publishLoading || publishingState
     },
     payments: {
       operatorId: effectiveOperatorId,
       payments,
       onSave: savePayments,
-      disabled: isPublishing || publishLoading
+      disabled: isPublishing || publishLoading || publishingState
     },
     security: {
       operatorId: effectiveOperatorId,
       security,
       onSave: saveSecurity,
-      disabled: isPublishing || publishLoading
+      disabled: isPublishing || publishLoading || publishingState
     },
     faqs: {
       operatorId: effectiveOperatorId,
       faqs,
       onSave: saveFaqs,
-      disabled: isPublishing || publishLoading
+      disabled: isPublishing || publishLoading || publishingState
     }
   }), [
     effectiveOperatorId,
@@ -213,7 +215,8 @@ export function OperatorForm({
     saveSecurity,
     saveFaqs,
     isPublishing,
-    publishLoading
+    publishLoading,
+    publishingState
   ]);
 
   const handlePublish = async () => {

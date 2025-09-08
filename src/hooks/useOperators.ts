@@ -175,6 +175,7 @@ export function useOperator(id: string | undefined) {
   const [operator, setOperator] = useState<Operator | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pauseRefetch, setPauseRefetch] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -202,8 +203,16 @@ export function useOperator(id: string | undefined) {
       }
     };
 
-    fetchOperator();
-  }, [id]);
+    if (!pauseRefetch) {
+      fetchOperator();
+    }
+  }, [id, pauseRefetch]);
 
-  return { operator, loading, error };
+  return { 
+    operator, 
+    loading, 
+    error,
+    pauseRefetch: () => setPauseRefetch(true),
+    resumeRefetch: () => setPauseRefetch(false)
+  };
 }

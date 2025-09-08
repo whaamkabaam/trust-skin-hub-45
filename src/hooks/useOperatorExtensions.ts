@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -68,15 +68,21 @@ export function useOperatorExtensions(operatorId: string) {
   const [security, setSecurity] = useState<OperatorSecurity | null>(null);
   const [faqs, setFaqs] = useState<OperatorFAQ[]>([]);
   const [loading, setLoading] = useState(false);
+  const isMountedRef = useRef(true);
 
   // Fetch all extension data
   const fetchExtensionData = useCallback(async () => {
     if (!operatorId || operatorId.startsWith('temp-')) {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
       return;
     }
     
-    setLoading(true);
+    if (isMountedRef.current) {
+      setLoading(true);
+    }
+    
     try {
       const [bonusesRes, paymentsRes, featuresRes, securityRes, faqsRes] = await Promise.all([
         supabase.from('operator_bonuses').select('*').eq('operator_id', operatorId).order('order_number'),
@@ -85,6 +91,9 @@ export function useOperatorExtensions(operatorId: string) {
         supabase.from('operator_security').select('*').eq('operator_id', operatorId).single(),
         supabase.from('operator_faqs').select('*').eq('operator_id', operatorId).order('order_number')
       ]);
+
+      // Only update state if component is still mounted
+      if (!isMountedRef.current) return;
 
       if (bonusesRes.error && bonusesRes.error.code !== 'PGRST116') throw bonusesRes.error;
       if (paymentsRes.error) throw paymentsRes.error;
@@ -97,10 +106,14 @@ export function useOperatorExtensions(operatorId: string) {
       setSecurity(securityRes.data || null);
       setFaqs(faqsRes.data || []);
     } catch (error) {
-      console.error('Error fetching extension data:', error);
-      toast.error('Failed to load operator details');
+      if (isMountedRef.current) {
+        console.error('Error fetching extension data:', error);
+        toast.error('Failed to load operator details');
+      }
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }, [operatorId]);
 
@@ -227,7 +240,13 @@ export function useOperatorExtensions(operatorId: string) {
   }, [operatorId]);
 
   useEffect(() => {
+    isMountedRef.current = true;
     fetchExtensionData();
+    
+    // Cleanup function to mark component as unmounted
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [operatorId, fetchExtensionData]);
 
   return {
