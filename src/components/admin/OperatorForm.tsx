@@ -727,20 +727,22 @@ export function OperatorForm({
          />
        )}
 
-       {/* FAQ Management */}
-       {initialData?.id && (
-         <FAQManager
-           faqs={faqs}
-           onSave={saveFaqs}
-           operatorId={initialData.id}
-         />
-       )}
-    </form>
+        {/* FAQ Management */}
+        {initialData?.id && (
+          <FAQManager
+            faqs={faqs}
+            onSave={saveFaqs}
+            operatorId={initialData.id}
+          />
+        )}
+
+        {/* Submit Button */}
+        <div className="flex justify-end">
           <Button type="submit" disabled={isLoading}>
+            <Save className="h-4 w-4 mr-2" />
             {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
           </Button>
         </div>
-      </div>
-    </form>
+      </form>
   );
 }
