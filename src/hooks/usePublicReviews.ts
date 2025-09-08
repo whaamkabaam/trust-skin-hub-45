@@ -6,7 +6,7 @@ interface PublicReview {
   entityId: string;
   entityType: 'operator';
   user: string;
-  verified: false;
+  verified: 'operator' | 'opener' | false;
   rating: number;
   subscores: {
     trust: number;
@@ -75,22 +75,25 @@ export function usePublicReviews(operatorId: string): PublicReviewsData {
         id: review.id,
         entityId: review.operator_id,
         entityType: 'operator' as const,
-        user: 'Anonymous', // Since we don't store user names
-        verified: false,
+        user: review.username || 'Anonymous',
+        verified: review.verification_status === 'operator' ? 'operator' : 
+                 review.verification_status === 'opener' ? 'opener' : false,
         rating: review.rating,
-        subscores: {
+        subscores: (review.subscores as any) || {
           trust: review.rating,
           fees: review.rating,
           ux: review.rating,
           support: review.rating
         },
-        title: 'User Review',
+        title: review.title || 'User Review',
         body: review.content,
-        helpful: {
+        helpful: (review.helpful_votes as any) || {
           up: 0,
           down: 0
         },
-        createdAt: review.created_at
+        photos: review.photos || undefined,
+        createdAt: review.created_at,
+        operatorResponse: (review.operator_response as any) || undefined
       }));
 
       setReviews(transformedReviews);

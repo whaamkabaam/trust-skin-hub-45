@@ -532,32 +532,53 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          helpful_votes: Json | null
           id: string
           operator_id: string
+          operator_response: Json | null
+          photos: string[] | null
           rating: number
           status: string | null
+          subscores: Json | null
+          title: string | null
           updated_at: string
           user_id: string | null
+          username: string | null
+          verification_status: string | null
         }
         Insert: {
           content: string
           created_at?: string
+          helpful_votes?: Json | null
           id?: string
           operator_id: string
+          operator_response?: Json | null
+          photos?: string[] | null
           rating: number
           status?: string | null
+          subscores?: Json | null
+          title?: string | null
           updated_at?: string
           user_id?: string | null
+          username?: string | null
+          verification_status?: string | null
         }
         Update: {
           content?: string
           created_at?: string
+          helpful_votes?: Json | null
           id?: string
           operator_id?: string
+          operator_response?: Json | null
+          photos?: string[] | null
           rating?: number
           status?: string | null
+          subscores?: Json | null
+          title?: string | null
           updated_at?: string
           user_id?: string | null
+          username?: string | null
+          verification_status?: string | null
         }
         Relationships: [
           {
