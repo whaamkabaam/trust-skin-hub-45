@@ -58,7 +58,7 @@ export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
     operator: operator ? {
       ...operator,
       id: operator.slug || operator.id,
-      logo: operator.logo,
+      logo: (operator as any).logo_url || operator.logo,
       overallRating: operator.ratings?.overall || 0,
       feeLevel: 'Medium', // Default or derive from ratings
       paymentMethods: ['skins', 'crypto'], // Default or from CMS
@@ -72,10 +72,10 @@ export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
         trading: 3
       },
       payoutSpeed: '10-30 minutes',
-      kycRequired: operator.kycRequired || false,
-      countries: operator.countries || [],
-      url: operator.url || '#',
-      verified: operator.verified || false,
+      kycRequired: (operator as any).kyc_required || operator.kycRequired || false,
+      countries: (operator as any).supported_countries || operator.countries || [],
+      url: (operator as any).tracking_link || operator.url || '#',
+      verified: (operator as any).verification_status === 'verified' || operator.verified || false,
       otherFeatures: [],
       gamingModes: [],
       games: [],
