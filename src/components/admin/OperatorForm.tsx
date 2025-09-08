@@ -13,6 +13,7 @@ import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
 import { useState, useCallback, useMemo } from 'react';
 import { useStaticContent } from '@/hooks/useStaticContent';
+import { usePublishingState } from '@/hooks/usePublishingState';
 import { toast } from '@/lib/toast';
 import { EnhancedFileUpload } from './EnhancedFileUpload';
 import { RichTextEditor } from './RichTextEditor';
@@ -177,6 +178,10 @@ export function OperatorForm({
 
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
   const [isPublishing, setIsPublishing] = useState(false);
+  const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
+  
+  // Check if this specific operator is being published
+  const isThisOperatorPublishing = globalIsPublishing && publishingOperatorId === initialData?.id;
 
   // Stabilize extension manager props to prevent crashes during re-renders
   const stableExtensionProps = useMemo(() => ({
@@ -184,25 +189,25 @@ export function OperatorForm({
       operatorId: effectiveOperatorId,
       bonuses,
       onSave: saveBonuses,
-      disabled: isPublishing || publishLoading || publishingState
+      disabled: isPublishing || publishLoading || publishingState || isThisOperatorPublishing
     },
     payments: {
       operatorId: effectiveOperatorId,
       payments,
       onSave: savePayments,
-      disabled: isPublishing || publishLoading || publishingState
+      disabled: isPublishing || publishLoading || publishingState || isThisOperatorPublishing
     },
     security: {
       operatorId: effectiveOperatorId,
       security,
       onSave: saveSecurity,
-      disabled: isPublishing || publishLoading || publishingState
+      disabled: isPublishing || publishLoading || publishingState || isThisOperatorPublishing
     },
     faqs: {
       operatorId: effectiveOperatorId,
       faqs,
       onSave: saveFaqs,
-      disabled: isPublishing || publishLoading || publishingState
+      disabled: isPublishing || publishLoading || publishingState || isThisOperatorPublishing
     }
   }), [
     effectiveOperatorId,
@@ -740,7 +745,7 @@ export function OperatorForm({
         <TabsContent value="bonuses" className="space-y-6">
           {effectiveOperatorId ? (
             <ExtensionErrorBoundary type="Bonuses">
-              {(isPublishing || publishLoading) ? (
+              {(isPublishing || publishLoading || isThisOperatorPublishing) ? (
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center">
@@ -751,7 +756,7 @@ export function OperatorForm({
                 </Card>
               ) : (
                 <BonusManager 
-                  key={`bonuses-${effectiveOperatorId}`}
+                  key={`bonuses-${effectiveOperatorId}-${isThisOperatorPublishing ? 'publishing' : 'normal'}`}
                   {...stableExtensionProps.bonuses}
                 />
               )}
@@ -768,7 +773,7 @@ export function OperatorForm({
         <TabsContent value="payments" className="space-y-6">
           {effectiveOperatorId ? (
             <ExtensionErrorBoundary type="Payment Methods">
-              {(isPublishing || publishLoading) ? (
+              {(isPublishing || publishLoading || isThisOperatorPublishing) ? (
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center">
@@ -779,7 +784,7 @@ export function OperatorForm({
                 </Card>
               ) : (
                 <PaymentMethodsManager 
-                  key={`payments-${effectiveOperatorId}`}
+                  key={`payments-${effectiveOperatorId}-${isThisOperatorPublishing ? 'publishing' : 'normal'}`}
                   {...stableExtensionProps.payments}
                 />
               )}
@@ -796,7 +801,7 @@ export function OperatorForm({
         <TabsContent value="security" className="space-y-6">
           {effectiveOperatorId ? (
             <ExtensionErrorBoundary type="Security">
-              {(isPublishing || publishLoading) ? (
+              {(isPublishing || publishLoading || isThisOperatorPublishing) ? (
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center">
@@ -807,7 +812,7 @@ export function OperatorForm({
                 </Card>
               ) : (
                 <SecurityManager 
-                  key={`security-${effectiveOperatorId}`}
+                  key={`security-${effectiveOperatorId}-${isThisOperatorPublishing ? 'publishing' : 'normal'}`}
                   {...stableExtensionProps.security}
                 />
               )}
@@ -824,7 +829,7 @@ export function OperatorForm({
         <TabsContent value="faqs" className="space-y-6">
           {effectiveOperatorId ? (
             <ExtensionErrorBoundary type="FAQs">
-              {(isPublishing || publishLoading) ? (
+              {(isPublishing || publishLoading || isThisOperatorPublishing) ? (
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center">
@@ -835,7 +840,7 @@ export function OperatorForm({
                 </Card>
               ) : (
                 <FAQManager 
-                  key={`faqs-${effectiveOperatorId}`}
+                  key={`faqs-${effectiveOperatorId}-${isThisOperatorPublishing ? 'publishing' : 'normal'}`}
                   {...stableExtensionProps.faqs}
                 />
               )}

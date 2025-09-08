@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { usePublishingState } from '@/hooks/usePublishingState';
 
 export interface OperatorBonus {
   id?: string;
@@ -69,6 +70,16 @@ export function useOperatorExtensions(operatorId: string) {
   const [faqs, setFaqs] = useState<OperatorFAQ[]>([]);
   const [loading, setLoading] = useState(false);
   const isMountedRef = useRef(true);
+  const { isPublishing, operatorId: publishingOperatorId } = usePublishingState();
+  
+  // Create stable refs for save functions to prevent crashes during publishing
+  const saveFunctionsRef = useRef({
+    saveBonuses: null as ((data: OperatorBonus[]) => Promise<void>) | null,
+    savePayments: null as ((data: OperatorPayment[]) => Promise<void>) | null,
+    saveFeatures: null as ((data: OperatorFeature[]) => Promise<void>) | null,
+    saveSecurity: null as ((data: OperatorSecurity) => Promise<void>) | null,
+    saveFaqs: null as ((data: OperatorFAQ[]) => Promise<void>) | null,
+  });
 
   // Fetch all extension data
   const fetchExtensionData = useCallback(async () => {
@@ -249,6 +260,13 @@ export function useOperatorExtensions(operatorId: string) {
     };
   }, [operatorId, fetchExtensionData]);
 
+  // Update stable refs whenever functions change
+  saveFunctionsRef.current.saveBonuses = saveBonuses;
+  saveFunctionsRef.current.savePayments = savePayments;
+  saveFunctionsRef.current.saveFeatures = saveFeatures;
+  saveFunctionsRef.current.saveSecurity = saveSecurity;
+  saveFunctionsRef.current.saveFaqs = saveFaqs;
+
   return {
     bonuses,
     payments,
@@ -256,11 +274,22 @@ export function useOperatorExtensions(operatorId: string) {
     security,
     faqs,
     loading,
-    saveBonuses,
-    savePayments,
-    saveFeatures,
-    saveSecurity,
-    saveFaqs,
+    // Return stable function references during publishing to prevent crashes
+    saveBonuses: (isPublishing && publishingOperatorId === operatorId) 
+      ? saveFunctionsRef.current.saveBonuses || saveBonuses 
+      : saveBonuses,
+    savePayments: (isPublishing && publishingOperatorId === operatorId) 
+      ? saveFunctionsRef.current.savePayments || savePayments 
+      : savePayments,
+    saveFeatures: (isPublishing && publishingOperatorId === operatorId) 
+      ? saveFunctionsRef.current.saveFeatures || saveFeatures 
+      : saveFeatures,
+    saveSecurity: (isPublishing && publishingOperatorId === operatorId) 
+      ? saveFunctionsRef.current.saveSecurity || saveSecurity 
+      : saveSecurity,
+    saveFaqs: (isPublishing && publishingOperatorId === operatorId) 
+      ? saveFunctionsRef.current.saveFaqs || saveFaqs 
+      : saveFaqs,
     refetchData: fetchExtensionData
   };
 }

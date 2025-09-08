@@ -5,6 +5,7 @@ import { OperatorForm } from '@/components/admin/OperatorForm';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { usePublishingState } from '@/hooks/usePublishingState';
 import type { OperatorFormData } from '@/lib/validations';
 
 export default function EditOperator() {
@@ -13,19 +14,22 @@ export default function EditOperator() {
   const { updateOperator, autoSaveOperator } = useOperators();
   const { operator, loading: operatorLoading } = useOperator(id);
   const [isLoading, setIsLoading] = useState(false);
-  const [isPublishing, setIsPublishing] = useState(false);
+  const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
+  
+  // Check if this specific operator is being published globally
+  const isThisOperatorPublishing = globalIsPublishing && publishingOperatorId === id;
   
   // Stable reference to operator data during publishing operations
   const stableOperatorRef = useRef<typeof operator>(null);
   const stableOperator = useMemo(() => {
-    if (isPublishing && stableOperatorRef.current) {
+    if (isThisOperatorPublishing && stableOperatorRef.current) {
       return stableOperatorRef.current;
     }
     if (operator) {
       stableOperatorRef.current = operator;
     }
     return operator;
-  }, [operator, isPublishing]);
+  }, [operator, isThisOperatorPublishing]);
 
   const handleSubmit = async (data: OperatorFormData) => {
     if (!id) return;
@@ -33,10 +37,8 @@ export default function EditOperator() {
     try {
       setIsLoading(true);
       
-      // Set publishing state if this is a publish operation
+      // Set stable reference before publishing
       if (data.published === true) {
-        setIsPublishing(true);
-        // Pause refetching during publishing to prevent state conflicts
         stableOperatorRef.current = operator;
       }
       
@@ -53,7 +55,6 @@ export default function EditOperator() {
       toast.error('Failed to update operator');
     } finally {
       setIsLoading(false);
-      setIsPublishing(false);
     }
   };
 
@@ -106,9 +107,9 @@ export default function EditOperator() {
         initialData={stableOperator}
         onSubmit={handleSubmit}
         onAutoSave={handleAutoSave}
-        isLoading={isLoading || isPublishing}
+        isLoading={isLoading || isThisOperatorPublishing}
         autoSaveEnabled={true}
-        publishingState={isPublishing}
+        publishingState={isThisOperatorPublishing}
       />
     </div>
   );

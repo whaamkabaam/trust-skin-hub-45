@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 import type { OperatorFormData } from '@/lib/validations';
 import { useStaticContent } from './useStaticContent';
+import { usePublishingState } from './usePublishingState';
 
 type Operator = Tables<'operators'>;
 
@@ -61,7 +62,14 @@ export function useOperators() {
   };
 
   const updateOperator = async (id: string, data: Partial<OperatorFormData>) => {
+    const { setPublishing, clearPublishing } = usePublishingState.getState();
+    
     try {
+      // If publishing, set global publishing state to prevent re-renders
+      if (data.published === true) {
+        setPublishing(id);
+      }
+      
       // Consolidate all database updates in a single transaction
       let updateData: any = { 
         ...data, 
@@ -116,6 +124,9 @@ export function useOperators() {
       console.error('Error updating operator:', err);
       toast.error('Failed to update operator');
       throw err;
+    } finally {
+      // Always clear publishing state
+      clearPublishing();
     }
   };
 
@@ -194,6 +205,10 @@ export function useOperator(id: string | undefined) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pauseRefetch, setPauseRefetch] = useState(false);
+  const { isPublishing, operatorId: publishingOperatorId } = usePublishingState();
+  
+  // Pause refetching if this operator is being published
+  const shouldPause = pauseRefetch || (isPublishing && publishingOperatorId === id);
 
   useEffect(() => {
     if (!id) {
@@ -221,10 +236,10 @@ export function useOperator(id: string | undefined) {
       }
     };
 
-    if (!pauseRefetch) {
+    if (!shouldPause) {
       fetchOperator();
     }
-  }, [id, pauseRefetch]);
+  }, [id, shouldPause]);
 
   return { 
     operator, 
