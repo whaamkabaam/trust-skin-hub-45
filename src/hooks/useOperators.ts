@@ -62,23 +62,41 @@ export function useOperators() {
 
   const updateOperator = async (id: string, data: Partial<OperatorFormData>) => {
     try {
+      // Consolidate all database updates in a single transaction
+      let updateData: any = { 
+        ...data, 
+        updated_at: new Date().toISOString()
+      };
+      
+      // If publishing, add publishing fields
+      if (data.published === true) {
+        updateData = {
+          ...updateData,
+          published: true,
+          published_at: new Date().toISOString(),
+          publish_status: 'published'
+        };
+        
+        // Generate static content first (without updating operator record)
+        const published = await publishStaticContent(id);
+        if (!published) {
+          throw new Error('Static content generation failed');
+        }
+      }
+
+      // Single database update with all changes
       const { data: updatedOperator, error } = await supabase
         .from('operators')
-        .update({ ...data, updated_at: new Date().toISOString() })
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
       
-      // If publishing, generate static content
+      // Show appropriate success message
       if (data.published === true) {
-        const published = await publishStaticContent(id);
-        if (!published) {
-          toast.error('Operator saved but static content generation failed');
-        } else {
-          toast.success('Operator published successfully with optimized content');
-        }
+        toast.success('Operator published successfully with optimized content');
       } else {
         toast.success('Operator updated successfully');
       }

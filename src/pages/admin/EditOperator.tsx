@@ -36,10 +36,17 @@ export default function EditOperator() {
       // Set publishing state if this is a publish operation
       if (data.published === true) {
         setIsPublishing(true);
+        // Pause refetching during publishing to prevent state conflicts
+        stableOperatorRef.current = operator;
       }
       
       await updateOperator(id, data);
-      toast.success('Operator updated successfully');
+      
+      // Only show success toast if not publishing (updateOperator shows its own toast)
+      if (data.published !== true) {
+        toast.success('Operator updated successfully');
+      }
+      
       navigate('/admin/operators');
     } catch (error) {
       console.error('Failed to update operator:', error);

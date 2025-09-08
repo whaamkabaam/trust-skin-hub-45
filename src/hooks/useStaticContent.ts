@@ -185,23 +185,7 @@ export function useStaticContent() {
       }
 
       console.log('Successfully upserted content');
-
-      // Update operator published status
-      const { error: updateError } = await supabase
-        .from('operators')
-        .update({ 
-          published: true, 
-          published_at: new Date().toISOString(),
-          publish_status: 'published'
-        })
-        .eq('id', operatorId);
-
-      if (updateError) {
-        console.error('Update error:', updateError);
-        throw updateError;
-      }
-
-      console.log('Successfully updated operator status');
+      console.log('Static content publishing completed successfully');
       return true;
 
     } catch (err) {
