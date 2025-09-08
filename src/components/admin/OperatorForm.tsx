@@ -138,6 +138,9 @@ export function OperatorForm({
 
   // Initialize operator extensions hook - use temporary ID for new operators
   const tempOperatorId = initialData?.id || `temp-${Date.now()}`;
+  // Use the real operator ID if available, otherwise use temp ID
+  const effectiveOperatorId = initialData?.id || tempOperatorId;
+  
   const {
     bonuses,
     payments,
@@ -149,7 +152,7 @@ export function OperatorForm({
     saveFeatures,
     saveSecurity,
     saveFaqs
-  } = useOperatorExtensions(tempOperatorId);
+  } = useOperatorExtensions(effectiveOperatorId);
 
   // Auto-save functionality
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
@@ -590,30 +593,7 @@ export function OperatorForm({
         </CardContent>
       </Card>
 
-      {/* Extension Managers */}
-      <BonusManager
-        bonuses={bonuses}
-        onSave={saveBonuses}
-        operatorId={tempOperatorId}
-      />
-
-      <PaymentMethodsManager
-        payments={payments}
-        onSave={savePayments}
-        operatorId={tempOperatorId}
-      />
-
-      <SecurityManager
-        security={security}
-        onSave={saveSecurity}
-        operatorId={tempOperatorId}
-      />
-
-      <FAQManager
-        faqs={faqs}
-        onSave={saveFaqs}
-        operatorId={tempOperatorId}
-      />
+      {/* Extension Managers are now handled in their respective tabs */}
 
       <Card>
         <CardHeader>
@@ -713,9 +693,9 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="bonuses" className="space-y-6">
-          {initialData?.id ? (
+          {effectiveOperatorId ? (
             <BonusManager 
-              operatorId={initialData.id} 
+              operatorId={effectiveOperatorId} 
               bonuses={bonuses}
               onSave={saveBonuses}
             />
@@ -729,9 +709,9 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="payments" className="space-y-6">
-          {initialData?.id ? (
+          {effectiveOperatorId ? (
             <PaymentMethodsManager 
-              operatorId={initialData.id}
+              operatorId={effectiveOperatorId}
               payments={payments}
               onSave={savePayments}
             />
@@ -745,9 +725,9 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
-          {initialData?.id ? (
+          {effectiveOperatorId ? (
             <SecurityManager 
-              operatorId={initialData.id}
+              operatorId={effectiveOperatorId}
               security={security}
               onSave={saveSecurity}
             />
@@ -761,9 +741,9 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="faqs" className="space-y-6">
-          {initialData?.id ? (
+          {effectiveOperatorId ? (
             <FAQManager 
-              operatorId={initialData.id}
+              operatorId={effectiveOperatorId}
               faqs={faqs}
               onSave={saveFaqs}
             />

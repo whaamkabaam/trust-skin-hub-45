@@ -106,6 +106,11 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Save bonuses
   const saveBonuses = async (bonusData: OperatorBonus[]) => {
+    if (!operatorId || operatorId.startsWith('temp-')) {
+      toast.error('Please save the operator first before managing bonuses');
+      return;
+    }
+    
     try {
       // Delete existing bonuses
       await supabase.from('operator_bonuses').delete().eq('operator_id', operatorId);
@@ -126,6 +131,11 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Save payments
   const savePayments = async (paymentData: OperatorPayment[]) => {
+    if (!operatorId || operatorId.startsWith('temp-')) {
+      toast.error('Please save the operator first before managing payment methods');
+      return;
+    }
+    
     try {
       // Delete existing payments
       await supabase.from('operator_payments').delete().eq('operator_id', operatorId);
@@ -146,6 +156,11 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Save features
   const saveFeatures = async (featureData: OperatorFeature[]) => {
+    if (!operatorId || operatorId.startsWith('temp-')) {
+      toast.error('Please save the operator first before managing features');
+      return;
+    }
+    
     try {
       // Delete existing features
       await supabase.from('operator_features').delete().eq('operator_id', operatorId);
@@ -166,6 +181,11 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Save security
   const saveSecurity = async (securityData: OperatorSecurity) => {
+    if (!operatorId || operatorId.startsWith('temp-')) {
+      toast.error('Please save the operator first before managing security');
+      return;
+    }
+    
     try {
       const { error } = await supabase
         .from('operator_security')
@@ -183,6 +203,11 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Save FAQs
   const saveFaqs = async (faqData: OperatorFAQ[]) => {
+    if (!operatorId || operatorId.startsWith('temp-')) {
+      toast.error('Please save the operator first before managing FAQs');
+      return;
+    }
+    
     try {
       // Delete existing FAQs
       await supabase.from('operator_faqs').delete().eq('operator_id', operatorId);
