@@ -26,6 +26,7 @@ import { FAQManager } from './FAQManager';
 import { ContentSectionManager } from './ContentSectionManager';
 import { MediaAssetManager } from './MediaAssetManager';
 import { PublishingDebugger } from './PublishingDebugger';
+import { QuickPublishTest } from './QuickPublishTest';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -809,7 +810,10 @@ export function OperatorForm({
 
         <TabsContent value="debug" className="space-y-6">
           {initialData?.id ? (
-            <PublishingDebugger operatorId={initialData.id} />
+            <div className="space-y-6">
+              <QuickPublishTest />
+              <PublishingDebugger operatorId={initialData.id} />
+            </div>
           ) : (
             <Card>
               <CardContent className="p-6">

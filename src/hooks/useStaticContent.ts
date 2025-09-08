@@ -124,8 +124,15 @@ export function useStaticContent() {
       setLoading(true);
       setError(null);
 
+      console.log('Starting publishStaticContent for operator:', operatorId);
+      
       const staticContent = await generateStaticContent(operatorId);
-      if (!staticContent) return false;
+      if (!staticContent) {
+        console.error('Failed to generate static content');
+        return false;
+      }
+
+      console.log('Generated static content:', staticContent);
 
       // Generate SEO data
       const seoData = {
@@ -157,7 +164,10 @@ export function useStaticContent() {
         }
       };
 
+      console.log('Generated SEO data:', seoData);
+
       // Upsert published content
+      console.log('Upserting to published_operator_content...');
       const { error: upsertError } = await supabase
         .from('published_operator_content')
         .upsert({
@@ -169,7 +179,12 @@ export function useStaticContent() {
           onConflict: 'slug'
         });
 
-      if (upsertError) throw upsertError;
+      if (upsertError) {
+        console.error('Upsert error:', upsertError);
+        throw upsertError;
+      }
+
+      console.log('Successfully upserted content');
 
       // Update operator published status
       const { error: updateError } = await supabase
@@ -181,8 +196,12 @@ export function useStaticContent() {
         })
         .eq('id', operatorId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Update error:', updateError);
+        throw updateError;
+      }
 
+      console.log('Successfully updated operator status');
       return true;
 
     } catch (err) {

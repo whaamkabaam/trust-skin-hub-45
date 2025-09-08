@@ -60,7 +60,7 @@ export function useMedia(operatorId?: string) {
         .from('media_assets')
         .insert({
           url: publicUrl,
-          type: file.type.startsWith('image/') ? 'image' : 'file',
+          type: 'screenshot', // Default to screenshot, should be specified by caller
           operator_id: operatorId,
           alt_text: metadata?.alt_text,
           caption: metadata?.caption,
