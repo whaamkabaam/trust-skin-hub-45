@@ -1851,27 +1851,54 @@ const OperatorReview = () => {
                 </CardContent>
               </Card>
             </div>
-
-            {/* Content Sections */}
-            {contentSections && contentSections.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                    <FileText className="w-4 h-4 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-bold">Additional Information</h2>
-                </div>
-                <ContentSectionRenderer sections={contentSections} />
-              </div>
-            </div>
           </div>
 
-          {/* Close sidebar column */}
+          {/* Content Sections - should be in LEFT column */}
+          {contentSections && contentSections.length > 0 && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Additional Information</h2>
+              </div>
+              <ContentSectionRenderer sections={contentSections} />
+            </div>
+          )}
+          </div>
+          
+          {/* RIGHT - Sticky Sidebar */}
+          <div className="lg:col-span-1 hidden lg:block">
+            <div className="sticky top-8 space-y-6">
+              <div className="space-y-3">
+                <h3 className="font-semibold text-muted-foreground text-sm">More About {operator?.name}</h3>
+                <div className="space-y-2">
+                  <Button variant="outline" className="w-full justify-start" asChild>
+                    <Link to={`/operators/${operator?.id}/promo-code`}>
+                      <DollarSign className="w-4 h-4 mr-2" />
+                      Promo Code
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>On this page</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-1">
+                  {sections.map((section, index) => (
+                    <a key={section.id} href={`#${section.anchor}`} className="block text-sm text-muted-foreground hover:text-foreground py-1 transition-colors">
+                      • {section.title}
+                    </a>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Mobile Sticky Bottom CTA */}
       <div className="sticky bottom-0 z-40 bg-background/95 backdrop-blur-sm border-t p-4 md:hidden">
         <div className="flex gap-2">
           <Button className="flex-1" asChild>
