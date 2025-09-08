@@ -20,8 +20,8 @@ import { usePublicOperatorLegacy } from '@/hooks/usePublicOperatorLegacy';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 const OperatorReview = () => {
-  const { id } = useParams<{ id: string }>();
-  const { operator, scores, promoCode, screenshots, faqItems, reviews, loading, error } = usePublicOperatorLegacy(id || '');
+  const { slug } = useParams<{ slug: string }>();
+  const { operator, scores, promoCode, screenshots, faqItems, reviews, loading, error } = usePublicOperatorLegacy(slug || '');
   
   const [tocOpen, setTocOpen] = useState(false);
   const [promoCodeCopied, setPromoCodeCopied] = useState(false);

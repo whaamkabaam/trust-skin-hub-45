@@ -52,8 +52,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/skins" element={<Skins />} />
             <Route path="/operators" element={<OperatorsArchive />} />
-            <Route path="/operators/:id" element={<LegacyOperatorReview />} />
-            <Route path="/operators/:id/new" element={<OperatorReview />} />
+            <Route path="/operators/:slug" element={<LegacyOperatorReview />} />
+            <Route path="/operators/:slug/new" element={<OperatorReview />} />
             <Route path="/operators/:id/review" element={<ReviewRedirect />} />
             <Route path="/casino-review" element={<OnlineCasinoReview />} />
             <Route path="/cases" element={<CasesArchive />} />
