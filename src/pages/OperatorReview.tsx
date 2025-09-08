@@ -167,7 +167,8 @@ const OperatorReview = () => {
     }
   };
   
-  return <div className="min-h-screen bg-background">
+  return (
+    <div className="min-h-screen bg-background">
       <SEOHead
         title={seoTitle}
         description={seoDescription}
@@ -1862,7 +1863,10 @@ const OperatorReview = () => {
                 </div>
                 <ContentSectionRenderer sections={contentSections} />
               </div>
-            )}
+            </div>
+          </div>
+
+          {/* Close sidebar column */}
           </div>
         </div>
       </section>
