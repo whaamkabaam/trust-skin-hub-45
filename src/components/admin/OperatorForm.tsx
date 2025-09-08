@@ -24,7 +24,10 @@ import { PaymentMethodsManager } from './PaymentMethodsManager';
 import { SecurityManager } from './SecurityManager';
 import { FAQManager } from './FAQManager';
 import { ContentSectionManager } from './ContentSectionManager';
+import { MediaAssetManager } from './MediaAssetManager';
+import { PublishingDebugger } from './PublishingDebugger';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type Operator = Tables<'operators'>;
 
@@ -244,7 +247,21 @@ export function OperatorForm({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      {/* Basic Information */}
+      <Tabs defaultValue="basic" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-9">
+          <TabsTrigger value="basic">Basic Info</TabsTrigger>
+          <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
+          <TabsTrigger value="payments">Payments</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="faqs">FAQs</TabsTrigger>
+          <TabsTrigger value="seo">SEO</TabsTrigger>
+          <TabsTrigger value="content">Content</TabsTrigger>
+          <TabsTrigger value="media">Media</TabsTrigger>
+          <TabsTrigger value="debug">Debug</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="basic" className="space-y-6">
+          {/* Basic Information */}
       <Card>
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
@@ -597,11 +614,6 @@ export function OperatorForm({
         operatorId={tempOperatorId}
       />
 
-      {initialData?.id && (
-        <ContentSectionManager
-          operatorId={initialData.id}
-        />
-      )}
       <Card>
         <CardHeader>
           <CardTitle>Supported Countries</CardTitle>
@@ -696,6 +708,117 @@ export function OperatorForm({
           </div>
         </CardContent>
       </Card>
+
+        </TabsContent>
+
+        <TabsContent value="bonuses" className="space-y-6">
+          {initialData?.id ? (
+            <BonusManager 
+              operatorId={initialData.id} 
+              bonuses={bonuses}
+              onSave={saveBonuses}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Please save the operator first to manage bonuses.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="payments" className="space-y-6">
+          {initialData?.id ? (
+            <PaymentMethodsManager 
+              operatorId={initialData.id}
+              payments={payments}
+              onSave={savePayments}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Please save the operator first to manage payments.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="security" className="space-y-6">
+          {initialData?.id ? (
+            <SecurityManager 
+              operatorId={initialData.id}
+              security={security}
+              onSave={saveSecurity}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Please save the operator first to manage security.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="faqs" className="space-y-6">
+          {initialData?.id ? (
+            <FAQManager 
+              operatorId={initialData.id}
+              faqs={faqs}
+              onSave={saveFaqs}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Please save the operator first to manage FAQs.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="seo" className="space-y-6">
+          <Card>
+            <CardContent className="p-6">
+              <p className="text-muted-foreground">SEO management coming soon.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="content" className="space-y-6">
+          {initialData?.id ? (
+            <ContentSectionManager operatorId={initialData.id} />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Please save the operator first to manage content.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="media" className="space-y-6">
+          {initialData?.id ? (
+            <MediaAssetManager operatorId={initialData.id} />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Please save the operator first to manage media assets.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="debug" className="space-y-6">
+          {initialData?.id ? (
+            <PublishingDebugger operatorId={initialData.id} />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Please save the operator first to access debugging tools.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Content Scheduling */}
       <ContentScheduling
