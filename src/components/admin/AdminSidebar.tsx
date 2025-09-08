@@ -8,6 +8,7 @@ import {
   Search,
   Star,
   Users,
+  Globe,
 } from 'lucide-react';
 
 const sidebarItems = [
@@ -20,6 +21,11 @@ const sidebarItems = [
     title: 'Operators',
     href: '/admin/operators',
     icon: Building2,
+  },
+  {
+    title: 'Publishing',
+    href: '/admin/publishing',
+    icon: Globe,
   },
   {
     title: 'Content Sections',

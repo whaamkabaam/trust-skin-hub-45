@@ -29,6 +29,7 @@ import MediaLibrary from "./pages/admin/MediaLibrary";
 import SEOManager from "./pages/admin/SEOManager";
 import ReviewsManager from "./pages/admin/ReviewsManager";
 import AdminUsers from "./pages/admin/AdminUsers";
+import PublishingManager from "./pages/admin/PublishingManager";
 import Auth from "./pages/Auth";
 
 const App = () => (
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="operators" element={<OperatorsList />} />
               <Route path="operators/new" element={<NewOperator />} />
               <Route path="operators/:id" element={<EditOperator />} />
+              <Route path="publishing" element={<PublishingManager />} />
               <Route path="content" element={<ContentSections />} />
               <Route path="media" element={<MediaLibrary />} />
               <Route path="seo" element={<SEOManager />} />

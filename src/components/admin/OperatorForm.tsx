@@ -8,10 +8,12 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Save } from 'lucide-react';
+import { Plus, Trash2, Save, Globe } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
 import { useState, useCallback } from 'react';
+import { useStaticContent } from '@/hooks/useStaticContent';
+import { toast } from '@/lib/toast';
 import { EnhancedFileUpload } from './EnhancedFileUpload';
 import { RichTextEditor } from './RichTextEditor';
 import { useAutoSave } from '@/hooks/useAutoSave';
@@ -21,6 +23,7 @@ import { BonusManager } from './BonusManager';
 import { PaymentMethodsManager } from './PaymentMethodsManager';
 import { SecurityManager } from './SecurityManager';
 import { FAQManager } from './FAQManager';
+import { ContentSectionManager } from './ContentSectionManager';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
 
 type Operator = Tables<'operators'>;
@@ -161,6 +164,40 @@ export function OperatorForm({
     enabled: autoSaveEnabled && !!onAutoSave,
     storageKey: initialData?.id || 'new-operator'
   });
+
+  const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const handlePublish = async () => {
+    if (!initialData?.id) {
+      toast.error('Please save the operator first before publishing');
+      return;
+    }
+
+    const requiredFields = ['name', 'slug', 'verdict'];
+    const currentValues = getValues();
+    const missingFields = requiredFields.filter(field => !currentValues[field as keyof OperatorFormData]);
+    
+    if (missingFields.length > 0) {
+      toast.error(`Please fill in required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    setIsPublishing(true);
+    try {
+      const success = await publishStaticContent(initialData.id);
+      if (success) {
+        toast.success('Static content published successfully! Your operator review page is now live.');
+      } else {
+        toast.error('Failed to publish static content. Please try again.');
+      }
+    } catch (error) {
+      console.error('Publishing error:', error);
+      toast.error('An error occurred while publishing. Please try again.');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
 
   const generateSlug = (name: string) => {
     return name
@@ -559,6 +596,12 @@ export function OperatorForm({
         onSave={saveFaqs}
         operatorId={tempOperatorId}
       />
+
+      {initialData?.id && (
+        <ContentSectionManager
+          operatorId={initialData.id}
+        />
+      )}
       <Card>
         <CardHeader>
           <CardTitle>Supported Countries</CardTitle>
@@ -686,6 +729,17 @@ export function OperatorForm({
              >
                <Save className="h-4 w-4 mr-2" />
                Save Draft
+             </Button>
+           )}
+           {initialData?.id && (
+             <Button 
+               type="button" 
+               onClick={handlePublish}
+               disabled={isPublishing || publishLoading}
+               className="bg-green-600 hover:bg-green-700 text-white"
+             >
+               <Globe className="h-4 w-4 mr-2" />
+               {isPublishing ? 'Publishing...' : 'Publish Static Content'}
              </Button>
            )}
            <Button type="submit" disabled={isLoading}>
