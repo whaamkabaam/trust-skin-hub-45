@@ -86,8 +86,13 @@ export function useOperators() {
         };
         
         // Generate static content first (without updating operator record)
-        const published = await publishStaticContent(id);
-        if (!published) {
+        try {
+          const published = await publishStaticContent(id);
+          if (!published) {
+            throw new Error('Static content generation failed');
+          }
+        } catch (publishError) {
+          console.error('Publishing error:', publishError);
           throw new Error('Static content generation failed');
         }
       }
@@ -102,6 +107,11 @@ export function useOperators() {
 
       if (error) throw error;
       
+      // Clear publishing state BEFORE any React operations to prevent crashes
+      if (data.published === true) {
+        clearPublishing();
+      }
+      
       // Show appropriate success message
       if (data.published === true) {
         toast.success('Operator published successfully with optimized content');
@@ -109,15 +119,31 @@ export function useOperators() {
         toast.success('Operator updated successfully');
       }
       
-      // Optimistic update
-      setOperators(prev => 
-        prev.map(op => op.id === id ? updatedOperator : op)
-      );
+      // Optimistic update with defensive check
+      try {
+        setOperators(prev => 
+          prev.map(op => op.id === id ? updatedOperator : op)
+        );
+      } catch (stateError) {
+        console.warn('State update failed, will rely on refetch:', stateError);
+      }
       
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ['operators'] });
-      queryClient.invalidateQueries({ queryKey: ['public-operators'] });
-      queryClient.invalidateQueries({ queryKey: ['operator', id] });
+      // Defensive query invalidation with delays to prevent race conditions
+      try {
+        // Small delay to let React settle after publishing
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Only invalidate if query client is still available
+        if (queryClient && typeof queryClient.invalidateQueries === 'function') {
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ['operators'] }).catch(console.warn),
+            queryClient.invalidateQueries({ queryKey: ['public-operators'] }).catch(console.warn),
+            queryClient.invalidateQueries({ queryKey: ['operator', id] }).catch(console.warn)
+          ]);
+        }
+      } catch (invalidationError) {
+        console.warn('Query invalidation failed, data will be stale:', invalidationError);
+      }
       
       return updatedOperator;
     } catch (err) {
@@ -125,8 +151,12 @@ export function useOperators() {
       toast.error('Failed to update operator');
       throw err;
     } finally {
-      // Always clear publishing state
-      clearPublishing();
+      // Always clear publishing state as final safety net
+      try {
+        clearPublishing();
+      } catch (cleanupError) {
+        console.warn('Publishing state cleanup failed:', cleanupError);
+      }
     }
   };
 
