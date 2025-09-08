@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { usePublicOperator } from './usePublicOperator';
 import { usePublicOperatorExtensions } from './usePublicOperatorExtensions';
 import { usePublicReviews } from './usePublicReviews';
+import { Operator, Review } from '@/types';
 import { Database } from '@/integrations/supabase/types';
 
 interface LegacyScores {
@@ -20,13 +21,20 @@ interface LegacyScreenshot {
   alt: string;
 }
 
+interface LegacyFAQ {
+  id: string;
+  q: string;
+  a: string;
+  category: string;
+}
+
 interface LegacyOperatorData {
-  operator: any | null;
+  operator: Operator | null;
   scores: LegacyScores;
   promoCode: string;
   screenshots: LegacyScreenshot[];
-  faqItems: any[];
-  reviews: any[];
+  faqItems: LegacyFAQ[];
+  reviews: Review[];
   loading: boolean;
   error: string | null;
 }
