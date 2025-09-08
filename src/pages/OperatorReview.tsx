@@ -18,6 +18,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { usePublicOperator } from '@/hooks/usePublicOperator';
 import { usePublicReviews } from '@/hooks/usePublicReviews';
 import { usePublicOperatorExtensions } from '@/hooks/usePublicOperatorExtensions';
+import { useMedia } from '@/hooks/useMedia';
 import { SEOHead } from '@/components/SEOHead';
 import { ContentSectionRenderer } from '@/components/ContentSectionRenderer';
 
@@ -31,6 +32,7 @@ const OperatorReview = () => {
   const { operator, contentSections, seoMetadata, loading, error } = usePublicOperator(slug || '');
   const { bonuses, payments, features, security, faqs } = usePublicOperatorExtensions(slug || '');
   const { reviews } = usePublicReviews(operator?.id || '');
+  const { assets: mediaAssets } = useMedia(operator?.id);
 
   if (loading) {
     return (
@@ -213,114 +215,363 @@ const OperatorReview = () => {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-background to-muted/30 border-b">
         <div className="container mx-auto px-4 py-6 md:py-8">
-          <div className="flex items-start gap-6 mb-8">
-            <div className="flex-1">
-              <div className="flex items-start gap-6">
-                <div className="w-16 h-16 bg-white rounded-lg shadow-lg flex items-center justify-center flex-shrink-0 border">
-                  {operator?.logo ? (
-                    <img src={operator.logo} alt={`${operator.name} logo`} className="w-12 h-12 object-contain" />
-                  ) : (
-                    <span className="text-xl font-bold text-primary">{operator?.name?.charAt(0)}</span>
-                  )}
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-4">
-                    <h1 className="text-3xl font-bold">{operator?.name}</h1>
-                    <Badge variant="outline" className="text-blue-600 border-blue-200">
-                      {siteType}
-                    </Badge>
-                    {operator?.verified && (
-                      <Badge className="bg-green-100 text-green-800">
-                        <CheckCircle className="w-4 h-4 mr-1" />
-                        Verified ✓
-                      </Badge>
+          {/* Desktop Layout */}
+          <div className="hidden md:block">
+            <div className="flex items-start gap-6 mb-8">
+              {/* Left - Site Info */}
+              <div className="flex-1">
+                <div className="flex items-start gap-6">
+                  {/* Site Logo */}
+                  <div className="w-16 h-16 bg-white rounded-lg shadow-lg flex items-center justify-center flex-shrink-0 border">
+                    {operator?.logo ? (
+                      <img src={operator.logo} alt={`${operator.name} logo`} className="w-12 h-12 object-contain" />
+                    ) : (
+                      <span className="text-xl font-bold text-primary">{operator?.name?.charAt(0)}</span>
                     )}
                   </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-4">
+                      <h1 className="text-3xl font-bold">{operator?.name}</h1>
+                      <Badge variant="outline" className="text-blue-600 border-blue-200">
+                        {siteType}
+                      </Badge>
+                      {operator?.verified && (
+                        <Badge className="bg-green-100 text-green-800">
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Verified ✓
+                        </Badge>
+                      )}
+                    </div>
 
-                  <div className="flex items-center gap-8 mb-6">
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">Our Rating:</span>
-                      <div className="flex items-center gap-1">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                          ))}
+                    {/* Ratings */}
+                    <div className="flex items-center gap-8 mb-6">
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">Our Rating:</span>
+                        <div className="flex items-center gap-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                            ))}
+                          </div>
+                          <span className="font-bold text-lg">{scores.overall.toFixed(1)}/5</span>
                         </div>
-                        <span className="font-bold text-lg">{scores.overall.toFixed(1)}/5</span>
+                      </div>
+                      <div className="h-6 w-px bg-border" />
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">User Rating:</span>
+                        <div className="flex items-center gap-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                            ))}
+                          </div>
+                          <span className="font-bold">{scores.user.toFixed(1)}/5</span>
+                          <span className="text-muted-foreground">({userRatings.total})</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="h-6 w-px bg-border" />
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">User Rating:</span>
-                      <div className="flex items-center gap-1">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                          ))}
-                        </div>
-                        <span className="font-bold">{scores.user.toFixed(1)}/5</span>
-                        <span className="text-muted-foreground">({userRatings.total})</span>
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Key Facts */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-6">
-                    <div>
-                      <span className="text-muted-foreground">Launched:</span>
-                      <span className="ml-2 font-medium">{operator?.launch_year || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Payments:</span>
-                      <div className="flex gap-1 mt-1">
-                        {payments?.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">{payment.payment_method}</Badge>
-                        )) || (
-                          <>
-                            <Badge variant="outline" className="text-xs">Visa</Badge>
-                            <Badge variant="outline" className="text-xs">BTC</Badge>
-                            <Badge variant="outline" className="text-xs">ETH</Badge>
-                          </>
-                        )}
+                    {/* Key Facts */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-6">
+                      <div>
+                        <span className="text-muted-foreground">Launched:</span>
+                        <span className="ml-2 font-medium">{operator?.launch_year || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Payments:</span>
+                        <div className="flex gap-1 mt-1">
+                          {payments?.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">{payment.payment_method}</Badge>
+                          )) || (
+                            <>
+                              <Badge variant="outline" className="text-xs">Visa</Badge>
+                              <Badge variant="outline" className="text-xs">BTC</Badge>
+                              <Badge variant="outline" className="text-xs">ETH</Badge>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">KYC:</span>
+                        <span className="ml-2 font-medium">{operator?.kycRequired ? 'Required' : 'Not Required'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Payout:</span>
+                        <div className="flex gap-1 mt-1">
+                          {siteType === 'Case Site' ? (
+                            <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                              Skins
+                            </Badge>
+                          ) : (
+                            <>
+                              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                                Physical
+                              </Badge>
+                              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
+                                Skins
+                              </Badge>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Provably Fair:</span>
+                        <span className="ml-2 font-medium text-green-600">Yes</span>
                       </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">KYC:</span>
-                      <span className="ml-2 font-medium">{operator?.kycRequired ? 'Required' : 'Not Required'}</span>
-                    </div>
+
+                    {/* Optional Features */}
+                    {(operator?.otherFeatures || operator?.gamingModes || operator?.games || operator?.categories) && (
+                      <div className="space-y-3 border-t pt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {operator?.otherFeatures && (
+                            <div>
+                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Other Features</span>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {operator.otherFeatures.map((feature) => (
+                                  <Badge key={feature} variant="secondary" className="text-xs">
+                                    {feature}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {operator?.gamingModes && (
+                            <div>
+                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Gaming Modes</span>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {operator.gamingModes.map((mode) => (
+                                  <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
+                                    {mode}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {operator?.games && (
+                            <div>
+                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Games</span>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {operator.games.map((game) => (
+                                  <Badge key={game} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
+                                    {game}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {operator?.categories && (
+                            <div>
+                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Categories</span>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {operator.categories.map((category) => (
+                                  <Badge key={category} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800">
+                                    {category}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Best Offer Card */}
-            <div className="w-80 flex-shrink-0">
-              <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-center text-sm font-medium text-muted-foreground">Best Offer</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 space-y-4">
-                  <div className="text-center">
-                    <div className="text-lg font-bold">{activeBonus?.title || 'Free $10 + 3 Cases'}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {activeBonus?.description || 'Welcome Bonus'}
+              {/* Right - Best Offer */}
+              <div className="w-80 flex-shrink-0">
+                <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-center text-sm font-medium text-muted-foreground">Best Offer</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0 space-y-4">
+                    <div className="text-center">
+                      <div className="text-lg font-bold">{activeBonus?.title || 'Free $10 + 3 Cases'}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {activeBonus?.description || 'Welcome Bonus'}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-background rounded border border-dashed">
+                      <code className="flex-1 text-center font-mono">{promoCode}</code>
+                      <Button size="sm" variant="ghost" onClick={copyPromoCode}>
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <Button className="w-full" asChild>
+                      <a href={operator?.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Visit Site
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Rate Operator CTA */}
+                <Card className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border-emerald-200/50 mt-4">
+                  <CardContent className="p-4 text-center">
+                    <div className="mb-3">
+                      <div className="flex justify-center mb-2">
+                        <Star className="w-6 h-6 text-emerald-600" />
+                      </div>
+                      <h3 className="font-semibold text-emerald-900 dark:text-emerald-100">Rate this Operator</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Share your experience</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="w-full bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-700 dark:hover:bg-emerald-900/70">
+                      <Star className="w-4 h-4 mr-2" />
+                      Write a Review
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Layout */}
+          <div className="md:hidden">
+            <Card className="mb-4">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 bg-white rounded-lg shadow flex items-center justify-center flex-shrink-0 border">
+                    {operator?.logo ? (
+                      <img src={operator.logo} alt={`${operator.name} logo`} className="w-10 h-10 object-contain" />
+                    ) : (
+                      <span className="text-lg font-bold text-primary">{operator?.name?.charAt(0)}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h1 className="text-xl font-bold">{operator?.name}</h1>
+                      <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
+                        {siteType}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-1 mb-2">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                        ))}
+                      </div>
+                      <span className="font-bold text-sm">{scores.overall.toFixed(1)}/5</span>
+                      <span className="text-muted-foreground text-sm">({userRatings.total})</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 p-2 bg-background rounded border border-dashed">
-                    <code className="flex-1 text-center font-mono">{promoCode}</code>
-                    <Button size="sm" variant="ghost" onClick={copyPromoCode}>
-                      <Copy className="w-3 h-3" />
+                </div>
+
+                {/* Mobile Key Facts - Collapsible */}
+                <Collapsible open={keyFactsOpen} onOpenChange={setKeyFactsOpen}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                      <span className="font-medium">Key Facts</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${keyFactsOpen ? 'rotate-180' : ''}`} />
                     </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-3">
+                    <div className="grid grid-cols-1 gap-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Launched:</span>
+                        <span className="font-medium">{operator?.launch_year || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Payments:</span>
+                        <div className="flex gap-1 mt-1">
+                          {payments?.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">{payment.payment_method}</Badge>
+                          )) || (
+                            <>
+                              <Badge variant="outline" className="text-xs">Visa</Badge>
+                              <Badge variant="outline" className="text-xs">BTC</Badge>
+                              <Badge variant="outline" className="text-xs">ETH</Badge>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">KYC:</span>
+                        <span className="font-medium">{operator?.kycRequired ? 'Required' : 'Not Required'}</span>
+                      </div>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </CardContent>
+            </Card>
+
+            {/* Mobile Best Offer */}
+            <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 mb-4">
+              <CardContent className="p-4 space-y-3">
+                <div className="text-center">
+                  <div className="text-lg font-bold">{activeBonus?.title || 'Free $10 + 3 Cases'}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {activeBonus?.description || 'Welcome Bonus'}
                   </div>
-                  <Button className="w-full" asChild>
-                    <a href={operator?.url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Visit Site
-                    </a>
+                </div>
+                <div className="flex items-center gap-2 p-2 bg-background rounded border border-dashed">
+                  <code className="flex-1 text-center font-mono text-sm">{promoCode}</code>
+                  <Button size="sm" variant="ghost" onClick={copyPromoCode}>
+                    <Copy className="w-3 h-3" />
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
+                <Button className="w-full" asChild>
+                  <a href={operator?.url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Visit Site
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Rating Breakdown Section */}
+      <section className="bg-muted/30 py-6 border-b">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-2">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <div className="font-bold text-lg">{scores.trust.toFixed(1)}</div>
+              <div className="text-xs text-muted-foreground">Trust</div>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-2">
+                <DollarSign className="w-8 h-8 text-white" />
+              </div>
+              <div className="font-bold text-lg">{scores.fees.toFixed(1)}</div>
+              <div className="text-xs text-muted-foreground">Value</div>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-2">
+                <CreditCard className="w-8 h-8 text-white" />
+              </div>
+              <div className="font-bold text-lg">{(ratings.payments || 0).toFixed(1)}</div>
+              <div className="text-xs text-muted-foreground">Payments</div>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mb-2">
+                <Gamepad2 className="w-8 h-8 text-white" />
+              </div>
+              <div className="font-bold text-lg">{(ratings.offering || 0).toFixed(1)}</div>
+              <div className="text-xs text-muted-foreground">Offering</div>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center mb-2">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <div className="font-bold text-lg">{scores.ux.toFixed(1)}</div>
+              <div className="text-xs text-muted-foreground">UX</div>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center mb-2">
+                <MessageCircle className="w-8 h-8 text-white" />
+              </div>
+              <div className="font-bold text-lg">{scores.support.toFixed(1)}</div>
+              <div className="text-xs text-muted-foreground">Support</div>
             </div>
           </div>
         </div>
@@ -332,6 +583,75 @@ const OperatorReview = () => {
           
           {/* LEFT - Main Content */}
           <div className="lg:col-span-3 space-y-8">
+
+            {/* Pros & Cons Cards */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Pros Card */}
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-green-800 dark:text-green-300">
+                    <CheckCircle className="w-5 h-5" />
+                    Pros
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {operator?.pros?.map((pro, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm">
+                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-green-800 dark:text-green-200">{pro}</span>
+                      </li>
+                    )) || (
+                      <>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-green-800 dark:text-green-200">Fast and secure transactions</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-green-800 dark:text-green-200">Wide variety of cases and skins</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-green-800 dark:text-green-200">User-friendly interface</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Cons Card */}
+              <Card className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 border-red-200/50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-red-800 dark:text-red-300">
+                    <XCircle className="w-5 h-5" />
+                    Cons
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {operator?.cons?.map((con, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm">
+                        <XCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-red-800 dark:text-red-200">{con}</span>
+                      </li>
+                    )) || (
+                      <>
+                        <li className="flex items-start gap-2 text-sm">
+                          <XCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-red-800 dark:text-red-200">Limited customer support hours</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <XCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-red-800 dark:text-red-200">Higher fees on certain payment methods</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* What is Section */}
             <div id="what-is-section" className="space-y-4">
@@ -353,6 +673,43 @@ const OperatorReview = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Screenshots Carousel */}
+            {mediaAssets && mediaAssets.length > 0 && (
+              <div id="screenshots-section" className="space-y-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-violet-600 rounded-lg flex items-center justify-center">
+                    <Gamepad2 className="w-4 h-4 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold">Screenshots</h2>
+                </div>
+                <Card>
+                  <CardContent className="p-6">
+                    <Carousel className="w-full">
+                      <CarouselContent>
+                        {mediaAssets.filter(asset => asset.type === 'screenshot').map((asset, index) => (
+                          <CarouselItem key={asset.id} className="md:basis-1/2 lg:basis-1/2">
+                            <div className="aspect-video relative overflow-hidden rounded-lg bg-muted">
+                              <img
+                                src={asset.url}
+                                alt={asset.alt_text || `${operator?.name} screenshot ${index + 1}`}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            </div>
+                            {asset.caption && (
+                              <p className="text-sm text-muted-foreground mt-2 text-center">{asset.caption}</p>
+                            )}
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Payments Section */}
             <div id="payments-section" className="space-y-4">
@@ -639,21 +996,136 @@ const OperatorReview = () => {
           {/* RIGHT - Sidebar */}
           <div className="lg:col-span-1 hidden lg:block">
             <div className="sticky top-8 space-y-6">
-              <div className="space-y-3">
-                <h3 className="font-semibold text-muted-foreground text-sm">More About {operator?.name}</h3>
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start" asChild>
-                    <Link to={`/operators/${operator?.id}/promo-code`}>
-                      <DollarSign className="w-4 h-4 mr-2" />
-                      Promo Code
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-
+              {/* Quick Facts */}
               <Card>
                 <CardHeader>
-                  <CardTitle>On this page</CardTitle>
+                  <CardTitle className="text-lg">Quick Facts</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Overall Rating</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-semibold">{scores.overall.toFixed(1)}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Trust Score</span>
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                      {operator?.trustScore}/10
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Launched</span>
+                    <span className="font-medium">{operator?.launch_year || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">KYC Required</span>
+                    <Badge variant={operator?.kycRequired ? "destructive" : "outline"}>
+                      {operator?.kycRequired ? 'Yes' : 'No'}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Payment Methods */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Payment Methods</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-sm font-medium text-muted-foreground">Deposits</span>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {payments?.filter(p => p.method_type === 'deposit').slice(0, 4).map((payment, i) => (
+                          <Badge key={i} variant="secondary" className="text-xs">
+                            {payment.payment_method}
+                          </Badge>
+                        )) || (
+                          <>
+                            <Badge variant="secondary" className="text-xs">Visa</Badge>
+                            <Badge variant="secondary" className="text-xs">BTC</Badge>
+                            <Badge variant="secondary" className="text-xs">ETH</Badge>
+                            <Badge variant="secondary" className="text-xs">Skins</Badge>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-muted-foreground">Withdrawals</span>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {payments?.filter(p => p.method_type === 'withdrawal').slice(0, 4).map((payment, i) => (
+                          <Badge key={i} variant="outline" className="text-xs">
+                            {payment.payment_method}
+                          </Badge>
+                        )) || (
+                          <>
+                            <Badge variant="outline" className="text-xs">Skins</Badge>
+                            <Badge variant="outline" className="text-xs">BTC</Badge>
+                            <Badge variant="outline" className="text-xs">ETH</Badge>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Similar Sites */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Similar Sites</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <span className="text-xs font-bold text-orange-600">CS</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">CSGORoll</div>
+                        <div className="text-xs text-muted-foreground">Case Opening</div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-xs font-medium">4.2</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <span className="text-xs font-bold text-purple-600">ST</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">Stake</div>
+                        <div className="text-xs text-muted-foreground">Multi-game</div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-xs font-medium">4.1</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <span className="text-xs font-bold text-blue-600">RB</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">Rollbit</div>
+                        <div className="text-xs text-muted-foreground">Casino & Skins</div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-xs font-medium">4.0</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Table of Contents */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">On this page</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-1">
                   {sections.map((section) => (
