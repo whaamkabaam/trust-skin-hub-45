@@ -71,15 +71,6 @@ export function useOperatorExtensions(operatorId: string) {
   const [loading, setLoading] = useState(false);
   const isMountedRef = useRef(true);
   const { isPublishing, operatorId: publishingOperatorId } = usePublishingState();
-  
-  // Create stable refs for save functions to prevent crashes during publishing
-  const saveFunctionsRef = useRef({
-    saveBonuses: null as ((data: OperatorBonus[]) => Promise<void>) | null,
-    savePayments: null as ((data: OperatorPayment[]) => Promise<void>) | null,
-    saveFeatures: null as ((data: OperatorFeature[]) => Promise<void>) | null,
-    saveSecurity: null as ((data: OperatorSecurity) => Promise<void>) | null,
-    saveFaqs: null as ((data: OperatorFAQ[]) => Promise<void>) | null,
-  });
 
   // Fetch all extension data
   const fetchExtensionData = useCallback(async () => {
@@ -130,6 +121,12 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Save bonuses
   const saveBonuses = useCallback(async (bonusData: OperatorBonus[]) => {
+    // Skip if currently publishing to prevent conflicts
+    if (isPublishing && publishingOperatorId === operatorId) {
+      console.log('Skipping bonuses save during publishing');
+      return;
+    }
+    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing bonuses');
       return;
@@ -151,10 +148,16 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving bonuses:', error);
       toast.error('Failed to save bonuses');
     }
-  }, [operatorId]);
+  }, [operatorId, isPublishing, publishingOperatorId]);
 
   // Save payments
   const savePayments = useCallback(async (paymentData: OperatorPayment[]) => {
+    // Skip if currently publishing to prevent conflicts
+    if (isPublishing && publishingOperatorId === operatorId) {
+      console.log('Skipping payments save during publishing');
+      return;
+    }
+    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing payment methods');
       return;
@@ -176,10 +179,16 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving payments:', error);
       toast.error('Failed to save payment methods');
     }
-  }, [operatorId]);
+  }, [operatorId, isPublishing, publishingOperatorId]);
 
   // Save features
   const saveFeatures = useCallback(async (featureData: OperatorFeature[]) => {
+    // Skip if currently publishing to prevent conflicts
+    if (isPublishing && publishingOperatorId === operatorId) {
+      console.log('Skipping features save during publishing');
+      return;
+    }
+    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing features');
       return;
@@ -201,10 +210,16 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving features:', error);
       toast.error('Failed to save features');
     }
-  }, [operatorId]);
+  }, [operatorId, isPublishing, publishingOperatorId]);
 
   // Save security
   const saveSecurity = useCallback(async (securityData: OperatorSecurity) => {
+    // Skip if currently publishing to prevent conflicts
+    if (isPublishing && publishingOperatorId === operatorId) {
+      console.log('Skipping security save during publishing');
+      return;
+    }
+    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing security');
       return;
@@ -223,10 +238,16 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving security:', error);
       toast.error('Failed to save security settings');
     }
-  }, [operatorId]);
+  }, [operatorId, isPublishing, publishingOperatorId]);
 
   // Save FAQs
   const saveFaqs = useCallback(async (faqData: OperatorFAQ[]) => {
+    // Skip if currently publishing to prevent conflicts
+    if (isPublishing && publishingOperatorId === operatorId) {
+      console.log('Skipping FAQs save during publishing');
+      return;
+    }
+    
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing FAQs');
       return;
@@ -248,7 +269,7 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving FAQs:', error);
       toast.error('Failed to save FAQs');
     }
-  }, [operatorId]);
+  }, [operatorId, isPublishing, publishingOperatorId]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -260,13 +281,6 @@ export function useOperatorExtensions(operatorId: string) {
     };
   }, [operatorId, fetchExtensionData]);
 
-  // Update stable refs whenever functions change
-  saveFunctionsRef.current.saveBonuses = saveBonuses;
-  saveFunctionsRef.current.savePayments = savePayments;
-  saveFunctionsRef.current.saveFeatures = saveFeatures;
-  saveFunctionsRef.current.saveSecurity = saveSecurity;
-  saveFunctionsRef.current.saveFaqs = saveFaqs;
-
   return {
     bonuses,
     payments,
@@ -274,22 +288,12 @@ export function useOperatorExtensions(operatorId: string) {
     security,
     faqs,
     loading,
-    // Return stable function references during publishing to prevent crashes
-    saveBonuses: (isPublishing && publishingOperatorId === operatorId) 
-      ? saveFunctionsRef.current.saveBonuses || saveBonuses 
-      : saveBonuses,
-    savePayments: (isPublishing && publishingOperatorId === operatorId) 
-      ? saveFunctionsRef.current.savePayments || savePayments 
-      : savePayments,
-    saveFeatures: (isPublishing && publishingOperatorId === operatorId) 
-      ? saveFunctionsRef.current.saveFeatures || saveFeatures 
-      : saveFeatures,
-    saveSecurity: (isPublishing && publishingOperatorId === operatorId) 
-      ? saveFunctionsRef.current.saveSecurity || saveSecurity 
-      : saveSecurity,
-    saveFaqs: (isPublishing && publishingOperatorId === operatorId) 
-      ? saveFunctionsRef.current.saveFaqs || saveFaqs 
-      : saveFaqs,
+    // Always return the same stable function references
+    saveBonuses,
+    savePayments,
+    saveFeatures,
+    saveSecurity,
+    saveFaqs,
     refetchData: fetchExtensionData
   };
 }
