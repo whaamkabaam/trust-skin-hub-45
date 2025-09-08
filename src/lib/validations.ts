@@ -35,6 +35,19 @@ export const operatorSchema = z.object({
   published: z.boolean().default(false),
   publish_status: z.string().optional(),
   scheduled_publish_at: z.string().nullable().optional().transform((val) => val === '' ? null : val),
+  // New extended fields
+  site_type: z.string().optional(),
+  promo_code: z.string().optional(),
+  verification_status: z.string().optional(),
+  company_background: z.string().optional(),
+  performance_metrics: z.record(z.string(), z.any()).optional(),
+  prize_info: z.record(z.string(), z.any()).optional(),
+  shipping_info: z.record(z.string(), z.any()).optional(),
+  support_channels: z.array(z.string()).default([]),
+  community_links: z.record(z.string(), z.string()).optional(),
+  withdrawal_time_crypto: z.string().optional(),
+  withdrawal_time_skins: z.string().optional(),
+  withdrawal_time_fiat: z.string().optional(),
 });
 
 export type OperatorFormData = z.infer<typeof operatorSchema>;

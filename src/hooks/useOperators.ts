@@ -130,7 +130,7 @@ export function useOperators() {
         .from('operators')
         .update({
           ...cleanedData,
-          draft_data: cleanedData,
+          draft_data: cleanedData as any,
           last_auto_saved_at: new Date().toISOString()
         })
         .eq('id', id);

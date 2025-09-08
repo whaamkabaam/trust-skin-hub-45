@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2, Save } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
@@ -16,6 +17,11 @@ import { RichTextEditor } from './RichTextEditor';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { SaveStateIndicator } from '@/components/SaveStateIndicator';
 import { ContentScheduling } from '@/components/ContentScheduling';
+import { BonusManager } from './BonusManager';
+import { PaymentMethodsManager } from './PaymentMethodsManager';
+import { SecurityManager } from './SecurityManager';
+import { FAQManager } from './FAQManager';
+import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
 
 type Operator = Tables<'operators'>;
 
@@ -69,7 +75,19 @@ export function OperatorForm({
       kyc_required: initialData.kyc_required || false,
       published: initialData.published || false,
       publish_status: (initialData as any).publish_status || 'draft',
-      scheduled_publish_at: (initialData as any).scheduled_publish_at || '',
+      // New extended fields
+      site_type: (initialData as any)?.site_type || '',
+      promo_code: (initialData as any)?.promo_code || '',
+      verification_status: (initialData as any)?.verification_status || 'unverified',
+      company_background: (initialData as any)?.company_background || '',
+      performance_metrics: (initialData as any)?.performance_metrics || {},
+      prize_info: (initialData as any)?.prize_info || {},
+      shipping_info: (initialData as any)?.shipping_info || {},
+      support_channels: ((initialData as any)?.support_channels as string[]) || [],
+      community_links: (initialData as any)?.community_links || {},
+      withdrawal_time_crypto: (initialData as any)?.withdrawal_time_crypto || '',
+      withdrawal_time_skins: (initialData as any)?.withdrawal_time_skins || '',
+      withdrawal_time_fiat: (initialData as any)?.withdrawal_time_fiat || '',
     } : {
       categories: [],
       pros: [],
@@ -87,7 +105,19 @@ export function OperatorForm({
       kyc_required: false,
       published: false,
       publish_status: 'draft',
-      scheduled_publish_at: '',
+      // New extended fields
+      site_type: '',
+      promo_code: '',
+      verification_status: 'unverified',
+      company_background: '',
+      performance_metrics: {},
+      prize_info: {},
+      shipping_info: {},
+      support_channels: [],
+      community_links: {},
+      withdrawal_time_crypto: '',
+      withdrawal_time_skins: '',
+      withdrawal_time_fiat: '',
     },
   });
 
@@ -96,7 +126,22 @@ export function OperatorForm({
   const pros = watch('pros');
   const cons = watch('cons');
   const countries = watch('supported_countries');
+  const supportChannels = watch('support_channels');
   const formData = watch();
+
+  // Initialize operator extensions hook
+  const {
+    bonuses,
+    payments,
+    features,
+    security,
+    faqs,
+    saveBonuses,
+    savePayments,
+    saveFeatures,
+    saveSecurity,
+    saveFaqs
+  } = useOperatorExtensions(initialData?.id || '');
 
   // Auto-save functionality
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
@@ -144,17 +189,17 @@ export function OperatorForm({
     return onSubmit(cleanedData);
   };
 
-  const addArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries') => {
+  const addArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries' | 'support_channels') => {
     const currentArray = watch(fieldName);
     setValue(fieldName, [...currentArray, '']);
   };
 
-  const removeArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries', index: number) => {
+  const removeArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries' | 'support_channels', index: number) => {
     const currentArray = watch(fieldName);
     setValue(fieldName, currentArray.filter((_, i) => i !== index));
   };
 
-  const updateArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries', index: number, value: string) => {
+  const updateArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries' | 'support_channels', index: number, value: string) => {
     const currentArray = watch(fieldName);
     setValue(fieldName, currentArray.map((item, i) => i === index ? value : item));
   };
@@ -226,12 +271,103 @@ export function OperatorForm({
                 <p className="text-sm text-destructive mt-1">{errors.launch_year.message}</p>
               )}
             </div>
-          <EnhancedFileUpload
-            label="Hero Image"
-            currentUrl={watch('hero_image_url')}
-            onUpload={(url) => setValue('hero_image_url', url)}
-            accept="image/*"
-          />
+            <div>
+              <Label htmlFor="site_type">Site Type</Label>
+              <Select
+                value={watch('site_type') || ''}
+                onValueChange={(value) => setValue('site_type', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select site type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="case_opening">Case Opening</SelectItem>
+                  <SelectItem value="casino">Casino</SelectItem>
+                  <SelectItem value="trading">Trading</SelectItem>
+                  <SelectItem value="mixed">Mixed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="promo_code">Promo Code</Label>
+              <Input
+                id="promo_code"
+                {...register('promo_code')}
+                placeholder="WELCOME2024"
+              />
+            </div>
+            <div>
+              <Label htmlFor="verification_status">Verification Status</Label>
+              <Select
+                value={watch('verification_status') || 'unverified'}
+                onValueChange={(value) => setValue('verification_status', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="verified">Verified</SelectItem>
+                  <SelectItem value="unverified">Unverified</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <EnhancedFileUpload
+              label="Hero Image"
+              currentUrl={watch('hero_image_url')}
+              onUpload={(url) => setValue('hero_image_url', url)}
+              accept="image/*"
+            />
+          </div>
+
+          <div>
+            <Label>Company Background</Label>
+            <RichTextEditor
+              value={watch('company_background') || ''}
+              onChange={(value) => setValue('company_background', value)}
+              placeholder="Background information about the company..."
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Withdrawal Times */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Withdrawal Processing Times</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="withdrawal_time_crypto">Crypto Withdrawals</Label>
+              <Input
+                id="withdrawal_time_crypto"
+                {...register('withdrawal_time_crypto')}
+                placeholder="e.g., Instant, 1-24 hours"
+              />
+            </div>
+            <div>
+              <Label htmlFor="withdrawal_time_skins">Skin Withdrawals</Label>
+              <Input
+                id="withdrawal_time_skins"
+                {...register('withdrawal_time_skins')}
+                placeholder="e.g., Instant, 1-24 hours"
+              />
+            </div>
+            <div>
+              <Label htmlFor="withdrawal_time_fiat">Fiat Withdrawals</Label>
+              <Input
+                id="withdrawal_time_fiat"
+                {...register('withdrawal_time_fiat')}
+                placeholder="e.g., 1-3 business days"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -363,7 +499,58 @@ export function OperatorForm({
         </Card>
       </div>
 
-      {/* Supported Countries */}
+      {/* Support Channels */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Support Channels</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {supportChannels.map((channel, index) => (
+            <div key={index} className="flex gap-2">
+              <Input
+                value={channel}
+                onChange={(e) => updateArrayItem('support_channels', index, e.target.value)}
+                placeholder="e.g., 24/7 Live Chat, Email Support"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => removeArrayItem('support_channels', index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => addArrayItem('support_channels')}
+            className="w-full"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Support Channel
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Bonuses & Promotions */}
+      {initialData?.id && (
+        <BonusManager
+          bonuses={bonuses}
+          onSave={saveBonuses}
+          operatorId={initialData.id}
+        />
+      )}
+
+      {/* Payment Methods */}
+      {initialData?.id && (
+        <PaymentMethodsManager
+          payments={payments}
+          onSave={savePayments}
+          operatorId={initialData.id}
+        />
+      )}
       <Card>
         <CardHeader>
           <CardTitle>Supported Countries</CardTitle>
@@ -399,6 +586,39 @@ export function OperatorForm({
       </Card>
 
       {/* Text Content */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Content</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <Label>Verdict</Label>
+            <RichTextEditor
+              value={watch('verdict') || ''}
+              onChange={(value) => setValue('verdict', value)}
+              placeholder="Overall verdict about the operator..."
+            />
+          </div>
+          
+          <div>
+            <Label>Bonus Terms</Label>
+            <RichTextEditor
+              value={watch('bonus_terms') || ''}
+              onChange={(value) => setValue('bonus_terms', value)}
+              placeholder="Details about bonus terms and conditions..."
+            />
+          </div>
+          
+          <div>
+            <Label>Fairness Information</Label>
+            <RichTextEditor
+              value={watch('fairness_info') || ''}
+              onChange={(value) => setValue('fairness_info', value)}
+              placeholder="Information about fairness and provability..."
+            />
+          </div>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>Content</CardTitle>
@@ -482,16 +702,40 @@ export function OperatorForm({
         />
         <div className="flex gap-2">
           {autoSaveEnabled && onAutoSave && (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={forceSave}
-              disabled={saveState === 'saving'}
-            >
-              <Save className="h-4 w-4 mr-2" />
-              Save Now
-            </Button>
-          )}
+             <Button 
+               type="button" 
+               variant="outline" 
+               onClick={forceSave}
+               disabled={saveState === 'saving'}
+             >
+               <Save className="h-4 w-4 mr-2" />
+               Save Now
+             </Button>
+           )}
+           <Button type="submit" disabled={isLoading}>
+             {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
+           </Button>
+         </div>
+       </div>
+
+       {/* Security & Compliance */}
+       {initialData?.id && (
+         <SecurityManager
+           security={security}
+           onSave={saveSecurity}
+           operatorId={initialData.id}
+         />
+       )}
+
+       {/* FAQ Management */}
+       {initialData?.id && (
+         <FAQManager
+           faqs={faqs}
+           onSave={saveFaqs}
+           operatorId={initialData.id}
+         />
+       )}
+    </form>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
           </Button>
