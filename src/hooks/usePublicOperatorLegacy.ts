@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { usePublicOperator } from './usePublicOperator';
 import { usePublicOperatorExtensions } from './usePublicOperatorExtensions';
 import { usePublicReviews } from './usePublicReviews';
+import { Database } from '@/integrations/supabase/types';
 
 interface LegacyScores {
   overall: number;
@@ -58,10 +59,10 @@ export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
     operator: operator ? {
       ...operator,
       id: operator.slug || operator.id,
-      logo: (operator as any).logo_url || operator.logo,
+      logo: operator.logo || '',
       overallRating: operator.ratings?.overall || 0,
-      feeLevel: 'Medium', // Default or derive from ratings
-      paymentMethods: ['skins', 'crypto'], // Default or from CMS
+      feeLevel: 'Medium' as const,
+      paymentMethods: ['skins' as const, 'crypto' as const],
       modes: operator.categories || [],
       pros: operator.pros || [],
       cons: operator.cons || [],
@@ -72,10 +73,10 @@ export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
         trading: 3
       },
       payoutSpeed: '10-30 minutes',
-      kycRequired: (operator as any).kyc_required || operator.kycRequired || false,
-      countries: (operator as any).supported_countries || operator.countries || [],
-      url: (operator as any).tracking_link || operator.url || '#',
-      verified: (operator as any).verification_status === 'verified' || operator.verified || false,
+      kycRequired: operator.kycRequired || false,
+      countries: operator.countries || [],
+      url: operator.url || '#',
+      verified: operator.verified || false,
       otherFeatures: [],
       gamingModes: [],
       games: [],
@@ -92,7 +93,7 @@ export function usePublicOperatorLegacy(slug: string): LegacyOperatorData {
       speed: operator?.ratings?.payments || 0
     },
 
-    promoCode: (operator as any)?.promo_code || 'SAVE20',
+    promoCode: 'SAVE20', // Default promo code since it's not in the Operator interface
 
     screenshots: mediaAssets
       ?.filter(asset => asset.type === 'screenshot')

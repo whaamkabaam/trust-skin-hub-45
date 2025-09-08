@@ -1,35 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-
-interface PublicReview {
-  id: string;
-  entityId: string;
-  entityType: 'operator';
-  user: string;
-  verified: 'operator' | 'opener' | false;
-  rating: number;
-  subscores: {
-    trust: number;
-    fees: number;
-    ux: number;
-    support: number;
-  };
-  title: string;
-  body: string;
-  helpful: {
-    up: number;
-    down: number;
-  };
-  photos?: string[];
-  createdAt: string;
-  operatorResponse?: {
-    body: string;
-    createdAt: string;
-  };
-}
+import { Review } from '@/types';
 
 interface PublicReviewsData {
-  reviews: PublicReview[];
+  reviews: Review[];
   loading: boolean;
   error: string | null;
   stats: {
@@ -40,7 +14,7 @@ interface PublicReviewsData {
 }
 
 export function usePublicReviews(operatorId: string): PublicReviewsData {
-  const [reviews, setReviews] = useState<PublicReview[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({
@@ -71,30 +45,38 @@ export function usePublicReviews(operatorId: string): PublicReviewsData {
       if (reviewsError) throw reviewsError;
 
       // Transform database reviews to match Review interface
-      const transformedReviews: PublicReview[] = (reviewsData || []).map(review => ({
-        id: review.id,
-        entityId: review.operator_id,
-        entityType: 'operator' as const,
-        user: review.username || 'Anonymous',
-        verified: review.verification_status === 'operator' ? 'operator' : 
-                 review.verification_status === 'opener' ? 'opener' : false,
-        rating: review.rating,
-        subscores: (review.subscores as any) || {
+      const transformedReviews: Review[] = (reviewsData || []).map(review => {
+        const subscores = review.subscores as { trust: number; fees: number; ux: number; support: number; } || {
           trust: review.rating,
           fees: review.rating,
           ux: review.rating,
           support: review.rating
-        },
-        title: review.title || 'User Review',
-        body: review.content,
-        helpful: (review.helpful_votes as any) || {
+        };
+        
+        const helpful = review.helpful_votes as { up: number; down: number; } || {
           up: 0,
           down: 0
-        },
-        photos: review.photos || undefined,
-        createdAt: review.created_at,
-        operatorResponse: (review.operator_response as any) || undefined
-      }));
+        };
+        
+        const operatorResponse = review.operator_response as { body: string; createdAt: string; } || undefined;
+        
+        return {
+          id: review.id,
+          entityId: review.operator_id,
+          entityType: 'operator' as const,
+          user: review.username || 'Anonymous',
+          verified: review.verification_status === 'operator' ? 'operator' : 
+                   review.verification_status === 'opener' ? 'opener' : false,
+          rating: review.rating,
+          subscores,
+          title: review.title || 'User Review',
+          body: review.content,
+          helpful,
+          photos: review.photos || undefined,
+          createdAt: review.created_at,
+          operatorResponse
+        };
+      });
 
       setReviews(transformedReviews);
 
