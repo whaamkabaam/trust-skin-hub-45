@@ -1103,24 +1103,31 @@ const OperatorReview = () => {
                         </div>
                         Deposit Methods & Limits
                       </h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <span className="text-sm">Credit/Debit Cards (Visa, Mastercard)</span>
-                          <Badge className="bg-blue-100 text-blue-800 border-0">$10 - $5,000</Badge>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <span className="text-sm">Bitcoin (BTC)</span>
-                          <Badge className="bg-orange-100 text-orange-800 border-0">$25 - $10,000</Badge>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <span className="text-sm">Ethereum (ETH)</span>
-                          <Badge className="bg-purple-100 text-purple-800 border-0">$25 - $10,000</Badge>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <span className="text-sm">Skins</span>
-                          <Badge className="bg-green-100 text-green-800 border-0">Variable</Badge>
-                        </div>
-                      </div>
+                       <div className="space-y-2">
+                         {payments?.filter(p => p.method_type === 'deposit').map((payment, i) => (
+                           <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                             <span className="text-sm">{payment.payment_method}</span>
+                             <Badge className="bg-blue-100 text-blue-800 border-0">
+                               ${payment.minimum_amount || 0} - ${payment.maximum_amount || 'No limit'}
+                             </Badge>
+                           </div>
+                         )) || (
+                           <>
+                             <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                               <span className="text-sm">Credit/Debit Cards (Visa, Mastercard)</span>
+                               <Badge className="bg-blue-100 text-blue-800 border-0">$10 - $5,000</Badge>
+                             </div>
+                             <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                               <span className="text-sm">Bitcoin (BTC)</span>
+                               <Badge className="bg-orange-100 text-orange-800 border-0">$25 - $10,000</Badge>
+                             </div>
+                             <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                               <span className="text-sm">Ethereum (ETH)</span>
+                               <Badge className="bg-purple-100 text-purple-800 border-0">$25 - $10,000</Badge>
+                             </div>
+                           </>
+                         )}
+                       </div>
                     </div>
                     <Separator />
                     <div>
@@ -1130,29 +1137,44 @@ const OperatorReview = () => {
                         </div>
                         Withdrawal Timeframes & Fees
                       </h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <div>
-                            <span className="text-sm font-medium">Skins</span>
-                            <p className="text-xs text-muted-foreground">Instant - 24 hours</p>
-                          </div>
-                          <Badge className="bg-green-100 text-green-800 border-0">0% fee</Badge>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <div>
-                            <span className="text-sm font-medium">Cryptocurrency</span>
-                            <p className="text-xs text-muted-foreground">1-6 hours</p>
-                          </div>
-                          <Badge className="bg-yellow-100 text-yellow-800 border-0">1-3% fee</Badge>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <div>
-                            <span className="text-sm font-medium">Physical items</span>
-                            <p className="text-xs text-muted-foreground">7-14 days shipping</p>
-                          </div>
-                          <Badge className="bg-red-100 text-red-800 border-0">$5-15 fee</Badge>
-                        </div>
-                      </div>
+                       <div className="space-y-2">
+                         {payments?.filter(p => p.method_type === 'withdrawal').map((payment, i) => (
+                           <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                             <div>
+                               <span className="text-sm font-medium">{payment.payment_method}</span>
+                               <p className="text-xs text-muted-foreground">{payment.processing_time || 'Processing time varies'}</p>
+                             </div>
+                             <Badge className="bg-green-100 text-green-800 border-0">
+                               {payment.fee_percentage ? `${payment.fee_percentage}%` : 
+                                payment.fee_fixed ? `$${payment.fee_fixed}` : '0%'} fee
+                             </Badge>
+                           </div>
+                         )) || (
+                           <>
+                             <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                               <div>
+                                 <span className="text-sm font-medium">Skins</span>
+                                 <p className="text-xs text-muted-foreground">{(operator as any)?.withdrawal_time_skins || 'Instant - 24 hours'}</p>
+                               </div>
+                               <Badge className="bg-green-100 text-green-800 border-0">0% fee</Badge>
+                             </div>
+                             <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                               <div>
+                                 <span className="text-sm font-medium">Cryptocurrency</span>
+                                 <p className="text-xs text-muted-foreground">{(operator as any)?.withdrawal_time_crypto || '1-6 hours'}</p>
+                               </div>
+                               <Badge className="bg-yellow-100 text-yellow-800 border-0">1-3% fee</Badge>
+                             </div>
+                             <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                               <div>
+                                 <span className="text-sm font-medium">Fiat</span>
+                                 <p className="text-xs text-muted-foreground">{(operator as any)?.withdrawal_time_fiat || '1-3 business days'}</p>
+                               </div>
+                               <Badge className="bg-red-100 text-red-800 border-0">$5-15 fee</Badge>
+                             </div>
+                           </>
+                         )}
+                       </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -1167,86 +1189,79 @@ const OperatorReview = () => {
                 </div>
                 <h2 className="text-2xl font-bold">Bonuses & Promos</h2>
               </div>
-              <div className="space-y-6">
-                {/* Bonus Cards Grid */}
-                <div className="grid md:grid-cols-2 gap-4">
-                  <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">🎁</span>
-                        </div>
-                        <h4 className="font-semibold text-green-800">Welcome Bonus</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Free $10 credit + 3 free cases</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">💰</span>
-                        </div>
-                        <h4 className="font-semibold text-blue-800">Rakeback</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Up to 15% daily rakeback on losses</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">📅</span>
-                        </div>
-                        <h4 className="font-semibold text-purple-800">Daily/Weekly</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Daily free case + weekly challenges</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">👥</span>
-                        </div>
-                        <h4 className="font-semibold text-orange-800">Referral</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground">5% of friend's deposits for life</p>
-                    </CardContent>
-                  </Card>
-                </div>
+               <div className="space-y-6">
+                 {/* Dynamic Bonus Cards Grid */}
+                 <div className="grid md:grid-cols-2 gap-4">
+                   {bonuses?.filter(b => b.is_active).slice(0, 4).map((bonus, i) => (
+                     <Card key={i} className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                       <CardContent className="p-4">
+                         <div className="flex items-center gap-2 mb-2">
+                           <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                             <span className="text-white text-xs">🎁</span>
+                           </div>
+                           <h4 className="font-semibold text-green-800">{bonus.title}</h4>
+                         </div>
+                         <p className="text-sm text-muted-foreground">{bonus.description || bonus.value}</p>
+                       </CardContent>
+                     </Card>
+                   )) || (
+                     // Fallback cards when no bonuses available
+                     <>
+                       <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                         <CardContent className="p-4">
+                           <div className="flex items-center gap-2 mb-2">
+                             <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                               <span className="text-white text-xs">🎁</span>
+                             </div>
+                             <h4 className="font-semibold text-green-800">Welcome Bonus</h4>
+                           </div>
+                           <p className="text-sm text-muted-foreground">Free $10 credit + 3 free cases</p>
+                         </CardContent>
+                       </Card>
+                       <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                         <CardContent className="p-4">
+                           <div className="flex items-center gap-2 mb-2">
+                             <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                               <span className="text-white text-xs">💰</span>
+                             </div>
+                             <h4 className="font-semibold text-blue-800">Rakeback</h4>
+                           </div>
+                           <p className="text-sm text-muted-foreground">Up to 15% daily rakeback on losses</p>
+                         </CardContent>
+                       </Card>
+                     </>
+                   )}
+                 </div>
 
-                {/* Detailed Content */}
-                <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
-                  <CardContent className="p-6 space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3">Welcome Package & First Deposit Bonuses</h3>
-                      <p className="text-muted-foreground leading-relaxed mb-4">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                      </p>
-                      <p className="text-muted-foreground leading-relaxed mb-4">
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3">Loyalty Programs & VIP Benefits</h3>
-                      <p className="text-muted-foreground leading-relaxed mb-4">
-                        Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus. Omnis voluptas assumenda est, omnis dolor repellendus.
-                      </p>
-                      <p className="text-muted-foreground leading-relaxed">
-                        Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur.
-                      </p>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3">Promotional Events & Seasonal Offers</h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                 {/* Dynamic Bonus Details */}
+                 {bonuses?.filter(b => b.is_active).length > 0 && (
+                   <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
+                     <CardContent className="p-6 space-y-6">
+                       {bonuses.filter(b => b.is_active).map((bonus, i) => (
+                         <div key={i}>
+                           <h3 className="text-lg font-semibold mb-3">{bonus.title}</h3>
+                           <p className="text-muted-foreground leading-relaxed mb-4">
+                             {bonus.description || `Value: ${bonus.value}`}
+                           </p>
+                           {bonus.terms && (
+                             <div className="text-sm text-muted-foreground bg-background/50 p-3 rounded">
+                               <strong>Terms:</strong> {bonus.terms}
+                             </div>
+                           )}
+                         </div>
+                       ))}
+                     </CardContent>
+                   </Card>
+                 ) || (
+                   <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
+                     <CardContent className="p-6">
+                       <h3 className="text-lg font-semibold mb-3">Bonus Information</h3>
+                       <p className="text-muted-foreground leading-relaxed">
+                         {operator?.bonus_terms || `${operator?.name} offers various promotional bonuses and rewards for active users. Contact their support team for current bonus information.`}
+                       </p>
+                     </CardContent>
+                   </Card>
+                 )}
               </div>
             </div>
 
@@ -1259,7 +1274,7 @@ const OperatorReview = () => {
                 <h2 className="text-2xl font-bold">Fairness & Security</h2>
               </div>
               <div className="space-y-6">
-                {/* Security Cards Grid */}
+                {/* Dynamic Security Cards Grid */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
                     <CardContent className="p-4">
@@ -1269,9 +1284,54 @@ const OperatorReview = () => {
                         </div>
                         <h4 className="font-semibold text-green-800">Provably Fair</h4>
                       </div>
-                      <p className="text-sm text-muted-foreground">Cryptographic verification for all outcomes</p>
+                      <p className="text-sm text-muted-foreground">
+                        {security?.provably_fair ? 'Cryptographic verification for all outcomes' : 'Traditional RNG system'}
+                      </p>
                     </CardContent>
                   </Card>
+                  
+                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">🔒</span>
+                        </div>
+                        <h4 className="font-semibold text-blue-800">SSL Security</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {security?.ssl_enabled ? `${security.ssl_provider || 'SSL'} encryption` : 'Basic security'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">⚖️</span>
+                        </div>
+                        <h4 className="font-semibold text-purple-800">Licensed</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {security?.license_info || 'Licensing information available on request'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">🛡️</span>
+                        </div>
+                        <h4 className="font-semibold text-orange-800">Data Protection</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {security?.data_protection_info ? 'GDPR compliant' : 'Standard data protection'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
                   <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50 hover:shadow-lg transition-all duration-200 hover-scale">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -1811,7 +1871,7 @@ const OperatorReview = () => {
       <div className="sticky bottom-0 z-40 bg-background/95 backdrop-blur-sm border-t p-4 md:hidden">
         <div className="flex gap-2">
           <Button className="flex-1" asChild>
-            <a href={operator.url} target="_blank" rel="noopener noreferrer">
+            <a href={operator?.url} target="_blank" rel="noopener noreferrer">
               Visit Site
             </a>
           </Button>
@@ -1826,6 +1886,8 @@ const OperatorReview = () => {
       </div>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default OperatorReview;

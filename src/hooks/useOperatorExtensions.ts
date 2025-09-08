@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -70,8 +70,11 @@ export function useOperatorExtensions(operatorId: string) {
   const [loading, setLoading] = useState(false);
 
   // Fetch all extension data
-  const fetchExtensionData = async () => {
-    if (!operatorId) return;
+  const fetchExtensionData = useCallback(async () => {
+    if (!operatorId || operatorId.startsWith('temp-')) {
+      setLoading(false);
+      return;
+    }
     
     setLoading(true);
     try {
@@ -99,7 +102,7 @@ export function useOperatorExtensions(operatorId: string) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [operatorId]);
 
   // Save bonuses
   const saveBonuses = async (bonusData: OperatorBonus[]) => {
@@ -200,7 +203,7 @@ export function useOperatorExtensions(operatorId: string) {
 
   useEffect(() => {
     fetchExtensionData();
-  }, [operatorId]);
+  }, [operatorId, fetchExtensionData]);
 
   return {
     bonuses,

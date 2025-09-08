@@ -129,7 +129,8 @@ export function OperatorForm({
   const supportChannels = watch('support_channels');
   const formData = watch();
 
-  // Initialize operator extensions hook
+  // Initialize operator extensions hook - use temporary ID for new operators
+  const tempOperatorId = initialData?.id || `temp-${Date.now()}`;
   const {
     bonuses,
     payments,
@@ -141,7 +142,7 @@ export function OperatorForm({
     saveFeatures,
     saveSecurity,
     saveFaqs
-  } = useOperatorExtensions(initialData?.id || '');
+  } = useOperatorExtensions(tempOperatorId);
 
   // Auto-save functionality
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
@@ -534,23 +535,30 @@ export function OperatorForm({
         </CardContent>
       </Card>
 
-      {/* Bonuses & Promotions */}
-      {initialData?.id && (
-        <BonusManager
-          bonuses={bonuses}
-          onSave={saveBonuses}
-          operatorId={initialData.id}
-        />
-      )}
+      {/* Extension Managers */}
+      <BonusManager
+        bonuses={bonuses}
+        onSave={saveBonuses}
+        operatorId={tempOperatorId}
+      />
 
-      {/* Payment Methods */}
-      {initialData?.id && (
-        <PaymentMethodsManager
-          payments={payments}
-          onSave={savePayments}
-          operatorId={initialData.id}
-        />
-      )}
+      <PaymentMethodsManager
+        payments={payments}
+        onSave={savePayments}
+        operatorId={tempOperatorId}
+      />
+
+      <SecurityManager
+        security={security}
+        onSave={saveSecurity}
+        operatorId={tempOperatorId}
+      />
+
+      <FAQManager
+        faqs={faqs}
+        onSave={saveFaqs}
+        operatorId={tempOperatorId}
+      />
       <Card>
         <CardHeader>
           <CardTitle>Supported Countries</CardTitle>
@@ -586,39 +594,7 @@ export function OperatorForm({
       </Card>
 
       {/* Text Content */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Content</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <Label>Verdict</Label>
-            <RichTextEditor
-              value={watch('verdict') || ''}
-              onChange={(value) => setValue('verdict', value)}
-              placeholder="Overall verdict about the operator..."
-            />
-          </div>
-          
-          <div>
-            <Label>Bonus Terms</Label>
-            <RichTextEditor
-              value={watch('bonus_terms') || ''}
-              onChange={(value) => setValue('bonus_terms', value)}
-              placeholder="Details about bonus terms and conditions..."
-            />
-          </div>
-          
-          <div>
-            <Label>Fairness Information</Label>
-            <RichTextEditor
-              value={watch('fairness_info') || ''}
-              onChange={(value) => setValue('fairness_info', value)}
-              placeholder="Information about fairness and provability..."
-            />
-          </div>
-        </CardContent>
-      </Card>
+      {/* Content */}
       <Card>
         <CardHeader>
           <CardTitle>Content</CardTitle>
@@ -709,7 +685,7 @@ export function OperatorForm({
                disabled={saveState === 'saving'}
              >
                <Save className="h-4 w-4 mr-2" />
-               Save Now
+               Save Draft
              </Button>
            )}
            <Button type="submit" disabled={isLoading}>
@@ -718,31 +694,6 @@ export function OperatorForm({
          </div>
        </div>
 
-       {/* Security & Compliance */}
-       {initialData?.id && (
-         <SecurityManager
-           security={security}
-           onSave={saveSecurity}
-           operatorId={initialData.id}
-         />
-       )}
-
-        {/* FAQ Management */}
-        {initialData?.id && (
-          <FAQManager
-            faqs={faqs}
-            onSave={saveFaqs}
-            operatorId={initialData.id}
-          />
-        )}
-
-        {/* Submit Button */}
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isLoading}>
-            <Save className="h-4 w-4 mr-2" />
-            {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
-          </Button>
-        </div>
       </form>
   );
 }
