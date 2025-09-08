@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Trash2, Plus } from 'lucide-react';
 import { OperatorFAQ } from '@/hooks/useOperatorExtensions';
+import { toast } from '@/lib/toast';
 
 interface FAQManagerProps {
   faqs: OperatorFAQ[];
@@ -70,12 +71,16 @@ export function FAQManager({ faqs, onSave, operatorId }: FAQManagerProps) {
   };
 
   const handleSave = () => {
-    // Ensure order numbers are correct
-    const orderedFaqs = localFaqs.map((faq, index) => ({
-      ...faq,
-      order_number: index,
-    }));
-    onSave(orderedFaqs);
+    if (typeof onSave === 'function') {
+      // Ensure order numbers are correct
+      const orderedFaqs = localFaqs.map((faq, index) => ({
+        ...faq,
+        order_number: index,
+      }));
+      onSave(orderedFaqs);
+    } else {
+      toast.error('Save function not available');
+    }
   };
 
   return (

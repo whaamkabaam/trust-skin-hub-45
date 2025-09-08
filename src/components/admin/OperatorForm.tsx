@@ -343,6 +343,7 @@ export function OperatorForm({
                   <SelectItem value="case_opening">Case Opening</SelectItem>
                   <SelectItem value="casino">Casino</SelectItem>
                   <SelectItem value="trading">Trading</SelectItem>
+                  <SelectItem value="mystery_box">Mystery Box</SelectItem>
                   <SelectItem value="mixed">Mixed</SelectItem>
                 </SelectContent>
               </Select>

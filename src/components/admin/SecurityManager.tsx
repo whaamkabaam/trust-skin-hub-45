@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Plus, Trash2 } from 'lucide-react';
 import { OperatorSecurity } from '@/hooks/useOperatorExtensions';
+import { toast } from '@/lib/toast';
 
 interface SecurityManagerProps {
   security: OperatorSecurity | null;
@@ -54,7 +55,11 @@ export function SecurityManager({ security, onSave, operatorId }: SecurityManage
   };
 
   const handleSave = () => {
-    onSave(localSecurity);
+    if (typeof onSave === 'function') {
+      onSave(localSecurity);
+    } else {
+      toast.error('Save function not available');
+    }
   };
 
   return (

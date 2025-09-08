@@ -105,7 +105,7 @@ export function useOperatorExtensions(operatorId: string) {
   }, [operatorId]);
 
   // Save bonuses
-  const saveBonuses = async (bonusData: OperatorBonus[]) => {
+  const saveBonuses = useCallback(async (bonusData: OperatorBonus[]) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing bonuses');
       return;
@@ -127,10 +127,10 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving bonuses:', error);
       toast.error('Failed to save bonuses');
     }
-  };
+  }, [operatorId]);
 
   // Save payments
-  const savePayments = async (paymentData: OperatorPayment[]) => {
+  const savePayments = useCallback(async (paymentData: OperatorPayment[]) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing payment methods');
       return;
@@ -152,10 +152,10 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving payments:', error);
       toast.error('Failed to save payment methods');
     }
-  };
+  }, [operatorId]);
 
   // Save features
-  const saveFeatures = async (featureData: OperatorFeature[]) => {
+  const saveFeatures = useCallback(async (featureData: OperatorFeature[]) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing features');
       return;
@@ -177,10 +177,10 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving features:', error);
       toast.error('Failed to save features');
     }
-  };
+  }, [operatorId]);
 
   // Save security
-  const saveSecurity = async (securityData: OperatorSecurity) => {
+  const saveSecurity = useCallback(async (securityData: OperatorSecurity) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing security');
       return;
@@ -199,10 +199,10 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving security:', error);
       toast.error('Failed to save security settings');
     }
-  };
+  }, [operatorId]);
 
   // Save FAQs
-  const saveFaqs = async (faqData: OperatorFAQ[]) => {
+  const saveFaqs = useCallback(async (faqData: OperatorFAQ[]) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing FAQs');
       return;
@@ -224,7 +224,7 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving FAQs:', error);
       toast.error('Failed to save FAQs');
     }
-  };
+  }, [operatorId]);
 
   useEffect(() => {
     fetchExtensionData();
