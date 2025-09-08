@@ -34,6 +34,7 @@ import ReviewsManager from "./pages/admin/ReviewsManager";
 import AdminUsers from "./pages/admin/AdminUsers";
 import PublishingManager from "./pages/admin/PublishingManager";
 import Auth from "./pages/Auth";
+import LegacyOperatorReview from "./pages/LegacyOperatorReview";
 
 // Redirect component for legacy review URLs
 const ReviewRedirect = () => {
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/operators" element={<OperatorsArchive />} />
             <Route path="/operators/:id" element={<OperatorReview />} />
             <Route path="/operators/:id/review" element={<ReviewRedirect />} />
+            <Route path="/operators/:id/legacy" element={<LegacyOperatorReview />} />
             <Route path="/casino-review" element={<OnlineCasinoReview />} />
             <Route path="/cases" element={<CasesArchive />} />
             <Route path="/cases/:id" element={<CaseDetail />} />
