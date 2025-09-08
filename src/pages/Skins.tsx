@@ -142,7 +142,7 @@ const Skins = () => {
                 </div>
                 <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto lg:w-auto">
                   <Button className="flex-1 sm:flex-none" asChild>
-                    <Link to={`/operators/${operator.id}/review`}>Read Review</Link>
+                    <Link to={`/operators/${operator.slug || operator.id}`}>Read Review</Link>
                   </Button>
                   <Button variant="outline" className="flex-1 sm:flex-none group" asChild>
                     <a href={operator.url} target="_blank" rel="noopener noreferrer">

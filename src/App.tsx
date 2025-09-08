@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { ErrorBoundary, AdminErrorBoundary } from '@/components/ErrorBoundary';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
@@ -35,6 +35,12 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import PublishingManager from "./pages/admin/PublishingManager";
 import Auth from "./pages/Auth";
 
+// Redirect component for legacy review URLs
+const ReviewRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/operators/${id}`} replace />;
+};
+
 const App = () => (
   <HelmetProvider>
     <TooltipProvider>
@@ -46,6 +52,7 @@ const App = () => (
             <Route path="/skins" element={<Skins />} />
             <Route path="/operators" element={<OperatorsArchive />} />
             <Route path="/operators/:id" element={<OperatorReview />} />
+            <Route path="/operators/:id/review" element={<ReviewRedirect />} />
             <Route path="/casino-review" element={<OnlineCasinoReview />} />
             <Route path="/cases" element={<CasesArchive />} />
             <Route path="/cases/:id" element={<CaseDetail />} />
