@@ -69,8 +69,18 @@ export function useOperatorExtensions(operatorId: string) {
   const [security, setSecurity] = useState<OperatorSecurity | null>(null);
   const [faqs, setFaqs] = useState<OperatorFAQ[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isExtensionActive, setIsExtensionActive] = useState(false);
   const isMountedRef = useRef(true);
   const { isPublishing, operatorId: publishingOperatorId } = usePublishingState();
+  
+  // Stable function references using useRef to prevent recreation
+  const stableSaveRefs = useRef({
+    saveBonuses: null as ((data: OperatorBonus[]) => Promise<void>) | null,
+    savePayments: null as ((data: OperatorPayment[]) => Promise<void>) | null,
+    saveFeatures: null as ((data: OperatorFeature[]) => Promise<void>) | null,
+    saveSecurity: null as ((data: OperatorSecurity) => Promise<void>) | null,
+    saveFaqs: null as ((data: OperatorFAQ[]) => Promise<void>) | null
+  });
 
   // Fetch all extension data
   const fetchExtensionData = useCallback(async () => {
@@ -119,10 +129,15 @@ export function useOperatorExtensions(operatorId: string) {
     }
   }, [operatorId]);
 
-  // Save bonuses with stable reference and defensive programming
-  const saveBonuses = useCallback(async (bonusData: OperatorBonus[]) => {
+  // Create stable save functions that won't change reference
+  const createStableSaveBonus = useCallback(async (bonusData: OperatorBonus[]) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing bonuses');
+      return;
+    }
+    
+    if (isExtensionActive) {
+      console.log('Extension management is active, deferring save');
       return;
     }
     
@@ -151,12 +166,19 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving bonuses:', error);
       toast.error('Failed to save bonuses');
     }
-  }, [operatorId]);
+  }, [operatorId, isExtensionActive]);
 
-  // Save payments with stable reference and defensive programming
-  const savePayments = useCallback(async (paymentData: OperatorPayment[]) => {
+  // Store stable reference
+  stableSaveRefs.current.saveBonuses = createStableSaveBonus;
+
+  const createStableSavePayments = useCallback(async (paymentData: OperatorPayment[]) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing payment methods');
+      return;
+    }
+    
+    if (isExtensionActive) {
+      console.log('Extension management is active, deferring save');
       return;
     }
     
@@ -185,13 +207,19 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving payments:', error);
       toast.error('Failed to save payment methods');
     }
-  }, [operatorId]);
+  }, [operatorId, isExtensionActive]);
 
-  // Save features
-  const saveFeatures = useCallback(async (featureData: OperatorFeature[]) => {
+  stableSaveRefs.current.savePayments = createStableSavePayments;
+
+  const createStableSaveFeatures = useCallback(async (featureData: OperatorFeature[]) => {
     // Skip if currently publishing to prevent conflicts
     if (isPublishing && publishingOperatorId === operatorId) {
       console.log('Skipping features save during publishing');
+      return;
+    }
+    
+    if (isExtensionActive) {
+      console.log('Extension management is active, deferring save');
       return;
     }
     
@@ -216,12 +244,18 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving features:', error);
       toast.error('Failed to save features');
     }
-  }, [operatorId, isPublishing, publishingOperatorId]);
+  }, [operatorId, isPublishing, publishingOperatorId, isExtensionActive]);
 
-  // Save security with stable reference and defensive programming
-  const saveSecurity = useCallback(async (securityData: OperatorSecurity) => {
+  stableSaveRefs.current.saveFeatures = createStableSaveFeatures;
+
+  const createStableSaveSecurity = useCallback(async (securityData: OperatorSecurity) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing security');
+      return;
+    }
+    
+    if (isExtensionActive) {
+      console.log('Extension management is active, deferring save');
       return;
     }
     
@@ -245,12 +279,18 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving security:', error);
       toast.error('Failed to save security settings');
     }
-  }, [operatorId]);
+  }, [operatorId, isExtensionActive]);
 
-  // Save FAQs with stable reference and defensive programming
-  const saveFaqs = useCallback(async (faqData: OperatorFAQ[]) => {
+  stableSaveRefs.current.saveSecurity = createStableSaveSecurity;
+
+  const createStableSaveFaqs = useCallback(async (faqData: OperatorFAQ[]) => {
     if (!operatorId || operatorId.startsWith('temp-')) {
       toast.error('Please save the operator first before managing FAQs');
+      return;
+    }
+    
+    if (isExtensionActive) {
+      console.log('Extension management is active, deferring save');
       return;
     }
     
@@ -279,7 +319,14 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error saving FAQs:', error);
       toast.error('Failed to save FAQs');
     }
-  }, [operatorId]);
+  }, [operatorId, isExtensionActive]);
+
+  stableSaveRefs.current.saveFaqs = createStableSaveFaqs;
+
+  // Extension activity control functions
+  const setExtensionActive = useCallback((active: boolean) => {
+    setIsExtensionActive(active);
+  }, []);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -291,6 +338,77 @@ export function useOperatorExtensions(operatorId: string) {
     };
   }, [operatorId, fetchExtensionData]);
 
+  // Defensive wrapper functions that check for function existence
+  const safeSaveBonuses = useCallback(async (data: OperatorBonus[]) => {
+    try {
+      if (stableSaveRefs.current.saveBonuses && typeof stableSaveRefs.current.saveBonuses === 'function') {
+        await stableSaveRefs.current.saveBonuses(data);
+      } else {
+        console.error('Save bonuses function is not available');
+        toast.error('Save function is not available');
+      }
+    } catch (error) {
+      console.error('Error in safeSaveBonuses:', error);
+      toast.error('Failed to save bonuses');
+    }
+  }, []);
+
+  const safeSavePayments = useCallback(async (data: OperatorPayment[]) => {
+    try {
+      if (stableSaveRefs.current.savePayments && typeof stableSaveRefs.current.savePayments === 'function') {
+        await stableSaveRefs.current.savePayments(data);
+      } else {
+        console.error('Save payments function is not available');
+        toast.error('Save function is not available');
+      }
+    } catch (error) {
+      console.error('Error in safeSavePayments:', error);
+      toast.error('Failed to save payments');
+    }
+  }, []);
+
+  const safeSaveFeatures = useCallback(async (data: OperatorFeature[]) => {
+    try {
+      if (stableSaveRefs.current.saveFeatures && typeof stableSaveRefs.current.saveFeatures === 'function') {
+        await stableSaveRefs.current.saveFeatures(data);
+      } else {
+        console.error('Save features function is not available');
+        toast.error('Save function is not available');
+      }
+    } catch (error) {
+      console.error('Error in safeSaveFeatures:', error);
+      toast.error('Failed to save features');
+    }
+  }, []);
+
+  const safeSaveSecurity = useCallback(async (data: OperatorSecurity) => {
+    try {
+      if (stableSaveRefs.current.saveSecurity && typeof stableSaveRefs.current.saveSecurity === 'function') {
+        await stableSaveRefs.current.saveSecurity(data);
+      } else {
+        console.error('Save security function is not available');
+        toast.error('Save function is not available');
+      }
+    } catch (error) {
+      console.error('Error in safeSaveSecurity:', error);
+      toast.error('Failed to save security');
+    }
+  }, []);
+
+  const safeSaveFaqs = useCallback(async (data: OperatorFAQ[]) => {
+    try {
+      if (stableSaveRefs.current.saveFaqs && typeof stableSaveRefs.current.saveFaqs === 'function') {
+        await stableSaveRefs.current.saveFaqs(data);
+      } else {
+        console.error('Save FAQs function is not available');
+        toast.error('Save function is not available');
+      }
+    } catch (error) {
+      console.error('Error in safeSaveFaqs:', error);
+      toast.error('Failed to save FAQs');
+    }
+  }, []);
+
   return {
     bonuses,
     payments,
@@ -298,12 +416,13 @@ export function useOperatorExtensions(operatorId: string) {
     security,
     faqs,
     loading,
-    // Always return the same stable function references
-    saveBonuses,
-    savePayments,
-    saveFeatures,
-    saveSecurity,
-    saveFaqs,
-    refetchData: fetchExtensionData
+    // Return defensive wrapper functions with stable references
+    saveBonuses: safeSaveBonuses,
+    savePayments: safeSavePayments,
+    saveFeatures: safeSaveFeatures,
+    saveSecurity: safeSaveSecurity,
+    saveFaqs: safeSaveFaqs,
+    refetchData: fetchExtensionData,
+    setExtensionActive
   };
 }

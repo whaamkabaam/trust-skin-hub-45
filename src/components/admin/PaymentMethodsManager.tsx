@@ -27,6 +27,11 @@ const paymentMethods = [
 export function PaymentMethodsManager({ payments, onSave, operatorId, disabled = false, onInteractionStart }: PaymentMethodsManagerProps) {
   const [localPayments, setLocalPayments] = useState<OperatorPayment[]>(payments);
 
+  // Update local state when props change
+  React.useEffect(() => {
+    setLocalPayments(payments);
+  }, [payments]);
+
   const addPayment = (type: 'deposit' | 'withdrawal') => {
     // Notify parent that user is interacting with extensions
     if (onInteractionStart) {

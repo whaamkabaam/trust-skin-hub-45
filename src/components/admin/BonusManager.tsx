@@ -31,6 +31,11 @@ const bonusTypes = [
 export function BonusManager({ bonuses, onSave, operatorId, disabled = false, onInteractionStart }: BonusManagerProps) {
   const [localBonuses, setLocalBonuses] = useState<OperatorBonus[]>(bonuses);
 
+  // Update local state when props change, but prevent auto-save interference
+  React.useEffect(() => {
+    setLocalBonuses(bonuses);
+  }, [bonuses]);
+
   const addBonus = () => {
     // Notify parent that user is interacting with extensions
     if (onInteractionStart) {

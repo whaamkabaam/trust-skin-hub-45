@@ -91,7 +91,7 @@ export function useAutoSave<T>({
     }, duration);
   }, []);
 
-  // Auto-save effect
+  // Auto-save effect with enhanced safety checks
   useEffect(() => {
     if (!enabled || initialLoadRef.current || isUserInteracting) return;
 
@@ -106,13 +106,15 @@ export function useAutoSave<T>({
           scheduled_publish_at: (debouncedData as any).scheduled_publish_at === '' ? null : (debouncedData as any).scheduled_publish_at,
         };
         
+        // Enhanced safety check for save function
         if (typeof onSave === 'function') {
           await onSave(cleanedData);
           setSaveState('saved');
           setLastSaved(new Date());
           clearDraft();
         } else {
-          console.warn('onSave is not a function, skipping auto-save');
+          console.warn('onSave is not a function or is undefined, skipping auto-save');
+          setSaveState('idle');
           return;
         }
         
@@ -124,7 +126,16 @@ export function useAutoSave<T>({
         console.error('Auto-save failed:', error);
         setSaveState('error');
         // Save as draft if auto-save fails
-        saveDraft(debouncedData);
+        try {
+          saveDraft(debouncedData);
+        } catch (draftError) {
+          console.error('Failed to save draft:', draftError);
+        }
+        
+        // Reset to idle after error
+        saveTimeoutRef.current = setTimeout(() => {
+          setSaveState('idle');
+        }, 3000);
       }
     };
 

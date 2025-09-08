@@ -157,7 +157,8 @@ export function OperatorForm({
     savePayments,
     saveFeatures,
     saveSecurity,
-    saveFaqs
+    saveFaqs,
+    setExtensionActive
   } = useOperatorExtensions(effectiveOperatorId);
 
   // Auto-save functionality
@@ -181,39 +182,56 @@ export function OperatorForm({
     storageKey: initialData?.id || 'new-operator'
   });
 
-  // Stabilize extension manager props with static keys to prevent React reconciliation issues
+  // Enhanced interaction handlers for extension management
+  const handleExtensionInteraction = useCallback((extensionType: string) => {
+    console.log(`Starting interaction with ${extensionType} extension`);
+    setExtensionActive(true);
+    pauseAutoSave?.(15000); // Pause auto-save for 15 seconds
+    
+    // Auto-reset after 30 seconds to prevent getting stuck
+    setTimeout(() => {
+      setExtensionActive(false);
+    }, 30000);
+  }, [setExtensionActive, pauseAutoSave]);
+
+  const handleExtensionSave = useCallback((extensionType: string) => {
+    console.log(`Completed save for ${extensionType} extension`);
+    setExtensionActive(false);
+  }, [setExtensionActive]);
+
+  // Stabilize extension manager props with static keys and enhanced error handling
   const stableExtensionProps = useMemo(() => ({
     bonuses: {
-      key: 'bonuses-manager',
+      key: 'bonuses-manager-stable',
       operatorId: effectiveOperatorId,
       bonuses,
       onSave: saveBonuses,
       disabled: publishLoading || publishingState,
-      onInteractionStart: () => pauseAutoSave?.(10000) // Pause auto-save for 10 seconds when user interacts with bonuses
+      onInteractionStart: () => handleExtensionInteraction('bonuses')
     },
     payments: {
-      key: 'payments-manager',
+      key: 'payments-manager-stable',
       operatorId: effectiveOperatorId,
       payments,
       onSave: savePayments,
       disabled: publishLoading || publishingState,
-      onInteractionStart: () => pauseAutoSave?.(10000)
+      onInteractionStart: () => handleExtensionInteraction('payments')
     },
     security: {
-      key: 'security-manager',
+      key: 'security-manager-stable',
       operatorId: effectiveOperatorId,
       security,
       onSave: saveSecurity,
       disabled: publishLoading || publishingState,
-      onInteractionStart: () => pauseAutoSave?.(10000)
+      onInteractionStart: () => handleExtensionInteraction('security')
     },
     faqs: {
-      key: 'faqs-manager',
+      key: 'faqs-manager-stable',
       operatorId: effectiveOperatorId,
       faqs,
       onSave: saveFaqs,
       disabled: publishLoading || publishingState,
-      onInteractionStart: () => pauseAutoSave?.(10000)
+      onInteractionStart: () => handleExtensionInteraction('faqs')
     }
   }), [
     effectiveOperatorId,
@@ -227,7 +245,7 @@ export function OperatorForm({
     saveFaqs,
     publishLoading,
     publishingState,
-    pauseAutoSave
+    handleExtensionInteraction
   ]);
 
 
@@ -743,39 +761,39 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="bonuses" className="space-y-6">
-          <TabErrorBoundary tabName="Bonuses">
+          <ExtensionErrorBoundary extensionName="Bonuses">
             <BonusManager 
               key={stableExtensionProps.bonuses.key}
               {...stableExtensionProps.bonuses} 
             />
-          </TabErrorBoundary>
+          </ExtensionErrorBoundary>
         </TabsContent>
 
         <TabsContent value="payments" className="space-y-6">
-          <TabErrorBoundary tabName="Payments">
+          <ExtensionErrorBoundary extensionName="Payments">
             <PaymentMethodsManager 
               key={stableExtensionProps.payments.key}
               {...stableExtensionProps.payments} 
             />
-          </TabErrorBoundary>
+          </ExtensionErrorBoundary>
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
-          <TabErrorBoundary tabName="Security">
+          <ExtensionErrorBoundary extensionName="Security">
             <SecurityManager 
               key={stableExtensionProps.security.key}
               {...stableExtensionProps.security} 
             />
-          </TabErrorBoundary>
+          </ExtensionErrorBoundary>
         </TabsContent>
 
         <TabsContent value="faqs" className="space-y-6">
-          <TabErrorBoundary tabName="FAQs">
+          <ExtensionErrorBoundary extensionName="FAQs">
             <FAQManager 
               key={stableExtensionProps.faqs.key}
               {...stableExtensionProps.faqs} 
             />
-          </TabErrorBoundary>
+          </ExtensionErrorBoundary>
         </TabsContent>
 
         <TabsContent value="seo" className="space-y-6">
