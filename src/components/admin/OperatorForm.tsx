@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, Save, Globe } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useStaticContent } from '@/hooks/useStaticContent';
 import { usePublishingState } from '@/hooks/usePublishingState';
 import { toast } from '@/lib/toast';
@@ -183,8 +183,17 @@ export function OperatorForm({
   // Check if this specific operator is being published
   const isThisOperatorPublishing = globalIsPublishing && publishingOperatorId === initialData?.id;
 
-  // Separate state for publishing UI status that doesn't affect form state
-  const [publishingUIStatus, setPublishingUIStatus] = useState(watch('publish_status') || 'draft');
+  // Separate state for publishing UI status that syncs with form data
+  const currentFormStatus = watch('publish_status') || 'draft';
+  const [publishingUIStatus, setPublishingUIStatus] = useState(currentFormStatus);
+
+  // Synchronize UI status with form data after updates complete
+  useEffect(() => {
+    // Only sync if not currently publishing to avoid race conditions
+    if (!isThisOperatorPublishing && !isPublishing) {
+      setPublishingUIStatus(currentFormStatus);
+    }
+  }, [currentFormStatus, isThisOperatorPublishing, isPublishing]);
 
   // Stabilize extension manager props to prevent crashes during re-renders
   const stableExtensionProps = useMemo(() => ({
@@ -227,55 +236,28 @@ export function OperatorForm({
     publishingState
   ]);
 
-  const handlePublish = async () => {
-    if (!initialData?.id) {
-      toast.error('Please save the operator first before publishing');
-      return;
-    }
 
-    const requiredFields = ['name', 'slug', 'verdict'];
-    const currentValues = getValues();
-    const missingFields = requiredFields.filter(field => !currentValues[field as keyof OperatorFormData]);
-    
-    if (missingFields.length > 0) {
-      toast.error(`Please fill in required fields: ${missingFields.join(', ')}`);
-      return;
-    }
-
-    setIsPublishing(true);
-    try {
-      const success = await publishStaticContent(initialData.id);
-      if (success) {
-        // Update UI status without affecting form state
-        setPublishingUIStatus('published');
-        toast.success('Static content published successfully! Your operator review page is now live.');
-      } else {
-        toast.error('Failed to publish static content. Please try again.');
-      }
-    } catch (error) {
-      console.error('Publishing error:', error);
-      toast.error('An error occurred while publishing. Please try again.');
-    } finally {
-      setIsPublishing(false);
-    }
-  };
-
-  // Stable callback for ContentScheduling that doesn't trigger form re-renders
+  // Stable callback for ContentScheduling that prevents race conditions
   const handleStatusChange = useCallback((status: string, scheduledDate?: string) => {
-    // Update form fields only for scheduling, not for published status
+    // For published status, use form submission workflow instead of direct state change
+    if (status === 'published') {
+      // Trigger form submission with published flag
+      const currentData = getValues();
+      handleSubmit((data) => onSubmit({ ...data, published: true }))();
+      return;
+    }
+    
+    // Handle other status changes normally
     if (status === 'scheduled' && scheduledDate) {
       setValue('publish_status' as any, status);
       setValue('scheduled_publish_at' as any, scheduledDate);
-    } else if (status !== 'published') {
+    } else {
       setValue('publish_status' as any, status);
       if (scheduledDate) {
         setValue('scheduled_publish_at' as any, scheduledDate);
       }
     }
-    
-    // Always update UI status
-    setPublishingUIStatus(status);
-  }, [setValue]);
+  }, [setValue, getValues, handleSubmit, onSubmit]);
 
   const generateSlug = (name: string) => {
     return name
@@ -926,9 +908,10 @@ export function OperatorForm({
 
       {/* Content Scheduling */}
       <ContentScheduling
-        publishStatus={publishingUIStatus}
-        publishedAt={(initialData as any)?.published_at}
-        scheduledPublishAt={(watch() as any).scheduled_publish_at}
+        key={`scheduling-${initialData?.id || 'new'}`}
+        publishStatus={publishingUIStatus || 'draft'}
+        publishedAt={(initialData as any)?.published_at || undefined}
+        scheduledPublishAt={(watch() as any).scheduled_publish_at || undefined}
         onStatusChange={handleStatusChange}
       />
 
@@ -948,17 +931,6 @@ export function OperatorForm({
              >
                <Save className="h-4 w-4 mr-2" />
                Save Draft
-             </Button>
-           )}
-           {initialData?.id && (
-             <Button 
-               type="button" 
-               onClick={handlePublish}
-               disabled={isPublishing || publishLoading}
-               className="bg-green-600 hover:bg-green-700 text-white"
-             >
-               <Globe className="h-4 w-4 mr-2" />
-               {isPublishing ? 'Publishing...' : 'Publish Static Content'}
              </Button>
            )}
            <Button type="submit" disabled={isLoading}>

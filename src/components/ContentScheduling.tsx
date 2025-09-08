@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,46 +15,66 @@ interface ContentSchedulingProps {
 }
 
 export function ContentScheduling({ 
-  publishStatus, 
+  publishStatus = 'draft', 
   publishedAt, 
   scheduledPublishAt,
   onStatusChange 
 }: ContentSchedulingProps) {
-  const [selectedStatus, setSelectedStatus] = useState(publishStatus || 'draft');
+  const [selectedStatus, setSelectedStatus] = useState(publishStatus);
   const [scheduledDate, setScheduledDate] = useState(scheduledPublishAt || '');
   const [scheduledTime, setScheduledTime] = useState('');
 
+  // Sync with external status changes
+  useEffect(() => {
+    if (publishStatus && publishStatus !== selectedStatus) {
+      setSelectedStatus(publishStatus);
+    }
+  }, [publishStatus]);
+
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, { variant: any; label: string }> = {
-      draft: { variant: 'secondary', label: 'Draft' },
-      scheduled: { variant: 'outline', label: 'Scheduled' },
-      published: { variant: 'default', label: 'Published' },
-      archived: { variant: 'destructive', label: 'Archived' }
-    };
-    const config = variants[status] || variants.draft;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    try {
+      const variants: Record<string, { variant: any; label: string }> = {
+        draft: { variant: 'secondary', label: 'Draft' },
+        scheduled: { variant: 'outline', label: 'Scheduled' },
+        published: { variant: 'default', label: 'Published' },
+        archived: { variant: 'destructive', label: 'Archived' }
+      };
+      const config = variants[status] || variants.draft;
+      return <Badge variant={config.variant}>{config.label}</Badge>;
+    } catch (error) {
+      console.error('Error rendering status badge:', error);
+      return <Badge variant="secondary">Draft</Badge>;
+    }
   };
 
   const handleStatusChange = (newStatus: string) => {
-    setSelectedStatus(newStatus);
-    
-    if (newStatus === 'scheduled') {
-      // Don't update yet, wait for date/time selection
-      return;
-    }
-    
-    if (newStatus === 'published') {
-      onStatusChange(newStatus, new Date().toISOString());
-    } else {
-      onStatusChange(newStatus, null);
+    try {
+      setSelectedStatus(newStatus);
+      
+      if (newStatus === 'scheduled') {
+        // Don't update yet, wait for date/time selection
+        return;
+      }
+      
+      if (newStatus === 'published') {
+        onStatusChange?.(newStatus, new Date().toISOString());
+      } else {
+        onStatusChange?.(newStatus, undefined);
+      }
+    } catch (error) {
+      console.error('Error handling status change:', error);
     }
   };
 
   const handleScheduleSubmit = () => {
-    if (!scheduledDate || !scheduledTime) return;
-    
-    const combinedDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
-    onStatusChange('scheduled', combinedDateTime.toISOString());
+    try {
+      if (!scheduledDate || !scheduledTime) return;
+      
+      const combinedDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+      onStatusChange?.('scheduled', combinedDateTime.toISOString());
+    } catch (error) {
+      console.error('Error scheduling content:', error);
+    }
   };
 
   const formatDateTime = (dateString?: string) => {
