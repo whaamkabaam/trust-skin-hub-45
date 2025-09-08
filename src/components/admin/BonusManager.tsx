@@ -15,6 +15,7 @@ interface BonusManagerProps {
   onSave: (bonuses: OperatorBonus[]) => void;
   operatorId: string;
   disabled?: boolean;
+  onInteractionStart?: () => void;
 }
 
 const bonusTypes = [
@@ -27,10 +28,15 @@ const bonusTypes = [
   { value: 'freeplay', label: 'Free Play' },
 ];
 
-export function BonusManager({ bonuses, onSave, operatorId, disabled = false }: BonusManagerProps) {
+export function BonusManager({ bonuses, onSave, operatorId, disabled = false, onInteractionStart }: BonusManagerProps) {
   const [localBonuses, setLocalBonuses] = useState<OperatorBonus[]>(bonuses);
 
   const addBonus = () => {
+    // Notify parent that user is interacting with extensions
+    if (onInteractionStart) {
+      onInteractionStart();
+    }
+    
     const newBonus: OperatorBonus = {
       operator_id: operatorId,
       bonus_type: 'welcome',
@@ -45,6 +51,11 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false }: 
   };
 
   const updateBonus = (index: number, updates: Partial<OperatorBonus>) => {
+    // Notify parent that user is interacting with extensions
+    if (onInteractionStart) {
+      onInteractionStart();
+    }
+    
     const updated = localBonuses.map((bonus, i) => 
       i === index ? { ...bonus, ...updates } : bonus
     );

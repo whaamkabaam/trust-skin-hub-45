@@ -15,6 +15,7 @@ interface FAQManagerProps {
   onSave: (faqs: OperatorFAQ[]) => void;
   operatorId: string;
   disabled?: boolean;
+  onInteractionStart?: () => void;
 }
 
 const faqCategories = [
@@ -25,10 +26,15 @@ const faqCategories = [
   { value: 'support', label: 'Support' },
 ];
 
-export function FAQManager({ faqs, onSave, operatorId, disabled = false }: FAQManagerProps) {
+export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInteractionStart }: FAQManagerProps) {
   const [localFaqs, setLocalFaqs] = useState<OperatorFAQ[]>(faqs);
 
   const addFaq = () => {
+    // Notify parent that user is interacting with extensions
+    if (onInteractionStart) {
+      onInteractionStart();
+    }
+    
     const newFaq: OperatorFAQ = {
       operator_id: operatorId,
       question: '',
@@ -41,6 +47,11 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false }: FAQMa
   };
 
   const updateFaq = (index: number, updates: Partial<OperatorFAQ>) => {
+    // Notify parent that user is interacting with extensions
+    if (onInteractionStart) {
+      onInteractionStart();
+    }
+    
     const updated = localFaqs.map((faq, i) => 
       i === index ? { ...faq, ...updates } : faq
     );

@@ -14,6 +14,7 @@ interface PaymentMethodsManagerProps {
   onSave: (payments: OperatorPayment[]) => void;
   operatorId: string;
   disabled?: boolean;
+  onInteractionStart?: () => void;
 }
 
 const paymentMethods = [
@@ -23,10 +24,15 @@ const paymentMethods = [
   'bank_transfer', 'paysafecard', 'google_pay', 'apple_pay'
 ];
 
-export function PaymentMethodsManager({ payments, onSave, operatorId, disabled = false }: PaymentMethodsManagerProps) {
+export function PaymentMethodsManager({ payments, onSave, operatorId, disabled = false, onInteractionStart }: PaymentMethodsManagerProps) {
   const [localPayments, setLocalPayments] = useState<OperatorPayment[]>(payments);
 
   const addPayment = (type: 'deposit' | 'withdrawal') => {
+    // Notify parent that user is interacting with extensions
+    if (onInteractionStart) {
+      onInteractionStart();
+    }
+    
     const newPayment: OperatorPayment = {
       operator_id: operatorId,
       method_type: type,
@@ -42,6 +48,11 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
   };
 
   const updatePayment = (index: number, updates: Partial<OperatorPayment>) => {
+    // Notify parent that user is interacting with extensions
+    if (onInteractionStart) {
+      onInteractionStart();
+    }
+    
     const updated = localPayments.map((payment, i) => 
       i === index ? { ...payment, ...updates } : payment
     );

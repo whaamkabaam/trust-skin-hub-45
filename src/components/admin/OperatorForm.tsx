@@ -174,7 +174,7 @@ export function OperatorForm({
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
   const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
   
-  const { saveState, lastSaved, forceSave } = useAutoSave({
+  const { saveState, lastSaved, forceSave, pauseAutoSave } = useAutoSave({
     data: formData,
     onSave: handleAutoSave,
     enabled: autoSaveEnabled && !!onAutoSave && !publishLoading,
@@ -188,28 +188,32 @@ export function OperatorForm({
       operatorId: effectiveOperatorId,
       bonuses,
       onSave: saveBonuses,
-      disabled: publishLoading || publishingState
+      disabled: publishLoading || publishingState,
+      onInteractionStart: () => pauseAutoSave?.(10000) // Pause auto-save for 10 seconds when user interacts with bonuses
     },
     payments: {
       key: 'payments-manager',
       operatorId: effectiveOperatorId,
       payments,
       onSave: savePayments,
-      disabled: publishLoading || publishingState
+      disabled: publishLoading || publishingState,
+      onInteractionStart: () => pauseAutoSave?.(10000)
     },
     security: {
       key: 'security-manager',
       operatorId: effectiveOperatorId,
       security,
       onSave: saveSecurity,
-      disabled: publishLoading || publishingState
+      disabled: publishLoading || publishingState,
+      onInteractionStart: () => pauseAutoSave?.(10000)
     },
     faqs: {
       key: 'faqs-manager',
       operatorId: effectiveOperatorId,
       faqs,
       onSave: saveFaqs,
-      disabled: publishLoading || publishingState
+      disabled: publishLoading || publishingState,
+      onInteractionStart: () => pauseAutoSave?.(10000)
     }
   }), [
     effectiveOperatorId,
@@ -222,7 +226,8 @@ export function OperatorForm({
     saveSecurity,
     saveFaqs,
     publishLoading,
-    publishingState
+    publishingState,
+    pauseAutoSave
   ]);
 
 

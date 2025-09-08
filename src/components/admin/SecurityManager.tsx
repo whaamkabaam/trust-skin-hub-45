@@ -14,9 +14,10 @@ interface SecurityManagerProps {
   onSave: (security: OperatorSecurity) => void;
   operatorId: string;
   disabled?: boolean;
+  onInteractionStart?: () => void;
 }
 
-export function SecurityManager({ security, onSave, operatorId, disabled = false }: SecurityManagerProps) {
+export function SecurityManager({ security, onSave, operatorId, disabled = false, onInteractionStart }: SecurityManagerProps) {
   const [localSecurity, setLocalSecurity] = useState<OperatorSecurity>(
     security || {
       operator_id: operatorId,
@@ -34,6 +35,10 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
   );
 
   const updateSecurity = (updates: Partial<OperatorSecurity>) => {
+    // Notify parent that user is interacting with extensions
+    if (onInteractionStart) {
+      onInteractionStart();
+    }
     setLocalSecurity(prev => ({ ...prev, ...updates }));
   };
 
