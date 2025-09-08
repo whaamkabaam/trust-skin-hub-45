@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Operator } from '@/types';
+import { useStaticContent } from './useStaticContent';
 
 interface ContentSection {
   id: string;
@@ -41,6 +42,8 @@ export function usePublicOperator(slug: string): PublicOperatorData {
   const [seoMetadata, setSeoMetadata] = useState<SEOMetadata | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const { getPublishedContent } = useStaticContent();
 
   useEffect(() => {
     if (slug) {
@@ -53,7 +56,19 @@ export function usePublicOperator(slug: string): PublicOperatorData {
       setLoading(true);
       setError(null);
 
-      // Fetch operator by slug
+      // Try to fetch from static content first (SEO optimized)
+      const staticContent = await getPublishedContent(slug);
+      
+      if (staticContent) {
+        // Use pre-generated static content
+        setOperator(staticContent.operator);
+        setContentSections(staticContent.contentSections);
+        setMediaAssets(staticContent.mediaAssets);
+        setSeoMetadata(staticContent.seoMetadata);
+        return;
+      }
+
+      // Fallback to dynamic fetching for preview/development
       const { data: operatorData, error: operatorError } = await supabase
         .from('operators')
         .select('*')
@@ -78,8 +93,8 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         hero_image_url: operatorData.hero_image_url,
         verdict: operatorData.verdict || '',
         overallRating: (operatorData.ratings as any)?.overall || 0,
-        feeLevel: 'Medium', // Default since not in DB
-        paymentMethods: ['crypto'], // Default since not in DB  
+        feeLevel: 'Medium',
+        paymentMethods: ['crypto'],
         modes: operatorData.categories || [],
         pros: operatorData.pros || [],
         cons: operatorData.cons || [],
@@ -89,11 +104,11 @@ export function usePublicOperator(slug: string): PublicOperatorData {
           withdrawal: 0,
           trading: 0
         },
-        payoutSpeed: '24 hours', // Default
+        payoutSpeed: '24 hours',
         kycRequired: operatorData.kyc_required || false,
         countries: operatorData.supported_countries || [],
         url: operatorData.tracking_link || '#',
-        verified: true, // All published operators are verified
+        verified: true,
         otherFeatures: [],
         gamingModes: [],
         games: [],

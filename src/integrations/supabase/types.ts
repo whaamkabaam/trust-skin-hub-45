@@ -490,6 +490,44 @@ export type Database = {
         }
         Relationships: []
       }
+      published_operator_content: {
+        Row: {
+          content_data: Json
+          created_at: string
+          id: string
+          operator_id: string
+          seo_data: Json
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          content_data?: Json
+          created_at?: string
+          id?: string
+          operator_id: string
+          seo_data?: Json
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          content_data?: Json
+          created_at?: string
+          id?: string
+          operator_id?: string
+          seo_data?: Json
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "published_operator_content_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: false
+            referencedRelation: "operators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           content: string

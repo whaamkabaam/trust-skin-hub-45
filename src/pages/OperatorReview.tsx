@@ -17,6 +17,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { usePublicOperator } from '@/hooks/usePublicOperator';
 import { usePublicReviews } from '@/hooks/usePublicReviews';
+import { usePublicOperatorExtensions } from '@/hooks/usePublicOperatorExtensions';
 import { SEOHead } from '@/components/SEOHead';
 import { ContentSectionRenderer } from '@/components/ContentSectionRenderer';
 const OperatorReview = () => {
@@ -27,6 +28,7 @@ const OperatorReview = () => {
   const [prosConsOpen, setProsConsOpen] = useState(false);
   
   const { operator, contentSections, seoMetadata, loading, error } = usePublicOperator(slug || '');
+  const { bonuses, payments, features, security, faqs } = usePublicOperatorExtensions(slug || '');
   const { reviews } = usePublicReviews(operator?.id || '');
 
   if (loading) {
@@ -90,35 +92,42 @@ const OperatorReview = () => {
     title: 'Verdict',
     anchor: 'verdict-section'
   }];
+  // Dynamic data with fallbacks
+  const ratings = operator?.ratings || {};
   const scores = {
-    overall: 4.3,
-    user: 3.7,
-    trust: 4.2,
-    fees: 4.0,
-    ux: 4.5,
-    support: 3.8,
-    speed: 4.6
+    overall: ratings.overall || 0,
+    user: ratings.overall || 0, // Use same for now
+    trust: ratings.trust || 0,
+    fees: ratings.value || 0,
+    ux: ratings.ux || 0,
+    support: ratings.support || 0,
+    speed: ratings.payments || 0
   };
-  const promoCode = "XYZ123";
+  
+  // Get first active bonus for promo code
+  const activeBonus = bonuses?.find(b => b.is_active) || null;
+  const promoCode = activeBonus?.value || "GET10FREE";
+  
   const copyPromoCode = () => {
     navigator.clipboard.writeText(promoCode);
     setPromoCodeCopied(true);
     setTimeout(() => setPromoCodeCopied(false), 2000);
   };
-  const siteType = operator.modes.includes('Case Opening') ? 'Case Site' : 'Mystery Box';
+  
+  const siteType = operator?.modes?.includes('Case Opening') ? 'Case Site' : 'Mystery Box';
   const userRatings = {
-    total: 1284,
+    total: reviews?.length || 0,
     breakdown: {
-      5: 45,
-      4: 30,
-      3: 15,
-      2: 7,
-      1: 3
+      5: 45, 4: 30, 3: 15, 2: 7, 1: 3 // Default breakdown
     }
   };
-  const faqItems = [{
-    q: `Is ${operator.name} legit?`,
-    a: `Yes, ${operator.name} is a legitimate platform with proper security measures and verified payouts.`
+  // Use actual FAQs or fallback
+  const faqItems = faqs?.length > 0 ? faqs.map(faq => ({
+    q: faq.question,
+    a: faq.answer
+  })) : [{
+    q: `Is ${operator?.name} legit?`,
+    a: `Yes, ${operator?.name} is a legitimate platform with proper security measures and verified payouts.`
   }, {
     q: "How do payouts work?",
     a: "Payouts are processed within 24-48 hours via Steam trade or direct shipping for physical items."
@@ -136,16 +145,16 @@ const OperatorReview = () => {
     { id: 6, url: "/placeholder.svg", alt: "Withdrawal interface" }
   ];
 
-  // SEO content
-  const seoTitle = seoMetadata?.meta_title || `${operator.name} Review - CS2 Trading Platform`;
-  const seoDescription = seoMetadata?.meta_description || `In-depth review of ${operator.name}. Find out about fees, security, features, and user experiences.`;
-  const structuredData = {
+  // SEO content with dynamic data
+  const seoTitle = seoMetadata?.meta_title || `${operator?.name} Review - CS2 Trading Platform`;
+  const seoDescription = seoMetadata?.meta_description || `In-depth review of ${operator?.name}. Find out about fees, security, features, and user experiences.`;
+  const structuredData = seoMetadata?.schema_data || {
     '@context': 'https://schema.org',
     '@type': 'Review',
     itemReviewed: {
       '@type': 'Organization',
-      name: operator.name,
-      url: operator.url
+      name: operator?.name,
+      url: operator?.url
     },
     reviewRating: {
       '@type': 'Rating',
@@ -177,18 +186,18 @@ const OperatorReview = () => {
               Back
             </Link>
           </Button>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">{operator.name}</span>
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium">{scores.overall}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm">{operator?.name}</span>
+              <div className="flex items-center gap-1">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                <span className="text-sm font-medium">{scores.overall.toFixed(1)}</span>
+              </div>
             </div>
-          </div>
-          <Button size="sm" asChild>
-            <a href={operator.url} target="_blank" rel="noopener noreferrer">
-              Visit
-            </a>
-          </Button>
+            <Button size="sm" asChild>
+              <a href={operator?.url} target="_blank" rel="noopener noreferrer">
+                Visit
+              </a>
+            </Button>
         </div>
       </div>
 
@@ -200,7 +209,7 @@ const OperatorReview = () => {
             <span className="text-muted-foreground">›</span>
             <Link to="/reviews" className="text-muted-foreground hover:text-foreground">Reviews</Link>
             <span className="text-muted-foreground">›</span>
-            <span className="font-medium">{operator.name}</span>
+            <span className="font-medium">{operator?.name}</span>
           </div>
         </div>
       </div>
@@ -216,16 +225,20 @@ const OperatorReview = () => {
                 <div className="flex items-start gap-6">
                   {/* Site Logo */}
                   <div className="w-16 h-16 bg-white rounded-lg shadow-lg flex items-center justify-center flex-shrink-0 border">
-                    <span className="text-xl font-bold text-primary">{operator.name.charAt(0)}</span>
+                    {operator?.logo ? (
+                      <img src={operator.logo} alt={`${operator.name} logo`} className="w-12 h-12 object-contain" />
+                    ) : (
+                      <span className="text-xl font-bold text-primary">{operator?.name?.charAt(0)}</span>
+                    )}
                   </div>
                   
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-4">
-                      <h1 className="text-3xl font-bold">{operator.name}</h1>
+                      <h1 className="text-3xl font-bold">{operator?.name}</h1>
                       <Badge variant="outline" className="text-blue-600 border-blue-200">
                         {siteType}
                       </Badge>
-                      {operator.verified && <Badge className="bg-green-100 text-green-800">
+                      {operator?.verified && <Badge className="bg-green-100 text-green-800">
                           <CheckCircle className="w-4 h-4 mr-1" />
                           Verified ✓
                         </Badge>}
@@ -239,7 +252,7 @@ const OperatorReview = () => {
                           <div className="flex">
                             {[...Array(5)].map((_, i) => <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />)}
                           </div>
-                          <span className="font-bold text-lg">{scores.overall}/5</span>
+                          <span className="font-bold text-lg">{scores.overall.toFixed(1)}/5</span>
                         </div>
                       </div>
                       <div className="h-6 w-px bg-border" />
@@ -249,7 +262,7 @@ const OperatorReview = () => {
                           <div className="flex">
                             {[...Array(5)].map((_, i) => <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />)}
                           </div>
-                          <span className="font-bold">{scores.user}/5</span>
+                          <span className="font-bold">{scores.user.toFixed(1)}/5</span>
                           <span className="text-muted-foreground">({userRatings.total})</span>
                         </div>
                       </div>
@@ -259,39 +272,45 @@ const OperatorReview = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-6">
                       <div>
                         <span className="text-muted-foreground">Launched:</span>
-                        <span className="ml-2 font-medium">{operator.launch_year || 'N/A'}</span>
+                        <span className="ml-2 font-medium">{operator?.launch_year || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Payments:</span>
                         <div className="flex gap-1 mt-1">
-                          <Badge variant="outline" className="text-xs">Visa</Badge>
-                          <Badge variant="outline" className="text-xs">BTC</Badge>
-                          <Badge variant="outline" className="text-xs">ETH</Badge>
+                          {payments?.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">{payment.payment_method}</Badge>
+                          )) || (
+                            <>
+                              <Badge variant="outline" className="text-xs">Visa</Badge>
+                              <Badge variant="outline" className="text-xs">BTC</Badge>
+                              <Badge variant="outline" className="text-xs">ETH</Badge>
+                            </>
+                          )}
                         </div>
                       </div>
                       <div>
                         <span className="text-muted-foreground">KYC:</span>
-                        <span className="ml-2 font-medium">{operator.kycRequired ? 'Required' : 'Not Required'}</span>
+                        <span className="ml-2 font-medium">{operator?.kycRequired ? 'Required' : 'Not Required'}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Payout:</span>
                         <div className="flex gap-1 mt-1">
                           <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
-                            {operator.payoutSpeed}
+                            {operator?.payoutSpeed || '24 hours'}
                           </Badge>
                         </div>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Provably Fair:</span>
-                        <span className="ml-2 font-medium text-green-600">Yes</span>
+                        <span className="ml-2 font-medium text-green-600">{security?.provably_fair ? 'Yes' : 'No'}</span>
                       </div>
                     </div>
 
                     {/* Optional Features - Better organized */}
-                    {(operator.otherFeatures || operator.gamingModes || operator.games || operator.categories) && (
+                    {(operator?.otherFeatures || operator?.gamingModes || operator?.games || operator?.categories) && (
                       <div className="space-y-3 border-t pt-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {operator.otherFeatures && (
+                          {operator?.otherFeatures && (
                             <div>
                               <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Other Features</span>
                               <div className="flex flex-wrap gap-1.5 mt-2">
@@ -304,7 +323,7 @@ const OperatorReview = () => {
                             </div>
                           )}
                           
-                          {operator.gamingModes && (
+                          {operator?.gamingModes && (
                             <div>
                               <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Gaming Modes</span>
                               <div className="flex flex-wrap gap-1.5 mt-2">
@@ -317,7 +336,7 @@ const OperatorReview = () => {
                             </div>
                           )}
                           
-                          {operator.games && (
+                          {operator?.games && (
                             <div>
                               <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Games</span>
                               <div className="flex flex-wrap gap-1.5 mt-2">
@@ -330,7 +349,7 @@ const OperatorReview = () => {
                             </div>
                           )}
                           
-                          {operator.categories && (
+                          {operator?.categories && (
                             <div>
                               <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Categories</span>
                               <div className="flex flex-wrap gap-1.5 mt-2">
@@ -357,8 +376,10 @@ const OperatorReview = () => {
                   </CardHeader>
                   <CardContent className="pt-0 space-y-4">
                     <div className="text-center">
-                      <div className="text-lg font-bold">Free $10 + 3 Cases</div>
-                      <div className="text-sm text-muted-foreground">Welcome Bonus</div>
+                      <div className="text-lg font-bold">{activeBonus?.title || 'Free $10 + 3 Cases'}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {activeBonus?.description || 'Welcome Bonus'}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 p-2 bg-background rounded border border-dashed">
                       <code className="flex-1 text-center font-mono">{promoCode}</code>
@@ -367,7 +388,7 @@ const OperatorReview = () => {
                       </Button>
                     </div>
                     <Button className="w-full" asChild>
-                      <a href={operator.url} target="_blank" rel="noopener noreferrer">
+                      <a href={operator?.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="w-4 h-4 mr-2" />
                         Visit Site
                       </a>

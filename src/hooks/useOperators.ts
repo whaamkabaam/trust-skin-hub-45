@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 import type { OperatorFormData } from '@/lib/validations';
+import { useStaticContent } from './useStaticContent';
 
 type Operator = Tables<'operators'>;
 
@@ -12,6 +13,7 @@ export function useOperators() {
   const [operators, setOperators] = useState<Operator[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { publishStaticContent } = useStaticContent();
 
   const fetchOperators = async () => {
     try {
@@ -69,6 +71,18 @@ export function useOperators() {
 
       if (error) throw error;
       
+      // If publishing, generate static content
+      if (data.published === true) {
+        const published = await publishStaticContent(id);
+        if (!published) {
+          toast.error('Operator saved but static content generation failed');
+        } else {
+          toast.success('Operator published successfully with optimized content');
+        }
+      } else {
+        toast.success('Operator updated successfully');
+      }
+      
       // Optimistic update
       setOperators(prev => 
         prev.map(op => op.id === id ? updatedOperator : op)
@@ -79,7 +93,6 @@ export function useOperators() {
       queryClient.invalidateQueries({ queryKey: ['public-operators'] });
       queryClient.invalidateQueries({ queryKey: ['operator', id] });
       
-      toast.success('Operator updated successfully');
       return updatedOperator;
     } catch (err) {
       console.error('Error updating operator:', err);

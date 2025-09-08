@@ -1,0 +1,234 @@
+import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { Operator } from '@/types';
+
+interface StaticContentData {
+  operator: Operator;
+  bonuses: any[];
+  payments: any[];
+  features: any[];
+  security: any | null;
+  faqs: any[];
+  contentSections: any[];
+  mediaAssets: any[];
+  seoMetadata: any | null;
+}
+
+interface PublishedContent {
+  id: string;
+  operator_id: string;
+  slug: string;
+  content_data: StaticContentData;
+  seo_data: any;
+  created_at: string;
+  updated_at: string;
+}
+
+export function useStaticContent() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const generateStaticContent = async (operatorId: string): Promise<StaticContentData | null> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch operator data
+      const { data: operator, error: operatorError } = await supabase
+        .from('operators')
+        .select('*')
+        .eq('id', operatorId)
+        .single();
+
+      if (operatorError) throw operatorError;
+
+      // Fetch all extension data in parallel
+      const [
+        { data: bonuses },
+        { data: payments },
+        { data: features },
+        { data: security },
+        { data: faqs },
+        { data: contentSections },
+        { data: mediaAssets },
+        { data: seoMetadata }
+      ] = await Promise.all([
+        supabase.from('operator_bonuses').select('*').eq('operator_id', operatorId).order('order_number'),
+        supabase.from('operator_payments').select('*').eq('operator_id', operatorId),
+        supabase.from('operator_features').select('*').eq('operator_id', operatorId),
+        supabase.from('operator_security').select('*').eq('operator_id', operatorId).single(),
+        supabase.from('operator_faqs').select('*').eq('operator_id', operatorId).order('order_number'),
+        supabase.from('content_sections').select('*').eq('operator_id', operatorId).order('order_number'),
+        supabase.from('media_assets').select('*').eq('operator_id', operatorId).order('order_number'),
+        supabase.from('seo_metadata').select('*').eq('operator_id', operatorId).single()
+      ]);
+
+      // Transform operator data to match interface
+      const transformedOperator: Operator = {
+        id: operator.id,
+        name: operator.name,
+        slug: operator.slug,
+        logo: operator.logo_url,
+        hero_image_url: operator.hero_image_url,
+        verdict: operator.verdict || '',
+        overallRating: (operator.ratings as any)?.overall || 0,
+        feeLevel: 'Medium',
+        paymentMethods: ['crypto'],
+        modes: operator.categories || [],
+        pros: operator.pros || [],
+        cons: operator.cons || [],
+        trustScore: (operator.ratings as any)?.trust || 0,
+        fees: {
+          deposit: 0,
+          withdrawal: 0,
+          trading: 0
+        },
+        payoutSpeed: '24 hours',
+        kycRequired: operator.kyc_required || false,
+        countries: operator.supported_countries || [],
+        url: operator.tracking_link || '#',
+        verified: true,
+        otherFeatures: [],
+        gamingModes: [],
+        games: [],
+        categories: operator.categories || [],
+        launch_year: operator.launch_year,
+        ratings: operator.ratings as any,
+        bonus_terms: operator.bonus_terms,
+        fairness_info: operator.fairness_info
+      };
+
+      return {
+        operator: transformedOperator,
+        bonuses: bonuses || [],
+        payments: payments || [],
+        features: features || [],
+        security: security || null,
+        faqs: faqs || [],
+        contentSections: contentSections || [],
+        mediaAssets: mediaAssets || [],
+        seoMetadata: seoMetadata || null
+      };
+
+    } catch (err) {
+      console.error('Error generating static content:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate static content');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const publishStaticContent = async (operatorId: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const staticContent = await generateStaticContent(operatorId);
+      if (!staticContent) return false;
+
+      // Generate SEO data
+      const seoData = {
+        title: `${staticContent.operator.name} Review ${new Date().getFullYear()} - Complete Analysis`,
+        description: `In-depth review of ${staticContent.operator.name}. Rating: ${staticContent.operator.overallRating}/10. ${staticContent.operator.verdict?.substring(0, 100)}...`,
+        ogTitle: `${staticContent.operator.name} Review - ${staticContent.operator.overallRating}/10 Rating`,
+        ogDescription: staticContent.operator.verdict?.substring(0, 150) || `Complete review and analysis of ${staticContent.operator.name}`,
+        ogImage: staticContent.operator.hero_image_url || staticContent.operator.logo,
+        structuredData: {
+          "@context": "https://schema.org",
+          "@type": "Review",
+          "itemReviewed": {
+            "@type": "Organization",
+            "name": staticContent.operator.name,
+            "image": staticContent.operator.logo,
+            "url": staticContent.operator.url
+          },
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": staticContent.operator.overallRating,
+            "bestRating": 10,
+            "worstRating": 0
+          },
+          "author": {
+            "@type": "Organization",
+            "name": "Expert Review Team"
+          },
+          "reviewBody": staticContent.operator.verdict
+        }
+      };
+
+      // Upsert published content
+      const { error: upsertError } = await supabase
+        .from('published_operator_content')
+        .upsert({
+          operator_id: operatorId,
+          slug: staticContent.operator.slug,
+          content_data: staticContent as any,
+          seo_data: seoData as any
+        }, {
+          onConflict: 'slug'
+        });
+
+      if (upsertError) throw upsertError;
+
+      // Update operator published status
+      const { error: updateError } = await supabase
+        .from('operators')
+        .update({ 
+          published: true, 
+          published_at: new Date().toISOString(),
+          publish_status: 'published'
+        })
+        .eq('id', operatorId);
+
+      if (updateError) throw updateError;
+
+      return true;
+
+    } catch (err) {
+      console.error('Error publishing static content:', err);
+      setError(err instanceof Error ? err.message : 'Failed to publish content');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getPublishedContent = async (slug: string): Promise<StaticContentData | null> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from('published_operator_content')
+        .select('content_data')
+        .eq('slug', slug)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          setError('Content not found');
+          return null;
+        }
+        throw error;
+      }
+
+      return data.content_data as any as StaticContentData;
+
+    } catch (err) {
+      console.error('Error fetching published content:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch content');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    loading,
+    error,
+    generateStaticContent,
+    publishStaticContent,
+    getPublishedContent
+  };
+}
