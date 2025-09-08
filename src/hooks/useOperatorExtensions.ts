@@ -73,6 +73,16 @@ export function useOperatorExtensions(operatorId: string) {
   const isMountedRef = useRef(true);
   const { isPublishing, operatorId: publishingOperatorId } = usePublishingState();
   
+  // Queue system for deferred saves
+  const saveQueueRef = useRef<{
+    bonuses?: OperatorBonus[];
+    payments?: OperatorPayment[];
+    features?: OperatorFeature[];
+    security?: OperatorSecurity;
+    faqs?: OperatorFAQ[];
+  }>({});
+  const extensionTimeoutRef = useRef<NodeJS.Timeout>();
+  
   // Stable function references using useRef to prevent recreation
   const stableSaveRefs = useRef({
     saveBonuses: null as ((data: OperatorBonus[]) => Promise<void>) | null,
@@ -137,7 +147,9 @@ export function useOperatorExtensions(operatorId: string) {
     }
     
     if (isExtensionActive) {
-      console.log('Extension management is active, deferring save');
+      console.log('Extension management is active, queuing bonus save');
+      saveQueueRef.current.bonuses = bonusData;
+      toast.info('Bonus changes queued - will save when extension interaction completes');
       return;
     }
     
@@ -178,7 +190,9 @@ export function useOperatorExtensions(operatorId: string) {
     }
     
     if (isExtensionActive) {
-      console.log('Extension management is active, deferring save');
+      console.log('Extension management is active, queuing payment save');
+      saveQueueRef.current.payments = paymentData;
+      toast.info('Payment changes queued - will save when extension interaction completes');
       return;
     }
     
@@ -219,7 +233,9 @@ export function useOperatorExtensions(operatorId: string) {
     }
     
     if (isExtensionActive) {
-      console.log('Extension management is active, deferring save');
+      console.log('Extension management is active, queuing feature save');
+      saveQueueRef.current.features = featureData;
+      toast.info('Feature changes queued - will save when extension interaction completes');
       return;
     }
     
@@ -255,7 +271,9 @@ export function useOperatorExtensions(operatorId: string) {
     }
     
     if (isExtensionActive) {
-      console.log('Extension management is active, deferring save');
+      console.log('Extension management is active, queuing security save');
+      saveQueueRef.current.security = securityData;
+      toast.info('Security changes queued - will save when extension interaction completes');
       return;
     }
     
@@ -290,7 +308,9 @@ export function useOperatorExtensions(operatorId: string) {
     }
     
     if (isExtensionActive) {
-      console.log('Extension management is active, deferring save');
+      console.log('Extension management is active, queuing FAQ save');
+      saveQueueRef.current.faqs = faqData;
+      toast.info('FAQ changes queued - will save when extension interaction completes');
       return;
     }
     
@@ -323,10 +343,63 @@ export function useOperatorExtensions(operatorId: string) {
 
   stableSaveRefs.current.saveFaqs = createStableSaveFaqs;
 
-  // Extension activity control functions
-  const setExtensionActive = useCallback((active: boolean) => {
-    setIsExtensionActive(active);
+  // Process queued saves when extension becomes inactive
+  const processQueuedSaves = useCallback(async () => {
+    const queue = saveQueueRef.current;
+    if (Object.keys(queue).length === 0) return;
+    
+    console.log('Processing queued extension saves:', queue);
+    
+    try {
+      const savePromises: Promise<void>[] = [];
+      
+      if (queue.bonuses && stableSaveRefs.current.saveBonuses) {
+        savePromises.push(stableSaveRefs.current.saveBonuses(queue.bonuses));
+      }
+      if (queue.payments && stableSaveRefs.current.savePayments) {
+        savePromises.push(stableSaveRefs.current.savePayments(queue.payments));
+      }
+      if (queue.features && stableSaveRefs.current.saveFeatures) {
+        savePromises.push(stableSaveRefs.current.saveFeatures(queue.features));
+      }
+      if (queue.security && stableSaveRefs.current.saveSecurity) {
+        savePromises.push(stableSaveRefs.current.saveSecurity(queue.security));
+      }
+      if (queue.faqs && stableSaveRefs.current.saveFaqs) {
+        savePromises.push(stableSaveRefs.current.saveFaqs(queue.faqs));
+      }
+      
+      await Promise.all(savePromises);
+      saveQueueRef.current = {}; // Clear queue
+      toast.success('All queued extension changes saved successfully');
+    } catch (error) {
+      console.error('Error processing queued saves:', error);
+      toast.error('Some queued changes failed to save. Please try again.');
+    }
   }, []);
+
+  // Extension activity control functions with auto-save after timeout
+  const setExtensionActive = useCallback((active: boolean) => {
+    console.log('Setting extension active:', active);
+    setIsExtensionActive(active);
+    
+    // Clear any existing timeout
+    if (extensionTimeoutRef.current) {
+      clearTimeout(extensionTimeoutRef.current);
+    }
+    
+    if (active) {
+      // Set timeout to auto-save after 10 seconds of inactivity
+      extensionTimeoutRef.current = setTimeout(() => {
+        console.log('Extension timeout reached, forcing save and deactivating');
+        setIsExtensionActive(false);
+        processQueuedSaves();
+      }, 10000);
+    } else {
+      // Process queued saves when extension becomes inactive
+      processQueuedSaves();
+    }
+  }, [processQueuedSaves]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -335,6 +408,13 @@ export function useOperatorExtensions(operatorId: string) {
     // Cleanup function to mark component as unmounted
     return () => {
       isMountedRef.current = false;
+      if (extensionTimeoutRef.current) {
+        clearTimeout(extensionTimeoutRef.current);
+      }
+      // Force save any queued items on unmount
+      if (Object.keys(saveQueueRef.current).length > 0) {
+        processQueuedSaves();
+      }
     };
   }, [operatorId, fetchExtensionData]);
 

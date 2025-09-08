@@ -91,7 +91,7 @@ export function useAutoSave<T>({
     }, duration);
   }, []);
 
-  // Auto-save effect with enhanced safety checks
+  // Auto-save effect with enhanced safety checks and crash prevention
   useEffect(() => {
     if (!enabled || initialLoadRef.current || isUserInteracting) return;
 
@@ -99,12 +99,17 @@ export function useAutoSave<T>({
       try {
         setSaveState('saving');
         
-        // Clean the data before saving
+        // Clean the data before saving - CRITICAL: Remove publish fields
         const cleanedData = {
           ...debouncedData,
           // Convert empty strings to null for timestamp fields
           scheduled_publish_at: (debouncedData as any).scheduled_publish_at === '' ? null : (debouncedData as any).scheduled_publish_at,
         };
+        
+        // CRITICAL: Ensure auto-save never includes publish fields
+        delete (cleanedData as any).published;
+        delete (cleanedData as any).published_at;
+        delete (cleanedData as any).publish_status;
         
         // Enhanced safety check for save function with detailed validation
         if (onSave && typeof onSave === 'function') {
@@ -114,6 +119,12 @@ export function useAutoSave<T>({
             setLastSaved(new Date());
             clearDraft();
           } catch (saveError) {
+            // Handle specific publishing errors to prevent crashes
+            if (saveError instanceof Error && saveError.message.includes('publish')) {
+              console.warn('Auto-save skipped due to publishing conflict:', saveError.message);
+              setSaveState('idle');
+              return;
+            }
             console.error('onSave function threw an error:', saveError);
             throw saveError;
           }
@@ -148,7 +159,13 @@ export function useAutoSave<T>({
       }
     };
 
-    performSave();
+    // Wrap in try-catch to prevent React crashes
+    try {
+      performSave();
+    } catch (syncError) {
+      console.error('Synchronous auto-save error:', syncError);
+      setSaveState('error');
+    }
 
     return () => {
       if (saveTimeoutRef.current) {

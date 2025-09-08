@@ -187,17 +187,24 @@ export function useOperators() {
 
   const autoSaveOperator = async (id: string, data: Partial<OperatorFormData>) => {
     try {
+      // CRITICAL: Ensure auto-save NEVER includes publish fields
+      const safeData = { ...data };
+      delete (safeData as any).published;
+      delete (safeData as any).published_at;
+      delete (safeData as any).publish_status;
+      
       // Clean the data same way as form submission
       const cleanedData = {
-        ...data,
-        categories: data.categories?.filter(c => c.trim() !== '') || [],
-        pros: data.pros?.filter(p => p.trim() !== '') || [],
-        cons: data.cons?.filter(c => c.trim() !== '') || [],
-        supported_countries: data.supported_countries?.filter(c => c.trim() !== '') || [],
+        ...safeData,
+        categories: safeData.categories?.filter(c => c.trim() !== '') || [],
+        pros: safeData.pros?.filter(p => p.trim() !== '') || [],
+        cons: safeData.cons?.filter(c => c.trim() !== '') || [],
+        supported_countries: safeData.supported_countries?.filter(c => c.trim() !== '') || [],
         // Convert empty strings to null for timestamp fields
-        scheduled_publish_at: data.scheduled_publish_at === '' ? null : data.scheduled_publish_at,
+        scheduled_publish_at: safeData.scheduled_publish_at === '' ? null : safeData.scheduled_publish_at,
       };
 
+      // Use a separate draft-only update that can't trigger publishing
       const { error } = await supabase
         .from('operators')
         .update({
@@ -208,6 +215,7 @@ export function useOperators() {
         .eq('id', id);
       
       if (error) throw error;
+      console.log('Auto-save completed successfully for operator:', id);
     } catch (err) {
       console.error('Auto-save failed:', err);
       throw err;
