@@ -81,7 +81,6 @@ export function useOperatorExtensions(operatorId: string) {
     security?: OperatorSecurity;
     faqs?: OperatorFAQ[];
   }>({});
-  const extensionTimeoutRef = useRef<NodeJS.Timeout>();
   
   // Stable function references using useRef to prevent recreation
   const stableSaveRefs = useRef({
@@ -415,25 +414,12 @@ export function useOperatorExtensions(operatorId: string) {
     }
   }, [operatorId]);
 
-  // Extension activity control functions with auto-save after timeout
+  // Simplified extension activity tracking  
   const setExtensionActive = useCallback((active: boolean) => {
-    console.log('Setting extension active:', active);
     setIsExtensionActive(active);
     
-    // Clear any existing timeout
-    if (extensionTimeoutRef.current) {
-      clearTimeout(extensionTimeoutRef.current);
-    }
-    
-    if (active) {
-      // Set timeout to auto-save after 10 seconds of inactivity
-      extensionTimeoutRef.current = setTimeout(() => {
-        console.log('Extension timeout reached, forcing save and deactivating');
-        setIsExtensionActive(false);
-        processQueuedSaves();
-      }, 10000);
-    } else {
-      // Process queued saves when extension becomes inactive
+    if (!active) {
+      // Process any queued saves immediately when deactivating
       processQueuedSaves();
     }
   }, [processQueuedSaves]);
@@ -445,9 +431,6 @@ export function useOperatorExtensions(operatorId: string) {
     // Cleanup function to mark component as unmounted
     return () => {
       isMountedRef.current = false;
-      if (extensionTimeoutRef.current) {
-        clearTimeout(extensionTimeoutRef.current);
-      }
       // Force save any queued items on unmount
       if (Object.keys(saveQueueRef.current).length > 0) {
         processQueuedSaves();

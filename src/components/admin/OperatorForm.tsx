@@ -30,7 +30,9 @@ import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
 import { useStableTempId } from '@/hooks/useStableTempId';
+import { useFormAutoSave } from '@/hooks/useFormAutoSave';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { FormErrorBoundary } from './FormErrorBoundary';
 import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
 import { TabErrorBoundary } from './TabErrorBoundary';
@@ -147,6 +149,9 @@ export function OperatorForm({
   // Use stable temporary ID for new operators to prevent data loss during navigation
   const effectiveOperatorId = useStableTempId(initialData?.id);
   
+  // Load saved form data for new operators
+  const { loadSavedFormData, clearSavedFormData } = useFormAutoSave(effectiveOperatorId);
+  
   const {
     bonuses,
     payments,
@@ -161,6 +166,22 @@ export function OperatorForm({
     setExtensionActive,
     isExtensionActive
   } = useOperatorExtensions(effectiveOperatorId);
+
+  // Load saved form data on mount for new operators
+  useEffect(() => {
+    if (!initialData && effectiveOperatorId.startsWith('temp-')) {
+      const savedData = loadSavedFormData();
+      if (savedData) {
+        // Populate form fields with saved data
+        Object.entries(savedData).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            setValue(key as any, value);
+          }
+        });
+        toast.success('Draft restored from your previous session');
+      }
+    }
+  }, [initialData, effectiveOperatorId, loadSavedFormData, setValue]);
 
   // Auto-save functionality - NEVER triggers publishing
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
@@ -182,23 +203,16 @@ export function OperatorForm({
     data: formData,
     onSave: handleAutoSave,
     enabled: autoSaveEnabled && !!onAutoSave && !publishLoading && !publishingState && !isExtensionActive,
-    storageKey: initialData?.id || 'new-operator'
+    storageKey: `temp-form-data-${effectiveOperatorId}`
   });
 
-  // Enhanced interaction handlers for extension management
+  // Simplified extension interaction handlers
   const handleExtensionInteraction = useCallback((extensionType: string) => {
-    console.log(`Starting interaction with ${extensionType} extension`);
     setExtensionActive(true);
-    pauseAutoSave?.(15000); // Pause auto-save for 15 seconds
-    
-    // Auto-reset after 30 seconds to prevent getting stuck
-    setTimeout(() => {
-      setExtensionActive(false);
-    }, 30000);
+    pauseAutoSave?.(10000); // Pause auto-save for 10 seconds
   }, [setExtensionActive, pauseAutoSave]);
 
   const handleExtensionSave = useCallback((extensionType: string) => {
-    console.log(`Completed save for ${extensionType} extension`);
     setExtensionActive(false);
   }, [setExtensionActive]);
 
@@ -321,6 +335,20 @@ export function OperatorForm({
   return (
     <FormErrorBoundary>
       <AutoSaveErrorBoundary onReset={() => setExtensionActive(false)}>
+        {/* Save State Indicator */}
+        <div className="flex justify-between items-center mb-4">
+          <SaveStateIndicator 
+            saveState={saveState} 
+            lastSaved={lastSaved} 
+            isDraft={!initialData && effectiveOperatorId.startsWith('temp-')}
+          />
+          {!initialData && effectiveOperatorId.startsWith('temp-') && (
+            <Badge variant="outline" className="text-blue-600">
+              New Operator Draft
+            </Badge>
+          )}
+        </div>
+        
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="grid w-full grid-cols-9">

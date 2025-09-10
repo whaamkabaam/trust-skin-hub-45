@@ -1,14 +1,27 @@
 import { Check, Save, AlertCircle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import type { SaveState } from '@/hooks/useAutoSave';
 
 interface SaveStateIndicatorProps {
   saveState: SaveState;
   lastSaved?: Date | null;
   className?: string;
+  isDraft?: boolean;
 }
 
-export function SaveStateIndicator({ saveState, lastSaved, className }: SaveStateIndicatorProps) {
+export function SaveStateIndicator({ saveState, lastSaved, className, isDraft = false }: SaveStateIndicatorProps) {
+  if (isDraft) {
+    return (
+      <div className={cn('flex items-center gap-2 text-sm', className)}>
+        <Badge variant="secondary" className="text-blue-600">
+          <Clock className="w-3 h-3 mr-1" />
+          Draft
+        </Badge>
+      </div>
+    );
+  }
+
   const getStateConfig = () => {
     switch (saveState) {
       case 'saving':
