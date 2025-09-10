@@ -29,24 +29,15 @@ const faqCategories = [
 ];
 
 export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInteractionStart }: FAQManagerProps) {
-  const [localFaqs, setLocalFaqs] = useState<OperatorFAQ[]>(faqs);
-  
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators
+  // Use localStorage for temporary operators only
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // Determine data source and save method
-  const effectiveFaqs = isTemporaryOperator ? localStorage.faqs : localFaqs;
+  // For temp operators, use localStorage. For existing operators, use props directly
+  const effectiveFaqs = isTemporaryOperator ? localStorage.faqs : faqs;
   const effectiveSave = isTemporaryOperator ? localStorage.saveFaqsToLocal : onSave;
-
-  // Update local state when props change
-  React.useEffect(() => {
-    if (!isTemporaryOperator) {
-      setLocalFaqs(faqs);
-    }
-  }, [faqs, isTemporaryOperator]);
 
   const addFaq = () => {
     // Notify parent that user is interacting with extensions
@@ -63,11 +54,11 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       is_featured: false,
     };
     
+    const newFaqs = [...effectiveFaqs, newFaq];
     if (isTemporaryOperator) {
-      const newFaqs = [...effectiveFaqs, newFaq];
       localStorage.saveFaqsToLocal(newFaqs);
     } else {
-      setLocalFaqs([...localFaqs, newFaq]);
+      onSave(newFaqs);
     }
   };
 
@@ -77,41 +68,37 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       onInteractionStart();
     }
     
-    const currentFaqs = isTemporaryOperator ? effectiveFaqs : localFaqs;
-    const updated = currentFaqs.map((faq, i) => 
+    const updated = effectiveFaqs.map((faq, i) => 
       i === index ? { ...faq, ...updates } : faq
     );
     
     if (isTemporaryOperator) {
       localStorage.saveFaqsToLocal(updated);
     } else {
-      setLocalFaqs(updated);
+      onSave(updated);
     }
   };
 
   const removeFaq = (index: number) => {
-    const currentFaqs = isTemporaryOperator ? effectiveFaqs : localFaqs;
-    const filtered = currentFaqs.filter((_, i) => i !== index);
+    const filtered = effectiveFaqs.filter((_, i) => i !== index);
     
     if (isTemporaryOperator) {
       localStorage.saveFaqsToLocal(filtered);
     } else {
-      setLocalFaqs(filtered);
+      onSave(filtered);
     }
   };
 
   const moveFaq = (index: number, direction: 'up' | 'down') => {
-    const currentFaqs = isTemporaryOperator ? effectiveFaqs : localFaqs;
-    
     if (
       (direction === 'up' && index === 0) ||
-      (direction === 'down' && index === currentFaqs.length - 1)
+      (direction === 'down' && index === effectiveFaqs.length - 1)
     ) {
       return;
     }
 
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    const updated = [...currentFaqs];
+    const updated = [...effectiveFaqs];
     [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
     
     // Update order numbers
@@ -122,7 +109,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     if (isTemporaryOperator) {
       localStorage.saveFaqsToLocal(updated);
     } else {
-      setLocalFaqs(updated);
+      onSave(updated);
     }
   };
 
@@ -136,17 +123,9 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       if (isTemporaryOperator) {
         // Data is already saved to localStorage automatically
         toast.success('FAQs saved locally - will be saved to database when operator is created');
-      } else if (typeof effectiveSave === 'function') {
-        // Ensure order numbers are correct
-        const orderedFaqs = localFaqs.map((faq, index) => ({
-          ...faq,
-          order_number: index,
-        }));
-        effectiveSave(orderedFaqs);
-        toast.success('FAQs saved to database');
       } else {
-        console.error('Save function not available for FAQs');
-        toast.error('Save function not available');
+        // No manual save needed - data is automatically saved via onSave calls
+        toast.success('FAQs are automatically saved to database');
       }
     } catch (error) {
       console.error('Error saving FAQs:', error);

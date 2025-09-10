@@ -34,24 +34,15 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     audit_info: '',
   };
   
-  const [localSecurity, setLocalSecurity] = useState<OperatorSecurity>(security || defaultSecurity);
-  
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators
+  // Use localStorage for temporary operators only
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // Determine data source and save method
-  const effectiveSecurity = isTemporaryOperator ? (localStorage.security || defaultSecurity) : localSecurity;
+  // For temp operators, use localStorage. For existing operators, use props directly
+  const effectiveSecurity = isTemporaryOperator ? (localStorage.security || defaultSecurity) : (security || defaultSecurity);
   const effectiveSave = isTemporaryOperator ? localStorage.saveSecurityToLocal : onSave;
-
-  // Update local state when props change
-  React.useEffect(() => {
-    if (!isTemporaryOperator) {
-      setLocalSecurity(security || defaultSecurity);
-    }
-  }, [security, isTemporaryOperator]);
 
   const updateSecurity = (updates: Partial<OperatorSecurity>) => {
     // Notify parent that user is interacting with extensions
@@ -64,7 +55,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     if (isTemporaryOperator) {
       localStorage.saveSecurityToLocal(updatedSecurity);
     } else {
-      setLocalSecurity(updatedSecurity);
+      onSave(updatedSecurity);
     }
   };
 
@@ -96,12 +87,9 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
       if (isTemporaryOperator) {
         // Data is already saved to localStorage automatically
         toast.success('Security settings saved locally - will be saved to database when operator is created');
-      } else if (typeof effectiveSave === 'function') {
-        effectiveSave(localSecurity);
-        toast.success('Security settings saved to database');
       } else {
-        console.error('Save function not available for security');
-        toast.error('Save function not available');
+        // No manual save needed - data is automatically saved via onSave calls
+        toast.success('Security settings are automatically saved to database');
       }
     } catch (error) {
       console.error('Error saving security:', error);

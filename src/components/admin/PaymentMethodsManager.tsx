@@ -27,24 +27,15 @@ const paymentMethods = [
 ];
 
 export function PaymentMethodsManager({ payments, onSave, operatorId, disabled = false, onInteractionStart }: PaymentMethodsManagerProps) {
-  const [localPayments, setLocalPayments] = useState<OperatorPayment[]>(payments);
-  
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators
+  // Use localStorage for temporary operators only
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // Determine data source and save method
-  const effectivePayments = isTemporaryOperator ? localStorage.payments : localPayments;
+  // For temp operators, use localStorage. For existing operators, use props directly
+  const effectivePayments = isTemporaryOperator ? localStorage.payments : payments;
   const effectiveSave = isTemporaryOperator ? localStorage.savePaymentsToLocal : onSave;
-
-  // Update local state when props change
-  React.useEffect(() => {
-    if (!isTemporaryOperator) {
-      setLocalPayments(payments);
-    }
-  }, [payments, isTemporaryOperator]);
 
   const addPayment = (type: 'deposit' | 'withdrawal') => {
     // Notify parent that user is interacting with extensions
@@ -63,11 +54,11 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       processing_time: 'Instant',
       is_available: true,
     };
+    const newPayments = [...effectivePayments, newPayment];
     if (isTemporaryOperator) {
-      const newPayments = [...effectivePayments, newPayment];
       localStorage.savePaymentsToLocal(newPayments);
     } else {
-      setLocalPayments([...localPayments, newPayment]);
+      onSave(newPayments);
     }
   };
 
@@ -77,26 +68,24 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       onInteractionStart();
     }
     
-    const currentPayments = isTemporaryOperator ? effectivePayments : localPayments;
-    const updated = currentPayments.map((payment, i) => 
+    const updated = effectivePayments.map((payment, i) => 
       i === index ? { ...payment, ...updates } : payment
     );
     
     if (isTemporaryOperator) {
       localStorage.savePaymentsToLocal(updated);
     } else {
-      setLocalPayments(updated);
+      onSave(updated);
     }
   };
 
   const removePayment = (index: number) => {
-    const currentPayments = isTemporaryOperator ? effectivePayments : localPayments;
-    const filtered = currentPayments.filter((_, i) => i !== index);
+    const filtered = effectivePayments.filter((_, i) => i !== index);
     
     if (isTemporaryOperator) {
       localStorage.savePaymentsToLocal(filtered);
     } else {
-      setLocalPayments(filtered);
+      onSave(filtered);
     }
   };
 
@@ -110,12 +99,9 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       if (isTemporaryOperator) {
         // Data is already saved to localStorage automatically
         toast.success('Payments saved locally - will be saved to database when operator is created');
-      } else if (typeof effectiveSave === 'function') {
-        effectiveSave(localPayments);
-        toast.success('Payment methods saved to database');
       } else {
-        console.error('Save function not available for payments');
-        toast.error('Save function not available');
+        // No manual save needed - data is automatically saved via onSave calls
+        toast.success('Payment methods are automatically saved to database');
       }
     } catch (error) {
       console.error('Error saving payments:', error);
