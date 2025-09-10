@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePublishingState } from '@/hooks/usePublishingState';
+import { PublishingErrorBoundary } from '@/components/admin/PublishingErrorBoundary';
+import { usePublishingQueue } from '@/hooks/usePublishingQueue';
 import type { OperatorFormData } from '@/lib/validations';
 
 export default function EditOperator() {
@@ -94,29 +96,39 @@ export default function EditOperator() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-4">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/admin/operators')}
-          className="p-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Edit Operator</h1>
-          <p className="text-muted-foreground">Editing {stableOperator.name}</p>
+    <PublishingErrorBoundary 
+      operatorId={id} 
+      onReset={() => {
+        // Reset publishing state and refresh operator data
+        const { clearPublishing } = usePublishingState.getState();
+        clearPublishing();
+        window.location.reload();
+      }}
+    >
+      <div className="space-y-6">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/admin/operators')}
+            className="p-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">Edit Operator</h1>
+            <p className="text-muted-foreground">Editing {stableOperator.name}</p>
+          </div>
         </div>
-      </div>
 
-      <OperatorForm
-        initialData={stableOperator}
-        onSubmit={handleSubmit}
-        onAutoSave={handleAutoSave}
-        isLoading={isLoading || isThisOperatorPublishing}
-        autoSaveEnabled={true}
-        publishingState={isThisOperatorPublishing}
-      />
-    </div>
+        <OperatorForm
+          initialData={stableOperator}
+          onSubmit={handleSubmit}
+          onAutoSave={handleAutoSave}
+          isLoading={isLoading || isThisOperatorPublishing}
+          autoSaveEnabled={true}
+          publishingState={isThisOperatorPublishing}
+        />
+      </div>
+    </PublishingErrorBoundary>
   );
 }

@@ -6,6 +6,7 @@ import type { Tables } from '@/integrations/supabase/types';
 import type { OperatorFormData } from '@/lib/validations';
 import { useStaticContent } from './useStaticContent';
 import { usePublishingState } from './usePublishingState';
+import { safePublishingOperation, usePublishingQueue } from './usePublishingQueue';
 
 type Operator = Tables<'operators'>;
 
@@ -62,102 +63,120 @@ export function useOperators() {
   };
 
   const updateOperator = async (id: string, data: Partial<OperatorFormData>) => {
-    const { setPublishing, clearPublishing } = usePublishingState.getState();
-    
-    try {
-      // If publishing, set global publishing state to prevent re-renders
-      if (data.published === true) {
-        setPublishing(id);
-      }
-      
-      // Consolidate all database updates in a single transaction
-      let updateData: any = { 
-        ...data, 
-        updated_at: new Date().toISOString()
-      };
-      
-      // If publishing, add publishing fields
-      if (data.published === true) {
-        updateData = {
-          ...updateData,
-          published: true,
-          published_at: new Date().toISOString(),
-          publish_status: 'published'
-        };
+    // Use safe publishing operation wrapper for all updates
+    return await safePublishingOperation(
+      id,
+      async () => {
+        const { setPublishing, clearPublishing } = usePublishingState.getState();
         
-        // Generate static content first (without updating operator record)
+        // If publishing, set global publishing state to prevent re-renders
+        if (data.published === true) {
+          console.log('Starting publishing process for operator:', id);
+          setPublishing(id);
+        }
+        
         try {
-          const published = await publishStaticContent(id);
-          if (!published) {
-            throw new Error('Static content generation failed');
+          // Consolidate all database updates in a single transaction
+          let updateData: any = { 
+            ...data, 
+            updated_at: new Date().toISOString()
+          };
+          
+          // If publishing, generate static content FIRST before any DB updates
+          if (data.published === true) {
+            console.log('Generating static content before publishing...');
+            
+            // Validate that extension data exists before publishing
+            try {
+              const extensionValidation = await supabase
+                .from('operator_bonuses')
+                .select('count')
+                .eq('operator_id', id)
+                .single();
+              
+              console.log('Extension validation result:', extensionValidation);
+            } catch (validationError) {
+              console.warn('Extension validation failed:', validationError);
+            }
+            
+            // Generate static content with comprehensive error handling
+            const published = await publishStaticContent(id);
+            if (!published) {
+              throw new Error('Static content generation failed - aborting publish');
+            }
+            
+            // Add publishing fields only after successful content generation
+            updateData = {
+              ...updateData,
+              published: true,
+              published_at: new Date().toISOString(),
+              publish_status: 'published'
+            };
+            
+            console.log('Static content generated successfully, updating operator record...');
           }
-        } catch (publishError) {
-          console.error('Publishing error:', publishError);
-          throw new Error('Static content generation failed');
-        }
-      }
 
-      // Single database update with all changes
-      const { data: updatedOperator, error } = await supabase
-        .from('operators')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+          // Single atomic database update with all changes
+          const { data: updatedOperator, error } = await supabase
+            .from('operators')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
 
-      if (error) throw error;
-      
-      // Clear publishing state BEFORE any React operations to prevent crashes
-      if (data.published === true) {
-        clearPublishing();
-      }
-      
-      // Show appropriate success message
-      if (data.published === true) {
-        toast.success('Operator published successfully with optimized content');
-      } else {
-        toast.success('Operator updated successfully');
-      }
-      
-      // Optimistic update with defensive check
-      try {
-        setOperators(prev => 
-          prev.map(op => op.id === id ? updatedOperator : op)
-        );
-      } catch (stateError) {
-        console.warn('State update failed, will rely on refetch:', stateError);
-      }
-      
-      // Defensive query invalidation with delays to prevent race conditions
-      try {
-        // Small delay to let React settle after publishing
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Only invalidate if query client is still available
-        if (queryClient && typeof queryClient.invalidateQueries === 'function') {
-          await Promise.all([
-            queryClient.invalidateQueries({ queryKey: ['operators'] }).catch(console.warn),
-            queryClient.invalidateQueries({ queryKey: ['public-operators'] }).catch(console.warn),
-            queryClient.invalidateQueries({ queryKey: ['operator', id] }).catch(console.warn)
-          ]);
+          if (error) {
+            console.error('Database update error:', error);
+            throw error;
+          }
+          
+          console.log('Operator record updated successfully:', updatedOperator);
+          
+          // Show appropriate success message
+          if (data.published === true) {
+            toast.success('Operator published successfully with optimized content');
+            console.log('Publishing completed successfully for operator:', id);
+          } else {
+            toast.success('Operator updated successfully');
+          }
+          
+          // Defensive state updates with error handling
+          try {
+            setOperators(prev => 
+              prev.map(op => op.id === id ? updatedOperator : op)
+            );
+          } catch (stateError) {
+            console.warn('Local state update failed, will rely on refetch:', stateError);
+          }
+          
+          // Delayed query invalidation to prevent race conditions
+          setTimeout(async () => {
+            try {
+              if (queryClient && typeof queryClient.invalidateQueries === 'function') {
+                await Promise.all([
+                  queryClient.invalidateQueries({ queryKey: ['operators'] }).catch(console.warn),
+                  queryClient.invalidateQueries({ queryKey: ['public-operators'] }).catch(console.warn),
+                  queryClient.invalidateQueries({ queryKey: ['operator', id] }).catch(console.warn)
+                ]);
+              }
+            } catch (invalidationError) {
+              console.warn('Query invalidation failed, data will be stale:', invalidationError);
+            }
+          }, 200);
+          
+          return updatedOperator;
+        } finally {
+          // Always clear publishing state as final safety net
+          try {
+            if (data.published === true) {
+              clearPublishing();
+            }
+          } catch (cleanupError) {
+            console.warn('Publishing state cleanup failed:', cleanupError);
+          }
         }
-      } catch (invalidationError) {
-        console.warn('Query invalidation failed, data will be stale:', invalidationError);
-      }
-      
-      return updatedOperator;
-    } catch (err) {
-      console.error('Error updating operator:', err);
-      toast.error('Failed to update operator');
-      throw err;
-    } finally {
-      // Always clear publishing state as final safety net
-      try {
-        clearPublishing();
-      } catch (cleanupError) {
-        console.warn('Publishing state cleanup failed:', cleanupError);
-      }
-    }
+      },
+      data.published === true ? 'Publishing Operator' : 'Updating Operator'
+    );
   };
 
   const deleteOperator = async (id: string) => {

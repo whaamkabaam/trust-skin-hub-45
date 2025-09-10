@@ -151,13 +151,14 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-    // For existing operators, only queue if extension is active AND it's a temp operator
-    if (isExtensionActive && operatorId.startsWith('temp-')) {
-      console.log('Extension management is active, queuing bonus save');
-      saveQueueRef.current.bonuses = bonusData;
-      toast.info('Bonus changes queued - will save when extension interaction completes');
-      return;
-    }
+  // CRITICAL FIX: Never queue for existing operators - always save immediately
+  // Only queue for temp operators during extension interaction
+  if (operatorId.startsWith('temp-') && isExtensionActive) {
+    console.log('Extension management is active, queuing bonus save');
+    saveQueueRef.current.bonuses = bonusData;
+    toast.info('Bonus changes queued - will save when extension interaction completes');
+    return;
+  }
     
     try {
       console.log('Saving bonuses for operator:', operatorId, bonusData);
@@ -201,13 +202,14 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-    // For existing operators, only queue if extension is active AND it's a temp operator
-    if (isExtensionActive && operatorId.startsWith('temp-')) {
-      console.log('Extension management is active, queuing payment save');
-      saveQueueRef.current.payments = paymentData;
-      toast.info('Payment changes queued - will save when extension interaction completes');
-      return;
-    }
+  // CRITICAL FIX: Never queue for existing operators - always save immediately
+  // Only queue for temp operators during extension interaction
+  if (operatorId.startsWith('temp-') && isExtensionActive) {
+    console.log('Extension management is active, queuing payment save');
+    saveQueueRef.current.payments = paymentData;
+    toast.info('Payment changes queued - will save when extension interaction completes');
+    return;
+  }
     
     try {
       console.log('Saving payments for operator:', operatorId, paymentData);
@@ -245,13 +247,14 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-    // For existing operators, only queue if extension is active AND it's a temp operator
-    if (isExtensionActive && operatorId.startsWith('temp-')) {
-      console.log('Extension management is active, queuing feature save');
-      saveQueueRef.current.features = featureData;
-      toast.info('Feature changes queued - will save when extension interaction completes');
-      return;
-    }
+  // CRITICAL FIX: Never queue for existing operators - always save immediately
+  // Only queue for temp operators during extension interaction
+  if (operatorId.startsWith('temp-') && isExtensionActive) {
+    console.log('Extension management is active, queuing feature save');
+    saveQueueRef.current.features = featureData;
+    toast.info('Feature changes queued - will save when extension interaction completes');
+    return;
+  }
     
     if (!operatorId) {
       toast.error('No operator ID provided');
@@ -296,13 +299,14 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-    // For existing operators, only queue if extension is active AND it's a temp operator
-    if (isExtensionActive && operatorId.startsWith('temp-')) {
-      console.log('Extension management is active, queuing security save');
-      saveQueueRef.current.security = securityData;
-      toast.info('Security changes queued - will save when extension interaction completes');
-      return;
-    }
+  // CRITICAL FIX: Never queue for existing operators - always save immediately
+  // Only queue for temp operators during extension interaction
+  if (operatorId.startsWith('temp-') && isExtensionActive) {
+    console.log('Extension management is active, queuing security save');
+    saveQueueRef.current.security = securityData;
+    toast.info('Security changes queued - will save when extension interaction completes');
+    return;
+  }
     
     try {
       console.log('Saving security for operator:', operatorId, securityData);
@@ -340,13 +344,14 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-    // For existing operators, only queue if extension is active AND it's a temp operator
-    if (isExtensionActive && operatorId.startsWith('temp-')) {
-      console.log('Extension management is active, queuing FAQ save');
-      saveQueueRef.current.faqs = faqData;
-      toast.info('FAQ changes queued - will save when extension interaction completes');
-      return;
-    }
+  // CRITICAL FIX: Never queue for existing operators - always save immediately
+  // Only queue for temp operators during extension interaction
+  if (operatorId.startsWith('temp-') && isExtensionActive) {
+    console.log('Extension management is active, queuing FAQ save');
+    saveQueueRef.current.faqs = faqData;
+    toast.info('FAQ changes queued - will save when extension interaction completes');
+    return;
+  }
     
     try {
       console.log('Saving FAQs for operator:', operatorId, faqData);

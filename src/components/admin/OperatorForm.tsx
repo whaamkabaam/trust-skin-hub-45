@@ -28,6 +28,7 @@ import { ContentSectionManager } from './ContentSectionManager';
 import { MediaAssetManager } from './MediaAssetManager';
 import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
+import { DataIntegrityChecker } from './DataIntegrityChecker';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
 import { useStableTempId } from '@/hooks/useStableTempId';
 import { useFormAutoSave } from '@/hooks/useFormAutoSave';
@@ -37,6 +38,8 @@ import { FormErrorBoundary } from './FormErrorBoundary';
 import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
 import { TabErrorBoundary } from './TabErrorBoundary';
 import { AutoSaveErrorBoundary } from './AutoSaveErrorBoundary';
+import { PublishingErrorBoundary } from './PublishingErrorBoundary';
+import { usePublishingQueue } from '@/hooks/usePublishingQueue';
 
 type Operator = Tables<'operators'>;
 
@@ -303,7 +306,7 @@ export function OperatorForm({
     setValue('slug', generateSlug(name));
   };
 
-  const handleFormSubmit = (data: OperatorFormData) => {
+  const handleFormSubmit = async (data: OperatorFormData) => {
     // Filter out empty strings from arrays and clean timestamp fields
     const cleanedData = {
       ...data,
@@ -314,7 +317,21 @@ export function OperatorForm({
       // Convert empty strings to null for timestamp fields
       scheduled_publish_at: data.scheduled_publish_at === '' ? null : data.scheduled_publish_at,
     };
-    return onSubmit(cleanedData);
+    
+    // Wrap publishing operations in error boundary
+    if (cleanedData.published === true) {
+      console.log('Publishing operation initiated - disabling extension interactions');
+      setExtensionActive(false); // Force stop all extension interactions
+      pauseAutoSave?.(60000); // Pause auto-save for 1 minute during publishing
+    }
+    
+    try {
+      return await onSubmit(cleanedData);
+    } catch (error) {
+      // Re-enable extension interactions if publishing fails
+      setExtensionActive(false);
+      throw error;
+    }
   };
 
   const addArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries' | 'support_channels') => {
@@ -333,21 +350,25 @@ export function OperatorForm({
   };
 
   return (
-    <FormErrorBoundary>
-      <AutoSaveErrorBoundary onReset={() => setExtensionActive(false)}>
-        {/* Save State Indicator */}
-        <div className="flex justify-between items-center mb-4">
-          <SaveStateIndicator 
-            saveState={saveState} 
-            lastSaved={lastSaved} 
-            isDraft={!initialData && effectiveOperatorId.startsWith('temp-')}
-          />
-          {!initialData && effectiveOperatorId.startsWith('temp-') && (
-            <Badge variant="outline" className="text-blue-600">
-              New Operator Draft
-            </Badge>
-          )}
-        </div>
+    <PublishingErrorBoundary 
+      operatorId={effectiveOperatorId} 
+      onReset={() => setExtensionActive(false)}
+    >
+      <FormErrorBoundary>
+        <AutoSaveErrorBoundary onReset={() => setExtensionActive(false)}>
+          {/* Save State Indicator */}
+          <div className="flex justify-between items-center mb-4">
+            <SaveStateIndicator 
+              saveState={saveState} 
+              lastSaved={lastSaved} 
+              isDraft={!initialData && effectiveOperatorId.startsWith('temp-')}
+            />
+            {!initialData && effectiveOperatorId.startsWith('temp-') && (
+              <Badge variant="outline" className="text-blue-600">
+                New Operator Draft
+              </Badge>
+            )}
+          </div>
         
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
@@ -861,6 +882,7 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="debug" className="space-y-6">
+          <DataIntegrityChecker operatorId={effectiveOperatorId} />
           {initialData?.id ? (
             <div className="space-y-6">
               <QuickPublishTest />
@@ -909,8 +931,9 @@ export function OperatorForm({
          </div>
        </div>
 
-      </form>
+        </form>
       </AutoSaveErrorBoundary>
     </FormErrorBoundary>
+  </PublishingErrorBoundary>
   );
 }
