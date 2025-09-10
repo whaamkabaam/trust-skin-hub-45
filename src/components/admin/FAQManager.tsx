@@ -6,9 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorFAQ } from '@/hooks/useOperatorExtensions';
 import { toast } from '@/lib/toast';
+import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface FAQManagerProps {
   faqs: OperatorFAQ[];
@@ -28,6 +30,23 @@ const faqCategories = [
 
 export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInteractionStart }: FAQManagerProps) {
   const [localFaqs, setLocalFaqs] = useState<OperatorFAQ[]>(faqs);
+  
+  // Check if this is a temporary operator (new operator)
+  const isTemporaryOperator = operatorId.startsWith('temp-');
+  
+  // Use localStorage for temporary operators
+  const localStorage = useLocalStorageExtensions(operatorId);
+  
+  // Determine data source and save method
+  const effectiveFaqs = isTemporaryOperator ? localStorage.faqs : localFaqs;
+  const effectiveSave = isTemporaryOperator ? localStorage.saveFaqsToLocal : onSave;
+
+  // Update local state when props change
+  React.useEffect(() => {
+    if (!isTemporaryOperator) {
+      setLocalFaqs(faqs);
+    }
+  }, [faqs, isTemporaryOperator]);
 
   const addFaq = () => {
     // Notify parent that user is interacting with extensions
@@ -40,10 +59,16 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       question: '',
       answer: '',
       category: 'general',
-      order_number: localFaqs.length,
+      order_number: effectiveFaqs.length,
       is_featured: false,
     };
-    setLocalFaqs([...localFaqs, newFaq]);
+    
+    if (isTemporaryOperator) {
+      const newFaqs = [...effectiveFaqs, newFaq];
+      localStorage.saveFaqsToLocal(newFaqs);
+    } else {
+      setLocalFaqs([...localFaqs, newFaq]);
+    }
   };
 
   const updateFaq = (index: number, updates: Partial<OperatorFAQ>) => {
@@ -52,26 +77,41 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       onInteractionStart();
     }
     
-    const updated = localFaqs.map((faq, i) => 
+    const currentFaqs = isTemporaryOperator ? effectiveFaqs : localFaqs;
+    const updated = currentFaqs.map((faq, i) => 
       i === index ? { ...faq, ...updates } : faq
     );
-    setLocalFaqs(updated);
+    
+    if (isTemporaryOperator) {
+      localStorage.saveFaqsToLocal(updated);
+    } else {
+      setLocalFaqs(updated);
+    }
   };
 
   const removeFaq = (index: number) => {
-    setLocalFaqs(localFaqs.filter((_, i) => i !== index));
+    const currentFaqs = isTemporaryOperator ? effectiveFaqs : localFaqs;
+    const filtered = currentFaqs.filter((_, i) => i !== index);
+    
+    if (isTemporaryOperator) {
+      localStorage.saveFaqsToLocal(filtered);
+    } else {
+      setLocalFaqs(filtered);
+    }
   };
 
   const moveFaq = (index: number, direction: 'up' | 'down') => {
+    const currentFaqs = isTemporaryOperator ? effectiveFaqs : localFaqs;
+    
     if (
       (direction === 'up' && index === 0) ||
-      (direction === 'down' && index === localFaqs.length - 1)
+      (direction === 'down' && index === currentFaqs.length - 1)
     ) {
       return;
     }
 
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    const updated = [...localFaqs];
+    const updated = [...currentFaqs];
     [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
     
     // Update order numbers
@@ -79,7 +119,11 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       faq.order_number = i;
     });
     
-    setLocalFaqs(updated);
+    if (isTemporaryOperator) {
+      localStorage.saveFaqsToLocal(updated);
+    } else {
+      setLocalFaqs(updated);
+    }
   };
 
   const handleSave = () => {
@@ -89,13 +133,17 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     }
     
     try {
-      if (typeof onSave === 'function') {
+      if (isTemporaryOperator) {
+        // Data is already saved to localStorage automatically
+        toast.success('FAQs saved locally - will be saved to database when operator is created');
+      } else if (typeof effectiveSave === 'function') {
         // Ensure order numbers are correct
         const orderedFaqs = localFaqs.map((faq, index) => ({
           ...faq,
           order_number: index,
         }));
-        onSave(orderedFaqs);
+        effectiveSave(orderedFaqs);
+        toast.success('FAQs saved to database');
       } else {
         console.error('Save function not available for FAQs');
         toast.error('Save function not available');
@@ -109,10 +157,27 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Frequently Asked Questions</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            Frequently Asked Questions
+            {isTemporaryOperator ? (
+              <HardDrive className="h-4 w-4 text-orange-500" />
+            ) : (
+              <Database className="h-4 w-4 text-green-500" />
+            )}
+          </CardTitle>
+        </div>
+        {isTemporaryOperator && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Data is being stored locally. Save the operator first to enable database storage.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {localFaqs.map((faq, index) => (
+        {effectiveFaqs.map((faq, index) => (
           <Card key={index} className="p-4">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -154,7 +219,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
                       variant="outline"
                       size="sm"
                       onClick={() => moveFaq(index, 'down')}
-                      disabled={index === localFaqs.length - 1}
+                      disabled={index === effectiveFaqs.length - 1}
                     >
                       ↓
                     </Button>
@@ -198,7 +263,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
             Add FAQ
           </Button>
           <Button type="button" onClick={handleSave} disabled={disabled}>
-            Save FAQs
+            {isTemporaryOperator ? 'Save Locally' : 'Save FAQs'}
           </Button>
         </div>
       </CardContent>

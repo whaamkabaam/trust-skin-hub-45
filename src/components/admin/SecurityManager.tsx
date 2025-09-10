@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorSecurity } from '@/hooks/useOperatorExtensions';
 import { toast } from '@/lib/toast';
+import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface SecurityManagerProps {
   security: OperatorSecurity | null;
@@ -18,45 +20,69 @@ interface SecurityManagerProps {
 }
 
 export function SecurityManager({ security, onSave, operatorId, disabled = false, onInteractionStart }: SecurityManagerProps) {
-  const [localSecurity, setLocalSecurity] = useState<OperatorSecurity>(
-    security || {
-      operator_id: operatorId,
-      ssl_enabled: false,
-      ssl_provider: '',
-      license_info: '',
-      compliance_certifications: [],
-      data_protection_info: '',
-      responsible_gaming_info: '',
-      provably_fair: false,
-      provably_fair_description: '',
-      complaints_platform: '',
-      audit_info: '',
+  const defaultSecurity = {
+    operator_id: operatorId,
+    ssl_enabled: false,
+    ssl_provider: '',
+    license_info: '',
+    compliance_certifications: [],
+    data_protection_info: '',
+    responsible_gaming_info: '',
+    provably_fair: false,
+    provably_fair_description: '',
+    complaints_platform: '',
+    audit_info: '',
+  };
+  
+  const [localSecurity, setLocalSecurity] = useState<OperatorSecurity>(security || defaultSecurity);
+  
+  // Check if this is a temporary operator (new operator)
+  const isTemporaryOperator = operatorId.startsWith('temp-');
+  
+  // Use localStorage for temporary operators
+  const localStorage = useLocalStorageExtensions(operatorId);
+  
+  // Determine data source and save method
+  const effectiveSecurity = isTemporaryOperator ? (localStorage.security || defaultSecurity) : localSecurity;
+  const effectiveSave = isTemporaryOperator ? localStorage.saveSecurityToLocal : onSave;
+
+  // Update local state when props change
+  React.useEffect(() => {
+    if (!isTemporaryOperator) {
+      setLocalSecurity(security || defaultSecurity);
     }
-  );
+  }, [security, isTemporaryOperator]);
 
   const updateSecurity = (updates: Partial<OperatorSecurity>) => {
     // Notify parent that user is interacting with extensions
     if (onInteractionStart) {
       onInteractionStart();
     }
-    setLocalSecurity(prev => ({ ...prev, ...updates }));
+    
+    const updatedSecurity = { ...effectiveSecurity, ...updates };
+    
+    if (isTemporaryOperator) {
+      localStorage.saveSecurityToLocal(updatedSecurity);
+    } else {
+      setLocalSecurity(updatedSecurity);
+    }
   };
 
   const addCertification = () => {
     updateSecurity({
-      compliance_certifications: [...localSecurity.compliance_certifications, '']
+      compliance_certifications: [...effectiveSecurity.compliance_certifications, '']
     });
   };
 
   const updateCertification = (index: number, value: string) => {
-    const updated = localSecurity.compliance_certifications.map((cert, i) => 
+    const updated = effectiveSecurity.compliance_certifications.map((cert, i) => 
       i === index ? value : cert
     );
     updateSecurity({ compliance_certifications: updated });
   };
 
   const removeCertification = (index: number) => {
-    const updated = localSecurity.compliance_certifications.filter((_, i) => i !== index);
+    const updated = effectiveSecurity.compliance_certifications.filter((_, i) => i !== index);
     updateSecurity({ compliance_certifications: updated });
   };
 
@@ -67,8 +93,12 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     }
     
     try {
-      if (typeof onSave === 'function') {
-        onSave(localSecurity);
+      if (isTemporaryOperator) {
+        // Data is already saved to localStorage automatically
+        toast.success('Security settings saved locally - will be saved to database when operator is created');
+      } else if (typeof effectiveSave === 'function') {
+        effectiveSave(localSecurity);
+        toast.success('Security settings saved to database');
       } else {
         console.error('Save function not available for security');
         toast.error('Save function not available');
@@ -82,24 +112,41 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Security & Compliance</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            Security & Compliance
+            {isTemporaryOperator ? (
+              <HardDrive className="h-4 w-4 text-orange-500" />
+            ) : (
+              <Database className="h-4 w-4 text-green-500" />
+            )}
+          </CardTitle>
+        </div>
+        {isTemporaryOperator && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Data is being stored locally. Save the operator first to enable database storage.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         {/* SSL Security */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Switch
-              checked={localSecurity.ssl_enabled}
+              checked={effectiveSecurity.ssl_enabled}
               onCheckedChange={(checked) => updateSecurity({ ssl_enabled: checked })}
             />
             <Label>SSL Security Enabled</Label>
           </div>
           
-          {localSecurity.ssl_enabled && (
+          {effectiveSecurity.ssl_enabled && (
             <div>
               <Label>SSL Provider</Label>
               <Input
-                value={localSecurity.ssl_provider || ''}
+                value={effectiveSecurity.ssl_provider || ''}
                 onChange={(e) => updateSecurity({ ssl_provider: e.target.value })}
                 placeholder="e.g., CloudFlare, Let's Encrypt"
               />
@@ -111,7 +158,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         <div>
           <Label>License Information</Label>
           <Textarea
-            value={localSecurity.license_info || ''}
+            value={effectiveSecurity.license_info || ''}
             onChange={(e) => updateSecurity({ license_info: e.target.value })}
             placeholder="Licensing information and regulatory details..."
             rows={3}
@@ -121,7 +168,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         {/* Compliance Certifications */}
         <div className="space-y-4">
           <Label>Compliance Certifications</Label>
-          {localSecurity.compliance_certifications.map((cert, index) => (
+          {effectiveSecurity.compliance_certifications.map((cert, index) => (
             <div key={index} className="flex gap-2">
               <Input
                 value={cert}
@@ -148,17 +195,17 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Switch
-              checked={localSecurity.provably_fair}
+              checked={effectiveSecurity.provably_fair}
               onCheckedChange={(checked) => updateSecurity({ provably_fair: checked })}
             />
             <Label>Provably Fair Gaming</Label>
           </div>
           
-          {localSecurity.provably_fair && (
+          {effectiveSecurity.provably_fair && (
             <div>
               <Label>Provably Fair Description</Label>
               <Textarea
-                value={localSecurity.provably_fair_description || ''}
+                value={effectiveSecurity.provably_fair_description || ''}
                 onChange={(e) => updateSecurity({ provably_fair_description: e.target.value })}
                 placeholder="Explain the provably fair system..."
                 rows={3}
@@ -171,7 +218,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         <div>
           <Label>Data Protection Information</Label>
           <Textarea
-            value={localSecurity.data_protection_info || ''}
+            value={effectiveSecurity.data_protection_info || ''}
             onChange={(e) => updateSecurity({ data_protection_info: e.target.value })}
             placeholder="GDPR compliance, data handling practices..."
             rows={3}
@@ -182,7 +229,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         <div>
           <Label>Responsible Gaming Information</Label>
           <Textarea
-            value={localSecurity.responsible_gaming_info || ''}
+            value={effectiveSecurity.responsible_gaming_info || ''}
             onChange={(e) => updateSecurity({ responsible_gaming_info: e.target.value })}
             placeholder="Responsible gaming measures and self-exclusion options..."
             rows={3}
@@ -193,7 +240,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         <div>
           <Label>Complaints Platform</Label>
           <Input
-            value={localSecurity.complaints_platform || ''}
+            value={effectiveSecurity.complaints_platform || ''}
             onChange={(e) => updateSecurity({ complaints_platform: e.target.value })}
             placeholder="e.g., ADR, Independent arbitration service"
           />
@@ -203,7 +250,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         <div>
           <Label>Audit Information</Label>
           <Textarea
-            value={localSecurity.audit_info || ''}
+            value={effectiveSecurity.audit_info || ''}
             onChange={(e) => updateSecurity({ audit_info: e.target.value })}
             placeholder="Third-party audits, security assessments..."
             rows={3}
@@ -211,7 +258,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         </div>
 
         <Button type="button" onClick={handleSave} className="w-full" disabled={disabled}>
-          Save Security Settings
+          {isTemporaryOperator ? 'Save Locally' : 'Save Security Settings'}
         </Button>
       </CardContent>
     </Card>

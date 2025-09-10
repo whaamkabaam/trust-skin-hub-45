@@ -6,9 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorBonus } from '@/hooks/useOperatorExtensions';
 import { toast } from 'sonner';
+import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface BonusManagerProps {
   bonuses: OperatorBonus[];
@@ -30,11 +32,23 @@ const bonusTypes = [
 
 export function BonusManager({ bonuses, onSave, operatorId, disabled = false, onInteractionStart }: BonusManagerProps) {
   const [localBonuses, setLocalBonuses] = useState<OperatorBonus[]>(bonuses);
+  
+  // Check if this is a temporary operator (new operator)
+  const isTemporaryOperator = operatorId.startsWith('temp-');
+  
+  // Use localStorage for temporary operators
+  const localStorage = useLocalStorageExtensions(operatorId);
+  
+  // Determine data source and save method
+  const effectiveBonuses = isTemporaryOperator ? localStorage.bonuses : localBonuses;
+  const effectiveSave = isTemporaryOperator ? localStorage.saveBonusesToLocal : onSave;
 
   // Update local state when props change, but prevent auto-save interference
   React.useEffect(() => {
-    setLocalBonuses(bonuses);
-  }, [bonuses]);
+    if (!isTemporaryOperator) {
+      setLocalBonuses(bonuses);
+    }
+  }, [bonuses, isTemporaryOperator]);
 
   const addBonus = () => {
     // Notify parent that user is interacting with extensions
@@ -52,7 +66,12 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       is_active: true,
       order_number: localBonuses.length,
     };
-    setLocalBonuses([...localBonuses, newBonus]);
+    if (isTemporaryOperator) {
+      const newBonuses = [...effectiveBonuses, newBonus];
+      localStorage.saveBonusesToLocal(newBonuses);
+    } else {
+      setLocalBonuses([...localBonuses, newBonus]);
+    }
   };
 
   const updateBonus = (index: number, updates: Partial<OperatorBonus>) => {
@@ -61,14 +80,27 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       onInteractionStart();
     }
     
-    const updated = localBonuses.map((bonus, i) => 
+    const currentBonuses = isTemporaryOperator ? effectiveBonuses : localBonuses;
+    const updated = currentBonuses.map((bonus, i) => 
       i === index ? { ...bonus, ...updates } : bonus
     );
-    setLocalBonuses(updated);
+    
+    if (isTemporaryOperator) {
+      localStorage.saveBonusesToLocal(updated);
+    } else {
+      setLocalBonuses(updated);
+    }
   };
 
   const removeBonus = (index: number) => {
-    setLocalBonuses(localBonuses.filter((_, i) => i !== index));
+    const currentBonuses = isTemporaryOperator ? effectiveBonuses : localBonuses;
+    const filtered = currentBonuses.filter((_, i) => i !== index);
+    
+    if (isTemporaryOperator) {
+      localStorage.saveBonusesToLocal(filtered);
+    } else {
+      setLocalBonuses(filtered);
+    }
   };
 
   const handleSave = () => {
@@ -78,8 +110,12 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     }
     
     try {
-      if (typeof onSave === 'function') {
-        onSave(localBonuses);
+      if (isTemporaryOperator) {
+        // Data is already saved to localStorage automatically
+        toast.success('Bonuses saved locally - will be saved to database when operator is created');
+      } else if (typeof effectiveSave === 'function') {
+        effectiveSave(localBonuses);
+        toast.success('Bonuses saved to database');
       } else {
         console.error('Save function not available for bonuses');
         toast.error('Save function not available');
@@ -93,10 +129,27 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bonuses & Promotions</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            Bonuses & Promotions
+            {isTemporaryOperator ? (
+              <HardDrive className="h-4 w-4 text-orange-500" />
+            ) : (
+              <Database className="h-4 w-4 text-green-500" />
+            )}
+          </CardTitle>
+        </div>
+        {isTemporaryOperator && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Data is being stored locally. Save the operator first to enable database storage.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {localBonuses.map((bonus, index) => (
+        {effectiveBonuses.map((bonus, index) => (
           <Card key={index} className="p-4">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -180,7 +233,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
             Add Bonus
           </Button>
           <Button type="button" onClick={handleSave} disabled={disabled}>
-            Save Bonuses
+            {isTemporaryOperator ? 'Save Locally' : 'Save Bonuses'}
           </Button>
         </div>
       </CardContent>

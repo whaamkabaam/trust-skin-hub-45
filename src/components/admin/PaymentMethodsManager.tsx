@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorPayment } from '@/hooks/useOperatorExtensions';
 import { toast } from 'sonner';
+import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface PaymentMethodsManagerProps {
   payments: OperatorPayment[];
@@ -26,11 +28,23 @@ const paymentMethods = [
 
 export function PaymentMethodsManager({ payments, onSave, operatorId, disabled = false, onInteractionStart }: PaymentMethodsManagerProps) {
   const [localPayments, setLocalPayments] = useState<OperatorPayment[]>(payments);
+  
+  // Check if this is a temporary operator (new operator)
+  const isTemporaryOperator = operatorId.startsWith('temp-');
+  
+  // Use localStorage for temporary operators
+  const localStorage = useLocalStorageExtensions(operatorId);
+  
+  // Determine data source and save method
+  const effectivePayments = isTemporaryOperator ? localStorage.payments : localPayments;
+  const effectiveSave = isTemporaryOperator ? localStorage.savePaymentsToLocal : onSave;
 
   // Update local state when props change
   React.useEffect(() => {
-    setLocalPayments(payments);
-  }, [payments]);
+    if (!isTemporaryOperator) {
+      setLocalPayments(payments);
+    }
+  }, [payments, isTemporaryOperator]);
 
   const addPayment = (type: 'deposit' | 'withdrawal') => {
     // Notify parent that user is interacting with extensions
@@ -49,7 +63,12 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       processing_time: 'Instant',
       is_available: true,
     };
-    setLocalPayments([...localPayments, newPayment]);
+    if (isTemporaryOperator) {
+      const newPayments = [...effectivePayments, newPayment];
+      localStorage.savePaymentsToLocal(newPayments);
+    } else {
+      setLocalPayments([...localPayments, newPayment]);
+    }
   };
 
   const updatePayment = (index: number, updates: Partial<OperatorPayment>) => {
@@ -58,14 +77,27 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       onInteractionStart();
     }
     
-    const updated = localPayments.map((payment, i) => 
+    const currentPayments = isTemporaryOperator ? effectivePayments : localPayments;
+    const updated = currentPayments.map((payment, i) => 
       i === index ? { ...payment, ...updates } : payment
     );
-    setLocalPayments(updated);
+    
+    if (isTemporaryOperator) {
+      localStorage.savePaymentsToLocal(updated);
+    } else {
+      setLocalPayments(updated);
+    }
   };
 
   const removePayment = (index: number) => {
-    setLocalPayments(localPayments.filter((_, i) => i !== index));
+    const currentPayments = isTemporaryOperator ? effectivePayments : localPayments;
+    const filtered = currentPayments.filter((_, i) => i !== index);
+    
+    if (isTemporaryOperator) {
+      localStorage.savePaymentsToLocal(filtered);
+    } else {
+      setLocalPayments(filtered);
+    }
   };
 
   const handleSave = () => {
@@ -75,8 +107,12 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
     }
     
     try {
-      if (typeof onSave === 'function') {
-        onSave(localPayments);
+      if (isTemporaryOperator) {
+        // Data is already saved to localStorage automatically
+        toast.success('Payments saved locally - will be saved to database when operator is created');
+      } else if (typeof effectiveSave === 'function') {
+        effectiveSave(localPayments);
+        toast.success('Payment methods saved to database');
       } else {
         console.error('Save function not available for payments');
         toast.error('Save function not available');
@@ -87,13 +123,30 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
     }
   };
 
-  const depositMethods = localPayments.filter(p => p.method_type === 'deposit');
-  const withdrawalMethods = localPayments.filter(p => p.method_type === 'withdrawal');
+  const depositMethods = effectivePayments.filter(p => p.method_type === 'deposit');
+  const withdrawalMethods = effectivePayments.filter(p => p.method_type === 'withdrawal');
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Payment Methods</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            Payment Methods
+            {isTemporaryOperator ? (
+              <HardDrive className="h-4 w-4 text-orange-500" />
+            ) : (
+              <Database className="h-4 w-4 text-green-500" />
+            )}
+          </CardTitle>
+        </div>
+        {isTemporaryOperator && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Data is being stored locally. Save the operator first to enable database storage.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Deposit Methods */}
@@ -108,7 +161,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
 
           <div className="space-y-4">
             {depositMethods.map((payment, index) => {
-              const globalIndex = localPayments.indexOf(payment);
+              const globalIndex = effectivePayments.indexOf(payment);
               return (
                 <Card key={globalIndex} className="p-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -213,7 +266,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
 
           <div className="space-y-4">
             {withdrawalMethods.map((payment, index) => {
-              const globalIndex = localPayments.indexOf(payment);
+              const globalIndex = effectivePayments.indexOf(payment);
               return (
                 <Card key={globalIndex} className="p-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -270,7 +323,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
         </div>
 
         <Button type="button" onClick={handleSave} className="w-full" disabled={disabled}>
-          Save Payment Methods
+          {isTemporaryOperator ? 'Save Locally' : 'Save Payment Methods'}
         </Button>
       </CardContent>
     </Card>

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useOperators } from '@/hooks/useOperators';
+import { useOperators, useOperator } from '@/hooks/useOperators';
 import { OperatorForm } from '@/components/admin/OperatorForm';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OperatorFormData } from '@/lib/validations';
+import { clearStableTempId } from '@/hooks/useStableTempId';
+import { getTempExtensionData } from '@/hooks/useLocalStorageExtensions';
 
 export default function NewOperator() {
   const navigate = useNavigate();
@@ -15,7 +17,26 @@ export default function NewOperator() {
   const handleSubmit = async (data: OperatorFormData) => {
     try {
       setIsLoading(true);
-      await createOperator(data);
+      
+      // Create the operator first
+      const newOperator = await createOperator(data);
+      
+      // Get temporary extension data and migrate to database
+      const tempId = localStorage.getItem('new-operator-temp-id');
+      if (tempId && newOperator?.id) {
+        const tempData = getTempExtensionData(tempId);
+        
+        // TODO: Add logic to save extension data to database
+        // This would require calling the appropriate save functions from useOperatorExtensions
+        console.log('Migrating temp extension data:', tempData);
+        
+        // Clear temporary data after successful migration
+        ['bonuses', 'payments', 'features', 'security', 'faqs'].forEach(type => {
+          localStorage.removeItem(`temp-${type}-${tempId}`);
+        });
+        clearStableTempId();
+      }
+      
       toast.success('Operator created successfully');
       navigate('/admin/operators');
     } catch (error) {

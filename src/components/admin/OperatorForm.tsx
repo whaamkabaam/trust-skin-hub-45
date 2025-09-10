@@ -29,6 +29,7 @@ import { MediaAssetManager } from './MediaAssetManager';
 import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
+import { useStableTempId } from '@/hooks/useStableTempId';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FormErrorBoundary } from './FormErrorBoundary';
 import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
@@ -143,10 +144,8 @@ export function OperatorForm({
   const supportChannels = watch('support_channels');
   const formData = watch();
 
-  // Initialize operator extensions hook - use temporary ID for new operators
-  const tempOperatorId = initialData?.id || `temp-${Date.now()}`;
-  // Use the real operator ID if available, otherwise use temp ID
-  const effectiveOperatorId = initialData?.id || tempOperatorId;
+  // Use stable temporary ID for new operators to prevent data loss during navigation
+  const effectiveOperatorId = useStableTempId(initialData?.id);
   
   const {
     bonuses,
