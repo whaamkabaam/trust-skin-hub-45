@@ -141,18 +141,14 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Create stable save functions that won't change reference
   const createStableSaveBonus = useCallback(async (bonusData: OperatorBonus[]) => {
-    // For temp operators, we don't save to database but allow queuing
     if (!operatorId) {
       toast.error('No operator ID provided');
       return;
     }
     
+    // For temp operators, skip database operations entirely - localStorage handles this
     if (operatorId.startsWith('temp-')) {
-      // For temp operators, just queue the data (handled by localStorage in managers)
-      if (isExtensionActive) {
-        saveQueueRef.current.bonuses = bonusData;
-        toast.info('Bonus changes queued - will save when extension interaction completes');
-      }
+      console.log('Skipping database save for temp operator bonuses - localStorage handles persistence');
       return;
     }
     
@@ -199,12 +195,9 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
+    // For temp operators, skip database operations entirely - localStorage handles this
     if (operatorId.startsWith('temp-')) {
-      // For temp operators, just queue the data (handled by localStorage in managers)
-      if (isExtensionActive) {
-        saveQueueRef.current.payments = paymentData;
-        toast.info('Payment changes queued - will save when extension interaction completes');
-      }
+      console.log('Skipping database save for temp operator payments - localStorage handles persistence');
       return;
     }
     
@@ -263,12 +256,9 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
+    // For temp operators, skip database operations entirely - localStorage handles this
     if (operatorId.startsWith('temp-')) {
-      // For temp operators, just queue the data (handled by localStorage in managers)
-      if (isExtensionActive) {
-        saveQueueRef.current.features = featureData;
-        toast.info('Feature changes queued - will save when extension interaction completes');
-      }
+      console.log('Skipping database save for temp operator features - localStorage handles persistence');
       return;
     }
     
@@ -298,12 +288,9 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
+    // For temp operators, skip database operations entirely - localStorage handles this
     if (operatorId.startsWith('temp-')) {
-      // For temp operators, just queue the data (handled by localStorage in managers)
-      if (isExtensionActive) {
-        saveQueueRef.current.security = securityData;
-        toast.info('Security changes queued - will save when extension interaction completes');
-      }
+      console.log('Skipping database save for temp operator security - localStorage handles persistence');
       return;
     }
     
@@ -344,12 +331,9 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
+    // For temp operators, skip database operations entirely - localStorage handles this
     if (operatorId.startsWith('temp-')) {
-      // For temp operators, just queue the data (handled by localStorage in managers)
-      if (isExtensionActive) {
-        saveQueueRef.current.faqs = faqData;
-        toast.info('FAQ changes queued - will save when extension interaction completes');
-      }
+      console.log('Skipping database save for temp operator faqs - localStorage handles persistence');
       return;
     }
     
