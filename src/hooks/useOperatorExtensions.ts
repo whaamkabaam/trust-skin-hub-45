@@ -141,8 +141,18 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Create stable save functions that won't change reference
   const createStableSaveBonus = useCallback(async (bonusData: OperatorBonus[]) => {
-    if (!operatorId || operatorId.startsWith('temp-')) {
-      toast.error('Please save the operator first before managing bonuses');
+    // For temp operators, we don't save to database but allow queuing
+    if (!operatorId) {
+      toast.error('No operator ID provided');
+      return;
+    }
+    
+    if (operatorId.startsWith('temp-')) {
+      // For temp operators, just queue the data (handled by localStorage in managers)
+      if (isExtensionActive) {
+        saveQueueRef.current.bonuses = bonusData;
+        toast.info('Bonus changes queued - will save when extension interaction completes');
+      }
       return;
     }
     
@@ -184,8 +194,17 @@ export function useOperatorExtensions(operatorId: string) {
   stableSaveRefs.current.saveBonuses = createStableSaveBonus;
 
   const createStableSavePayments = useCallback(async (paymentData: OperatorPayment[]) => {
-    if (!operatorId || operatorId.startsWith('temp-')) {
-      toast.error('Please save the operator first before managing payment methods');
+    if (!operatorId) {
+      toast.error('No operator ID provided');
+      return;
+    }
+    
+    if (operatorId.startsWith('temp-')) {
+      // For temp operators, just queue the data (handled by localStorage in managers)
+      if (isExtensionActive) {
+        saveQueueRef.current.payments = paymentData;
+        toast.info('Payment changes queued - will save when extension interaction completes');
+      }
       return;
     }
     
@@ -239,8 +258,17 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-    if (!operatorId || operatorId.startsWith('temp-')) {
-      toast.error('Please save the operator first before managing features');
+    if (!operatorId) {
+      toast.error('No operator ID provided');
+      return;
+    }
+    
+    if (operatorId.startsWith('temp-')) {
+      // For temp operators, just queue the data (handled by localStorage in managers)
+      if (isExtensionActive) {
+        saveQueueRef.current.features = featureData;
+        toast.info('Feature changes queued - will save when extension interaction completes');
+      }
       return;
     }
     
@@ -265,8 +293,17 @@ export function useOperatorExtensions(operatorId: string) {
   stableSaveRefs.current.saveFeatures = createStableSaveFeatures;
 
   const createStableSaveSecurity = useCallback(async (securityData: OperatorSecurity) => {
-    if (!operatorId || operatorId.startsWith('temp-')) {
-      toast.error('Please save the operator first before managing security');
+    if (!operatorId) {
+      toast.error('No operator ID provided');
+      return;
+    }
+    
+    if (operatorId.startsWith('temp-')) {
+      // For temp operators, just queue the data (handled by localStorage in managers)
+      if (isExtensionActive) {
+        saveQueueRef.current.security = securityData;
+        toast.info('Security changes queued - will save when extension interaction completes');
+      }
       return;
     }
     
@@ -302,8 +339,17 @@ export function useOperatorExtensions(operatorId: string) {
   stableSaveRefs.current.saveSecurity = createStableSaveSecurity;
 
   const createStableSaveFaqs = useCallback(async (faqData: OperatorFAQ[]) => {
-    if (!operatorId || operatorId.startsWith('temp-')) {
-      toast.error('Please save the operator first before managing FAQs');
+    if (!operatorId) {
+      toast.error('No operator ID provided');
+      return;
+    }
+    
+    if (operatorId.startsWith('temp-')) {
+      // For temp operators, just queue the data (handled by localStorage in managers)
+      if (isExtensionActive) {
+        saveQueueRef.current.faqs = faqData;
+        toast.info('FAQ changes queued - will save when extension interaction completes');
+      }
       return;
     }
     
@@ -348,6 +394,13 @@ export function useOperatorExtensions(operatorId: string) {
     const queue = saveQueueRef.current;
     if (Object.keys(queue).length === 0) return;
     
+    // Skip processing for temp operators (localStorage handles this)
+    if (operatorId.startsWith('temp-')) {
+      console.log('Skipping queued saves for temp operator - localStorage handles this');
+      saveQueueRef.current = {}; // Clear queue
+      return;
+    }
+    
     console.log('Processing queued extension saves:', queue);
     
     try {
@@ -376,7 +429,7 @@ export function useOperatorExtensions(operatorId: string) {
       console.error('Error processing queued saves:', error);
       toast.error('Some queued changes failed to save. Please try again.');
     }
-  }, []);
+  }, [operatorId]);
 
   // Extension activity control functions with auto-save after timeout
   const setExtensionActive = useCallback((active: boolean) => {

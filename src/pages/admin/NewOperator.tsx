@@ -8,11 +8,83 @@ import { toast } from 'sonner';
 import type { OperatorFormData } from '@/lib/validations';
 import { clearStableTempId } from '@/hooks/useStableTempId';
 import { getTempExtensionData } from '@/hooks/useLocalStorageExtensions';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function NewOperator() {
   const navigate = useNavigate();
   const { createOperator, autoSaveOperator } = useOperators();
   const [isLoading, setIsLoading] = useState(false);
+
+  const migrateExtensionData = async (operatorId: string, tempData: any) => {
+    const migrations = [];
+    
+    // Migrate bonuses
+    if (tempData.bonuses?.length > 0) {
+      const bonusesWithOperatorId = tempData.bonuses.map((bonus: any) => ({
+        ...bonus,
+        operator_id: operatorId
+      }));
+      migrations.push(
+        supabase.from('operator_bonuses').insert(bonusesWithOperatorId)
+      );
+    }
+    
+    // Migrate payments
+    if (tempData.payments?.length > 0) {
+      const paymentsWithOperatorId = tempData.payments.map((payment: any) => ({
+        ...payment,
+        operator_id: operatorId
+      }));
+      migrations.push(
+        supabase.from('operator_payments').insert(paymentsWithOperatorId)
+      );
+    }
+    
+    // Migrate features
+    if (tempData.features?.length > 0) {
+      const featuresWithOperatorId = tempData.features.map((feature: any) => ({
+        ...feature,
+        operator_id: operatorId
+      }));
+      migrations.push(
+        supabase.from('operator_features').insert(featuresWithOperatorId)
+      );
+    }
+    
+    // Migrate security
+    if (tempData.security) {
+      migrations.push(
+        supabase.from('operator_security').insert({
+          ...tempData.security,
+          operator_id: operatorId
+        })
+      );
+    }
+    
+    // Migrate FAQs
+    if (tempData.faqs?.length > 0) {
+      const faqsWithOperatorId = tempData.faqs.map((faq: any) => ({
+        ...faq,
+        operator_id: operatorId
+      }));
+      migrations.push(
+        supabase.from('operator_faqs').insert(faqsWithOperatorId)
+      );
+    }
+    
+    // Execute all migrations
+    if (migrations.length > 0) {
+      const results = await Promise.allSettled(migrations);
+      const failed = results.filter(result => result.status === 'rejected');
+      
+      if (failed.length > 0) {
+        console.error('Some extension migrations failed:', failed);
+        toast.warning(`Operator created, but ${failed.length} extension(s) failed to migrate`);
+      } else {
+        toast.success('Operator and all extensions created successfully');
+      }
+    }
+  };
 
   const handleSubmit = async (data: OperatorFormData) => {
     try {
@@ -26,18 +98,19 @@ export default function NewOperator() {
       if (tempId && newOperator?.id) {
         const tempData = getTempExtensionData(tempId);
         
-        // TODO: Add logic to save extension data to database
-        // This would require calling the appropriate save functions from useOperatorExtensions
+        // Migrate all extension data to database
         console.log('Migrating temp extension data:', tempData);
+        await migrateExtensionData(newOperator.id, tempData);
         
         // Clear temporary data after successful migration
         ['bonuses', 'payments', 'features', 'security', 'faqs'].forEach(type => {
           localStorage.removeItem(`temp-${type}-${tempId}`);
         });
         clearStableTempId();
+      } else {
+        toast.success('Operator created successfully');
       }
       
-      toast.success('Operator created successfully');
       navigate('/admin/operators');
     } catch (error) {
       console.error('Failed to create operator:', error);
@@ -49,10 +122,11 @@ export default function NewOperator() {
 
   const handleAutoSave = async (data: OperatorFormData) => {
     try {
-      // For new operators, we create a draft with a temporary ID
-      // This allows users to come back and continue editing
-      const draftId = 'draft-' + Date.now();
-      localStorage.setItem(`operator-draft-${draftId}`, JSON.stringify(data));
+      // Use the stable temp ID for consistency with extensions
+      const tempId = localStorage.getItem('new-operator-temp-id');
+      if (tempId) {
+        localStorage.setItem(`operator-draft-${tempId}`, JSON.stringify(data));
+      }
     } catch (error) {
       console.error('Auto-save failed:', error);
       throw error;
