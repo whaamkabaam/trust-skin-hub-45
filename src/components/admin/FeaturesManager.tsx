@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,30 +7,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
-import { OperatorBonus } from '@/hooks/useOperatorExtensions';
+import { OperatorFeature } from '@/hooks/useOperatorExtensions';
 import { toast } from 'sonner';
 import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-interface BonusManagerProps {
-  bonuses: OperatorBonus[];
-  onSave: (bonuses: OperatorBonus[]) => void;
+interface FeaturesManagerProps {
+  features: OperatorFeature[];
+  onSave: (features: OperatorFeature[]) => void;
   operatorId: string;
   disabled?: boolean;
   onInteractionStart?: () => void;
 }
 
-const bonusTypes = [
-  { value: 'welcome', label: 'Welcome Bonus' },
-  { value: 'daily', label: 'Daily Bonus' },
-  { value: 'cashback', label: 'Cashback/Rakeback' },
-  { value: 'vip', label: 'VIP Program' },
-  { value: 'referral', label: 'Referral Program' },
-  { value: 'tournament', label: 'Tournament' },
-  { value: 'freeplay', label: 'Free Play' },
+const featureTypes = [
+  { value: 'gameplay', label: 'Gameplay Feature' },
+  { value: 'technical', label: 'Technical Feature' },
+  { value: 'security', label: 'Security Feature' },
+  { value: 'social', label: 'Social Feature' },
+  { value: 'promotion', label: 'Promotional Feature' },
+  { value: 'payment', label: 'Payment Feature' },
 ];
 
-export function BonusManager({ bonuses, onSave, operatorId, disabled = false, onInteractionStart }: BonusManagerProps) {
+export function FeaturesManager({ features, onSave, operatorId, disabled = false, onInteractionStart }: FeaturesManagerProps) {
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
@@ -38,54 +37,51 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   const localStorage = useLocalStorageExtensions(operatorId);
   
   // Always use props data (useOperatorExtensions manages localStorage internally)
-  const effectiveBonuses = isTemporaryOperator ? localStorage.bonuses : bonuses;
+  const effectiveFeatures = isTemporaryOperator ? localStorage.features : features;
 
-  const addBonus = () => {
+  const addFeature = () => {
     // Notify parent that user is interacting with extensions
     if (onInteractionStart) {
       onInteractionStart();
     }
     
-    const newBonus: OperatorBonus = {
+    const newFeature: OperatorFeature = {
       operator_id: operatorId,
-      bonus_type: 'welcome',
-      title: '',
+      feature_type: 'gameplay',
+      feature_name: '',
       description: '',
-      value: '',
-      terms: '',
-      is_active: true,
-      order_number: effectiveBonuses.length,
+      is_highlighted: false,
     };
-    const newBonuses = [...effectiveBonuses, newBonus];
+    const newFeatures = [...effectiveFeatures, newFeature];
     if (isTemporaryOperator) {
-      localStorage.saveBonusesToLocal(newBonuses);
+      localStorage.saveFeaturesToLocal(newFeatures);
     } else {
-      onSave(newBonuses);
+      onSave(newFeatures);
     }
   };
 
-  const updateBonus = (index: number, updates: Partial<OperatorBonus>) => {
+  const updateFeature = (index: number, updates: Partial<OperatorFeature>) => {
     // Notify parent that user is interacting with extensions
     if (onInteractionStart) {
       onInteractionStart();
     }
     
-    const updated = effectiveBonuses.map((bonus, i) => 
-      i === index ? { ...bonus, ...updates } : bonus
+    const updated = effectiveFeatures.map((feature, i) => 
+      i === index ? { ...feature, ...updates } : feature
     );
     
     if (isTemporaryOperator) {
-      localStorage.saveBonusesToLocal(updated);
+      localStorage.saveFeaturesToLocal(updated);
     } else {
       onSave(updated);
     }
   };
 
-  const removeBonus = (index: number) => {
-    const filtered = effectiveBonuses.filter((_, i) => i !== index);
+  const removeFeature = (index: number) => {
+    const filtered = effectiveFeatures.filter((_, i) => i !== index);
     
     if (isTemporaryOperator) {
-      localStorage.saveBonusesToLocal(filtered);
+      localStorage.saveFeaturesToLocal(filtered);
     } else {
       onSave(filtered);
     }
@@ -99,15 +95,13 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     
     try {
       if (isTemporaryOperator) {
-        // Data is already saved to localStorage automatically
-        toast.success('Bonuses saved locally - will be saved to database when operator is created');
+        toast.success('Features saved locally - will be saved to database when operator is created');
       } else {
-        // No manual save needed - data is automatically saved via onSave calls
-        toast.success('Bonuses are automatically saved to database');
+        toast.success('Features are automatically saved to database');
       }
     } catch (error) {
-      console.error('Error saving bonuses:', error);
-      toast.error('Failed to save bonuses');
+      console.error('Error saving features:', error);
+      toast.error('Failed to save features');
     }
   };
 
@@ -116,7 +110,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            Bonuses & Promotions
+            Features & Highlights
             {isTemporaryOperator ? (
               <HardDrive className="h-4 w-4 text-orange-500" />
             ) : (
@@ -134,19 +128,19 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {effectiveBonuses.map((bonus, index) => (
+        {effectiveFeatures.map((feature, index) => (
           <Card key={index} className="p-4">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Select
-                  value={bonus.bonus_type}
-                  onValueChange={(value) => updateBonus(index, { bonus_type: value })}
+                  value={feature.feature_type}
+                  onValueChange={(value) => updateFeature(index, { feature_type: value })}
                 >
                   <SelectTrigger className="w-[200px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {bonusTypes.map((type) => (
+                    {featureTypes.map((type) => (
                       <SelectItem key={type.value} value={type.value}>
                         {type.label}
                       </SelectItem>
@@ -155,57 +149,37 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
                 </Select>
                 <div className="flex items-center gap-2">
                   <Switch
-                    checked={bonus.is_active}
-                    onCheckedChange={(checked) => updateBonus(index, { is_active: checked })}
+                    checked={feature.is_highlighted}
+                    onCheckedChange={(checked) => updateFeature(index, { is_highlighted: checked })}
                   />
-                  <Label>Active</Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => removeBonus(index)}
+                  <Label>Highlight</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeFeature(index)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Title</Label>
-                  <Input
-                    value={bonus.title}
-                    onChange={(e) => updateBonus(index, { title: e.target.value })}
-                    placeholder="e.g., Welcome Bonus"
-                  />
-                </div>
-                <div>
-                  <Label>Value</Label>
-                  <Input
-                    value={bonus.value || ''}
-                    onChange={(e) => updateBonus(index, { value: e.target.value })}
-                    placeholder="e.g., 5%, $10, 100 coins"
-                  />
-                </div>
+              <div>
+                <Label>Feature Name</Label>
+                <Input
+                  value={feature.feature_name}
+                  onChange={(e) => updateFeature(index, { feature_name: e.target.value })}
+                  placeholder="e.g., Live Chat Support"
+                />
               </div>
 
               <div>
                 <Label>Description</Label>
                 <Textarea
-                  value={bonus.description || ''}
-                  onChange={(e) => updateBonus(index, { description: e.target.value })}
-                  placeholder="Describe the bonus..."
+                  value={feature.description || ''}
+                  onChange={(e) => updateFeature(index, { description: e.target.value })}
+                  placeholder="Describe the feature..."
                   rows={2}
-                />
-              </div>
-
-              <div>
-                <Label>Terms & Conditions</Label>
-                <Textarea
-                  value={bonus.terms || ''}
-                  onChange={(e) => updateBonus(index, { terms: e.target.value })}
-                  placeholder="Terms and conditions..."
-                  rows={3}
                 />
               </div>
             </div>
@@ -213,12 +187,12 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
         ))}
 
         <div className="flex gap-2">
-          <Button type="button" onClick={addBonus} variant="outline" disabled={disabled}>
+          <Button type="button" onClick={addFeature} variant="outline" disabled={disabled}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Bonus
+            Add Feature
           </Button>
           <Button type="button" onClick={handleSave} disabled={disabled}>
-            {isTemporaryOperator ? 'Save Locally' : 'Save Bonuses'}
+            {isTemporaryOperator ? 'Save Locally' : 'Save Features'}
           </Button>
         </div>
       </CardContent>

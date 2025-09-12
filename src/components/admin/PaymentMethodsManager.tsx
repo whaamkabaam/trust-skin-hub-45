@@ -30,12 +30,11 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators only
+  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // For temp operators, use localStorage. For existing operators, use props directly
+  // Always use props data (useOperatorExtensions manages localStorage internally)
   const effectivePayments = isTemporaryOperator ? localStorage.payments : payments;
-  const effectiveSave = isTemporaryOperator ? localStorage.savePaymentsToLocal : onSave;
 
   const addPayment = (type: 'deposit' | 'withdrawal') => {
     // Notify parent that user is interacting with extensions

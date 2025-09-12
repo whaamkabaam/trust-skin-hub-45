@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePublishingState } from '@/hooks/usePublishingState';
+import { usePublishingLock } from '@/hooks/usePublishingLock';
 
 export interface OperatorBonus {
   id?: string;
@@ -72,6 +73,7 @@ export function useOperatorExtensions(operatorId: string) {
   const [isExtensionActive, setIsExtensionActive] = useState(false);
   const isMountedRef = useRef(true);
   const { isPublishing, operatorId: publishingOperatorId } = usePublishingState();
+  const { isLocked } = usePublishingLock();
   
   // Queue system for deferred saves
   const saveQueueRef = useRef<{
@@ -145,20 +147,18 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
+    // Skip if operator is locked during publishing
+    if (isLocked(operatorId)) {
+      console.log('Operator is locked during publishing, skipping bonus save');
+      toast.info('Changes will be saved after publishing completes');
+      return;
+    }
+    
     // For temp operators, skip database operations entirely - localStorage handles this
     if (operatorId.startsWith('temp-')) {
       console.log('Skipping database save for temp operator bonuses - localStorage handles persistence');
       return;
     }
-    
-  // CRITICAL FIX: Never queue for existing operators - always save immediately
-  // Only queue for temp operators during extension interaction
-  if (operatorId.startsWith('temp-') && isExtensionActive) {
-    console.log('Extension management is active, queuing bonus save');
-    saveQueueRef.current.bonuses = bonusData;
-    toast.info('Bonus changes queued - will save when extension interaction completes');
-    return;
-  }
     
     try {
       console.log('Saving bonuses for operator:', operatorId, bonusData);
@@ -202,14 +202,8 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-  // CRITICAL FIX: Never queue for existing operators - always save immediately
-  // Only queue for temp operators during extension interaction
-  if (operatorId.startsWith('temp-') && isExtensionActive) {
-    console.log('Extension management is active, queuing payment save');
-    saveQueueRef.current.payments = paymentData;
-    toast.info('Payment changes queued - will save when extension interaction completes');
-    return;
-  }
+    // For existing operators: save immediately to database (no queuing)
+    // For temp operators: localStorage handles persistence
     
     try {
       console.log('Saving payments for operator:', operatorId, paymentData);
@@ -247,14 +241,8 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-  // CRITICAL FIX: Never queue for existing operators - always save immediately
-  // Only queue for temp operators during extension interaction
-  if (operatorId.startsWith('temp-') && isExtensionActive) {
-    console.log('Extension management is active, queuing feature save');
-    saveQueueRef.current.features = featureData;
-    toast.info('Feature changes queued - will save when extension interaction completes');
-    return;
-  }
+    // For existing operators: save immediately to database (no queuing)
+    // For temp operators: localStorage handles persistence
     
     if (!operatorId) {
       toast.error('No operator ID provided');
@@ -299,14 +287,8 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-  // CRITICAL FIX: Never queue for existing operators - always save immediately
-  // Only queue for temp operators during extension interaction
-  if (operatorId.startsWith('temp-') && isExtensionActive) {
-    console.log('Extension management is active, queuing security save');
-    saveQueueRef.current.security = securityData;
-    toast.info('Security changes queued - will save when extension interaction completes');
-    return;
-  }
+    // For existing operators: save immediately to database (no queuing)
+    // For temp operators: localStorage handles persistence
     
     try {
       console.log('Saving security for operator:', operatorId, securityData);
@@ -344,14 +326,8 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-  // CRITICAL FIX: Never queue for existing operators - always save immediately
-  // Only queue for temp operators during extension interaction
-  if (operatorId.startsWith('temp-') && isExtensionActive) {
-    console.log('Extension management is active, queuing FAQ save');
-    saveQueueRef.current.faqs = faqData;
-    toast.info('FAQ changes queued - will save when extension interaction completes');
-    return;
-  }
+    // For existing operators: save immediately to database (no queuing)
+    // For temp operators: localStorage handles persistence
     
     try {
       console.log('Saving FAQs for operator:', operatorId, faqData);

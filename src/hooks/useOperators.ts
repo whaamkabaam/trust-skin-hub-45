@@ -7,6 +7,7 @@ import type { OperatorFormData } from '@/lib/validations';
 import { useStaticContent } from './useStaticContent';
 import { usePublishingState } from './usePublishingState';
 import { safePublishingOperation, usePublishingQueue } from './usePublishingQueue';
+import { usePublishingLock } from './usePublishingLock';
 
 type Operator = Tables<'operators'>;
 
@@ -68,11 +69,13 @@ export function useOperators() {
       id,
       async () => {
         const { setPublishing, clearPublishing } = usePublishingState.getState();
+        const { lock, unlock } = usePublishingLock.getState();
         
-        // If publishing, set global publishing state to prevent re-renders
+        // If publishing, set global publishing state and lock operator
         if (data.published === true) {
           console.log('Starting publishing process for operator:', id);
           setPublishing(id);
+          lock(id);
         }
         
         try {
@@ -165,10 +168,11 @@ export function useOperators() {
           
           return updatedOperator;
         } finally {
-          // Always clear publishing state as final safety net
+          // Always clear publishing state and unlock as final safety net
           try {
             if (data.published === true) {
               clearPublishing();
+              unlock(id);
             }
           } catch (cleanupError) {
             console.warn('Publishing state cleanup failed:', cleanupError);

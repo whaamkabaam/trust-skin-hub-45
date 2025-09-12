@@ -32,12 +32,11 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators only
+  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // For temp operators, use localStorage. For existing operators, use props directly
+  // Always use props data (useOperatorExtensions manages localStorage internally)
   const effectiveFaqs = isTemporaryOperator ? localStorage.faqs : faqs;
-  const effectiveSave = isTemporaryOperator ? localStorage.saveFaqsToLocal : onSave;
 
   const addFaq = () => {
     // Notify parent that user is interacting with extensions

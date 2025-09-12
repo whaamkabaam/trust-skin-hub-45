@@ -37,12 +37,11 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators only
+  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // For temp operators, use localStorage. For existing operators, use props directly
+  // Always use props data (useOperatorExtensions manages localStorage internally)
   const effectiveSecurity = isTemporaryOperator ? (localStorage.security || defaultSecurity) : (security || defaultSecurity);
-  const effectiveSave = isTemporaryOperator ? localStorage.saveSecurityToLocal : onSave;
 
   const updateSecurity = (updates: Partial<OperatorSecurity>) => {
     // Notify parent that user is interacting with extensions
