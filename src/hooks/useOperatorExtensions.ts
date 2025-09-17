@@ -75,14 +75,7 @@ export function useOperatorExtensions(operatorId: string) {
   const { isPublishing, operatorId: publishingOperatorId } = usePublishingState();
   const { isLocked } = usePublishingLock();
   
-  // Queue system for deferred saves
-  const saveQueueRef = useRef<{
-    bonuses?: OperatorBonus[];
-    payments?: OperatorPayment[];
-    features?: OperatorFeature[];
-    security?: OperatorSecurity;
-    faqs?: OperatorFAQ[];
-  }>({});
+  // Removed queue system - direct saves only
   
   // Stable function references using useRef to prevent recreation
   const stableSaveRefs = useRef({
@@ -358,57 +351,13 @@ export function useOperatorExtensions(operatorId: string) {
 
   stableSaveRefs.current.saveFaqs = createStableSaveFaqs;
 
-  // Process queued saves when extension becomes inactive
-  const processQueuedSaves = useCallback(async () => {
-    const queue = saveQueueRef.current;
-    if (Object.keys(queue).length === 0) return;
-    
-    // Skip processing for temp operators (localStorage handles this)
-    if (operatorId.startsWith('temp-')) {
-      console.log('Skipping queued saves for temp operator - localStorage handles this');
-      saveQueueRef.current = {}; // Clear queue
-      return;
-    }
-    
-    console.log('Processing queued extension saves:', queue);
-    
-    try {
-      const savePromises: Promise<void>[] = [];
-      
-      if (queue.bonuses && stableSaveRefs.current.saveBonuses) {
-        savePromises.push(stableSaveRefs.current.saveBonuses(queue.bonuses));
-      }
-      if (queue.payments && stableSaveRefs.current.savePayments) {
-        savePromises.push(stableSaveRefs.current.savePayments(queue.payments));
-      }
-      if (queue.features && stableSaveRefs.current.saveFeatures) {
-        savePromises.push(stableSaveRefs.current.saveFeatures(queue.features));
-      }
-      if (queue.security && stableSaveRefs.current.saveSecurity) {
-        savePromises.push(stableSaveRefs.current.saveSecurity(queue.security));
-      }
-      if (queue.faqs && stableSaveRefs.current.saveFaqs) {
-        savePromises.push(stableSaveRefs.current.saveFaqs(queue.faqs));
-      }
-      
-      await Promise.all(savePromises);
-      saveQueueRef.current = {}; // Clear queue
-      toast.success('All queued extension changes saved successfully');
-    } catch (error) {
-      console.error('Error processing queued saves:', error);
-      toast.error('Some queued changes failed to save. Please try again.');
-    }
-  }, [operatorId]);
+  // Simplified - no more queuing
 
   // Simplified extension activity tracking  
   const setExtensionActive = useCallback((active: boolean) => {
+    console.log('Extension active state changed:', active);
     setIsExtensionActive(active);
-    
-    if (!active) {
-      // Process any queued saves immediately when deactivating
-      processQueuedSaves();
-    }
-  }, [processQueuedSaves]);
+  }, []);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -417,10 +366,6 @@ export function useOperatorExtensions(operatorId: string) {
     // Cleanup function to mark component as unmounted
     return () => {
       isMountedRef.current = false;
-      // Force save any queued items on unmount
-      if (Object.keys(saveQueueRef.current).length > 0) {
-        processQueuedSaves();
-      }
     };
   }, [operatorId, fetchExtensionData]);
 

@@ -84,6 +84,7 @@ export function useAutoSave<T>({
 
   // Track user interaction to prevent auto-save during typing/extension management
   const pauseAutoSave = useCallback((duration = 15000) => { // Increased to 15 seconds
+    console.log('⏸️ Auto-save paused for', duration, 'ms');
     setIsUserInteracting(true);
     if (interactionTimeoutRef.current) {
       clearTimeout(interactionTimeoutRef.current);
