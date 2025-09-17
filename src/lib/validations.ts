@@ -1,15 +1,18 @@
 import { z } from 'zod';
 
 export const operatorSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  slug: z.string().min(1, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with dashes only'),
-  logo_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  tracking_link: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  launch_year: z.number().min(1990).max(new Date().getFullYear()).optional(),
+  name: z.string().min(1, 'Operator name is required'),
+  slug: z.string().min(1, 'URL slug is required').regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and dashes only'),
+  logo_url: z.string().refine((val) => val === '' || z.string().url().safeParse(val).success, 'Must be a valid URL or empty').optional(),
+  tracking_link: z.string().refine((val) => val === '' || z.string().url().safeParse(val).success, 'Must be a valid URL or empty').optional(),
+  launch_year: z.preprocess(
+    (val) => val === '' || val === null || val === undefined || (typeof val === 'number' && isNaN(val)) ? undefined : Number(val),
+    z.number().min(1990, 'Launch year must be 1990 or later').max(new Date().getFullYear(), 'Launch year cannot be in the future').optional()
+  ),
   verdict: z.string().optional(),
   bonus_terms: z.string().optional(),
   fairness_info: z.string().optional(),
-  hero_image_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  hero_image_url: z.string().refine((val) => val === '' || z.string().url().safeParse(val).success, 'Must be a valid URL or empty').optional(),
   categories: z.array(z.string()).default([]),
   pros: z.array(z.string()).default([]),
   cons: z.array(z.string()).default([]),

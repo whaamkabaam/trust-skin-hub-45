@@ -3,12 +3,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Save, Globe } from 'lucide-react';
+import { Plus, Trash2, Save, Globe, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
 import { useState, useCallback, useMemo, useEffect } from 'react';
@@ -60,14 +62,7 @@ export function OperatorForm({
   autoSaveEnabled = true,
   publishingState = false
 }: OperatorFormProps) {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-    getValues,
-  } = useForm<OperatorFormData>({
+  const form = useForm<OperatorFormData>({
     resolver: zodResolver(operatorSchema),
     defaultValues: initialData ? {
       name: initialData.name,
@@ -149,6 +144,8 @@ export function OperatorForm({
       withdrawal_time_fiat: '',
     },
   });
+
+  const { register, handleSubmit, watch, setValue, formState: { errors, isValid, dirtyFields }, getValues, control } = form;
 
   const ratings = watch('ratings');
   const categories = watch('categories');
@@ -322,13 +319,10 @@ export function OperatorForm({
   };
 
   const handleFormSubmit = async (data: OperatorFormData) => {
-    // Validate required fields
-    if (!data.name?.trim()) {
-      toast.error('Operator name is required');
-      return;
-    }
-    if (!data.slug?.trim()) {
-      toast.error('Operator slug is required');
+    // Show validation errors summary if form is invalid
+    if (!isValid) {
+      const errorFields = Object.keys(errors);
+      toast.error(`Please fix the following errors: ${errorFields.join(', ')}`);
       return;
     }
     
@@ -374,6 +368,18 @@ export function OperatorForm({
     setValue(fieldName, currentArray.map((item, i) => i === index ? value : item));
   };
 
+  // Form validation summary
+  const getValidationSummary = () => {
+    const errorCount = Object.keys(errors).length;
+    const totalFields = ['name', 'slug', 'logo_url', 'tracking_link', 'launch_year'];
+    const completedFields = totalFields.filter(field => {
+      const value = watch(field as any);
+      return value && String(value).trim() !== '';
+    }).length;
+
+    return { errorCount, completedFields, totalFields: totalFields.length };
+  };
+
   return (
     <PublishingErrorBoundary 
       operatorId={effectiveOperatorId} 
@@ -394,8 +400,26 @@ export function OperatorForm({
               </Badge>
             )}
           </div>
+
+          {/* Validation Summary */}
+          {Object.keys(errors).length > 0 && (
+            <Alert className="mb-4 border-destructive/50 bg-destructive/10">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <AlertDescription className="text-destructive">
+                <strong>Please fix the following errors:</strong>
+                <ul className="mt-2 space-y-1">
+                  {Object.entries(errors).map(([field, error]) => (
+                    <li key={field} className="text-sm">
+                      • {field}: {error?.message}
+                    </li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
         
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+        <Form {...form}>
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -417,29 +441,59 @@ export function OperatorForm({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                {...register('name')}
-                onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="Operator name"
-              />
-              {errors.name && (
-                <p className="text-sm text-destructive mt-1">{errors.name.message}</p>
+            <FormField
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-1">
+                    Name 
+                    <span className="text-destructive">*</span>
+                    {field.value?.trim() && (
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleNameChange(e.target.value);
+                      }}
+                      placeholder="Enter operator name"
+                      className={errors.name ? 'border-destructive' : ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
-            <div>
-              <Label htmlFor="slug">Slug *</Label>
-              <Input
-                id="slug"
-                {...register('slug')}
-                placeholder="operator-slug"
-              />
-              {errors.slug && (
-                <p className="text-sm text-destructive mt-1">{errors.slug.message}</p>
+            />
+            <FormField
+              control={control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-1">
+                    URL Slug 
+                    <span className="text-destructive">*</span>
+                    {field.value?.trim() && !errors.slug && (
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="operator-url-slug"
+                      className={errors.slug ? 'border-destructive' : ''}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Auto-generated from name. Use lowercase letters, numbers, and dashes only.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -449,32 +503,67 @@ export function OperatorForm({
               onUpload={(url) => setValue('logo_url', url)}
               accept="image/*"
             />
-            <div>
-              <Label htmlFor="tracking_link">Tracking Link</Label>
-              <Input
-                id="tracking_link"
-                {...register('tracking_link')}
-                placeholder="https://example.com/affiliate"
-              />
-              {errors.tracking_link && (
-                <p className="text-sm text-destructive mt-1">{errors.tracking_link.message}</p>
+            <FormField
+              control={control}
+              name="tracking_link"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-1">
+                    Tracking Link
+                    {field.value?.trim() && !errors.tracking_link && (
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="https://example.com/affiliate"
+                      className={errors.tracking_link ? 'border-destructive' : ''}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Optional affiliate tracking URL
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="launch_year">Launch Year</Label>
-              <Input
-                id="launch_year"
-                type="number"
-                {...register('launch_year', { valueAsNumber: true })}
-                placeholder="2020"
-              />
-              {errors.launch_year && (
-                <p className="text-sm text-destructive mt-1">{errors.launch_year.message}</p>
+            <FormField
+              control={control}
+              name="launch_year"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-1">
+                    Launch Year
+                    {field.value && !errors.launch_year && (
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      value={field.value || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.onChange(value === '' ? undefined : parseInt(value));
+                      }}
+                      placeholder="2020"
+                      min="1990"
+                      max={new Date().getFullYear()}
+                      className={errors.launch_year ? 'border-destructive' : ''}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Year the operator was founded (1990-{new Date().getFullYear()})
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
             <div>
               <Label htmlFor="site_type">Site Type</Label>
               <Select
@@ -948,17 +1037,19 @@ export function OperatorForm({
              >
                <Save className="h-4 w-4 mr-2" />
                Save Draft
-             </Button>
-           )}
-           <Button type="submit" disabled={isLoading}>
-             {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
-           </Button>
-         </div>
-       </div>
+            </Button>
+          )}
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
+          </Button>
+        </div>
+      </div>
 
+        </Tabs>
         </form>
-      </AutoSaveErrorBoundary>
-    </FormErrorBoundary>
-  </PublishingErrorBoundary>
+        </Form>
+        </AutoSaveErrorBoundary>
+      </FormErrorBoundary>
+    </PublishingErrorBoundary>
   );
 }
