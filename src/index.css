@@ -165,8 +165,30 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html,
   body {
     @apply bg-background text-foreground;
+    height: 100vh;
+    overflow: hidden;
+    scroll-behavior: smooth;
+  }
+
+  #root {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Scroll containment for admin areas */
+  .admin-scroll-container {
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+  }
+
+  /* Prevent mobile bounce scroll */
+  .no-bounce {
+    overscroll-behavior-y: none;
   }
 }
 
