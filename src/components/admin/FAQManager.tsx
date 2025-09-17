@@ -50,11 +50,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     };
     
     const newFaqs = [...effectiveFaqs, newFaq];
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(newFaqs);
-    } else {
-      onSave(newFaqs);
-    }
+    onSave(newFaqs);
   };
 
   const updateFaq = (index: number, updates: Partial<OperatorFAQ>) => {
@@ -67,21 +63,12 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       i === index ? { ...faq, ...updates } : faq
     );
     
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(updated);
-    } else {
-      onSave(updated);
-    }
+    onSave(updated);
   };
 
   const removeFaq = (index: number) => {
     const filtered = effectiveFaqs.filter((_, i) => i !== index);
-    
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(filtered);
-    } else {
-      onSave(filtered);
-    }
+    onSave(filtered);
   };
 
   const moveFaq = (index: number, direction: 'up' | 'down') => {
@@ -101,11 +88,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       faq.order_number = i;
     });
     
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(updated);
-    } else {
-      onSave(updated);
-    }
+    onSave(updated);
   };
 
   const handleSave = () => {
@@ -115,13 +98,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     }
     
     try {
-      if (isTemporaryOperator) {
-        // Data is already saved to localStorage automatically
-        toast.success('FAQs saved locally - will be saved to database when operator is created');
-      } else {
-        // No manual save needed - data is automatically saved via onSave calls
-        toast.success('FAQs are automatically saved to database');
-      }
+      toast.success('FAQs saved successfully');
     } catch (error) {
       console.error('Error saving FAQs:', error);
       toast.error('Failed to save FAQs');
@@ -237,7 +214,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
             Add FAQ
           </Button>
           <Button type="button" onClick={handleSave} disabled={disabled}>
-            {isTemporaryOperator ? 'Save Locally' : 'Save FAQs'}
+            Save FAQs
           </Button>
         </div>
       </CardContent>

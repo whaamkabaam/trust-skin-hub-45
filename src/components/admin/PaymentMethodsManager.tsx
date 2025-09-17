@@ -84,11 +84,6 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       toast.error('Failed to save payment methods');
     }
   };
-    } catch (error) {
-      console.error('Error saving payments:', error);
-      toast.error('Failed to save payments');
-    }
-  };
 
   const depositMethods = effectivePayments.filter(p => p.method_type === 'deposit');
   const withdrawalMethods = effectivePayments.filter(p => p.method_type === 'withdrawal');
