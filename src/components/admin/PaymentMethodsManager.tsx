@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorPayment } from '@/hooks/useOperatorExtensions';
 import { toast } from 'sonner';
-import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface PaymentMethodsManagerProps {
@@ -30,11 +29,8 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
-  const localStorage = useLocalStorageExtensions(operatorId);
-  
-  // Always use props data (useOperatorExtensions manages localStorage internally)
-  const effectivePayments = isTemporaryOperator ? localStorage.payments : payments;
+  // Always use props data - useOperatorExtensions manages ALL localStorage logic
+  const effectivePayments = payments;
 
   const addPayment = (type: 'deposit' | 'withdrawal') => {
     // Notify parent that user is interacting with extensions
@@ -54,11 +50,7 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       is_available: true,
     };
     const newPayments = [...effectivePayments, newPayment];
-    if (isTemporaryOperator) {
-      localStorage.savePaymentsToLocal(newPayments);
-    } else {
-      onSave(newPayments);
-    }
+    onSave(newPayments);
   };
 
   const updatePayment = (index: number, updates: Partial<OperatorPayment>) => {
@@ -71,21 +63,12 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
       i === index ? { ...payment, ...updates } : payment
     );
     
-    if (isTemporaryOperator) {
-      localStorage.savePaymentsToLocal(updated);
-    } else {
-      onSave(updated);
-    }
+    onSave(updated);
   };
 
   const removePayment = (index: number) => {
     const filtered = effectivePayments.filter((_, i) => i !== index);
-    
-    if (isTemporaryOperator) {
-      localStorage.savePaymentsToLocal(filtered);
-    } else {
-      onSave(filtered);
-    }
+    onSave(filtered);
   };
 
   const handleSave = () => {
@@ -95,13 +78,12 @@ export function PaymentMethodsManager({ payments, onSave, operatorId, disabled =
     }
     
     try {
-      if (isTemporaryOperator) {
-        // Data is already saved to localStorage automatically
-        toast.success('Payments saved locally - will be saved to database when operator is created');
-      } else {
-        // No manual save needed - data is automatically saved via onSave calls
-        toast.success('Payment methods are automatically saved to database');
-      }
+      toast.success('Payment methods saved successfully');
+    } catch (error) {
+      console.error('Error saving payments:', error);
+      toast.error('Failed to save payment methods');
+    }
+  };
     } catch (error) {
       console.error('Error saving payments:', error);
       toast.error('Failed to save payments');

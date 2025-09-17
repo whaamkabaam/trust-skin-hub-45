@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useUserInteraction } from '@/hooks/useUserInteraction';
 
 export type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -21,6 +22,7 @@ export function useAutoSave<T>({
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const { isTyping } = useUserInteraction();
   
   // Filter out extension data that shouldn't trigger auto-save
   const filterFormData = useCallback((formData: any) => {
@@ -110,7 +112,7 @@ export function useAutoSave<T>({
 
   // Auto-save effect with enhanced safety checks and crash prevention
   useEffect(() => {
-    if (!enabled || initialLoadRef.current || isUserInteracting) return;
+    if (!enabled || initialLoadRef.current || isUserInteracting || isTyping()) return;
     
     // Only save if there's a significant change
     if (!hasSignificantChange(debouncedData, lastDataRef.current)) return;

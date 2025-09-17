@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorFeature } from '@/hooks/useOperatorExtensions';
 import { toast } from 'sonner';
-import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface FeaturesManagerProps {
@@ -33,11 +32,8 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
-  const localStorage = useLocalStorageExtensions(operatorId);
-  
-  // Always use props data (useOperatorExtensions manages localStorage internally)
-  const effectiveFeatures = isTemporaryOperator ? localStorage.features : features;
+  // Always use props data - useOperatorExtensions manages ALL localStorage logic
+  const effectiveFeatures = features;
 
   const addFeature = () => {
     // Notify parent that user is interacting with extensions
@@ -53,11 +49,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
       is_highlighted: false,
     };
     const newFeatures = [...effectiveFeatures, newFeature];
-    if (isTemporaryOperator) {
-      localStorage.saveFeaturesToLocal(newFeatures);
-    } else {
-      onSave(newFeatures);
-    }
+    onSave(newFeatures);
   };
 
   const updateFeature = (index: number, updates: Partial<OperatorFeature>) => {
@@ -70,21 +62,12 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
       i === index ? { ...feature, ...updates } : feature
     );
     
-    if (isTemporaryOperator) {
-      localStorage.saveFeaturesToLocal(updated);
-    } else {
-      onSave(updated);
-    }
+    onSave(updated);
   };
 
   const removeFeature = (index: number) => {
     const filtered = effectiveFeatures.filter((_, i) => i !== index);
-    
-    if (isTemporaryOperator) {
-      localStorage.saveFeaturesToLocal(filtered);
-    } else {
-      onSave(filtered);
-    }
+    onSave(filtered);
   };
 
   const handleSave = () => {
@@ -94,11 +77,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     }
     
     try {
-      if (isTemporaryOperator) {
-        toast.success('Features saved locally - will be saved to database when operator is created');
-      } else {
-        toast.success('Features are automatically saved to database');
-      }
+      toast.success('Features saved successfully');
     } catch (error) {
       console.error('Error saving features:', error);
       toast.error('Failed to save features');

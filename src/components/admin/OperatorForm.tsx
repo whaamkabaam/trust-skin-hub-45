@@ -18,7 +18,8 @@ import { toast } from '@/lib/toast';
 import { EnhancedFileUpload } from './EnhancedFileUpload';
 import { RichTextEditor } from './RichTextEditor';
 import { useAutoSave } from '@/hooks/useAutoSave';
-import { SaveStateIndicator } from '@/components/SaveStateIndicator';
+import { SaveStatusIndicator } from './SaveStatusIndicator';
+import { PublishingStatusIndicator } from './PublishingStatusIndicator';
 import { ContentScheduling } from '@/components/ContentScheduling';
 import { BonusManager } from './BonusManager';
 import { PaymentMethodsManager } from './PaymentMethodsManager';
@@ -358,11 +359,11 @@ export function OperatorForm({
         <AutoSaveErrorBoundary onReset={() => setExtensionActive(false)}>
           {/* Save State Indicator */}
           <div className="flex justify-between items-center mb-4">
-            <SaveStateIndicator 
+            <SaveStatusIndicator 
               saveState={saveState} 
               lastSaved={lastSaved} 
-              isDraft={!initialData && effectiveOperatorId.startsWith('temp-')}
             />
+            <PublishingStatusIndicator operatorId={effectiveOperatorId} />
             {!initialData && effectiveOperatorId.startsWith('temp-') && (
               <Badge variant="outline" className="text-blue-600">
                 New Operator Draft
@@ -908,7 +909,7 @@ export function OperatorForm({
       />
 
       <div className="flex justify-between items-center">
-        <SaveStateIndicator 
+        <SaveStatusIndicator 
           saveState={saveState} 
           lastSaved={lastSaved}
           className="flex-1"

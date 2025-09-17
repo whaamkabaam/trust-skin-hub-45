@@ -8,8 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorFAQ } from '@/hooks/useOperatorExtensions';
-import { toast } from '@/lib/toast';
-import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
+import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface FAQManagerProps {
@@ -32,11 +31,8 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
-  const localStorage = useLocalStorageExtensions(operatorId);
-  
-  // Always use props data (useOperatorExtensions manages localStorage internally)
-  const effectiveFaqs = isTemporaryOperator ? localStorage.faqs : faqs;
+  // Always use props data - useOperatorExtensions manages ALL localStorage logic
+  const effectiveFaqs = faqs;
 
   const addFaq = () => {
     // Notify parent that user is interacting with extensions
