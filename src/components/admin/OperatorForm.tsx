@@ -410,7 +410,7 @@ export function OperatorForm({
                 <ul className="mt-2 space-y-1">
                   {Object.entries(errors).map(([field, error]) => (
                     <li key={field} className="text-sm">
-                      • {field}: {error?.message}
+                      • {field}: {String(error?.message || 'Invalid value')}
                     </li>
                   ))}
                 </ul>
@@ -1044,12 +1044,10 @@ export function OperatorForm({
           </Button>
         </div>
       </div>
-
-        </Tabs>
-        </form>
-        </Form>
-        </AutoSaveErrorBoundary>
-      </FormErrorBoundary>
-    </PublishingErrorBoundary>
+    </form>
+    </Form>
+    </AutoSaveErrorBoundary>
+  </FormErrorBoundary>
+  </PublishingErrorBoundary>
   );
 }
