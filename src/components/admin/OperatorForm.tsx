@@ -11,15 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, Save, Globe } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useStaticContent } from '@/hooks/useStaticContent';
-import { usePublishingState } from '@/hooks/usePublishingState';
 import { toast } from '@/lib/toast';
 import { EnhancedFileUpload } from './EnhancedFileUpload';
 import { RichTextEditor } from './RichTextEditor';
-import { useAutoSave } from '@/hooks/useAutoSave';
-import { SaveStatusIndicator } from './SaveStatusIndicator';
-import { PublishingStatusIndicator } from './PublishingStatusIndicator';
 import { ContentScheduling } from '@/components/ContentScheduling';
 import { BonusManager } from './BonusManager';
 import { PaymentMethodsManager } from './PaymentMethodsManager';
@@ -31,35 +27,20 @@ import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
 import { DataIntegrityChecker } from './DataIntegrityChecker';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
-import { useStableTempId } from '@/hooks/useStableTempId';
-import { useFormAutoSave } from '@/hooks/useFormAutoSave';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { FormErrorBoundary } from './FormErrorBoundary';
-import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
-import { TabErrorBoundary } from './TabErrorBoundary';
-import { AutoSaveErrorBoundary } from './AutoSaveErrorBoundary';
-import { PublishingErrorBoundary } from './PublishingErrorBoundary';
-import { ExtensionSaveStatus } from './ExtensionSaveStatus';
 
 type Operator = Tables<'operators'>;
 
 interface OperatorFormProps {
   initialData?: Operator | null;
   onSubmit: (data: OperatorFormData) => Promise<void>;
-  onAutoSave?: (data: OperatorFormData) => Promise<void>;
   isLoading?: boolean;
-  autoSaveEnabled?: boolean;
-  publishingState?: boolean;
 }
 
 export function OperatorForm({ 
   initialData, 
   onSubmit, 
-  onAutoSave, 
-  isLoading, 
-  autoSaveEnabled = true,
-  publishingState = false
+  isLoading
 }: OperatorFormProps) {
   const {
     register,
@@ -150,11 +131,7 @@ export function OperatorForm({
   const supportChannels = watch('support_channels');
   const formData = watch();
 
-  // Use stable temporary ID for new operators to prevent data loss during navigation
-  const effectiveOperatorId = useStableTempId(initialData?.id);
-  
-  // Load saved form data for new operators
-  const { loadSavedFormData, clearSavedFormData } = useFormAutoSave(effectiveOperatorId);
+  const effectiveOperatorId = initialData?.id || 'new-operator';
   
   const {
     bonuses,
@@ -166,108 +143,10 @@ export function OperatorForm({
     savePayments,
     saveFeatures,
     saveSecurity,
-    saveFaqs,
-    setExtensionActive,
-    isExtensionActive
+    saveFaqs
   } = useOperatorExtensions(effectiveOperatorId);
 
-  // Load saved form data on mount for new operators
-  useEffect(() => {
-    if (!initialData && effectiveOperatorId.startsWith('temp-')) {
-      const savedData = loadSavedFormData();
-      if (savedData) {
-        // Populate form fields with saved data
-        Object.entries(savedData).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            setValue(key as any, value);
-          }
-        });
-        toast.success('Draft restored from your previous session');
-      }
-    }
-  }, [initialData, effectiveOperatorId, loadSavedFormData, setValue]);
-
-  // Auto-save functionality - NEVER triggers publishing
-  const handleAutoSave = useCallback(async (data: OperatorFormData) => {
-    if (onAutoSave && typeof onAutoSave === 'function') {
-      try {
-        // Ensure we're only saving form data, never triggering publish
-        await onAutoSave(data);
-      } catch (error) {
-        console.error('Auto-save failed:', error);
-        // Silent failure for auto-save to prevent disrupting user experience
-      }
-    }
-  }, [onAutoSave]);
-
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
-  const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
-  
-  const { saveState, lastSaved, forceSave, pauseAutoSave } = useAutoSave({
-    data: formData,
-    onSave: handleAutoSave,
-    enabled: autoSaveEnabled && !!onAutoSave && !publishLoading && !publishingState && !isExtensionActive && !globalIsPublishing,
-    storageKey: `temp-form-data-${effectiveOperatorId}`
-  });
-
-  // Enhanced extension interaction handlers with longer auto-save pause
-  const handleExtensionInteraction = useCallback((extensionType: string) => {
-    setExtensionActive(true);
-    pauseAutoSave?.(15000); // Pause auto-save for 15 seconds during extension work
-  }, [setExtensionActive, pauseAutoSave]);
-
-  const handleExtensionSave = useCallback((extensionType: string) => {
-    setExtensionActive(false);
-  }, [setExtensionActive]);
-
-  // Stabilize extension manager props with static keys and enhanced error handling
-  const stableExtensionProps = useMemo(() => ({
-    bonuses: {
-      key: 'bonuses-manager-stable',
-      operatorId: effectiveOperatorId,
-      bonuses,
-      onSave: saveBonuses,
-      disabled: publishLoading || publishingState,
-      onInteractionStart: () => handleExtensionInteraction('bonuses')
-    },
-    payments: {
-      key: 'payments-manager-stable',
-      operatorId: effectiveOperatorId,
-      payments,
-      onSave: savePayments,
-      disabled: publishLoading || publishingState,
-      onInteractionStart: () => handleExtensionInteraction('payments')
-    },
-    security: {
-      key: 'security-manager-stable',
-      operatorId: effectiveOperatorId,
-      security,
-      onSave: saveSecurity,
-      disabled: publishLoading || publishingState,
-      onInteractionStart: () => handleExtensionInteraction('security')
-    },
-    faqs: {
-      key: 'faqs-manager-stable',
-      operatorId: effectiveOperatorId,
-      faqs,
-      onSave: saveFaqs,
-      disabled: publishLoading || publishingState,
-      onInteractionStart: () => handleExtensionInteraction('faqs')
-    }
-  }), [
-    effectiveOperatorId,
-    bonuses,
-    payments,
-    security,
-    faqs,
-    saveBonuses,
-    savePayments,
-    saveSecurity,
-    saveFaqs,
-    publishLoading,
-    publishingState,
-    handleExtensionInteraction
-  ]);
 
 
   // Simplified status change handler that prevents race conditions
@@ -319,20 +198,7 @@ export function OperatorForm({
       scheduled_publish_at: data.scheduled_publish_at === '' ? null : data.scheduled_publish_at,
     };
     
-    // Wrap publishing operations in error boundary
-    if (cleanedData.published === true) {
-      console.log('Publishing operation initiated - disabling extension interactions');
-      setExtensionActive(false); // Force stop all extension interactions
-      pauseAutoSave?.(60000); // Pause auto-save for 1 minute during publishing
-    }
-    
-    try {
-      return await onSubmit(cleanedData);
-    } catch (error) {
-      // Re-enable extension interactions if publishing fails
-      setExtensionActive(false);
-      throw error;
-    }
+    return await onSubmit(cleanedData);
   };
 
   const addArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries' | 'support_channels') => {
@@ -351,27 +217,7 @@ export function OperatorForm({
   };
 
   return (
-    <PublishingErrorBoundary 
-      operatorId={effectiveOperatorId} 
-      onReset={() => setExtensionActive(false)}
-    >
-      <FormErrorBoundary>
-        <AutoSaveErrorBoundary onReset={() => setExtensionActive(false)}>
-          {/* Save State Indicator */}
-          <div className="flex justify-between items-center mb-4">
-            <SaveStatusIndicator 
-              saveState={saveState} 
-              lastSaved={lastSaved} 
-            />
-            <PublishingStatusIndicator operatorId={effectiveOperatorId} />
-            {!initialData && effectiveOperatorId.startsWith('temp-') && (
-              <Badge variant="outline" className="text-blue-600">
-                New Operator Draft
-              </Badge>
-            )}
-          </div>
-        
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -941,32 +787,13 @@ export function OperatorForm({
       />
 
       <div className="flex justify-between items-center">
-        <SaveStatusIndicator 
-          saveState={saveState} 
-          lastSaved={lastSaved}
-          className="flex-1"
-        />
         <div className="flex gap-2">
-          {autoSaveEnabled && onAutoSave && (
-             <Button 
-               type="button" 
-               variant="outline" 
-               onClick={forceSave}
-               disabled={saveState === 'saving'}
-             >
-               <Save className="h-4 w-4 mr-2" />
-               Save Draft
-             </Button>
-           )}
-           <Button type="submit" disabled={isLoading}>
-             {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
-           </Button>
-         </div>
-       </div>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
+          </Button>
+        </div>
+      </div>
 
-        </form>
-      </AutoSaveErrorBoundary>
-    </FormErrorBoundary>
-  </PublishingErrorBoundary>
+    </form>
   );
 }
