@@ -131,7 +131,9 @@ export function OperatorForm({
   const supportChannels = watch('support_channels');
   const formData = watch();
 
-  const effectiveOperatorId = initialData?.id || 'new-operator';
+  // Only load extensions for existing operators with real UUIDs
+  const isNewOperator = !initialData?.id;
+  const hasValidOperatorId = initialData?.id && initialData.id !== 'new-operator';
   
   const {
     bonuses,
@@ -144,7 +146,7 @@ export function OperatorForm({
     saveFeatures,
     saveSecurity,
     saveFaqs
-  } = useOperatorExtensions(effectiveOperatorId);
+  } = useOperatorExtensions(hasValidOperatorId ? initialData.id : '');
 
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
 
@@ -219,16 +221,20 @@ export function OperatorForm({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className={`grid w-full ${isNewOperator ? 'grid-cols-4' : 'grid-cols-9'}`}>
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
-          <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
-          <TabsTrigger value="payments">Payments</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="faqs">FAQs</TabsTrigger>
+          {!isNewOperator && (
+            <>
+              <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
+              <TabsTrigger value="payments">Payments</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+              <TabsTrigger value="faqs">FAQs</TabsTrigger>
+            </>
+          )}
           <TabsTrigger value="seo">SEO</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="media">Media</TabsTrigger>
-          <TabsTrigger value="debug">Debug</TabsTrigger>
+          {!isNewOperator && <TabsTrigger value="debug">Debug</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="basic" className="space-y-6">
@@ -661,39 +667,71 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="bonuses" className="space-y-6">
-          <BonusManager
-            operatorId={effectiveOperatorId}
-            bonuses={bonuses}
-            onSave={saveBonuses}
-            disabled={publishLoading}
-          />
+          {!isNewOperator ? (
+            <BonusManager
+              operatorId={initialData.id}
+              bonuses={bonuses}
+              onSave={saveBonuses}
+              disabled={publishLoading}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Create the operator first to manage bonuses.</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="payments" className="space-y-6">
-          <PaymentMethodsManager
-            operatorId={effectiveOperatorId}
-            payments={payments}
-            onSave={savePayments}
-            disabled={publishLoading}
-          />
+          {!isNewOperator ? (
+            <PaymentMethodsManager
+              operatorId={initialData.id}
+              payments={payments}
+              onSave={savePayments}
+              disabled={publishLoading}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Create the operator first to manage payment methods.</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
-          <SecurityManager
-            operatorId={effectiveOperatorId}
-            security={security}
-            onSave={saveSecurity}
-            disabled={publishLoading}
-          />
+          {!isNewOperator ? (
+            <SecurityManager
+              operatorId={initialData.id}
+              security={security}
+              onSave={saveSecurity}
+              disabled={publishLoading}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Create the operator first to manage security settings.</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="faqs" className="space-y-6">
-          <FAQManager
-            operatorId={effectiveOperatorId}
-            faqs={faqs}
-            onSave={saveFaqs}
-            disabled={publishLoading}
-          />
+          {!isNewOperator ? (
+            <FAQManager
+              operatorId={initialData.id}
+              faqs={faqs}
+              onSave={saveFaqs}
+              disabled={publishLoading}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Create the operator first to manage FAQs.</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="seo" className="space-y-6">
@@ -729,39 +767,40 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="debug" className="space-y-6">
-          <DataIntegrityChecker operatorId={effectiveOperatorId} />
-          {initialData?.id ? (
-            <div className="space-y-6">
-              <QuickPublishTest />
-              <PublishingDebugger operatorId={initialData.id} />
-            </div>
+          {!isNewOperator ? (
+            <>
+              <DataIntegrityChecker operatorId={initialData.id} />
+              <div className="space-y-6">
+                <QuickPublishTest />
+                <PublishingDebugger operatorId={initialData.id} />
+              </div>
+            </>
           ) : (
             <Card>
               <CardContent className="p-6">
-                <p className="text-muted-foreground">Please save the operator first to access debugging tools.</p>
+                <p className="text-muted-foreground">Debug tools available after creating the operator.</p>
               </CardContent>
             </Card>
           )}
-        </TabsContent>
+         </TabsContent>
+
       </Tabs>
 
-      {/* Content Scheduling */}
-      <ContentScheduling
-        key={`scheduling-${initialData?.id || 'new'}`}
-        publishStatus={watch('publish_status') || 'draft'}
-        publishedAt={(initialData as any)?.published_at || undefined}
-        scheduledPublishAt={(watch() as any).scheduled_publish_at || undefined}
-        onStatusChange={handleStatusChange}
-      />
-
-      <div className="flex justify-between items-center">
-        <div className="flex gap-2">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
-          </Button>
-        </div>
+      <div className="flex gap-4">
+        <Button type="submit" disabled={isLoading} className="flex-1">
+          <Save className="h-4 w-4 mr-2" />
+          {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
+        </Button>
+        
+        {initialData?.id && (
+          <ContentScheduling
+            publishStatus={watch('publish_status') || 'draft'}
+            publishedAt={(initialData as any)?.published_at}
+            scheduledPublishAt={(watch() as any).scheduled_publish_at}
+            onStatusChange={handleStatusChange}
+          />
+        )}
       </div>
-
     </form>
   );
 }

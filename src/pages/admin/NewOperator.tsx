@@ -15,9 +15,10 @@ export default function NewOperator() {
   const handleSubmit = async (data: OperatorFormData) => {
     try {
       setIsLoading(true);
-      await createOperator(data);
-      toast.success('Operator created successfully');
-      navigate('/admin/operators');
+      const newOperator = await createOperator(data);
+      toast.success('Operator created successfully! Redirecting to edit extensions...');
+      // Redirect to edit mode where extensions can be managed
+      navigate(`/admin/operators/${newOperator.id}/edit`);
     } catch (error) {
       console.error('Failed to create operator:', error);
       toast.error('Failed to create operator');

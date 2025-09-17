@@ -71,7 +71,7 @@ export function useOperatorExtensions(operatorId: string) {
 
   // Fetch all extension data
   const fetchExtensionData = useCallback(async () => {
-    if (!operatorId) {
+    if (!operatorId || operatorId === 'new-operator' || operatorId.includes('temp-')) {
       setLoading(false);
       return;
     }
