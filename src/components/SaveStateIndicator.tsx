@@ -1,7 +1,7 @@
 import { Check, Save, AlertCircle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import type { SaveState } from '@/types/save';
+import type { SaveState } from '@/hooks/useAutoSave';
 
 interface SaveStateIndicatorProps {
   saveState: SaveState;

@@ -11,11 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, Save, Globe } from 'lucide-react';
 import { operatorSchema, type OperatorFormData } from '@/lib/validations';
 import type { Tables } from '@/integrations/supabase/types';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useStaticContent } from '@/hooks/useStaticContent';
+import { usePublishingState } from '@/hooks/usePublishingState';
 import { toast } from '@/lib/toast';
 import { EnhancedFileUpload } from './EnhancedFileUpload';
 import { RichTextEditor } from './RichTextEditor';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { SaveStateIndicator } from '@/components/SaveStateIndicator';
 import { ContentScheduling } from '@/components/ContentScheduling';
 import { BonusManager } from './BonusManager';
 import { PaymentMethodsManager } from './PaymentMethodsManager';
@@ -27,20 +30,35 @@ import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
 import { DataIntegrityChecker } from './DataIntegrityChecker';
 import { useOperatorExtensions } from '@/hooks/useOperatorExtensions';
+import { useStableTempId } from '@/hooks/useStableTempId';
+import { useFormAutoSave } from '@/hooks/useFormAutoSave';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { FormErrorBoundary } from './FormErrorBoundary';
+import { ExtensionErrorBoundary } from './ExtensionErrorBoundary';
+import { TabErrorBoundary } from './TabErrorBoundary';
+import { AutoSaveErrorBoundary } from './AutoSaveErrorBoundary';
+import { PublishingErrorBoundary } from './PublishingErrorBoundary';
+import { usePublishingQueue } from '@/hooks/usePublishingQueue';
 
 type Operator = Tables<'operators'>;
 
 interface OperatorFormProps {
   initialData?: Operator | null;
   onSubmit: (data: OperatorFormData) => Promise<void>;
+  onAutoSave?: (data: OperatorFormData) => Promise<void>;
   isLoading?: boolean;
+  autoSaveEnabled?: boolean;
+  publishingState?: boolean;
 }
 
 export function OperatorForm({ 
   initialData, 
   onSubmit, 
-  isLoading
+  onAutoSave, 
+  isLoading, 
+  autoSaveEnabled = true,
+  publishingState = false
 }: OperatorFormProps) {
   const {
     register,
@@ -131,9 +149,11 @@ export function OperatorForm({
   const supportChannels = watch('support_channels');
   const formData = watch();
 
-  // Only load extensions for existing operators with real UUIDs
-  const isNewOperator = !initialData?.id;
-  const hasValidOperatorId = initialData?.id && initialData.id !== 'new-operator';
+  // Use stable temporary ID for new operators to prevent data loss during navigation
+  const effectiveOperatorId = useStableTempId(initialData?.id);
+  
+  // Load saved form data for new operators
+  const { loadSavedFormData, clearSavedFormData } = useFormAutoSave(effectiveOperatorId);
   
   const {
     bonuses,
@@ -145,10 +165,108 @@ export function OperatorForm({
     savePayments,
     saveFeatures,
     saveSecurity,
-    saveFaqs
-  } = useOperatorExtensions(hasValidOperatorId ? initialData.id : '');
+    saveFaqs,
+    setExtensionActive,
+    isExtensionActive
+  } = useOperatorExtensions(effectiveOperatorId);
+
+  // Load saved form data on mount for new operators
+  useEffect(() => {
+    if (!initialData && effectiveOperatorId.startsWith('temp-')) {
+      const savedData = loadSavedFormData();
+      if (savedData) {
+        // Populate form fields with saved data
+        Object.entries(savedData).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            setValue(key as any, value);
+          }
+        });
+        toast.success('Draft restored from your previous session');
+      }
+    }
+  }, [initialData, effectiveOperatorId, loadSavedFormData, setValue]);
+
+  // Auto-save functionality - NEVER triggers publishing
+  const handleAutoSave = useCallback(async (data: OperatorFormData) => {
+    if (onAutoSave && typeof onAutoSave === 'function') {
+      try {
+        // Ensure we're only saving form data, never triggering publish
+        await onAutoSave(data);
+      } catch (error) {
+        console.error('Auto-save failed:', error);
+        // Silent failure for auto-save to prevent disrupting user experience
+      }
+    }
+  }, [onAutoSave]);
 
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
+  const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
+  
+  const { saveState, lastSaved, forceSave, pauseAutoSave } = useAutoSave({
+    data: formData,
+    onSave: handleAutoSave,
+    enabled: autoSaveEnabled && !!onAutoSave && !publishLoading && !publishingState && !isExtensionActive,
+    storageKey: `temp-form-data-${effectiveOperatorId}`
+  });
+
+  // Simplified extension interaction handlers
+  const handleExtensionInteraction = useCallback((extensionType: string) => {
+    setExtensionActive(true);
+    pauseAutoSave?.(10000); // Pause auto-save for 10 seconds
+  }, [setExtensionActive, pauseAutoSave]);
+
+  const handleExtensionSave = useCallback((extensionType: string) => {
+    setExtensionActive(false);
+  }, [setExtensionActive]);
+
+  // Stabilize extension manager props with static keys and enhanced error handling
+  const stableExtensionProps = useMemo(() => ({
+    bonuses: {
+      key: 'bonuses-manager-stable',
+      operatorId: effectiveOperatorId,
+      bonuses,
+      onSave: saveBonuses,
+      disabled: publishLoading || publishingState,
+      onInteractionStart: () => handleExtensionInteraction('bonuses')
+    },
+    payments: {
+      key: 'payments-manager-stable',
+      operatorId: effectiveOperatorId,
+      payments,
+      onSave: savePayments,
+      disabled: publishLoading || publishingState,
+      onInteractionStart: () => handleExtensionInteraction('payments')
+    },
+    security: {
+      key: 'security-manager-stable',
+      operatorId: effectiveOperatorId,
+      security,
+      onSave: saveSecurity,
+      disabled: publishLoading || publishingState,
+      onInteractionStart: () => handleExtensionInteraction('security')
+    },
+    faqs: {
+      key: 'faqs-manager-stable',
+      operatorId: effectiveOperatorId,
+      faqs,
+      onSave: saveFaqs,
+      disabled: publishLoading || publishingState,
+      onInteractionStart: () => handleExtensionInteraction('faqs')
+    }
+  }), [
+    effectiveOperatorId,
+    bonuses,
+    payments,
+    security,
+    faqs,
+    saveBonuses,
+    savePayments,
+    saveSecurity,
+    saveFaqs,
+    publishLoading,
+    publishingState,
+    handleExtensionInteraction
+  ]);
 
 
   // Simplified status change handler that prevents race conditions
@@ -200,7 +318,20 @@ export function OperatorForm({
       scheduled_publish_at: data.scheduled_publish_at === '' ? null : data.scheduled_publish_at,
     };
     
-    return await onSubmit(cleanedData);
+    // Wrap publishing operations in error boundary
+    if (cleanedData.published === true) {
+      console.log('Publishing operation initiated - disabling extension interactions');
+      setExtensionActive(false); // Force stop all extension interactions
+      pauseAutoSave?.(60000); // Pause auto-save for 1 minute during publishing
+    }
+    
+    try {
+      return await onSubmit(cleanedData);
+    } catch (error) {
+      // Re-enable extension interactions if publishing fails
+      setExtensionActive(false);
+      throw error;
+    }
   };
 
   const addArrayItem = (fieldName: 'categories' | 'pros' | 'cons' | 'supported_countries' | 'support_channels') => {
@@ -219,22 +350,38 @@ export function OperatorForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <PublishingErrorBoundary 
+      operatorId={effectiveOperatorId} 
+      onReset={() => setExtensionActive(false)}
+    >
+      <FormErrorBoundary>
+        <AutoSaveErrorBoundary onReset={() => setExtensionActive(false)}>
+          {/* Save State Indicator */}
+          <div className="flex justify-between items-center mb-4">
+            <SaveStateIndicator 
+              saveState={saveState} 
+              lastSaved={lastSaved} 
+              isDraft={!initialData && effectiveOperatorId.startsWith('temp-')}
+            />
+            {!initialData && effectiveOperatorId.startsWith('temp-') && (
+              <Badge variant="outline" className="text-blue-600">
+                New Operator Draft
+              </Badge>
+            )}
+          </div>
+        
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
-        <TabsList className={`grid w-full ${isNewOperator ? 'grid-cols-4' : 'grid-cols-9'}`}>
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
-          {!isNewOperator && (
-            <>
-              <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
-              <TabsTrigger value="payments">Payments</TabsTrigger>
-              <TabsTrigger value="security">Security</TabsTrigger>
-              <TabsTrigger value="faqs">FAQs</TabsTrigger>
-            </>
-          )}
+          <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
+          <TabsTrigger value="payments">Payments</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="faqs">FAQs</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="media">Media</TabsTrigger>
-          {!isNewOperator && <TabsTrigger value="debug">Debug</TabsTrigger>}
+          <TabsTrigger value="debug">Debug</TabsTrigger>
         </TabsList>
 
         <TabsContent value="basic" className="space-y-6">
@@ -667,71 +814,39 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="bonuses" className="space-y-6">
-          {!isNewOperator ? (
-            <BonusManager
-              operatorId={initialData.id}
-              bonuses={bonuses}
-              onSave={saveBonuses}
-              disabled={publishLoading}
+          <ExtensionErrorBoundary extensionName="Bonuses">
+            <BonusManager 
+              key={stableExtensionProps.bonuses.key}
+              {...stableExtensionProps.bonuses} 
             />
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Create the operator first to manage bonuses.</p>
-              </CardContent>
-            </Card>
-          )}
+          </ExtensionErrorBoundary>
         </TabsContent>
 
         <TabsContent value="payments" className="space-y-6">
-          {!isNewOperator ? (
-            <PaymentMethodsManager
-              operatorId={initialData.id}
-              payments={payments}
-              onSave={savePayments}
-              disabled={publishLoading}
+          <ExtensionErrorBoundary extensionName="Payments">
+            <PaymentMethodsManager 
+              key={stableExtensionProps.payments.key}
+              {...stableExtensionProps.payments} 
             />
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Create the operator first to manage payment methods.</p>
-              </CardContent>
-            </Card>
-          )}
+          </ExtensionErrorBoundary>
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
-          {!isNewOperator ? (
-            <SecurityManager
-              operatorId={initialData.id}
-              security={security}
-              onSave={saveSecurity}
-              disabled={publishLoading}
+          <ExtensionErrorBoundary extensionName="Security">
+            <SecurityManager 
+              key={stableExtensionProps.security.key}
+              {...stableExtensionProps.security} 
             />
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Create the operator first to manage security settings.</p>
-              </CardContent>
-            </Card>
-          )}
+          </ExtensionErrorBoundary>
         </TabsContent>
 
         <TabsContent value="faqs" className="space-y-6">
-          {!isNewOperator ? (
-            <FAQManager
-              operatorId={initialData.id}
-              faqs={faqs}
-              onSave={saveFaqs}
-              disabled={publishLoading}
+          <ExtensionErrorBoundary extensionName="FAQs">
+            <FAQManager 
+              key={stableExtensionProps.faqs.key}
+              {...stableExtensionProps.faqs} 
             />
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Create the operator first to manage FAQs.</p>
-              </CardContent>
-            </Card>
-          )}
+          </ExtensionErrorBoundary>
         </TabsContent>
 
         <TabsContent value="seo" className="space-y-6">
@@ -767,40 +882,58 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="debug" className="space-y-6">
-          {!isNewOperator ? (
-            <>
-              <DataIntegrityChecker operatorId={initialData.id} />
-              <div className="space-y-6">
-                <QuickPublishTest />
-                <PublishingDebugger operatorId={initialData.id} />
-              </div>
-            </>
+          <DataIntegrityChecker operatorId={effectiveOperatorId} />
+          {initialData?.id ? (
+            <div className="space-y-6">
+              <QuickPublishTest />
+              <PublishingDebugger operatorId={initialData.id} />
+            </div>
           ) : (
             <Card>
               <CardContent className="p-6">
-                <p className="text-muted-foreground">Debug tools available after creating the operator.</p>
+                <p className="text-muted-foreground">Please save the operator first to access debugging tools.</p>
               </CardContent>
             </Card>
           )}
-         </TabsContent>
-
+        </TabsContent>
       </Tabs>
 
-      <div className="flex gap-4">
-        <Button type="submit" disabled={isLoading} className="flex-1">
-          <Save className="h-4 w-4 mr-2" />
-          {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
-        </Button>
-        
-        {initialData?.id && (
-          <ContentScheduling
-            publishStatus={watch('publish_status') || 'draft'}
-            publishedAt={(initialData as any)?.published_at}
-            scheduledPublishAt={(watch() as any).scheduled_publish_at}
-            onStatusChange={handleStatusChange}
-          />
-        )}
-      </div>
-    </form>
+      {/* Content Scheduling */}
+      <ContentScheduling
+        key={`scheduling-${initialData?.id || 'new'}`}
+        publishStatus={watch('publish_status') || 'draft'}
+        publishedAt={(initialData as any)?.published_at || undefined}
+        scheduledPublishAt={(watch() as any).scheduled_publish_at || undefined}
+        onStatusChange={handleStatusChange}
+      />
+
+      <div className="flex justify-between items-center">
+        <SaveStateIndicator 
+          saveState={saveState} 
+          lastSaved={lastSaved}
+          className="flex-1"
+        />
+        <div className="flex gap-2">
+          {autoSaveEnabled && onAutoSave && (
+             <Button 
+               type="button" 
+               variant="outline" 
+               onClick={forceSave}
+               disabled={saveState === 'saving'}
+             >
+               <Save className="h-4 w-4 mr-2" />
+               Save Draft
+             </Button>
+           )}
+           <Button type="submit" disabled={isLoading}>
+             {isLoading ? 'Saving...' : initialData ? 'Update Operator' : 'Create Operator'}
+           </Button>
+         </div>
+       </div>
+
+        </form>
+      </AutoSaveErrorBoundary>
+    </FormErrorBoundary>
+  </PublishingErrorBoundary>
   );
 }

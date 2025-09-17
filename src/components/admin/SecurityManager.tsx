@@ -7,7 +7,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Plus, Trash2, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorSecurity } from '@/hooks/useOperatorExtensions';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
+import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface SecurityManagerProps {
@@ -36,8 +37,11 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Always use props data - useOperatorExtensions manages ALL localStorage logic
-  const effectiveSecurity = security || defaultSecurity;
+  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
+  const localStorage = useLocalStorageExtensions(operatorId);
+  
+  // Always use props data (useOperatorExtensions manages localStorage internally)
+  const effectiveSecurity = isTemporaryOperator ? (localStorage.security || defaultSecurity) : (security || defaultSecurity);
 
   const updateSecurity = (updates: Partial<OperatorSecurity>) => {
     // Notify parent that user is interacting with extensions
@@ -47,7 +51,11 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     
     const updatedSecurity = { ...effectiveSecurity, ...updates };
     
-    onSave(updatedSecurity);
+    if (isTemporaryOperator) {
+      localStorage.saveSecurityToLocal(updatedSecurity);
+    } else {
+      onSave(updatedSecurity);
+    }
   };
 
   const addCertification = () => {
@@ -75,7 +83,13 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     }
     
     try {
-      toast.success('Security settings saved successfully');
+      if (isTemporaryOperator) {
+        // Data is already saved to localStorage automatically
+        toast.success('Security settings saved locally - will be saved to database when operator is created');
+      } else {
+        // No manual save needed - data is automatically saved via onSave calls
+        toast.success('Security settings are automatically saved to database');
+      }
     } catch (error) {
       console.error('Error saving security:', error);
       toast.error('Failed to save security settings');

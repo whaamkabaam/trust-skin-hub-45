@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorBonus } from '@/hooks/useOperatorExtensions';
 import { toast } from 'sonner';
+import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface BonusManagerProps {
@@ -33,8 +34,11 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Always use props data - useOperatorExtensions manages ALL localStorage logic
-  const effectiveBonuses = bonuses;
+  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
+  const localStorage = useLocalStorageExtensions(operatorId);
+  
+  // Always use props data (useOperatorExtensions manages localStorage internally)
+  const effectiveBonuses = isTemporaryOperator ? localStorage.bonuses : bonuses;
 
   const addBonus = () => {
     // Notify parent that user is interacting with extensions
@@ -53,7 +57,11 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       order_number: effectiveBonuses.length,
     };
     const newBonuses = [...effectiveBonuses, newBonus];
-    onSave(newBonuses);
+    if (isTemporaryOperator) {
+      localStorage.saveBonusesToLocal(newBonuses);
+    } else {
+      onSave(newBonuses);
+    }
   };
 
   const updateBonus = (index: number, updates: Partial<OperatorBonus>) => {
@@ -66,12 +74,21 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       i === index ? { ...bonus, ...updates } : bonus
     );
     
-    onSave(updated);
+    if (isTemporaryOperator) {
+      localStorage.saveBonusesToLocal(updated);
+    } else {
+      onSave(updated);
+    }
   };
 
   const removeBonus = (index: number) => {
     const filtered = effectiveBonuses.filter((_, i) => i !== index);
-    onSave(filtered);
+    
+    if (isTemporaryOperator) {
+      localStorage.saveBonusesToLocal(filtered);
+    } else {
+      onSave(filtered);
+    }
   };
 
   const handleSave = () => {
@@ -81,7 +98,13 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     }
     
     try {
-      toast.success('Bonuses saved successfully');
+      if (isTemporaryOperator) {
+        // Data is already saved to localStorage automatically
+        toast.success('Bonuses saved locally - will be saved to database when operator is created');
+      } else {
+        // No manual save needed - data is automatically saved via onSave calls
+        toast.success('Bonuses are automatically saved to database');
+      }
     } catch (error) {
       console.error('Error saving bonuses:', error);
       toast.error('Failed to save bonuses');

@@ -8,7 +8,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
 import { OperatorFAQ } from '@/hooks/useOperatorExtensions';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
+import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface FAQManagerProps {
@@ -31,8 +32,11 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
   
-  // Always use props data - useOperatorExtensions manages ALL localStorage logic
-  const effectiveFaqs = faqs;
+  // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
+  const localStorage = useLocalStorageExtensions(operatorId);
+  
+  // Always use props data (useOperatorExtensions manages localStorage internally)
+  const effectiveFaqs = isTemporaryOperator ? localStorage.faqs : faqs;
 
   const addFaq = () => {
     // Notify parent that user is interacting with extensions
@@ -50,7 +54,11 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     };
     
     const newFaqs = [...effectiveFaqs, newFaq];
-    onSave(newFaqs);
+    if (isTemporaryOperator) {
+      localStorage.saveFaqsToLocal(newFaqs);
+    } else {
+      onSave(newFaqs);
+    }
   };
 
   const updateFaq = (index: number, updates: Partial<OperatorFAQ>) => {
@@ -63,12 +71,21 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       i === index ? { ...faq, ...updates } : faq
     );
     
-    onSave(updated);
+    if (isTemporaryOperator) {
+      localStorage.saveFaqsToLocal(updated);
+    } else {
+      onSave(updated);
+    }
   };
 
   const removeFaq = (index: number) => {
     const filtered = effectiveFaqs.filter((_, i) => i !== index);
-    onSave(filtered);
+    
+    if (isTemporaryOperator) {
+      localStorage.saveFaqsToLocal(filtered);
+    } else {
+      onSave(filtered);
+    }
   };
 
   const moveFaq = (index: number, direction: 'up' | 'down') => {
@@ -88,7 +105,11 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       faq.order_number = i;
     });
     
-    onSave(updated);
+    if (isTemporaryOperator) {
+      localStorage.saveFaqsToLocal(updated);
+    } else {
+      onSave(updated);
+    }
   };
 
   const handleSave = () => {
@@ -98,7 +119,13 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     }
     
     try {
-      toast.success('FAQs saved successfully');
+      if (isTemporaryOperator) {
+        // Data is already saved to localStorage automatically
+        toast.success('FAQs saved locally - will be saved to database when operator is created');
+      } else {
+        // No manual save needed - data is automatically saved via onSave calls
+        toast.success('FAQs are automatically saved to database');
+      }
     } catch (error) {
       console.error('Error saving FAQs:', error);
       toast.error('Failed to save FAQs');
@@ -214,7 +241,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
             Add FAQ
           </Button>
           <Button type="button" onClick={handleSave} disabled={disabled}>
-            Save FAQs
+            {isTemporaryOperator ? 'Save Locally' : 'Save FAQs'}
           </Button>
         </div>
       </CardContent>
