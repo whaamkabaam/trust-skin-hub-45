@@ -109,6 +109,15 @@ export function OperatorForm({
       withdrawal_time_skins: (initialData as any)?.withdrawal_time_skins || '',
       withdrawal_time_fiat: (initialData as any)?.withdrawal_time_fiat || '',
     } : {
+      name: '',
+      slug: '',
+      logo_url: '',
+      tracking_link: '',
+      launch_year: undefined,
+      verdict: '',
+      bonus_terms: '',
+      fairness_info: '',
+      hero_image_url: '',
       categories: [],
       pros: [],
       cons: [],
@@ -170,21 +179,27 @@ export function OperatorForm({
     isExtensionActive
   } = useOperatorExtensions(effectiveOperatorId);
 
+  // Track draft restoration to prevent spam notifications
+  const [draftRestored, setDraftRestored] = useState(false);
+
   // Load saved form data on mount for new operators
   useEffect(() => {
-    if (!initialData && effectiveOperatorId.startsWith('temp-')) {
+    if (!initialData && effectiveOperatorId.startsWith('temp-') && !draftRestored) {
       const savedData = loadSavedFormData();
-      if (savedData) {
+      if (savedData && Object.keys(savedData).some(key => 
+        savedData[key] && savedData[key] !== '' && savedData[key] !== 0
+      )) {
         // Populate form fields with saved data
         Object.entries(savedData).forEach(([key, value]) => {
           if (value !== undefined && value !== null) {
             setValue(key as any, value);
           }
         });
+        setDraftRestored(true);
         toast.success('Draft restored from your previous session');
       }
     }
-  }, [initialData, effectiveOperatorId, loadSavedFormData, setValue]);
+  }, [initialData, effectiveOperatorId, loadSavedFormData, setValue, draftRestored]);
 
   // Auto-save functionality - NEVER triggers publishing
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
@@ -307,6 +322,16 @@ export function OperatorForm({
   };
 
   const handleFormSubmit = async (data: OperatorFormData) => {
+    // Validate required fields
+    if (!data.name?.trim()) {
+      toast.error('Operator name is required');
+      return;
+    }
+    if (!data.slug?.trim()) {
+      toast.error('Operator slug is required');
+      return;
+    }
+    
     // Filter out empty strings from arrays and clean timestamp fields
     const cleanedData = {
       ...data,
