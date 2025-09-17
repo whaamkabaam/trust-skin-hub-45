@@ -14,7 +14,7 @@ interface UseAutoSaveOptions<T> {
 export function useAutoSave<T>({
   data,
   onSave,
-  delay = 2000,
+  delay = 10000, // Increased to 10 seconds to prevent keystroke saves
   enabled = true,
   storageKey
 }: UseAutoSaveOptions<T>) {
@@ -80,8 +80,8 @@ export function useAutoSave<T>({
     }
   }, [storageKey]);
 
-  // Track user interaction to prevent auto-save during extension management
-  const pauseAutoSave = useCallback((duration = 5000) => {
+  // Track user interaction to prevent auto-save during typing/extension management
+  const pauseAutoSave = useCallback((duration = 15000) => { // Increased to 15 seconds
     setIsUserInteracting(true);
     if (interactionTimeoutRef.current) {
       clearTimeout(interactionTimeoutRef.current);
@@ -91,9 +91,30 @@ export function useAutoSave<T>({
     }, duration);
   }, []);
 
+  // Detect significant changes to prevent minor typing corrections from triggering saves
+  const lastDataRef = useRef<T>();
+  const hasSignificantChange = useCallback((currentData: T, previousData: T | undefined) => {
+    if (!previousData) return false;
+    
+    try {
+      const currentStr = JSON.stringify(currentData);
+      const previousStr = JSON.stringify(previousData);
+      
+      // Only save if there's substantial change (more than 10 characters difference)
+      const difference = Math.abs(currentStr.length - previousStr.length);
+      return difference > 10 || currentStr !== previousStr;
+    } catch {
+      return true; // If comparison fails, assume significant change
+    }
+  }, []);
+
   // Auto-save effect with enhanced safety checks and crash prevention
   useEffect(() => {
     if (!enabled || initialLoadRef.current || isUserInteracting) return;
+    
+    // Only save if there's a significant change
+    if (!hasSignificantChange(debouncedData, lastDataRef.current)) return;
+    lastDataRef.current = debouncedData;
 
     const performSave = async () => {
       try {
@@ -172,7 +193,7 @@ export function useAutoSave<T>({
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [debouncedData, enabled, onSave, clearDraft, saveDraft, isUserInteracting]);
+  }, [debouncedData, enabled, onSave, clearDraft, saveDraft, isUserInteracting, hasSignificantChange]);
 
   // Save draft on data change (but not when user is interacting with extensions)
   useEffect(() => {

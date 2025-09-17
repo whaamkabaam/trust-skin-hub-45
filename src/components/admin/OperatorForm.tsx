@@ -205,14 +205,14 @@ export function OperatorForm({
   const { saveState, lastSaved, forceSave, pauseAutoSave } = useAutoSave({
     data: formData,
     onSave: handleAutoSave,
-    enabled: autoSaveEnabled && !!onAutoSave && !publishLoading && !publishingState && !isExtensionActive,
+    enabled: autoSaveEnabled && !!onAutoSave && !publishLoading && !publishingState && !isExtensionActive && !globalIsPublishing,
     storageKey: `temp-form-data-${effectiveOperatorId}`
   });
 
-  // Simplified extension interaction handlers
+  // Enhanced extension interaction handlers with longer auto-save pause
   const handleExtensionInteraction = useCallback((extensionType: string) => {
     setExtensionActive(true);
-    pauseAutoSave?.(10000); // Pause auto-save for 10 seconds
+    pauseAutoSave?.(15000); // Pause auto-save for 15 seconds during extension work
   }, [setExtensionActive, pauseAutoSave]);
 
   const handleExtensionSave = useCallback((extensionType: string) => {
