@@ -17,6 +17,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useStaticContent } from '@/hooks/useStaticContent';
 import { usePublishingState } from '@/hooks/usePublishingState';
 import { toast } from '@/lib/toast';
+import { supabase } from '@/integrations/supabase/client';
 import { EnhancedFileUpload } from './EnhancedFileUpload';
 import { RichTextEditor } from './RichTextEditor';
 import { useAutoSave } from '@/hooks/useAutoSave';
@@ -155,6 +156,31 @@ export function OperatorForm({
   const supportChannels = watch('support_channels');
   const formData = watch();
 
+  // Content sections state integrated with form
+  const [contentSections, setContentSections] = useState<any[]>([]);
+
+  // Load content sections for existing operators
+  useEffect(() => {
+    const loadContentSections = async () => {
+      if (initialData?.id && !initialData.id.startsWith('temp-')) {
+        try {
+          const { data, error } = await supabase
+            .from('content_sections')
+            .select('*')
+            .eq('operator_id', initialData.id)
+            .order('order_number');
+
+          if (error) throw error;
+          setContentSections(data || []);
+        } catch (error) {
+          console.error('Error loading content sections:', error);
+        }
+      }
+    };
+
+    loadContentSections();
+  }, [initialData?.id]);
+
   // Use stable temporary ID for new operators to prevent data loss during navigation
   const effectiveOperatorId = useStableTempId(initialData?.id);
   
@@ -202,14 +228,25 @@ export function OperatorForm({
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
     if (onAutoSave && typeof onAutoSave === 'function') {
       try {
+        // Include content sections in auto-save data
+        const dataWithSections = {
+          ...data,
+          content_sections: contentSections
+        };
+        
         // Ensure we're only saving form data, never triggering publish
-        await onAutoSave(data);
+        await onAutoSave(dataWithSections);
       } catch (error) {
         console.error('Auto-save failed:', error);
         // Silent failure for auto-save to prevent disrupting user experience
       }
     }
-  }, [onAutoSave]);
+  }, [onAutoSave, contentSections]);
+
+  // Handle content sections changes
+  const handleContentSectionsChange = useCallback((sections: any[]) => {
+    setContentSections(sections);
+  }, []);
 
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
   const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
@@ -972,15 +1009,14 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="content" className="space-y-6">
-          {initialData?.id ? (
-            <ContentSectionManager operatorId={initialData.id} />
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Please save the operator first to manage content.</p>
-              </CardContent>
-            </Card>
-          )}
+          <TabErrorBoundary tabName="Content Sections">
+            <ContentSectionManager 
+              operatorId={effectiveOperatorId}
+              initialSections={contentSections}
+              onSectionsChange={handleContentSectionsChange}
+              disabled={publishLoading || publishingState}
+            />
+          </TabErrorBoundary>
         </TabsContent>
 
         <TabsContent value="media" className="space-y-6">

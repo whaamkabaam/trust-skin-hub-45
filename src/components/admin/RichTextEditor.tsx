@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -31,12 +31,47 @@ export function RichTextEditor({
   placeholder = 'Start typing...', 
   className = '' 
 }: RichTextEditorProps) {
+  const quillRef = useRef<ReactQuill>(null);
+  const isUnmountingRef = useRef(false);
+
+  // Safe onChange handler to prevent "n is not a function" errors
+  const handleChange = useCallback((content: string) => {
+    if (isUnmountingRef.current) return;
+    
+    try {
+      onChange(content);
+    } catch (error) {
+      console.error('RichTextEditor onChange error:', error);
+    }
+  }, [onChange]);
+
+  // Cleanup on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      isUnmountingRef.current = true;
+      
+      // Cleanup Quill instance
+      if (quillRef.current) {
+        try {
+          const editor = quillRef.current.getEditor();
+          if (editor && editor.root) {
+            // Clear any event listeners and clean up
+            editor.root.innerHTML = '';
+          }
+        } catch (error) {
+          console.warn('Quill cleanup warning:', error);
+        }
+      }
+    };
+  }, []);
+
   return (
     <div className={`rich-text-editor ${className}`}>
       <ReactQuill
+        ref={quillRef}
         theme="snow"
-        value={value}
-        onChange={onChange}
+        value={value || ''}
+        onChange={handleChange}
         modules={modules}
         formats={formats}
         placeholder={placeholder}

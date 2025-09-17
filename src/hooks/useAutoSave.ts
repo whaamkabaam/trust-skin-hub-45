@@ -27,6 +27,7 @@ export function useAutoSave<T>({
     if (!formData || typeof formData !== 'object') return formData;
     
     // Remove extension-related fields that are managed separately
+    // but keep content_sections as it's now part of the main form
     const {
       bonuses,
       payments,
