@@ -58,19 +58,19 @@ export function AdminSidebar() {
   const location = useLocation();
 
   return (
-    <div className="w-64 bg-sidebar border-r border-sidebar-border h-full overflow-hidden">
-      <div className="h-full flex flex-col p-6">
-        <div className="flex items-center gap-2 mb-8 flex-shrink-0">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">U</span>
-          </div>
-          <div>
-            <h2 className="font-semibold text-sidebar-foreground">Unpacked.gg</h2>
-            <p className="text-xs text-sidebar-foreground/60">Admin Panel</p>
-          </div>
+    <div className="w-64 bg-sidebar border-r border-sidebar-border h-full flex flex-col overflow-hidden">
+      <div className="flex items-center gap-2 p-6 pb-4 flex-shrink-0">
+        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <span className="text-primary-foreground font-bold text-sm">U</span>
         </div>
+        <div>
+          <h2 className="font-semibold text-sidebar-foreground">Unpacked.gg</h2>
+          <p className="text-xs text-sidebar-foreground/60">Admin Panel</p>
+        </div>
+      </div>
 
-        <nav className="space-y-2 flex-1 overflow-y-auto">
+      <nav className="flex-1 overflow-y-auto px-6 pb-6" style={{ scrollbarGutter: 'stable' }}>
+        <div className="space-y-2">
           {sidebarItems.map((item) => {
             const isActive = location.pathname === item.href || 
               (item.href !== '/admin' && location.pathname.startsWith(item.href));
@@ -91,8 +91,8 @@ export function AdminSidebar() {
               </Link>
             );
           })}
-        </nav>
-      </div>
+        </div>
+      </nav>
     </div>
   );
 }
