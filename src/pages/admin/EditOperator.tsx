@@ -38,37 +38,14 @@ export default function EditOperator() {
     
     try {
       setIsLoading(true);
-      
-      // Set stable reference before publishing
-      if (data.published === true) {
-        stableOperatorRef.current = operator;
-      }
-      
       await updateOperator(id, data);
-      
-      // Only show success toast if not publishing (updateOperator shows its own toast)
-      if (data.published !== true) {
-        toast.success('Operator updated successfully');
-      }
-      
+      toast.success('Operator updated successfully');
       navigate('/admin/operators');
     } catch (error) {
       console.error('Failed to update operator:', error);
       toast.error('Failed to update operator');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleAutoSave = async (data: OperatorFormData) => {
-    if (!id) return;
-    
-    try {
-      // Auto-save should NEVER trigger publishing
-      await autoSaveOperator(id, data);
-    } catch (error) {
-      console.error('Auto-save failed:', error);
-      // Don't show error toast for auto-save failures
     }
   };
 
@@ -123,10 +100,7 @@ export default function EditOperator() {
         <OperatorForm
           initialData={stableOperator}
           onSubmit={handleSubmit}
-          onAutoSave={handleAutoSave}
           isLoading={isLoading || isThisOperatorPublishing}
-          autoSaveEnabled={true}
-          publishingState={isThisOperatorPublishing}
         />
       </div>
     </PublishingErrorBoundary>

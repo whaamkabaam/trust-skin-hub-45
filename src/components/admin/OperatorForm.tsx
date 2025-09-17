@@ -661,71 +661,39 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="bonuses" className="space-y-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Bonus Management</h3>
-            <ExtensionSaveStatus 
-              isTemporaryOperator={effectiveOperatorId.startsWith('temp-')}
-              isSaving={saveState === 'saving'}
-              hasError={saveState === 'error'}
-            />
-          </div>
-          <ExtensionErrorBoundary extensionName="Bonuses">
-            <BonusManager 
-              key={stableExtensionProps.bonuses.key}
-              {...stableExtensionProps.bonuses} 
-            />
-          </ExtensionErrorBoundary>
+          <BonusManager
+            operatorId={effectiveOperatorId}
+            bonuses={bonuses}
+            onSave={saveBonuses}
+            disabled={publishLoading}
+          />
         </TabsContent>
 
         <TabsContent value="payments" className="space-y-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Payment Methods</h3>
-            <ExtensionSaveStatus 
-              isTemporaryOperator={effectiveOperatorId.startsWith('temp-')}
-              isSaving={saveState === 'saving'}
-              hasError={saveState === 'error'}
-            />
-          </div>
-          <ExtensionErrorBoundary extensionName="Payments">
-            <PaymentMethodsManager 
-              key={stableExtensionProps.payments.key}
-              {...stableExtensionProps.payments} 
-            />
-          </ExtensionErrorBoundary>
+          <PaymentMethodsManager
+            operatorId={effectiveOperatorId}
+            payments={payments}
+            onSave={savePayments}
+            disabled={publishLoading}
+          />
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Security Settings</h3>
-            <ExtensionSaveStatus 
-              isTemporaryOperator={effectiveOperatorId.startsWith('temp-')}
-              isSaving={saveState === 'saving'}
-              hasError={saveState === 'error'}
-            />
-          </div>
-          <ExtensionErrorBoundary extensionName="Security">
-            <SecurityManager 
-              key={stableExtensionProps.security.key}
-              {...stableExtensionProps.security} 
-            />
-          </ExtensionErrorBoundary>
+          <SecurityManager
+            operatorId={effectiveOperatorId}
+            security={security}
+            onSave={saveSecurity}
+            disabled={publishLoading}
+          />
         </TabsContent>
 
         <TabsContent value="faqs" className="space-y-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">FAQ Management</h3>
-            <ExtensionSaveStatus 
-              isTemporaryOperator={effectiveOperatorId.startsWith('temp-')}
-              isSaving={saveState === 'saving'}
-              hasError={saveState === 'error'}
-            />
-          </div>
-          <ExtensionErrorBoundary extensionName="FAQs">
-            <FAQManager 
-              key={stableExtensionProps.faqs.key}
-              {...stableExtensionProps.faqs} 
-            />
-          </ExtensionErrorBoundary>
+          <FAQManager
+            operatorId={effectiveOperatorId}
+            faqs={faqs}
+            onSave={saveFaqs}
+            disabled={publishLoading}
+          />
         </TabsContent>
 
         <TabsContent value="seo" className="space-y-6">

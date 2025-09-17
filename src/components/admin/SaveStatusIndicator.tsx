@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle, Circle, AlertCircle, Loader2 } from 'lucide-react';
-import { SaveState } from '@/hooks/useAutoSave';
+import { SaveState } from '@/types/save';
 
 interface SaveStatusIndicatorProps {
   saveState: SaveState;
