@@ -146,7 +146,7 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         .from('seo_metadata')
         .select('*')
         .eq('operator_id', operatorData.id)
-        .single();
+        .maybeSingle();
 
       if (seoError && seoError.code !== 'PGRST116') throw seoError;
       setSeoMetadata(seoData || null);

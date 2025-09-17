@@ -105,20 +105,41 @@ export function StableRichTextEditor({
     setEditorError(true);
   }, []);
 
-  // Cleanup on unmount
+  // Enhanced cleanup on unmount
   useEffect(() => {
     return () => {
       isUnmountingRef.current = true;
       
-      // Clean up Quill instance
+      // More comprehensive cleanup
       if (quillRef.current) {
         try {
           const editor = quillRef.current.getEditor?.();
-          if (editor && typeof editor.disable === 'function') {
-            editor.disable();
+          
+          if (editor) {
+            // Remove all event listeners
+            if (typeof editor.off === 'function') {
+              editor.off();
+            }
+            
+            // Clear selection and disable
+            if (typeof editor.setSelection === 'function') {
+              editor.setSelection(null);
+            }
+            
+            if (typeof editor.disable === 'function') {
+              editor.disable();
+            }
+            
+            // Clear contents if possible
+            if (typeof editor.setText === 'function') {
+              editor.setText('');
+            }
           }
         } catch (error) {
-          // Silent cleanup failure
+          // Silent cleanup failure - component is unmounting anyway
+        } finally {
+          // Always clear the reference
+          quillRef.current = null;
         }
       }
       

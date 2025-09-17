@@ -165,7 +165,7 @@ const OperatorReview = () => {
   };
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <SEOHead
         title={seoTitle}
         description={seoDescription}

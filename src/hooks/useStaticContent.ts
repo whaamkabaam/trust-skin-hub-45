@@ -38,7 +38,7 @@ export function useStaticContent() {
         .from('operators')
         .select('*')
         .eq('id', operatorId)
-        .single();
+        .maybeSingle();
 
       if (operatorError) throw operatorError;
 
@@ -56,11 +56,11 @@ export function useStaticContent() {
         supabase.from('operator_bonuses').select('*').eq('operator_id', operatorId).order('order_number'),
         supabase.from('operator_payments').select('*').eq('operator_id', operatorId),
         supabase.from('operator_features').select('*').eq('operator_id', operatorId),
-        supabase.from('operator_security').select('*').eq('operator_id', operatorId).single(),
+        supabase.from('operator_security').select('*').eq('operator_id', operatorId).maybeSingle(),
         supabase.from('operator_faqs').select('*').eq('operator_id', operatorId).order('order_number'),
         supabase.from('content_sections').select('*').eq('operator_id', operatorId).order('order_number'),
         supabase.from('media_assets').select('*').eq('operator_id', operatorId).order('order_number'),
-        supabase.from('seo_metadata').select('*').eq('operator_id', operatorId).single()
+        supabase.from('seo_metadata').select('*').eq('operator_id', operatorId).maybeSingle()
       ]);
 
       // Transform operator data to match interface

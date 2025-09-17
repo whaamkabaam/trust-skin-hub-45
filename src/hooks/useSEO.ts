@@ -35,9 +35,9 @@ export function useSEO(operatorId: string) {
         .from('seo_metadata')
         .select('*')
         .eq('operator_id', operatorId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error) throw error;
       setMetadata(data);
     } catch (error) {
       console.error('Error fetching SEO metadata:', error);

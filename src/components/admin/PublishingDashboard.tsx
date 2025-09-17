@@ -7,6 +7,7 @@ import { useStaticContent } from '@/hooks/useStaticContent';
 import { useOperators } from '@/hooks/useOperators';
 import { toast } from '@/lib/toast';
 import { formatDistanceToNow } from 'date-fns';
+import { PublishingErrorBoundary } from '@/components/admin/PublishingErrorBoundary';
 
 export function PublishingDashboard() {
   const { operators, loading } = useOperators();
@@ -15,17 +16,30 @@ export function PublishingDashboard() {
 
   const handlePublish = async (operatorId: string, operatorName: string) => {
     setPublishingId(operatorId);
+    
     try {
+      console.log('Starting publishing process for operator:', operatorId);
       const success = await publishStaticContent(operatorId);
+      
       if (success) {
         toast.success(`${operatorName} published successfully!`);
+        
+        // Small delay to ensure state is properly updated
+        setTimeout(() => {
+          console.log('Publishing completed successfully for operator:', operatorId);
+        }, 100);
       } else {
         toast.error(`Failed to publish ${operatorName}`);
       }
     } catch (error) {
-      toast.error(`Error publishing ${operatorName}`);
+      console.error('Publishing error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Error publishing ${operatorName}: ${errorMessage}`);
     } finally {
-      setPublishingId(null);
+      // Ensure we always clear the publishing state
+      setTimeout(() => {
+        setPublishingId(null);
+      }, 200);
     }
   };
 
@@ -43,7 +57,8 @@ export function PublishingDashboard() {
   const unpublishedOperators = operators?.filter(op => !op.published) || [];
 
   return (
-    <div className="space-y-6">
+    <PublishingErrorBoundary onRetry={() => window.location.reload()}>
+      <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -177,5 +192,6 @@ export function PublishingDashboard() {
         </CardContent>
       </Card>
     </div>
+    </PublishingErrorBoundary>
   );
 }
