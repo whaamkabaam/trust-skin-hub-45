@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ import { usePublishingState } from '@/hooks/usePublishingState';
 import { toast } from '@/lib/toast';
 import { supabase } from '@/integrations/supabase/client';
 import { EnhancedFileUpload } from './EnhancedFileUpload';
-import { RichTextEditor } from './RichTextEditor';
+import { StableRichTextEditor } from './StableRichTextEditor';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { SaveStateIndicator } from '@/components/SaveStateIndicator';
 import { ContentScheduling } from '@/components/ContentScheduling';
@@ -27,7 +27,7 @@ import { BonusManager } from './BonusManager';
 import { PaymentMethodsManager } from './PaymentMethodsManager';
 import { SecurityManager } from './SecurityManager';
 import { FAQManager } from './FAQManager';
-import { ContentSectionManager } from './ContentSectionManager';
+import { ContentSectionManager, type ContentSection } from './ContentSectionManager';
 import { MediaAssetManager } from './MediaAssetManager';
 import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
@@ -63,7 +63,7 @@ export function OperatorForm({
   autoSaveEnabled = true,
   publishingState = false
 }: OperatorFormProps) {
-  const form = useForm<OperatorFormData>({
+  const form = useForm<OperatorFormData & { content_sections: ContentSection[] }>({
     resolver: zodResolver(operatorSchema),
     defaultValues: initialData ? {
       name: initialData.name,
@@ -104,6 +104,7 @@ export function OperatorForm({
       withdrawal_time_crypto: (initialData as any)?.withdrawal_time_crypto || '',
       withdrawal_time_skins: (initialData as any)?.withdrawal_time_skins || '',
       withdrawal_time_fiat: (initialData as any)?.withdrawal_time_fiat || '',
+      content_sections: [],
     } : {
       name: '',
       slug: '',
@@ -143,10 +144,17 @@ export function OperatorForm({
       withdrawal_time_crypto: '',
       withdrawal_time_skins: '',
       withdrawal_time_fiat: '',
+      content_sections: [],
     },
   });
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isValid, dirtyFields }, getValues, control } = form;
+
+  // Use field array for content sections to ensure persistence
+  const { fields: contentSectionFields, append: appendSection, remove: removeSection, update: updateSection } = useFieldArray({
+    control,
+    name: 'content_sections',
+  });
 
   const ratings = watch('ratings');
   const categories = watch('categories');
@@ -154,10 +162,8 @@ export function OperatorForm({
   const cons = watch('cons');
   const countries = watch('supported_countries');
   const supportChannels = watch('support_channels');
+  const contentSections = watch('content_sections');
   const formData = watch();
-
-  // Content sections state integrated with form
-  const [contentSections, setContentSections] = useState<any[]>([]);
 
   // Load content sections for existing operators
   useEffect(() => {
@@ -171,7 +177,11 @@ export function OperatorForm({
             .order('order_number');
 
           if (error) throw error;
-          setContentSections(data || []);
+          
+          // Set content sections in form
+          if (data && data.length > 0) {
+            setValue('content_sections', data);
+          }
         } catch (error) {
           console.error('Error loading content sections:', error);
         }
@@ -179,7 +189,7 @@ export function OperatorForm({
     };
 
     loadContentSections();
-  }, [initialData?.id]);
+  }, [initialData?.id, setValue]);
 
   // Use stable temporary ID for new operators to prevent data loss during navigation
   const effectiveOperatorId = useStableTempId(initialData?.id);
@@ -228,25 +238,51 @@ export function OperatorForm({
   const handleAutoSave = useCallback(async (data: OperatorFormData) => {
     if (onAutoSave && typeof onAutoSave === 'function') {
       try {
-        // Include content sections in auto-save data
-        const dataWithSections = {
-          ...data,
-          content_sections: contentSections
-        };
-        
-        // Ensure we're only saving form data, never triggering publish
-        await onAutoSave(dataWithSections);
+        // Content sections are already included in form data
+        await onAutoSave(data);
       } catch (error) {
         console.error('Auto-save failed:', error);
         // Silent failure for auto-save to prevent disrupting user experience
       }
     }
-  }, [onAutoSave, contentSections]);
+  }, [onAutoSave]);
 
-  // Handle content sections changes
-  const handleContentSectionsChange = useCallback((sections: any[]) => {
-    setContentSections(sections);
-  }, []);
+  // Handle content sections changes using form state
+  const handleContentSectionsChange = useCallback((sections: ContentSection[]) => {
+    setValue('content_sections', sections, { shouldDirty: true });
+  }, [setValue]);
+
+  // Save content sections independently 
+  const saveContentSections = useCallback(async () => {
+    if (effectiveOperatorId.startsWith('temp-')) {
+      throw new Error('Please save the operator first');
+    }
+
+    const sections = getValues('content_sections');
+    
+    // Delete existing sections for this operator
+    await supabase
+      .from('content_sections')
+      .delete()
+      .eq('operator_id', effectiveOperatorId);
+
+    // Insert new sections
+    if (sections.length > 0) {
+      const sectionsToInsert = sections.map((section, index) => ({
+        operator_id: effectiveOperatorId,
+        section_key: section.section_key,
+        heading: section.heading,
+        rich_text_content: section.rich_text_content,
+        order_number: index,
+      }));
+
+      const { error } = await supabase
+        .from('content_sections')
+        .insert(sectionsToInsert);
+
+      if (error) throw error;
+    }
+  }, [effectiveOperatorId, getValues]);
 
   const { publishStaticContent, loading: publishLoading, error: publishError } = useStaticContent();
   const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
@@ -659,7 +695,7 @@ export function OperatorForm({
 
           <div>
             <Label>Company Background</Label>
-            <RichTextEditor
+            <StableRichTextEditor
               value={watch('company_background') || ''}
               onChange={(value) => setValue('company_background', value)}
               placeholder="Background information about the company..."
@@ -910,7 +946,7 @@ export function OperatorForm({
         <CardContent className="space-y-6">
           <div>
             <Label>Verdict</Label>
-            <RichTextEditor
+            <StableRichTextEditor
               value={watch('verdict') || ''}
               onChange={(value) => setValue('verdict', value)}
               placeholder="Overall verdict about the operator..."
@@ -919,7 +955,7 @@ export function OperatorForm({
           
           <div>
             <Label>Bonus Terms</Label>
-            <RichTextEditor
+            <StableRichTextEditor
               value={watch('bonus_terms') || ''}
               onChange={(value) => setValue('bonus_terms', value)}
               placeholder="Details about bonus terms and conditions..."
@@ -928,7 +964,7 @@ export function OperatorForm({
           
           <div>
             <Label>Fairness Information</Label>
-            <RichTextEditor
+            <StableRichTextEditor
               value={watch('fairness_info') || ''}
               onChange={(value) => setValue('fairness_info', value)}
               placeholder="Information about fairness and provability..."
@@ -1012,8 +1048,10 @@ export function OperatorForm({
           <TabErrorBoundary tabName="Content Sections">
             <ContentSectionManager 
               operatorId={effectiveOperatorId}
-              initialSections={contentSections}
+              sections={contentSections || []}
               onSectionsChange={handleContentSectionsChange}
+              onSave={saveContentSections}
+              saveState={saveState}
               disabled={publishLoading || publishingState}
             />
           </TabErrorBoundary>

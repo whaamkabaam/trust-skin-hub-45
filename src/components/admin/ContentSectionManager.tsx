@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RichTextEditor } from './RichTextEditor';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { StableRichTextEditor } from './StableRichTextEditor';
+import { Plus, Trash2, GripVertical, Save } from 'lucide-react';
 import { toast } from '@/lib/toast';
 import { TabErrorBoundary } from './TabErrorBoundary';
 
-interface ContentSection {
+export interface ContentSection {
   id?: string;
   section_key: string;
   heading: string;
@@ -20,9 +19,11 @@ interface ContentSection {
 
 interface ContentSectionManagerProps {
   operatorId: string;
-  initialSections?: ContentSection[];
-  onSectionsChange?: (sections: ContentSection[]) => void;
+  sections: ContentSection[];
+  onSectionsChange: (sections: ContentSection[]) => void;
   disabled?: boolean;
+  onSave?: () => Promise<void>;
+  saveState?: 'idle' | 'saving' | 'saved' | 'error';
 }
 
 const SECTION_TEMPLATES = [
@@ -37,50 +38,21 @@ const SECTION_TEMPLATES = [
 ];
 
 export function ContentSectionManager({ 
-  operatorId, 
-  initialSections = [], 
+  operatorId,
+  sections,
   onSectionsChange,
-  disabled = false 
+  disabled = false,
+  onSave,
+  saveState = 'idle'
 }: ContentSectionManagerProps) {
-  const [sections, setSections] = useState<ContentSection[]>(initialSections);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
 
-  // Initialize sections from props or fetch from database
-  useEffect(() => {
-    if (initialSections.length > 0) {
-      setSections(initialSections);
-    } else if (operatorId && !operatorId.startsWith('temp-')) {
-      fetchSections();
-    }
-  }, [operatorId, initialSections]);
+  // Memoize available section options to prevent re-renders
+  const availableSections = useMemo(() => {
+    const usedKeys = new Set(sections.map(s => s.section_key));
+    return SECTION_TEMPLATES.filter(template => !usedKeys.has(template.key));
+  }, [sections]);
 
-  const fetchSections = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('content_sections')
-        .select('*')
-        .eq('operator_id', operatorId)
-        .order('order_number');
-
-      if (error) throw error;
-      setSections(data || []);
-    } catch (err) {
-      console.error('Error fetching sections:', err);
-      toast.error('Failed to fetch content sections');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Notify parent component of changes
-  const updateSections = useCallback((newSections: ContentSection[]) => {
-    setSections(newSections);
-    onSectionsChange?.(newSections);
-  }, [onSectionsChange]);
-
-  const addSection = (sectionKey: string) => {
+  const addSection = useCallback((sectionKey: string) => {
     if (disabled) return;
     
     const template = SECTION_TEMPLATES.find(t => t.key === sectionKey);
@@ -94,179 +66,157 @@ export function ContentSectionManager({
     };
 
     const newSections = [...sections, newSection];
-    updateSections(newSections);
-  };
+    onSectionsChange(newSections);
+  }, [sections, onSectionsChange, disabled]);
 
-  const updateSection = (index: number, field: keyof ContentSection, value: string | number) => {
+  const updateSection = useCallback((index: number, field: keyof ContentSection, value: string | number) => {
     if (disabled) return;
     
     const newSections = sections.map((section, i) => 
       i === index ? { ...section, [field]: value } : section
     );
-    updateSections(newSections);
-  };
+    onSectionsChange(newSections);
+  }, [sections, onSectionsChange, disabled]);
 
-  const removeSection = (index: number) => {
+  const removeSection = useCallback((index: number) => {
     if (disabled) return;
     
-    const newSections = sections.filter((_, i) => i !== index);
-    updateSections(newSections);
-  };
+    const newSections = sections.filter((_, i) => i !== index)
+      .map((section, i) => ({ ...section, order_number: i }));
+    onSectionsChange(newSections);
+  }, [sections, onSectionsChange, disabled]);
 
-  const saveSections = async () => {
-    if (disabled || operatorId.startsWith('temp-')) {
-      toast.warning('Please save the operator first before saving content sections');
-      return;
-    }
-
+  const handleSave = useCallback(async () => {
+    if (!onSave) return;
+    
     try {
-      setSaving(true);
-      
-      // Delete existing sections for this operator
-      await supabase
-        .from('content_sections')
-        .delete()
-        .eq('operator_id', operatorId);
-
-      // Insert new sections
-      if (sections.length > 0) {
-        const sectionsToInsert = sections.map((section, index) => ({
-          operator_id: operatorId,
-          section_key: section.section_key,
-          heading: section.heading,
-          rich_text_content: section.rich_text_content,
-          order_number: index,
-        }));
-
-        const { error } = await supabase
-          .from('content_sections')
-          .insert(sectionsToInsert);
-
-        if (error) throw error;
-      }
-
+      await onSave();
       toast.success('Content sections saved successfully');
-      
-      // Refresh to get IDs for existing operators
-      if (!operatorId.startsWith('temp-')) {
-        fetchSections();
-      }
-    } catch (err) {
-      console.error('Error saving sections:', err);
+    } catch (error) {
+      console.error('Error saving content sections:', error);
       toast.error('Failed to save content sections');
-    } finally {
-      setSaving(false);
     }
-  };
-
-  if (loading && sections.length === 0) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
+  }, [onSave]);
 
   return (
     <TabErrorBoundary tabName="Content Sections">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Content Sections</h3>
-          <div className="flex items-center space-x-2">
-            <Select onValueChange={addSection} disabled={disabled}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Add section..." />
-              </SelectTrigger>
-              <SelectContent>
-                {SECTION_TEMPLATES.map(template => (
-                  <SelectItem key={template.key} value={template.key}>
-                    {template.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button 
-              type="button" 
-              onClick={saveSections} 
-              disabled={saving || disabled || operatorId.startsWith('temp-')}
-            >
-              {saving ? 'Saving...' : 'Save All'}
-            </Button>
+          <div>
+            <h3 className="text-lg font-medium">Content Sections</h3>
+            <p className="text-sm text-muted-foreground">
+              Add custom content sections to provide detailed information about the operator
+            </p>
+          </div>
+          
+          <div className="flex gap-2">
+            {availableSections.length > 0 && (
+              <Select onValueChange={addSection} disabled={disabled}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Add Section" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableSections.map((template) => (
+                    <SelectItem key={template.key} value={template.key}>
+                      {template.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            
+            {onSave && sections.length > 0 && (
+              <Button
+                onClick={handleSave}
+                disabled={disabled || saveState === 'saving' || operatorId.startsWith('temp-')}
+                variant="outline"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {saveState === 'saving' ? 'Saving...' : 'Save All'}
+              </Button>
+            )}
           </div>
         </div>
 
-        <div className="space-y-4">
-          {sections.map((section, index) => (
-            <Card key={index}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center space-x-2">
-                  <GripVertical className="h-4 w-4 text-muted-foreground" />
-                  <div className="flex-1 grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Section Type</Label>
-                      <Select
-                        value={section.section_key}
-                        onValueChange={(value) => updateSection(index, 'section_key', value)}
+        {sections.length === 0 ? (
+          <Card>
+            <CardContent className="p-6 text-center">
+              <p className="text-muted-foreground mb-4">
+                No content sections added yet. Use the dropdown above to add your first section.
+              </p>
+              {availableSections.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  All available section templates have been used.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {sections.map((section, index) => {
+              const template = SECTION_TEMPLATES.find(t => t.key === section.section_key);
+              
+              return (
+                <Card key={`section-${index}-${section.section_key}`}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <CardTitle className="text-base">{template?.label || section.section_key}</CardTitle>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeSection(index)}
                         disabled={disabled}
+                        className="text-destructive hover:text-destructive"
                       >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {SECTION_TEMPLATES.map(template => (
-                            <SelectItem key={template.key} value={template.key}>
-                              {template.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4">
                     <div>
-                      <Label>Heading</Label>
+                      <Label htmlFor={`heading-${index}`}>Section Heading</Label>
                       <Input
+                        id={`heading-${index}`}
                         value={section.heading}
                         onChange={(e) => updateSection(index, 'heading', e.target.value)}
                         placeholder="Section heading..."
                         disabled={disabled}
                       />
                     </div>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeSection(index)}
-                    disabled={disabled}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <TabErrorBoundary tabName={`Content Section ${index + 1}`}>
-                  <RichTextEditor
-                    value={section.rich_text_content}
-                    onChange={(value) => updateSection(index, 'rich_text_content', value)}
-                    placeholder="Section content..."
-                  />
-                </TabErrorBoundary>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                    
+                    <div>
+                      <Label htmlFor={`content-${index}`}>Content</Label>
+                      <div className="mt-1">
+                        <StableRichTextEditor
+                          value={section.rich_text_content}
+                          onChange={(value) => updateSection(index, 'rich_text_content', value)}
+                          placeholder="Enter section content..."
+                          disabled={disabled}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
 
-        {sections.length === 0 && (
-          <Card>
-            <CardContent className="text-center py-8">
-              <p className="text-muted-foreground mb-4">No content sections added yet.</p>
-              <p className="text-sm text-muted-foreground">
-                Use the dropdown above to add content sections for this operator.
+        {operatorId.startsWith('temp-') && sections.length > 0 && (
+          <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950">
+            <CardContent className="p-4">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                💡 Content sections will be saved when you save the operator. 
+                They cannot be saved independently until the operator exists in the database.
               </p>
-              {operatorId.startsWith('temp-') && (
-                <p className="text-sm text-amber-600 mt-2">
-                  Save the operator first to enable content section saving.
-                </p>
-              )}
             </CardContent>
           </Card>
         )}

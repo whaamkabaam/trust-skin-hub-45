@@ -1,13 +1,83 @@
+import React, { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useOperator } from '@/hooks/useOperators';
-import { ContentSectionManager } from '@/components/admin/ContentSectionManager';
+import { ContentSectionManager, type ContentSection } from '@/components/admin/ContentSectionManager';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/lib/toast';
 
 export default function OperatorContent() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { operator, loading } = useOperator(id);
+  const [sections, setSections] = useState<ContentSection[]>([]);
+  const [sectionsLoading, setSectionsLoading] = useState(false);
+
+  // Load sections when operator is loaded
+  useEffect(() => {
+    const loadSections = async () => {
+      if (id && !id.startsWith('temp-')) {
+        setSectionsLoading(true);
+        try {
+          const { data, error } = await supabase
+            .from('content_sections')
+            .select('*')
+            .eq('operator_id', id)
+            .order('order_number');
+
+          if (error) throw error;
+          setSections(data || []);
+        } catch (error) {
+          console.error('Error loading sections:', error);
+          toast.error('Failed to load content sections');
+        } finally {
+          setSectionsLoading(false);
+        }
+      }
+    };
+
+    loadSections();
+  }, [id]);
+
+  const handleSectionsChange = useCallback((newSections: ContentSection[]) => {
+    setSections(newSections);
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    if (!id || id.startsWith('temp-')) return;
+    
+    try {
+      // Delete existing sections
+      await supabase
+        .from('content_sections')
+        .delete()
+        .eq('operator_id', id);
+
+      // Insert new sections
+      if (sections.length > 0) {
+        const sectionsToInsert = sections.map((section, index) => ({
+          operator_id: id,
+          section_key: section.section_key,
+          heading: section.heading,
+          rich_text_content: section.rich_text_content,
+          order_number: index,
+        }));
+
+        const { error } = await supabase
+          .from('content_sections')
+          .insert(sectionsToInsert);
+
+        if (error) throw error;
+      }
+      
+      toast.success('Content sections saved successfully');
+    } catch (error) {
+      console.error('Error saving sections:', error);
+      toast.error('Failed to save content sections');
+      throw error;
+    }
+  }, [id, sections]);
 
   if (loading) {
     return (
@@ -48,7 +118,13 @@ export default function OperatorContent() {
         </div>
       </div>
 
-      <ContentSectionManager operatorId={id!} />
+      <ContentSectionManager 
+        operatorId={id!}
+        sections={sections}
+        onSectionsChange={handleSectionsChange}
+        onSave={handleSave}
+        disabled={sectionsLoading}
+      />
     </div>
   );
 }
