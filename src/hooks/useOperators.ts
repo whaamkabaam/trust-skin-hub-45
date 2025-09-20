@@ -151,28 +151,48 @@ export function useOperators() {
             console.warn('Local state update failed, will rely on refetch:', stateError);
           }
           
-          // Delayed query invalidation to prevent race conditions
-          setTimeout(async () => {
-            try {
-              if (queryClient && typeof queryClient.invalidateQueries === 'function') {
-                await Promise.all([
-                  queryClient.invalidateQueries({ queryKey: ['operators'] }).catch(console.warn),
-                  queryClient.invalidateQueries({ queryKey: ['public-operators'] }).catch(console.warn),
-                  queryClient.invalidateQueries({ queryKey: ['operator', id] }).catch(console.warn)
-                ]);
-              }
-            } catch (invalidationError) {
-              console.warn('Query invalidation failed, data will be stale:', invalidationError);
+          // Immediate query invalidation with defensive checks
+          try {
+            if (queryClient && typeof queryClient.invalidateQueries === 'function') {
+              // Use Promise.allSettled to prevent any individual failure from causing crashes
+              await Promise.allSettled([
+                queryClient.invalidateQueries({ queryKey: ['operators'] }),
+                queryClient.invalidateQueries({ queryKey: ['public-operators'] }),
+                queryClient.invalidateQueries({ queryKey: ['operator', id] })
+              ]).then(results => {
+                results.forEach((result, index) => {
+                  if (result.status === 'rejected') {
+                    console.warn(`Query invalidation ${index} failed:`, result.reason);
+                  }
+                });
+              });
+            } else {
+              console.warn('QueryClient not available for invalidation');
             }
-          }, 200);
+          } catch (invalidationError) {
+            console.warn('Query invalidation failed, data will be stale:', invalidationError);
+          }
           
           return updatedOperator;
         } finally {
-          // Always clear publishing state and unlock as final safety net
+          // Always clear publishing state and unlock as final safety net with defensive checks
           try {
             if (data.published === true) {
-              clearPublishing();
-              unlock(id);
+              const state = usePublishingState.getState();
+              const lockState = usePublishingLock.getState();
+              
+              // Defensive function existence checks
+              if (state && typeof state.clearPublishing === 'function') {
+                state.clearPublishing();
+              } else {
+                console.warn('clearPublishing function not available');
+              }
+              
+              if (lockState && typeof lockState.unlock === 'function') {
+                lockState.unlock(id);
+              } else {
+                console.warn('unlock function not available');
+              }
             }
           } catch (cleanupError) {
             console.warn('Publishing state cleanup failed:', cleanupError);

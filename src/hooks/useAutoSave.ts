@@ -97,6 +97,9 @@ export function useAutoSave<T>({
     if (!enabled || initialLoadRef.current || isUserInteracting) return;
 
     const performSave = async () => {
+      // Defensive check to prevent crashes during component unmounting
+      if (!enabled || isUserInteracting) return;
+      
       try {
         setSaveState('saving');
         
@@ -116,14 +119,20 @@ export function useAutoSave<T>({
         if (onSave && typeof onSave === 'function') {
           try {
             await onSave(cleanedData);
-            setSaveState('saved');
-            setLastSaved(new Date());
-            clearDraft();
+            
+            // Check if component is still mounted before updating state
+            if (enabled && !isUserInteracting) {
+              setSaveState('saved');
+              setLastSaved(new Date());
+              if (clearDraft && typeof clearDraft === 'function') {
+                clearDraft();
+              }
+            }
           } catch (saveError) {
             // Handle specific publishing errors to prevent crashes
             if (saveError instanceof Error && saveError.message.includes('publish')) {
               console.warn('Auto-save skipped due to publishing conflict:', saveError.message);
-              setSaveState('idle');
+              if (enabled) setSaveState('idle');
               return;
             }
             console.error('onSave function threw an error:', saveError);
@@ -135,27 +144,36 @@ export function useAutoSave<T>({
             type: typeof onSave,
             isFunction: typeof onSave === 'function'
           });
-          setSaveState('idle');
+          if (enabled) setSaveState('idle');
           return;
         }
         
-        // Reset to idle after 2 seconds
+        // Reset to idle after 2 seconds with defensive check
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+        }
         saveTimeoutRef.current = setTimeout(() => {
-          setSaveState('idle');
+          if (enabled) setSaveState('idle');
         }, 2000);
       } catch (error) {
         console.error('Auto-save failed:', error);
-        setSaveState('error');
+        if (enabled) setSaveState('error');
+        
         // Save as draft if auto-save fails
         try {
-          saveDraft(debouncedData);
+          if (saveDraft && typeof saveDraft === 'function') {
+            saveDraft(debouncedData);
+          }
         } catch (draftError) {
           console.error('Failed to save draft:', draftError);
         }
         
-        // Reset to idle after error
+        // Reset to idle after error with defensive check
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+        }
         saveTimeoutRef.current = setTimeout(() => {
-          setSaveState('idle');
+          if (enabled) setSaveState('idle');
         }, 3000);
       }
     };
@@ -165,12 +183,14 @@ export function useAutoSave<T>({
       performSave();
     } catch (syncError) {
       console.error('Synchronous auto-save error:', syncError);
-      setSaveState('error');
+      if (enabled) setSaveState('error');
     }
 
     return () => {
+      // Defensive cleanup to prevent "n is not a function" errors
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = undefined;
       }
     };
   }, [debouncedData, enabled, onSave, clearDraft, saveDraft, isUserInteracting]);
@@ -190,10 +210,17 @@ export function useAutoSave<T>({
         await onSave(data);
         setSaveState('saved');
         setLastSaved(new Date());
-        clearDraft();
         
+        // Defensive check for clearDraft function
+        if (clearDraft && typeof clearDraft === 'function') {
+          clearDraft();
+        }
+        
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+        }
         saveTimeoutRef.current = setTimeout(() => {
-          setSaveState('idle');
+          if (enabled) setSaveState('idle');
         }, 2000);
       } else {
         console.warn('forceSave: onSave function not available');
@@ -202,15 +229,25 @@ export function useAutoSave<T>({
     } catch (error) {
       console.error('Force save failed:', error);
       setSaveState('error');
-      saveDraft(data);
+      
+      // Defensive check for saveDraft function
+      if (saveDraft && typeof saveDraft === 'function') {
+        saveDraft(data);
+      }
     }
-  }, [data, onSave, clearDraft, saveDraft]);
+  }, [data, onSave, clearDraft, saveDraft, enabled]);
 
-  // Cleanup effect
+  // Cleanup effect with defensive checks
   useEffect(() => {
     return () => {
+      // Defensive cleanup to prevent "n is not a function" errors
       if (interactionTimeoutRef.current) {
         clearTimeout(interactionTimeoutRef.current);
+        interactionTimeoutRef.current = undefined;
+      }
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = undefined;
       }
     };
   }, []);
