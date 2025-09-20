@@ -1,5 +1,6 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { flushSync } from 'react-dom';
 import { useOperators, useOperator } from '@/hooks/useOperators';
 import { OperatorForm } from '@/components/admin/OperatorForm';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,11 @@ export default function EditOperator() {
   const { updateOperator, autoSaveOperator } = useOperators();
   const { operator, loading: operatorLoading } = useOperator(id);
   const [isLoading, setIsLoading] = useState(false);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
   const { isPublishing: globalIsPublishing, operatorId: publishingOperatorId } = usePublishingState();
+  
+  // Component mount tracking to prevent operations on unmounted components
+  const isMountedRef = useRef(true);
   
   // Check if this specific operator is being published globally
   const isThisOperatorPublishing = globalIsPublishing && publishingOperatorId === id;
@@ -33,8 +38,31 @@ export default function EditOperator() {
     return operator;
   }, [operator, isThisOperatorPublishing]);
 
+  // Effect to handle navigation after state updates are complete
+  useEffect(() => {
+    if (shouldNavigate && isMountedRef.current) {
+      // Clear publishing state before navigation
+      const { clearPublishing } = usePublishingState.getState();
+      clearPublishing();
+      
+      // Use flushSync to ensure state updates are completed before navigation
+      flushSync(() => {
+        setShouldNavigate(false);
+      });
+      
+      navigate('/admin/operators');
+    }
+  }, [shouldNavigate, navigate]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const handleSubmit = async (data: OperatorFormData) => {
-    if (!id) return;
+    if (!id || !isMountedRef.current) return;
     
     try {
       setIsLoading(true);
@@ -46,32 +74,36 @@ export default function EditOperator() {
       
       await updateOperator(id, data);
       
+      // Only proceed if component is still mounted
+      if (!isMountedRef.current) return;
+      
       // Only show success toast if not publishing (updateOperator shows its own toast)
       if (data.published !== true) {
         toast.success('Operator updated successfully');
       }
       
-      // Add delay before navigation to allow state cleanup
-      setTimeout(() => {
-        navigate('/admin/operators');
-      }, data.published === true ? 300 : 100);
+      // Trigger navigation via state change instead of direct navigation
+      setShouldNavigate(true);
     } catch (error) {
       console.error('Failed to update operator:', error);
-      toast.error('Failed to update operator');
+      if (isMountedRef.current) {
+        toast.error('Failed to update operator');
+      }
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
   };
 
   // Stable reset handler to prevent stale closures
   const handleReset = () => {
+    if (!isMountedRef.current) return;
+    
     try {
       const { clearPublishing } = usePublishingState.getState();
       clearPublishing();
-      // Add small delay to allow state cleanup
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
+      window.location.reload();
     } catch (error) {
       console.error('Reset failed:', error);
       // Fallback: force reload without state cleanup
@@ -80,7 +112,7 @@ export default function EditOperator() {
   };
 
   const handleAutoSave = async (data: OperatorFormData) => {
-    if (!id) return;
+    if (!id || !isMountedRef.current) return;
     
     try {
       // Auto-save should NEVER trigger publishing

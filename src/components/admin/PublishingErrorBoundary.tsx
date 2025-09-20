@@ -59,21 +59,18 @@ export class PublishingErrorBoundary extends Component<PublishingErrorBoundaryPr
       errorInfo: null
     });
     
-    // Add safety delay for reset operations
-    setTimeout(() => {
-      try {
-        // Call onRetry first, then onReset as fallback
-        if (this.props.onRetry) {
-          this.props.onRetry();
-        } else if (this.props.onReset) {
-          this.props.onReset();
-        }
-      } catch (error) {
-        console.error('Error in retry handler:', error);
-        // Ultimate fallback
-        window.location.reload();
+    try {
+      // Call onRetry first, then onReset as fallback
+      if (this.props.onRetry) {
+        this.props.onRetry();
+      } else if (this.props.onReset) {
+        this.props.onReset();
       }
-    }, 50);
+    } catch (error) {
+      console.error('Error in retry handler:', error);
+      // Ultimate fallback
+      window.location.reload();
+    }
   };
 
   render() {
