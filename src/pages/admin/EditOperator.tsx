@@ -51,12 +51,31 @@ export default function EditOperator() {
         toast.success('Operator updated successfully');
       }
       
-      navigate('/admin/operators');
+      // Add delay before navigation to allow state cleanup
+      setTimeout(() => {
+        navigate('/admin/operators');
+      }, data.published === true ? 300 : 100);
     } catch (error) {
       console.error('Failed to update operator:', error);
       toast.error('Failed to update operator');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Stable reset handler to prevent stale closures
+  const handleReset = () => {
+    try {
+      const { clearPublishing } = usePublishingState.getState();
+      clearPublishing();
+      // Add small delay to allow state cleanup
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    } catch (error) {
+      console.error('Reset failed:', error);
+      // Fallback: force reload without state cleanup
+      window.location.reload();
     }
   };
 
@@ -98,12 +117,7 @@ export default function EditOperator() {
   return (
     <PublishingErrorBoundary 
       operatorId={id} 
-      onReset={() => {
-        // Reset publishing state and refresh operator data
-        const { clearPublishing } = usePublishingState.getState();
-        clearPublishing();
-        window.location.reload();
-      }}
+      onReset={handleReset}
     >
       <div className="space-y-6">
         <div className="flex items-center space-x-4">

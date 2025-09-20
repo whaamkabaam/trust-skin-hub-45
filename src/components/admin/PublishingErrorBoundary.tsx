@@ -38,6 +38,14 @@ export class PublishingErrorBoundary extends Component<PublishingErrorBoundaryPr
     console.error('Publishing Error Boundary caught an error:', error);
     console.error('Error Info:', errorInfo);
     
+    // Check for the specific "n is not a function" error pattern
+    const isStaleClosureError = error.message?.includes('is not a function') || 
+                               error.stack?.includes('is not a function');
+    
+    if (isStaleClosureError) {
+      console.warn('Detected stale closure error - likely due to state cleanup timing');
+    }
+    
     this.setState({
       error,
       errorInfo
@@ -51,12 +59,21 @@ export class PublishingErrorBoundary extends Component<PublishingErrorBoundaryPr
       errorInfo: null
     });
     
-    // Call onRetry first, then onReset as fallback
-    if (this.props.onRetry) {
-      this.props.onRetry();
-    } else if (this.props.onReset) {
-      this.props.onReset();
-    }
+    // Add safety delay for reset operations
+    setTimeout(() => {
+      try {
+        // Call onRetry first, then onReset as fallback
+        if (this.props.onRetry) {
+          this.props.onRetry();
+        } else if (this.props.onReset) {
+          this.props.onReset();
+        }
+      } catch (error) {
+        console.error('Error in retry handler:', error);
+        // Ultimate fallback
+        window.location.reload();
+      }
+    }, 50);
   };
 
   render() {
