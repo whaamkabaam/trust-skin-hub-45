@@ -168,16 +168,19 @@ All colors MUST be HSL.
   html,
   body {
     @apply bg-background text-foreground;
-    height: 100vh;
-    overflow: hidden;
     scroll-behavior: smooth;
   }
 
   #root {
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+  }
+
+  /* Admin-specific overflow control */
+  .admin-container {
+    height: 100vh;
+    overflow: hidden;
   }
 
   /* Scroll containment for admin areas */
