@@ -23,7 +23,7 @@ import { SEOHead } from '@/components/SEOHead';
 import { ContentSectionRenderer } from '@/components/ContentSectionRenderer';
 
 const OperatorReview = () => {
-  const { id: slug } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [tocOpen, setTocOpen] = useState(false);
   const [promoCodeCopied, setPromoCodeCopied] = useState(false);
   const [keyFactsOpen, setKeyFactsOpen] = useState(false);
