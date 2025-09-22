@@ -1,6 +1,7 @@
 import { ArrowRight, Shield, Clock, Users, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Link } from 'react-router-dom';
 import heroBg from '@/assets/hero-bg.jpg';
 
 const Hero = () => {
@@ -32,7 +33,7 @@ const Hero = () => {
           {/* Gaming Hubs CTAs - Playful Card Style */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 justify-center mb-12 max-w-6xl mx-auto">
             <div className="group cursor-pointer">
-              <a href="/casinos" className="block">
+              <Link to="/casinos" className="block">
                 <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[120px] md:min-h-[140px] bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 transform transition-all duration-300 hover:scale-105 hover:rotate-1 shadow-lg hover:shadow-2xl">
                   <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                   <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
@@ -42,11 +43,11 @@ const Hero = () => {
                   </div>
                   <div className="absolute top-2 right-2 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
                 </div>
-              </a>
+              </Link>
             </div>
             
             <div className="group cursor-pointer">
-              <a href="/esports" className="block">
+              <Link to="/esports" className="block">
                 <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[120px] md:min-h-[140px] bg-gradient-to-br from-green-500 via-emerald-500 to-cyan-500 transform transition-all duration-300 hover:scale-105 hover:-rotate-1 shadow-lg hover:shadow-2xl">
                   <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                   <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
@@ -56,11 +57,11 @@ const Hero = () => {
                   </div>
                   <div className="absolute top-2 right-2 w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
                 </div>
-              </a>
+              </Link>
             </div>
             
             <div className="group cursor-pointer">
-              <a href="/cases" className="block">
+              <Link to="/cases" className="block">
                 <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[120px] md:min-h-[140px] bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 transform transition-all duration-300 hover:scale-105 hover:rotate-1 shadow-lg hover:shadow-2xl">
                   <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                   <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
@@ -70,11 +71,11 @@ const Hero = () => {
                   </div>
                   <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 </div>
-              </a>
+              </Link>
             </div>
             
             <div className="group cursor-pointer">
-              <a href="/mystery-boxes" className="block">
+              <Link to="/mystery-boxes" className="block">
                 <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[120px] md:min-h-[140px] bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 transform transition-all duration-300 hover:scale-105 hover:-rotate-1 shadow-lg hover:shadow-2xl">
                   <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                   <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
@@ -84,33 +85,33 @@ const Hero = () => {
                   </div>
                   <div className="absolute top-2 right-2 w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
                 </div>
-              </a>
+              </Link>
             </div>
           </div>
 
           {/* Trust Strip */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 mb-8">
-            <a 
-              href="/methodology" 
+            <Link 
+              to="/methodology" 
               className="flex items-center justify-center space-x-2 text-white/80 hover:text-white transition-colors group"
             >
               <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
               <span className="text-sm font-medium">How we rate</span>
-            </a>
-            <a 
-              href="/editorial-policy" 
+            </Link>
+            <Link 
+              to="/editorial-policy" 
               className="flex items-center justify-center space-x-2 text-white/80 hover:text-white transition-colors group"
             >
               <Users className="h-4 w-4 group-hover:scale-110 transition-transform" />
               <span className="text-sm font-medium">Editorial policy</span>
-            </a>
-            <a 
-              href="/affiliate-disclosure" 
+            </Link>
+            <Link 
+              to="/affiliate-disclosure" 
               className="flex items-center justify-center space-x-2 text-white/80 hover:text-white transition-colors group"
             >
               <TrendingUp className="h-4 w-4 group-hover:scale-110 transition-transform" />
               <span className="text-sm font-medium">Affiliate disclosure</span>
-            </a>
+            </Link>
             <div className="flex items-center justify-center space-x-2 text-white/80">
               <Clock className="h-4 w-4" />
               <span className="text-sm font-medium">Updated daily</span>

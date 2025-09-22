@@ -147,9 +147,12 @@ export function usePublicOperatorsQuery(filters: OperatorFilters = {}) {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     retry: (failureCount, error) => {
-      if (failureCount >= 3) return false;
+      console.error('Query failed:', error);
+      if (failureCount >= 2) return false; // Reduced retries for faster fallback
       return true;
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+    retryDelay: (attemptIndex) => Math.min(500 * 2 ** attemptIndex, 2000), // Faster retry
+    refetchOnWindowFocus: false, // Prevent unnecessary refetches
+    refetchOnMount: 'always' // Ensure fresh data on mount
   });
 }
