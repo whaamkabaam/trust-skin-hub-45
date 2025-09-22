@@ -65,6 +65,7 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         setContentSections(staticContent.contentSections);
         setMediaAssets(staticContent.mediaAssets);
         setSeoMetadata(staticContent.seoMetadata);
+        setLoading(false);
         return;
       }
 
