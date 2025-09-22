@@ -111,7 +111,7 @@ const OperatorReview = () => {
   
   // Get first active bonus for promo code
   const activeBonus = bonuses?.find(b => b.is_active) || null;
-  const promoCode = activeBonus?.value || "GET10FREE";
+  const promoCode = operator?.promo_code || activeBonus?.value || "GET10FREE";
   
   const copyPromoCode = () => {
     navigator.clipboard.writeText(promoCode);
@@ -119,7 +119,7 @@ const OperatorReview = () => {
     setTimeout(() => setPromoCodeCopied(false), 2000);
   };
   
-  const siteType = operator?.modes?.includes('Case Opening') ? 'Case Site' : 'Mystery Box';
+  const siteType = operator?.site_type || (operator?.modes?.includes('Case Opening') ? 'Case Site' : 'Mystery Box');
   const userRatings = {
     total: reviews?.length || 0,
     breakdown: {
@@ -213,7 +213,11 @@ const OperatorReview = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-background to-muted/30 border-b">
+      <section className="bg-gradient-to-br from-background to-muted/30 border-b" style={operator?.hero_image_url ? {
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${operator.hero_image_url})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      } : undefined}>
         <div className="container mx-auto px-4 py-6 md:py-8">
           {/* Desktop Layout */}
           <div className="hidden md:block">
@@ -223,8 +227,8 @@ const OperatorReview = () => {
                 <div className="flex items-start gap-6">
                   {/* Site Logo */}
                   <div className="w-16 h-16 bg-white rounded-lg shadow-lg flex items-center justify-center flex-shrink-0 border">
-                    {operator?.logo ? (
-                      <img src={operator.logo} alt={`${operator.name} logo`} className="w-12 h-12 object-contain" />
+                    {operator?.logo_url ? (
+                      <img src={operator.logo_url} alt={`${operator.name} logo`} className="w-12 h-12 object-contain" />
                     ) : (
                       <span className="text-xl font-bold text-primary">{operator?.name?.charAt(0)}</span>
                     )}
@@ -236,10 +240,10 @@ const OperatorReview = () => {
                       <Badge variant="outline" className="text-blue-600 border-blue-200">
                         {siteType}
                       </Badge>
-                      {operator?.verified && (
+                      {(operator?.verified || operator?.verification_status === 'verified') && (
                         <Badge className="bg-green-100 text-green-800">
                           <CheckCircle className="w-4 h-4 mr-1" />
-                          Verified ✓
+                          {operator?.verification_status === 'verified' ? 'Verified ✓' : 'Verified ✓'}
                         </Badge>
                       )}
                     </div>
@@ -297,90 +301,120 @@ const OperatorReview = () => {
                         <span className="ml-2 font-medium">{operator?.kycRequired ? 'Required' : 'Not Required'}</span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Payout:</span>
-                        <div className="flex gap-1 mt-1">
-                          {siteType === 'Case Site' ? (
-                            <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
-                              Skins
-                            </Badge>
-                          ) : (
-                            <>
-                              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
-                                Physical
-                              </Badge>
-                              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">
-                                Skins
-                              </Badge>
-                            </>
-                          )}
-                        </div>
+                        <span className="text-muted-foreground">Crypto Payout:</span>
+                        <span className="ml-2 font-medium">{operator?.withdrawal_time_crypto || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Fiat Payout:</span>
+                        <span className="ml-2 font-medium">{operator?.withdrawal_time_fiat || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Skins Payout:</span>
+                        <span className="ml-2 font-medium">{operator?.withdrawal_time_skins || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Provably Fair:</span>
-                        <span className="ml-2 font-medium text-green-600">Yes</span>
+                        <span className="ml-2 font-medium text-green-600">{security?.provably_fair ? 'Yes' : 'No'}</span>
                       </div>
                     </div>
 
-                    {/* Optional Features */}
-                    {(operator?.otherFeatures || operator?.gamingModes || operator?.games || operator?.categories) && (
-                      <div className="space-y-3 border-t pt-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {operator?.otherFeatures && (
-                            <div>
-                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Other Features</span>
-                              <div className="flex flex-wrap gap-1.5 mt-2">
-                                {operator.otherFeatures.map((feature) => (
-                                  <Badge key={feature} variant="secondary" className="text-xs">
-                                    {feature}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          
-                          {operator?.gamingModes && (
-                            <div>
-                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Gaming Modes</span>
-                              <div className="flex flex-wrap gap-1.5 mt-2">
-                                {operator.gamingModes.map((mode) => (
-                                  <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
-                                    {mode}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          
-                          {operator?.games && (
-                            <div>
-                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Games</span>
-                              <div className="flex flex-wrap gap-1.5 mt-2">
-                                {operator.games.map((game) => (
-                                  <Badge key={game} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
-                                    {game}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          
-                          {operator?.categories && (
-                            <div>
-                              <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Categories</span>
-                              <div className="flex flex-wrap gap-1.5 mt-2">
-                                {operator.categories.map((category) => (
-                                  <Badge key={category} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800">
-                                    {category}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                {/* Support Channels */}
+                {operator?.support_channels && operator.support_channels.length > 0 && (
+                  <div className="space-y-3 border-t pt-4">
+                    <div>
+                      <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Support Channels</span>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {operator.support_channels.map((channel, index) => (
+                          <Badge key={index} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
+                            {channel}
+                          </Badge>
+                        ))}
                       </div>
-                    )}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Operator Features */}
+                {features && features.length > 0 && (
+                  <div className="space-y-3 border-t pt-4">
+                    <div>
+                      <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Platform Features</span>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {features.filter(f => f.is_highlighted).map((feature) => (
+                          <Badge key={feature.id} variant="secondary" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800">
+                            ⭐ {feature.feature_name}
+                          </Badge>
+                        ))}
+                        {features.filter(f => !f.is_highlighted).map((feature) => (
+                          <Badge key={feature.id} variant="outline" className="text-xs">
+                            {feature.feature_name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Optional Features */}
+                {(operator?.otherFeatures || operator?.gamingModes || operator?.games || operator?.categories) && (
+                  <div className="space-y-3 border-t pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {operator?.otherFeatures && (
+                        <div>
+                          <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Other Features</span>
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {operator.otherFeatures.map((feature) => (
+                              <Badge key={feature} variant="secondary" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {operator?.gamingModes && (
+                        <div>
+                          <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Gaming Modes</span>
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {operator.gamingModes.map((mode) => (
+                              <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
+                                {mode}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {operator?.games && (
+                        <div>
+                          <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Games</span>
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {operator.games.map((game) => (
+                              <Badge key={game} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
+                                {game}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {operator?.categories && (
+                        <div>
+                          <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Categories</span>
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {operator.categories.map((category) => (
+                              <Badge key={category} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800">
+                                {category}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
               </div>
 
               {/* Right - Best Offer */}
@@ -437,8 +471,8 @@ const OperatorReview = () => {
               <CardContent className="p-4">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 bg-white rounded-lg shadow flex items-center justify-center flex-shrink-0 border">
-                    {operator?.logo ? (
-                      <img src={operator.logo} alt={`${operator.name} logo`} className="w-10 h-10 object-contain" />
+                    {operator?.logo_url ? (
+                      <img src={operator.logo_url} alt={`${operator.name} logo`} className="w-10 h-10 object-contain" />
                     ) : (
                       <span className="text-lg font-bold text-primary">{operator?.name?.charAt(0)}</span>
                     )}
@@ -662,14 +696,37 @@ const OperatorReview = () => {
                 <h2 className="text-2xl font-bold">What is {operator?.name}?</h2>
               </div>
               <Card>
-                <CardContent className="p-6">
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                <CardContent className="p-6 space-y-4">
+                  <div className="text-muted-foreground leading-relaxed">
                     {operator?.verdict ? (
                       <div dangerouslySetInnerHTML={{ __html: operator.verdict }} />
                     ) : (
                       `${operator?.name} is a popular CS2 trading platform that offers case opening, skin trading, and various gaming modes for Counter-Strike 2 enthusiasts.`
                     )}
-                  </p>
+                  </div>
+                  
+                  {/* Company Background */}
+                  {operator?.company_background && (
+                    <div className="border-t pt-4">
+                      <h3 className="text-lg font-semibold mb-3">Company Background</h3>
+                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: operator.company_background }} />
+                    </div>
+                  )}
+
+                  {/* Supported Countries */}
+                  {operator?.supported_countries && operator.supported_countries.length > 0 && (
+                    <div className="border-t pt-4">
+                      <h3 className="text-lg font-semibold mb-3">Supported Countries</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {operator.supported_countries.slice(0, 10).map((country, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">{country}</Badge>
+                        ))}
+                        {operator.supported_countries.length > 10 && (
+                          <Badge variant="secondary" className="text-xs">+{operator.supported_countries.length - 10} more</Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -711,6 +768,91 @@ const OperatorReview = () => {
               </div>
             )}
 
+            {/* Games & Modes Section */}
+            <div id="games-modes-section" className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                  <Gamepad2 className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Games & Modes</h2>
+              </div>
+              
+              {/* Features from Database */}
+              {features && features.length > 0 && (
+                <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50">
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-2xl">⭐</span>
+                      Platform Features
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {features.map((feature) => (
+                        <div key={feature.id} className={`p-4 rounded-lg border ${feature.is_highlighted ? 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800' : 'bg-background border-border'}`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            {feature.is_highlighted && <span className="text-yellow-600">⭐</span>}
+                            <h4 className="font-semibold">{feature.feature_name}</h4>
+                            <Badge variant="outline" className="text-xs">{feature.feature_type}</Badge>
+                          </div>
+                          {feature.description && (
+                            <p className="text-sm text-muted-foreground">{feature.description}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Gaming Modes & Games */}
+              {(operator?.gamingModes || operator?.games) && (
+                <div className="grid md:grid-cols-2 gap-6">
+                  {operator?.gamingModes && (
+                    <Card>
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-4 text-blue-800 dark:text-blue-300">Gaming Modes</h3>
+                        <div className="space-y-2">
+                          {operator.gamingModes.map((mode, index) => (
+                            <div key={index} className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                              <span className="text-blue-600">🎮</span>
+                              <span className="text-sm font-medium">{mode}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {operator?.games && (
+                    <Card>
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Supported Games</h3>
+                        <div className="space-y-2">
+                          {operator.games.map((game, index) => (
+                            <div key={index} className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                              <span className="text-green-600">🎯</span>
+                              <span className="text-sm font-medium">{game}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
+
+              {/* Fallback when no features/games are available */}
+              {(!features || features.length === 0) && !operator?.gamingModes && !operator?.games && (
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="text-center text-muted-foreground">
+                      <Gamepad2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>Game modes and features information will be displayed here when available.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
             {/* Payments Section */}
             <div id="payments-section" className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
@@ -730,12 +872,21 @@ const OperatorReview = () => {
                     </h4>
                     <div className="space-y-2">
                       {payments?.filter(p => p.method_type === 'deposit').map((payment, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <span className="text-sm">{payment.payment_method}</span>
-                          <Badge className="bg-blue-100 text-blue-800 border-0">
-                            ${payment.minimum_amount || 0} - ${payment.maximum_amount || 'No limit'}
-                          </Badge>
-                        </div>
+                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                             <span className="text-sm">{payment.payment_method}</span>
+                             <div className="text-right">
+                               <Badge className="bg-blue-100 text-blue-800 border-0">
+                                 ${payment.minimum_amount || 0} - ${payment.maximum_amount || 'No limit'}
+                               </Badge>
+                               {(payment.fee_percentage || payment.fee_fixed) && (
+                                 <p className="text-xs text-muted-foreground mt-1">
+                                   Fee: {payment.fee_percentage ? `${payment.fee_percentage}%` : ''}
+                                   {payment.fee_percentage && payment.fee_fixed ? ' + ' : ''}
+                                   {payment.fee_fixed ? `$${payment.fee_fixed}` : ''}
+                                 </p>
+                               )}
+                             </div>
+                           </div>
                       )) || (
                         <>
                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
@@ -773,17 +924,17 @@ const OperatorReview = () => {
                       )) || (
                         <>
                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                            <div>
-                              <span className="text-sm font-medium">Skins</span>
-                              <p className="text-xs text-muted-foreground">{(operator as any)?.withdrawal_time_skins || 'Instant - 24 hours'}</p>
-                            </div>
+                          <div>
+                            <span className="text-sm font-medium">Skins</span>
+                            <p className="text-xs text-muted-foreground">{operator?.withdrawal_time_skins || 'Instant - 24 hours'}</p>
+                          </div>
                             <Badge className="bg-green-100 text-green-800 border-0">0% fee</Badge>
                           </div>
                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                            <div>
-                              <span className="text-sm font-medium">Cryptocurrency</span>
-                              <p className="text-xs text-muted-foreground">{(operator as any)?.withdrawal_time_crypto || '1-6 hours'}</p>
-                            </div>
+                          <div>
+                            <span className="text-sm font-medium">Cryptocurrency</span>
+                            <p className="text-xs text-muted-foreground">{operator?.withdrawal_time_crypto || '1-6 hours'}</p>
+                          </div>
                             <Badge className="bg-yellow-100 text-yellow-800 border-0">1-3% fee</Badge>
                           </div>
                         </>
@@ -813,7 +964,7 @@ const OperatorReview = () => {
                           </div>
                           <h4 className="font-semibold text-green-800">{bonus.title}</h4>
                         </div>
-                        <p className="text-sm text-muted-foreground">{bonus.description || bonus.value}</p>
+                        <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: bonus.description || bonus.value || '' }} />
                       </CardContent>
                     </Card>
                   )) || (
@@ -850,12 +1001,10 @@ const OperatorReview = () => {
                       {bonuses.filter(b => b.is_active).map((bonus, i) => (
                         <div key={i}>
                           <h3 className="text-lg font-semibold mb-3">{bonus.title}</h3>
-                          <p className="text-muted-foreground leading-relaxed mb-4">
-                            {bonus.description || `Value: ${bonus.value}`}
-                          </p>
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: bonus.description || `Value: ${bonus.value}` || '' }} />
                           {bonus.terms && (
                             <div className="text-sm text-muted-foreground bg-background/50 p-3 rounded">
-                              <strong>Terms:</strong> {bonus.terms}
+                              <strong>Terms:</strong> <span dangerouslySetInnerHTML={{ __html: bonus.terms }} />
                             </div>
                           )}
                         </div>
@@ -866,9 +1015,13 @@ const OperatorReview = () => {
                   <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200/50">
                     <CardContent className="p-6">
                       <h3 className="text-lg font-semibold mb-3">Bonus Information</h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {operator?.bonus_terms || `${operator?.name} offers various promotional bonuses and rewards for active users. Contact their support team for current bonus information.`}
-                      </p>
+                      <div className="text-muted-foreground leading-relaxed">
+                        {operator?.bonus_terms ? (
+                          <div dangerouslySetInnerHTML={{ __html: operator.bonus_terms }} />
+                        ) : (
+                          `${operator?.name} offers various promotional bonuses and rewards for active users. Contact their support team for current bonus information.`
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 )}
@@ -923,18 +1076,53 @@ const OperatorReview = () => {
                             <Shield className="w-5 h-5 text-green-600" />
                             Provably Fair System
                           </h3>
-                          <p className="text-muted-foreground leading-relaxed mb-4">
-                            {security.provably_fair_description}
-                          </p>
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.provably_fair_description }} />
                         </div>
                       )}
                       
                       {security.license_info && (
                         <div>
                           <h3 className="text-lg font-semibold mb-3">Licensing & Regulation</h3>
-                          <p className="text-muted-foreground leading-relaxed mb-4">
-                            {security.license_info}
-                          </p>
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.license_info }} />
+                        </div>
+                      )}
+
+                      {security.compliance_certifications && security.compliance_certifications.length > 0 && (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-3">Compliance Certifications</h3>
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {security.compliance_certifications.map((cert, index) => (
+                              <Badge key={index} variant="outline" className="bg-green-50 text-green-700 border-green-200">{cert}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {security.data_protection_info && (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-3">Data Protection</h3>
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.data_protection_info }} />
+                        </div>
+                      )}
+
+                      {security.responsible_gaming_info && (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-3">Responsible Gaming</h3>
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.responsible_gaming_info }} />
+                        </div>
+                      )}
+
+                      {security.complaints_platform && (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-3">Complaints Platform</h3>
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.complaints_platform }} />
+                        </div>
+                      )}
+
+                      {security.audit_info && (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-3">Audit Information</h3>
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.audit_info }} />
                         </div>
                       )}
                     </CardContent>
@@ -943,13 +1131,130 @@ const OperatorReview = () => {
                   <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50">
                     <CardContent className="p-6">
                       <h3 className="text-lg font-semibold mb-3">Security & Compliance</h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {operator?.fairness_info || `${operator?.name} implements industry-standard security measures to protect user data and ensure fair gaming practices.`}
-                      </p>
+                      <div className="text-muted-foreground leading-relaxed">
+                        {operator?.fairness_info ? (
+                          <div dangerouslySetInnerHTML={{ __html: operator.fairness_info }} />
+                        ) : (
+                          `${operator?.name} implements industry-standard security measures to protect user data and ensure fair gaming practices.`
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 )}
               </div>
+            </div>
+
+            {/* UX & Support Section */}
+            <div id="ux-support-section" className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <MessageCircle className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">UX & Support</h2>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Support Channels */}
+                <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200/50">
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5 text-indigo-600" />
+                      Support Channels
+                    </h3>
+                    {operator?.support_channels && operator.support_channels.length > 0 ? (
+                      <div className="space-y-3">
+                        {operator.support_channels.map((channel, index) => (
+                          <div key={index} className="flex items-center gap-3 p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                            <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs">💬</span>
+                            </div>
+                            <span className="font-medium">{channel}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">💬</span>
+                          </div>
+                          <span className="font-medium">Live Chat</span>
+                        </div>
+                        <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">📧</span>
+                          </div>
+                          <span className="font-medium">Email Support</span>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* User Experience Features */}
+                <Card className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 border-pink-200/50">
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Users className="w-5 h-5 text-pink-600" />
+                      User Experience
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                        <span className="text-sm">UX Rating</span>
+                        <div className="flex items-center gap-2">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.ux) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                            ))}
+                          </div>
+                          <span className="font-semibold">{scores.ux.toFixed(1)}/5</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                        <span className="text-sm">Support Rating</span>
+                        <div className="flex items-center gap-2">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.support) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                            ))}
+                          </div>
+                          <span className="font-semibold">{scores.support.toFixed(1)}/5</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                        <span className="text-sm">Mobile Friendly</span>
+                        <Badge className="bg-green-100 text-green-800">Yes</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Community Links */}
+              {operator?.community_links && Object.keys(operator.community_links).length > 0 && (
+                <Card className="bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20 border-violet-200/50">
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-violet-600" />
+                      Community & Social
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {Object.entries(operator.community_links).map(([platform, url]) => (
+                        <a
+                          key={platform}
+                          href={url as string}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-white/10 rounded-lg hover:bg-white/70 dark:hover:bg-white/20 transition-colors"
+                        >
+                          <span className="capitalize">{platform}</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* FAQ Section */}

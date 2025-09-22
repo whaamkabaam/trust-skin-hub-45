@@ -2,7 +2,8 @@ export interface Operator {
   id: string;
   name: string;
   slug?: string;
-  logo: string;
+  logo: string; // legacy field
+  logo_url?: string; // database field
   hero_image_url?: string;
   verdict: string;
   overallRating: number;
@@ -34,6 +35,17 @@ export interface Operator {
   };
   bonus_terms?: string;
   fairness_info?: string;
+  // Database fields
+  promo_code?: string;
+  site_type?: string;
+  verification_status?: string;
+  withdrawal_time_crypto?: string;
+  withdrawal_time_fiat?: string;
+  withdrawal_time_skins?: string;
+  support_channels?: string[];
+  company_background?: string;
+  supported_countries?: string[];
+  community_links?: Record<string, string>;
   // Optional new fields
   otherFeatures?: string[];
   gamingModes?: string[];
