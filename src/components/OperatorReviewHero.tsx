@@ -210,14 +210,14 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold">{scores.overall}</span>
+                    <span className="font-bold">{scores.overall}/10</span>
                   </div>
                   <span className="text-xs text-muted-foreground">Our Rating</span>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold">{scores.user}</span>
+                    <span className="font-bold">{scores.user}/10</span>
                   </div>
                   <span className="text-xs text-muted-foreground">User ({userRatings.total})</span>
                 </div>

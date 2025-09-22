@@ -828,7 +828,7 @@ const OperatorReview = () => {
                           {operator.gamingModes.map((mode, index) => (
                             <div key={index} className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
                               <span className="text-blue-600">🎮</span>
-                              <span className="text-sm font-medium">{mode}</span>
+                              <span className="text-sm font-medium">{formatGamingMode(mode)}</span>
                             </div>
                           ))}
                         </div>
@@ -844,7 +844,7 @@ const OperatorReview = () => {
                           {operator.games.map((game, index) => (
                             <div key={index} className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-900/20 rounded">
                               <span className="text-green-600">🎯</span>
-                              <span className="text-sm font-medium">{game}</span>
+                              <span className="text-sm font-medium">{formatGameName(game)}</span>
                             </div>
                           ))}
                         </div>
@@ -1321,7 +1321,7 @@ const OperatorReview = () => {
 
           {/* RIGHT - Sidebar */}
           <div className="lg:col-span-1 hidden lg:block">
-            <div className="sticky top-8 space-y-6">
+            <div className="sticky top-20 space-y-6">
               {/* Quick Facts */}
               <Card>
                 <CardHeader>
@@ -1366,7 +1366,7 @@ const OperatorReview = () => {
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {payments?.filter(p => p.method_type === 'deposit').slice(0, 4).map((payment, i) => (
                           <Badge key={i} variant="secondary" className="text-xs">
-                            {payment.payment_method}
+                             {formatPaymentMethod(payment.payment_method)}
                           </Badge>
                         )) || (
                           <>
@@ -1383,7 +1383,7 @@ const OperatorReview = () => {
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {payments?.filter(p => p.method_type === 'withdrawal').slice(0, 4).map((payment, i) => (
                           <Badge key={i} variant="outline" className="text-xs">
-                            {payment.payment_method}
+                             {formatPaymentMethod(payment.payment_method)}
                           </Badge>
                         )) || (
                           <>
