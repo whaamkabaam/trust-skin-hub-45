@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Star, CheckCircle, Copy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import StarRating from '@/components/StarRating';
 
 interface OperatorReviewHeroProps {
   operator: {
@@ -77,8 +78,14 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
       </div>
 
       {/* Header / Hero */}
-      <section className="bg-gradient-to-br from-background to-muted/30 border-b">
-        <div className="container mx-auto px-4 py-6 md:py-8">
+      <section className="relative bg-gradient-to-br from-background via-muted/20 to-muted/40 border-b overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary))_0%,transparent_50%)]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,hsl(var(--primary)/0.03)_25%,transparent_25%,transparent_75%,hsl(var(--primary)/0.03)_75%)] bg-[length:20px_20px]"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 py-6 md:py-8 relative z-10">
           {/* Desktop Layout */}
           <div className="hidden md:block">
             <div className="flex items-start gap-6 mb-8">
@@ -108,11 +115,9 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
                     <span className="text-muted-foreground">Our Rating:</span>
                     <div className="flex items-center gap-1">
                       <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                        ))}
+                        <StarRating rating={scores.overall} size="md" />
                       </div>
-                      <span className="font-bold text-lg">{scores.overall}/5</span>
+                      <span className="font-bold text-lg">{scores.overall}/10</span>
                     </div>
                   </div>
                   <div className="h-6 w-px bg-border" />
@@ -120,11 +125,9 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
                     <span className="text-muted-foreground">User Rating:</span>
                     <div className="flex items-center gap-1">
                       <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                        ))}
+                        <StarRating rating={scores.user} size="md" />
                       </div>
-                      <span className="font-bold">{scores.user}/5</span>
+                      <span className="font-bold">{scores.user}/10</span>
                       <span className="text-muted-foreground">({userRatings.total})</span>
                     </div>
                   </div>
@@ -162,8 +165,8 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
                     <span className="text-muted-foreground">Payments:</span>
                     <div className="flex gap-1 mt-1">
                       <Badge variant="outline" className="text-xs">Visa</Badge>
-                      <Badge variant="outline" className="text-xs">BTC</Badge>
-                      <Badge variant="outline" className="text-xs">ETH</Badge>
+                      <Badge variant="outline" className="text-xs">Bitcoin</Badge>
+                      <Badge variant="outline" className="text-xs">Ethereum</Badge>
                     </div>
                   </div>
                   <div>

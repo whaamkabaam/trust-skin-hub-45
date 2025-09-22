@@ -21,6 +21,16 @@ import { usePublicOperatorExtensions } from '@/hooks/usePublicOperatorExtensions
 import { useMedia } from '@/hooks/useMedia';
 import { SEOHead } from '@/components/SEOHead';
 import { ContentSectionRenderer } from '@/components/ContentSectionRenderer';
+import StarRating from '@/components/StarRating';
+import { 
+  formatSupportChannel, 
+  formatFeatureName, 
+  formatGamingMode, 
+  formatGameName, 
+  formatCategoryName, 
+  formatPaymentMethod,
+  formatWithdrawalTime
+} from '@/lib/formatters';
 
 const OperatorReview = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -302,15 +312,15 @@ const OperatorReview = () => {
                       </div>
                       <div>
                         <span className="text-muted-foreground">Crypto Payout:</span>
-                        <span className="ml-2 font-medium">{operator?.withdrawal_time_crypto || 'N/A'}</span>
+                        <span className="ml-2 font-medium">{formatWithdrawalTime(operator?.withdrawal_time_crypto) || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Fiat Payout:</span>
-                        <span className="ml-2 font-medium">{operator?.withdrawal_time_fiat || 'N/A'}</span>
+                        <span className="ml-2 font-medium">{formatWithdrawalTime(operator?.withdrawal_time_fiat) || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Skins Payout:</span>
-                        <span className="ml-2 font-medium">{operator?.withdrawal_time_skins || 'N/A'}</span>
+                        <span className="ml-2 font-medium">{formatWithdrawalTime(operator?.withdrawal_time_skins) || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Provably Fair:</span>
@@ -326,7 +336,7 @@ const OperatorReview = () => {
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {operator.support_channels.map((channel, index) => (
                           <Badge key={index} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
-                            {channel}
+                            {formatSupportChannel(channel)}
                           </Badge>
                         ))}
                       </div>
@@ -340,16 +350,16 @@ const OperatorReview = () => {
                     <div>
                       <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Platform Features</span>
                       <div className="flex flex-wrap gap-1.5 mt-2">
-                        {features.filter(f => f.is_highlighted).map((feature) => (
-                          <Badge key={feature.id} variant="secondary" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800">
-                            ⭐ {feature.feature_name}
-                          </Badge>
-                        ))}
-                        {features.filter(f => !f.is_highlighted).map((feature) => (
-                          <Badge key={feature.id} variant="outline" className="text-xs">
-                            {feature.feature_name}
-                          </Badge>
-                        ))}
+                         {features.filter(f => f.is_highlighted).map((feature) => (
+                           <Badge key={feature.id} variant="secondary" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800">
+                             ⭐ {formatFeatureName(feature.feature_name)}
+                           </Badge>
+                         ))}
+                         {features.filter(f => !f.is_highlighted).map((feature) => (
+                           <Badge key={feature.id} variant="outline" className="text-xs">
+                             {formatFeatureName(feature.feature_name)}
+                           </Badge>
+                         ))}
                       </div>
                     </div>
                   </div>
@@ -365,7 +375,7 @@ const OperatorReview = () => {
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {operator.otherFeatures.map((feature) => (
                               <Badge key={feature} variant="secondary" className="text-xs">
-                                {feature}
+                                {formatFeatureName(feature)}
                               </Badge>
                             ))}
                           </div>
@@ -378,7 +388,7 @@ const OperatorReview = () => {
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {operator.gamingModes.map((mode) => (
                               <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
-                                {mode}
+                                {formatGamingMode(mode)}
                               </Badge>
                             ))}
                           </div>
@@ -391,7 +401,7 @@ const OperatorReview = () => {
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {operator.games.map((game) => (
                               <Badge key={game} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
-                                {game}
+                                {formatGameName(game)}
                               </Badge>
                             ))}
                           </div>
@@ -404,7 +414,7 @@ const OperatorReview = () => {
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {operator.categories.map((category) => (
                               <Badge key={category} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800">
-                                {category}
+                                {formatCategoryName(category)}
                               </Badge>
                             ))}
                           </div>
@@ -485,12 +495,8 @@ const OperatorReview = () => {
                       </Badge>
                     </div>
                     <div className="flex items-center gap-1 mb-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                        ))}
-                      </div>
-                      <span className="font-bold text-sm">{scores.overall.toFixed(1)}/5</span>
+                      <StarRating rating={scores.overall} size="sm" />
+                      <span className="font-bold text-sm">{scores.overall.toFixed(1)}/10</span>
                       <span className="text-muted-foreground text-sm">({userRatings.total})</span>
                     </div>
                   </div>
@@ -514,12 +520,12 @@ const OperatorReview = () => {
                         <span className="text-muted-foreground">Payments:</span>
                         <div className="flex gap-1 mt-1">
                           {payments?.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
-                            <Badge key={i} variant="outline" className="text-xs">{payment.payment_method}</Badge>
+                            <Badge key={i} variant="outline" className="text-xs">{formatPaymentMethod(payment.payment_method)}</Badge>
                           )) || (
                             <>
                               <Badge variant="outline" className="text-xs">Visa</Badge>
-                              <Badge variant="outline" className="text-xs">BTC</Badge>
-                              <Badge variant="outline" className="text-xs">ETH</Badge>
+                              <Badge variant="outline" className="text-xs">Bitcoin</Badge>
+                              <Badge variant="outline" className="text-xs">Ethereum</Badge>
                             </>
                           )}
                         </div>

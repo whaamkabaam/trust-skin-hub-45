@@ -10,19 +10,20 @@ interface RatingBadgeProps {
 }
 
 const getRatingColor = (rating: number) => {
-  if (rating >= 4.5) return 'bg-success text-success-foreground';
-  if (rating >= 4.0) return 'bg-success/80 text-success-foreground';
-  if (rating >= 3.5) return 'bg-warning text-warning-foreground';
-  if (rating >= 3.0) return 'bg-warning/80 text-warning-foreground';
+  if (rating >= 9.0) return 'bg-success text-success-foreground';
+  if (rating >= 8.0) return 'bg-success/80 text-success-foreground';
+  if (rating >= 7.0) return 'bg-warning text-warning-foreground';
+  if (rating >= 6.0) return 'bg-warning/80 text-warning-foreground';
+  if (rating >= 5.0) return 'bg-orange-500 text-white';
   return 'bg-destructive text-destructive-foreground';
 };
 
 const getRatingText = (rating: number) => {
-  if (rating >= 4.5) return 'Excellent';
-  if (rating >= 4.0) return 'Very Good';
-  if (rating >= 3.5) return 'Good';
-  if (rating >= 3.0) return 'Average';
-  if (rating >= 2.0) return 'Below Average';
+  if (rating >= 9.0) return 'Excellent';
+  if (rating >= 8.0) return 'Very Good';
+  if (rating >= 7.0) return 'Good';
+  if (rating >= 6.0) return 'Average';
+  if (rating >= 5.0) return 'Below Average';
   return 'Poor';
 };
 
@@ -53,7 +54,7 @@ const RatingBadge = ({
           sizeClasses[size]
         )}>
           <Star className={cn("fill-current", starSizes[size])} />
-          <span>{rating.toFixed(1)}</span>
+          <span>{rating.toFixed(1)}/10</span>
         </div>
         {showText && (
           <span className="text-sm text-muted-foreground font-medium">
@@ -68,7 +69,7 @@ const RatingBadge = ({
     return (
       <Badge className={cn(getRatingColor(rating), sizeClasses[size])}>
         <Star className={cn("fill-current mr-1", starSizes[size])} />
-        {rating.toFixed(1)}
+        {rating.toFixed(1)}/10
       </Badge>
     );
   }
@@ -77,7 +78,7 @@ const RatingBadge = ({
     <div className="inline-flex items-center gap-2">
       <Badge className={cn(getRatingColor(rating), sizeClasses[size])}>
         <Star className={cn("fill-current mr-1", starSizes[size])} />
-        {rating.toFixed(1)}
+        {rating.toFixed(1)}/10
       </Badge>
       {showText && (
         <span className="text-sm text-muted-foreground font-medium">
