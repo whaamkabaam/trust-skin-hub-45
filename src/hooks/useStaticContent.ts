@@ -213,15 +213,21 @@ export function useStaticContent() {
           console.log(`📭 getPublishedContent: No published content found for slug: ${slug}`);
           return null;
         }
-        throw error;
+        console.error(`❌ getPublishedContent: Database error for slug ${slug}:`, error);
+        return null; // Return null instead of throwing
       }
 
-      console.log(`✅ getPublishedContent: Successfully fetched static content for slug: ${slug}`);
+      if (!data?.content_data) {
+        console.log(`📭 getPublishedContent: No content data found for slug: ${slug}`);
+        return null;
+      }
+
+      console.log(`✅ getPublishedContent: Successfully fetched static content for slug: ${slug}`, data.content_data);
       return data.content_data as any as StaticContentData;
 
     } catch (err) {
-      console.error(`❌ getPublishedContent: Error fetching published content for slug ${slug}:`, err);
-      throw err; // Re-throw to let caller handle the error
+      console.error(`❌ getPublishedContent: Unexpected error fetching published content for slug ${slug}:`, err);
+      return null; // Always return null on error, never throw
     }
   };
 

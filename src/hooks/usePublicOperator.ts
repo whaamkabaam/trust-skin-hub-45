@@ -68,8 +68,8 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         setContentSections(staticContent.contentSections);
         setMediaAssets(staticContent.mediaAssets);
         setSeoMetadata(staticContent.seoMetadata);
-        setLoading(false);
-        return;
+        console.log('🎉 Successfully loaded static content data');
+        return; // Early return, loading will be set to false in finally block
       }
 
       console.log('⚠️ No static content found, falling back to dynamic fetching...');
@@ -85,7 +85,6 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         console.log('❌ Operator fetch error:', operatorError);
         if (operatorError.code === 'PGRST116') {
           setError('Operator not found');
-          setLoading(false);
           return;
         }
         throw operatorError;
@@ -159,9 +158,10 @@ export function usePublicOperator(slug: string): PublicOperatorData {
       setSeoMetadata(seoData || null);
 
     } catch (err) {
-      console.error('Error fetching operator data:', err);
+      console.error('❌ Error in fetchOperatorData:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch operator data');
     } finally {
+      console.log('🏁 fetchOperatorData completed, setting loading to false');
       setLoading(false);
     }
   };
