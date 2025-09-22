@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, Search, Edit, Trash2, Eye, MoreHorizontal } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, MoreHorizontal, Copy } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { TableSkeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog, BulkConfirmDialog } from '@/components/ConfirmDialog';
@@ -37,7 +37,7 @@ import {
 import { SeedDataButton } from '@/components/admin/SeedDataButton';
 
 export default function OperatorsList() {
-  const { operators, loading, deleteOperator } = useOperators();
+  const { operators, loading, deleteOperator, duplicateOperator } = useOperators();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOperators, setSelectedOperators] = useState<Set<string>>(new Set());
 
@@ -55,6 +55,16 @@ export default function OperatorsList() {
       await deleteOperator(id);
     }
     setSelectedOperators(new Set());
+  };
+
+  const handleDuplicate = async (id: string) => {
+    try {
+      const newOperator = await duplicateOperator(id);
+      // Navigate to edit the duplicated operator
+      window.location.href = `/admin/operators/${newOperator.id}`;
+    } catch (err) {
+      // Error is already handled in the hook
+    }
   };
 
   const handleSelectAll = () => {
@@ -246,6 +256,10 @@ export default function OperatorsList() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleDuplicate(operator.id)}>
+                            <Copy className="h-4 w-4 mr-2" />
+                            Duplicate Operator
+                          </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link to={`/admin/operators/${operator.id}/content`}>
                               Manage Content

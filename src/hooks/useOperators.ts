@@ -265,6 +265,197 @@ export function useOperators() {
     }
   };
 
+  const duplicateOperator = async (sourceId: string) => {
+    try {
+      const loadingToast = toast.loading('Duplicating operator...');
+
+      // Fetch the source operator and all its related data
+      const { data: sourceOperator, error: operatorError } = await supabase
+        .from('operators')
+        .select('*')
+        .eq('id', sourceId)
+        .single();
+
+      if (operatorError) throw operatorError;
+
+      // Fetch all existing operators to generate unique name and slug
+      const { data: existingOperators, error: existingError } = await supabase
+        .from('operators')
+        .select('name, slug');
+
+      if (existingError) throw existingError;
+
+      // Import utilities for generating unique names
+      const { generateUniqueOperatorName, generateUniqueOperatorSlug } = await import('@/lib/utils');
+      
+      const existingNames = existingOperators?.map(op => op.name) || [];
+      const existingSlugs = existingOperators?.map(op => op.slug) || [];
+      
+      const newName = generateUniqueOperatorName(sourceOperator.name, existingNames);
+      const newSlug = generateUniqueOperatorSlug(newName, existingSlugs);
+
+      // Prepare the new operator data (excluding auto-generated fields)
+      const { 
+        id, 
+        created_at, 
+        updated_at, 
+        published, 
+        published_at, 
+        publish_status, 
+        last_auto_saved_at,
+        ...operatorData 
+      } = sourceOperator;
+
+      const newOperatorData = {
+        ...operatorData,
+        name: newName,
+        slug: newSlug,
+        published: false,
+        published_at: null,
+        publish_status: 'draft',
+        last_auto_saved_at: null
+      };
+
+      // Start transaction - create new operator first
+      const { data: newOperator, error: createError } = await supabase
+        .from('operators')
+        .insert([newOperatorData])
+        .select()
+        .single();
+
+      if (createError) throw createError;
+
+      const newOperatorId = newOperator.id;
+
+      // Fetch and duplicate all extension data in parallel
+      const [
+        bonusesResult,
+        paymentsResult,
+        featuresResult,
+        securityResult,
+        faqsResult,
+        contentResult,
+        mediaResult,
+        seoResult
+      ] = await Promise.allSettled([
+        supabase.from('operator_bonuses').select('*').eq('operator_id', sourceId),
+        supabase.from('operator_payments').select('*').eq('operator_id', sourceId),
+        supabase.from('operator_features').select('*').eq('operator_id', sourceId),
+        supabase.from('operator_security').select('*').eq('operator_id', sourceId),
+        supabase.from('operator_faqs').select('*').eq('operator_id', sourceId),
+        supabase.from('content_sections').select('*').eq('operator_id', sourceId),
+        supabase.from('media_assets').select('*').eq('operator_id', sourceId),
+        supabase.from('seo_metadata').select('*').eq('operator_id', sourceId)
+      ]);
+
+      // Process and insert each extension type
+      const insertPromises = [];
+
+      // Bonuses
+      if (bonusesResult.status === 'fulfilled' && bonusesResult.value.data?.length) {
+        const bonusData = bonusesResult.value.data.map(({ id, created_at, updated_at, ...bonus }) => ({
+          ...bonus,
+          operator_id: newOperatorId
+        }));
+        insertPromises.push(supabase.from('operator_bonuses').insert(bonusData));
+      }
+
+      // Payments
+      if (paymentsResult.status === 'fulfilled' && paymentsResult.value.data?.length) {
+        const paymentData = paymentsResult.value.data.map(({ id, created_at, updated_at, ...payment }) => ({
+          ...payment,
+          operator_id: newOperatorId
+        }));
+        insertPromises.push(supabase.from('operator_payments').insert(paymentData));
+      }
+
+      // Features
+      if (featuresResult.status === 'fulfilled' && featuresResult.value.data?.length) {
+        const featureData = featuresResult.value.data.map(({ id, created_at, updated_at, ...feature }) => ({
+          ...feature,
+          operator_id: newOperatorId
+        }));
+        insertPromises.push(supabase.from('operator_features').insert(featureData));
+      }
+
+      // Security
+      if (securityResult.status === 'fulfilled' && securityResult.value.data?.length) {
+        const securityData = securityResult.value.data.map(({ id, created_at, updated_at, ...security }) => ({
+          ...security,
+          operator_id: newOperatorId
+        }));
+        insertPromises.push(supabase.from('operator_security').insert(securityData));
+      }
+
+      // FAQs
+      if (faqsResult.status === 'fulfilled' && faqsResult.value.data?.length) {
+        const faqData = faqsResult.value.data.map(({ id, created_at, updated_at, ...faq }) => ({
+          ...faq,
+          operator_id: newOperatorId
+        }));
+        insertPromises.push(supabase.from('operator_faqs').insert(faqData));
+      }
+
+      // Content Sections
+      if (contentResult.status === 'fulfilled' && contentResult.value.data?.length) {
+        const contentData = contentResult.value.data.map(({ id, created_at, updated_at, ...content }) => ({
+          ...content,
+          operator_id: newOperatorId
+        }));
+        insertPromises.push(supabase.from('content_sections').insert(contentData));
+      }
+
+      // Media Assets
+      if (mediaResult.status === 'fulfilled' && mediaResult.value.data?.length) {
+        const mediaData = mediaResult.value.data.map(({ id, created_at, updated_at, ...media }) => ({
+          ...media,
+          operator_id: newOperatorId
+        }));
+        insertPromises.push(supabase.from('media_assets').insert(mediaData));
+      }
+
+      // SEO Metadata
+      if (seoResult.status === 'fulfilled' && seoResult.value.data?.length) {
+        const seoData = seoResult.value.data.map(({ id, created_at, updated_at, ...seo }) => ({
+          ...seo,
+          operator_id: newOperatorId
+        }));
+        insertPromises.push(supabase.from('seo_metadata').insert(seoData));
+      }
+
+      // Execute all inserts
+      const insertResults = await Promise.allSettled(insertPromises);
+      
+      // Check for any insert failures
+      const failedInserts = insertResults.filter(result => result.status === 'rejected');
+      if (failedInserts.length > 0) {
+        console.warn('Some extension data failed to duplicate:', failedInserts);
+      }
+
+      // Update local state
+      setOperators(prev => [newOperator, ...prev]);
+      
+      // Invalidate queries
+      queryClient.invalidateQueries({ queryKey: ['operators'] });
+      
+      toast.dismiss(loadingToast);
+      toast.success(`Operator duplicated successfully as "${newName}"`, {
+        duration: 5000,
+        description: 'Click to edit the duplicated operator',
+        action: {
+          label: 'Edit',
+          onClick: () => window.location.href = `/admin/operators/${newOperatorId}`
+        }
+      });
+
+      return newOperator;
+    } catch (err) {
+      console.error('Error duplicating operator:', err);
+      toast.error('Failed to duplicate operator');
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchOperators();
   }, []);
@@ -276,6 +467,7 @@ export function useOperators() {
     createOperator,
     updateOperator,
     deleteOperator,
+    duplicateOperator,
     autoSaveOperator,
     refetch: fetchOperators,
   };
