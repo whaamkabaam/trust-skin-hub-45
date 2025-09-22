@@ -53,13 +53,16 @@ export function usePublicOperator(slug: string): PublicOperatorData {
 
   const fetchOperatorData = async () => {
     try {
+      console.log(`🔍 Starting fetchOperatorData for slug: ${slug}`);
       setLoading(true);
       setError(null);
 
       // Try to fetch from static content first (SEO optimized)
+      console.log('📊 Attempting to fetch static content...');
       const staticContent = await getPublishedContent(slug);
       
       if (staticContent) {
+        console.log('✅ Static content found:', staticContent);
         // Use pre-generated static content
         setOperator(staticContent.operator);
         setContentSections(staticContent.contentSections);
@@ -69,6 +72,7 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         return;
       }
 
+      console.log('⚠️ No static content found, falling back to dynamic fetching...');
       // Fallback to dynamic fetching for preview/development
       const { data: operatorData, error: operatorError } = await supabase
         .from('operators')
@@ -78,8 +82,10 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         .single();
 
       if (operatorError) {
+        console.log('❌ Operator fetch error:', operatorError);
         if (operatorError.code === 'PGRST116') {
           setError('Operator not found');
+          setLoading(false);
           return;
         }
         throw operatorError;
