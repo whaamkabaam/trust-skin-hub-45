@@ -25,9 +25,9 @@ export function ContentSectionRenderer({ sections, className }: ContentSectionRe
     return DOMPurify.sanitize(html, {
       ALLOWED_TAGS: [
         'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'ul', 'ol', 'li', 'blockquote', 'a', 'code', 'pre'
+        'ul', 'ol', 'li', 'blockquote', 'a', 'code', 'pre', 'span', 'div'
       ],
-      ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+      ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'id']
     });
   };
 

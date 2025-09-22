@@ -731,6 +731,14 @@ const OperatorReview = () => {
               </Card>
             </div>
 
+            {/* Content Sections - Main Platform Information */}
+            {contentSections && contentSections.length > 0 && (
+              <ContentSectionRenderer 
+                sections={contentSections} 
+                className="space-y-8"
+              />
+            )}
+
             {/* Screenshots Carousel */}
             {mediaAssets && mediaAssets.length > 0 && (
               <div id="screenshots-section" className="space-y-4">
@@ -964,7 +972,11 @@ const OperatorReview = () => {
                           </div>
                           <h4 className="font-semibold text-green-800">{bonus.title}</h4>
                         </div>
-                        <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: bonus.description || bonus.value || '' }} />
+                         {bonus.description ? (
+                           <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: bonus.description }} />
+                         ) : bonus.value ? (
+                           <p className="text-sm text-muted-foreground">{bonus.value}</p>
+                         ) : null}
                       </CardContent>
                     </Card>
                   )) || (
@@ -1001,7 +1013,11 @@ const OperatorReview = () => {
                       {bonuses.filter(b => b.is_active).map((bonus, i) => (
                         <div key={i}>
                           <h3 className="text-lg font-semibold mb-3">{bonus.title}</h3>
-                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: bonus.description || `Value: ${bonus.value}` || '' }} />
+                          {bonus.description ? (
+                            <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: bonus.description }} />
+                          ) : bonus.value ? (
+                            <p className="text-muted-foreground leading-relaxed mb-4">Value: {bonus.value}</p>
+                          ) : null}
                           {bonus.terms && (
                             <div className="text-sm text-muted-foreground bg-background/50 p-3 rounded">
                               <strong>Terms:</strong> <span dangerouslySetInnerHTML={{ __html: bonus.terms }} />
@@ -1198,34 +1214,44 @@ const OperatorReview = () => {
                       <Users className="w-5 h-5 text-pink-600" />
                       User Experience
                     </h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                        <span className="text-sm">UX Rating</span>
-                        <div className="flex items-center gap-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.ux) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
-                          </div>
-                          <span className="font-semibold">{scores.ux.toFixed(1)}/5</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                        <span className="text-sm">Support Rating</span>
-                        <div className="flex items-center gap-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.support) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
-                          </div>
-                          <span className="font-semibold">{scores.support.toFixed(1)}/5</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                        <span className="text-sm">Mobile Friendly</span>
-                        <Badge className="bg-green-100 text-green-800">Yes</Badge>
-                      </div>
-                    </div>
+                     <div className="space-y-3">
+                       <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                         <span className="text-sm">Support Channels</span>
+                         <div className="flex flex-wrap gap-1">
+                           {operator?.support_channels?.map((channel, i) => (
+                             <Badge key={i} variant="outline" className="text-xs">{channel}</Badge>
+                           )) || (
+                             <Badge variant="outline" className="text-xs">24/7 Live Chat</Badge>
+                           )}
+                         </div>
+                       </div>
+                       <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                         <span className="text-sm">UX Rating</span>
+                         <div className="flex items-center gap-2">
+                           <div className="flex">
+                             {[...Array(5)].map((_, i) => (
+                               <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.ux) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                             ))}
+                           </div>
+                           <span className="font-semibold">{scores.ux.toFixed(1)}/5</span>
+                         </div>
+                       </div>
+                       <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                         <span className="text-sm">Support Rating</span>
+                         <div className="flex items-center gap-2">
+                           <div className="flex">
+                             {[...Array(5)].map((_, i) => (
+                               <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.support) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                             ))}
+                           </div>
+                           <span className="font-semibold">{scores.support.toFixed(1)}/5</span>
+                         </div>
+                       </div>
+                       <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                         <span className="text-sm">Mobile Friendly</span>
+                         <Badge className="bg-green-100 text-green-800">Yes</Badge>
+                       </div>
+                     </div>
                   </CardContent>
                 </Card>
               </div>
@@ -1284,17 +1310,6 @@ const OperatorReview = () => {
               </div>
             </div>
 
-            {contentSections && contentSections.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                    <FileText className="w-4 h-4 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-bold">Additional Information</h2>
-                </div>
-                <ContentSectionRenderer sections={contentSections} />
-              </div>
-            )}
 
           </div>
 
