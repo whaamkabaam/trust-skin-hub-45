@@ -199,9 +199,8 @@ export function useStaticContent() {
 
   const getPublishedContent = async (slug: string): Promise<StaticContentData | null> => {
     try {
-      setLoading(true);
-      setError(null);
-
+      console.log(`🔍 getPublishedContent: Fetching static content for slug: ${slug}`);
+      
       const { data, error } = await supabase
         .from('published_operator_content')
         .select('content_data')
@@ -209,21 +208,20 @@ export function useStaticContent() {
         .single();
 
       if (error) {
+        console.log(`⚠️ getPublishedContent: Database error for slug ${slug}:`, error);
         if (error.code === 'PGRST116') {
-          setError('Content not found');
+          console.log(`📭 getPublishedContent: No published content found for slug: ${slug}`);
           return null;
         }
         throw error;
       }
 
+      console.log(`✅ getPublishedContent: Successfully fetched static content for slug: ${slug}`);
       return data.content_data as any as StaticContentData;
 
     } catch (err) {
-      console.error('Error fetching published content:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch content');
-      return null;
-    } finally {
-      setLoading(false);
+      console.error(`❌ getPublishedContent: Error fetching published content for slug ${slug}:`, err);
+      throw err; // Re-throw to let caller handle the error
     }
   };
 
