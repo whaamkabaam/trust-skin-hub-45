@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import StarRating from '@/components/StarRating';
+import StarRating from '../StarRating';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Building, User, Shield, CreditCard, Gift, HelpCircle } from 'lucide-react';
