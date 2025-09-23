@@ -78,11 +78,19 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
       </div>
 
       {/* Header / Hero */}
-      <section className="relative bg-gradient-to-br from-background via-muted/20 to-muted/40 border-b overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary))_0%,transparent_50%)]"></div>
-          <div className="absolute inset-0 bg-[linear-gradient(45deg,hsl(var(--primary)/0.03)_25%,transparent_25%,transparent_75%,hsl(var(--primary)/0.03)_75%)] bg-[length:20px_20px]"></div>
+      <section className="relative bg-gradient-hero border-b overflow-hidden min-h-[400px] flex items-center">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          {/* Primary gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-gaming-blue/3 to-accent/5"></div>
+          
+          {/* Floating circles */}
+          <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-gaming-orange/20 to-primary/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-gaming-blue/15 to-gaming-gold/15 rounded-full blur-3xl animate-float-delayed"></div>
+          <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-gradient-to-r from-accent/25 to-secondary/25 rounded-full blur-2xl animate-pulse-glow"></div>
+          
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
         </div>
         
         <div className="container mx-auto px-4 py-6 md:py-8 relative z-10">
