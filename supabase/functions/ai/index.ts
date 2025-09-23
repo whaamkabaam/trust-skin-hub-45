@@ -110,20 +110,28 @@ RETURN JSON STRUCTURE:
     "payment_method": "Visa",
     "method_type": "deposit",
     "min_amount": "$20",
-    "max_amount": null,
-    "fees": "Card issuer fees may apply",
+    "max_amount": "$5,000",
+    "fee_percentage": 0,
+    "fee_fixed": 0,
     "processing_time": "Instant"
   }],
   "features": [{
+    "feature_type": "gameplay",
     "feature_name": "Case Battles",
     "description": "Competitive case opening against other players",
     "is_highlighted": true
   }],
   "security": {
     "ssl_enabled": true,
+    "ssl_provider": "Cloudflare",
     "provably_fair": true,
+    "provably_fair_description": "SHA-512 + HMAC hashing, seed verification",
     "license_info": "CGG Entertainment Ltd, Cyprus",
-    "security_measures": "SHA-512 + HMAC hashing, seed verification"
+    "compliance_certifications": ["SSL/TLS", "Responsible Gaming"],
+    "data_protection_info": "GDPR compliant data handling",
+    "responsible_gaming_info": "Self-exclusion and limits available",
+    "complaints_platform": "Available via support",
+    "audit_info": "Regular third-party audits"
   },
   "faqs": [{
     "question": "What promo code unlocks the free-box boost?",

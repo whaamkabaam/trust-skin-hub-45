@@ -25,7 +25,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     ssl_enabled: false,
     ssl_provider: '',
     license_info: '',
-    compliance_certifications: [],
+    compliance_certifications: [] as string[], // Ensure always an array
     data_protection_info: '',
     responsible_gaming_info: '',
     provably_fair: false,
@@ -42,6 +42,11 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
   
   // Always use props data (useOperatorExtensions manages localStorage internally)
   const effectiveSecurity = isTemporaryOperator ? (localStorage.security || defaultSecurity) : (security || defaultSecurity);
+  
+  // Ensure compliance_certifications is always an array to prevent map errors
+  if (!effectiveSecurity.compliance_certifications || !Array.isArray(effectiveSecurity.compliance_certifications)) {
+    effectiveSecurity.compliance_certifications = [];
+  }
 
   const updateSecurity = (updates: Partial<OperatorSecurity>) => {
     // Notify parent that user is interacting with extensions

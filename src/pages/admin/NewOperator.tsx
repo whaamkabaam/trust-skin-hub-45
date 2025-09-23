@@ -20,6 +20,56 @@ export default function NewOperator() {
     return cleanItem;
   };
 
+  // Transform AI-extracted data to match database schema
+  const transformPaymentForDatabase = (payment: any) => {
+    const cleanPayment = cleanDataForInsert(payment);
+    
+    // Map AI fields to database fields
+    const transformed = {
+      ...cleanPayment,
+      // Handle fee transformation - convert "fees" to fee_percentage and fee_fixed
+      fee_percentage: cleanPayment.fee_percentage || (typeof cleanPayment.fees === 'string' && cleanPayment.fees.includes('%') ? parseFloat(cleanPayment.fees) || 0 : 0),
+      fee_fixed: cleanPayment.fee_fixed || (typeof cleanPayment.fees === 'number' ? cleanPayment.fees : 0),
+      // Ensure numeric fields are properly typed
+      minimum_amount: cleanPayment.minimum_amount || cleanPayment.min_amount || null,
+      maximum_amount: cleanPayment.maximum_amount || cleanPayment.max_amount || null
+    };
+    
+    // Remove the old "fees" field if it exists
+    delete transformed.fees;
+    delete transformed.min_amount;
+    delete transformed.max_amount;
+    
+    return transformed;
+  };
+
+  const transformFeatureForDatabase = (feature: any) => {
+    const cleanFeature = cleanDataForInsert(feature);
+    
+    // Ensure feature_type is present (required by database)
+    const transformed = {
+      ...cleanFeature,
+      feature_type: cleanFeature.feature_type || 'gameplay' // Default to 'gameplay' if not specified
+    };
+    
+    return transformed;
+  };
+
+  const transformSecurityForDatabase = (security: any) => {
+    const cleanSecurity = cleanDataForInsert(security);
+    
+    // Remove fields that don't exist in database schema
+    const transformed = { ...cleanSecurity };
+    delete transformed.security_measures; // This field doesn't exist in DB
+    
+    // Ensure compliance_certifications is an array
+    if (!transformed.compliance_certifications || !Array.isArray(transformed.compliance_certifications)) {
+      transformed.compliance_certifications = [];
+    }
+    
+    return transformed;
+  };
+
   const migrateExtensionData = async (operatorId: string, tempData: any) => {
     const migrations = [];
     const migrationResults: { type: string; success: boolean; error?: any }[] = [];
@@ -44,10 +94,10 @@ export default function NewOperator() {
         }
       }
       
-      // Migrate payments
+      // Migrate payments with proper transformation
       if (tempData.payments?.length > 0) {
         const cleanPayments = tempData.payments.map((payment: any) => ({
-          ...cleanDataForInsert(payment),
+          ...transformPaymentForDatabase(payment),
           operator_id: operatorId
         }));
         
@@ -63,10 +113,10 @@ export default function NewOperator() {
         }
       }
       
-      // Migrate features
+      // Migrate features with proper transformation
       if (tempData.features?.length > 0) {
         const cleanFeatures = tempData.features.map((feature: any) => ({
-          ...cleanDataForInsert(feature),
+          ...transformFeatureForDatabase(feature),
           operator_id: operatorId
         }));
         
@@ -82,10 +132,10 @@ export default function NewOperator() {
         }
       }
       
-      // Migrate security
+      // Migrate security with proper transformation
       if (tempData.security) {
         const cleanSecurity = {
-          ...cleanDataForInsert(tempData.security),
+          ...transformSecurityForDatabase(tempData.security),
           operator_id: operatorId
         };
         

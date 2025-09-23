@@ -1074,21 +1074,83 @@ export function OperatorForm({
         <TabsContent value="import" className="space-y-6">
           <OperatorSmartImport 
             onDataExtracted={(data) => {
-              // Apply extracted data to form
+              // Apply extracted data to form with improved validation and debug logging
               console.log('Applying extracted data:', data);
+              console.log('Current form values before update:', getValues());
               
-              // Basic info - including the critical slug field
-              if (data.name) setValue('name', data.name);
-              if (data.slug) setValue('slug', data.slug);
-              if (data.site_type) setValue('site_type', data.site_type);
-              if (data.launch_year) setValue('launch_year', data.launch_year);
-              if (data.verdict) setValue('verdict', data.verdict);
-              if (data.categories) setValue('categories', data.categories);
-              if (data.pros) setValue('pros', data.pros);
-              if (data.cons) setValue('cons', data.cons);
+              // Basic info - with explicit validation and detailed logging
+              if (data.name) {
+                console.log('Setting name:', data.name);
+                setValue('name', data.name, { shouldValidate: true });
+              }
+              if (data.slug) {
+                console.log('Setting slug:', data.slug);
+                setValue('slug', data.slug, { shouldValidate: true });
+              }
+              if (data.site_type) {
+                console.log('Setting site_type:', data.site_type);
+                setValue('site_type', data.site_type);
+              }
+              if (data.launch_year) {
+                console.log('Setting launch_year:', data.launch_year);
+                setValue('launch_year', data.launch_year);
+              }
+              if (data.verdict) {
+                console.log('Setting verdict:', data.verdict);
+                setValue('verdict', data.verdict);
+              }
+              if (data.verification_status) {
+                console.log('Setting verification_status:', data.verification_status);
+                setValue('verification_status', data.verification_status);
+              }
+              if (data.promo_code) {
+                console.log('Setting promo_code:', data.promo_code);
+                setValue('promo_code', data.promo_code);
+              }
+              if (data.bonus_terms) {
+                console.log('Setting bonus_terms:', data.bonus_terms);
+                setValue('bonus_terms', data.bonus_terms);
+              }
+              if (data.fairness_info) {
+                console.log('Setting fairness_info:', data.fairness_info);
+                setValue('fairness_info', data.fairness_info);
+              }
+              if (data.categories) {
+                console.log('Setting categories:', data.categories);
+                setValue('categories', data.categories);
+              }
+              if (data.pros) {
+                console.log('Setting pros:', data.pros);
+                setValue('pros', data.pros);
+              }
+              if (data.cons) {
+                console.log('Setting cons:', data.cons);
+                setValue('cons', data.cons);
+              }
+              if (data.kyc_required !== undefined) {
+                console.log('Setting kyc_required:', data.kyc_required);
+                setValue('kyc_required', data.kyc_required);
+              }
+              if (data.withdrawal_time_crypto) {
+                console.log('Setting withdrawal_time_crypto:', data.withdrawal_time_crypto);
+                setValue('withdrawal_time_crypto', data.withdrawal_time_crypto);
+              }
+              if (data.withdrawal_time_skins) {
+                console.log('Setting withdrawal_time_skins:', data.withdrawal_time_skins);
+                setValue('withdrawal_time_skins', data.withdrawal_time_skins);
+              }
+              if (data.withdrawal_time_fiat) {
+                console.log('Setting withdrawal_time_fiat:', data.withdrawal_time_fiat);
+                setValue('withdrawal_time_fiat', data.withdrawal_time_fiat);
+              }
+              if (data.support_channels?.length > 0) {
+                console.log('Setting support_channels:', data.support_channels);
+                setValue('support_channels', data.support_channels);
+              }
 
-              // Ratings
+              // Ratings with better validation
               if (data.ratings) {
+                console.log('Setting ratings:', data.ratings);
                 const currentRatings = getValues('ratings') as any || {};
                 setValue('ratings', {
                   overall: data.ratings.overall || currentRatings.overall || 0,
@@ -1098,8 +1160,14 @@ export function OperatorForm({
                   payments: data.ratings.payments || currentRatings.payments || 0,
                   offering: data.ratings.offering || currentRatings.offering || 0,
                   value: data.ratings.value || currentRatings.value || 0
-                });
+                }, { shouldValidate: true });
               }
+
+              // Log final form values after update
+              setTimeout(() => {
+                console.log('Form values after update:', getValues());
+                console.log('Form validation errors:', form.formState.errors);
+              }, 100);
 
               // Store extracted bonuses, payments, etc. in localStorage for extension managers
               if (data.bonuses?.length > 0) {
