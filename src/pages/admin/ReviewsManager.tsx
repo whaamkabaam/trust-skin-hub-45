@@ -11,7 +11,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useOperators } from '@/hooks/useOperators';
 import { useReviews } from '@/hooks/useReviews';
 import { RichTextEditor } from '@/components/admin/RichTextEditor';
-import { Plus, Star, Filter, Check, X, Edit, Trash2, MessageSquare } from 'lucide-react';
+import { SmartImportDialog } from '@/components/admin/SmartImportDialog';
+import { Plus, Star, Filter, Check, X, Edit, Trash2, MessageSquare, Wand2 } from 'lucide-react';
+import { toast } from '@/lib/toast';
 
 export default function ReviewsManager() {
   const { operators, loading: operatorsLoading } = useOperators();
@@ -83,14 +85,28 @@ export default function ReviewsManager() {
           <h1 className="text-2xl font-bold">Reviews Manager</h1>
           <p className="text-muted-foreground">Moderate and manage user reviews</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Editorial Review
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+        <div className="flex gap-2">
+          <SmartImportDialog 
+            onImportComplete={(data) => {
+              // Handle imported data
+              console.log('Imported data:', data);
+              toast.success('Content imported successfully!');
+            }}
+            trigger={
+              <Button variant="outline">
+                <Wand2 className="h-4 w-4 mr-2" />
+                Smart Import
+              </Button>
+            }
+          />
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Editorial Review
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create Editorial Review</DialogTitle>
             </DialogHeader>
@@ -147,6 +163,7 @@ export default function ReviewsManager() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Filters */}
