@@ -22,7 +22,7 @@ serve(async (req) => {
     const { message, mode = 'chat' } = await req.json();
 
     if (mode === 'parse') {
-      // AI-powered content parsing for operator/review data
+      // AI-powered content parsing for operator/review data with advanced preprocessing
       const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -34,53 +34,93 @@ serve(async (req) => {
           messages: [
             {
               role: 'system',
-              content: `You are a specialized parser for user reviews about gambling platforms and operators. Your PRIMARY focus is extracting review data from user-submitted text. Extract structured data and return ONLY valid JSON (no markdown, no code blocks) with this structure:
+              content: `You are an advanced content parser specialized in extracting structured data from gambling platform reviews and operator information. You excel at filtering noise and focusing on meaningful content.
+
+PREPROCESSING INTELLIGENCE:
+- Ignore common web navigation elements (Skip to content, Home, About, etc.)
+- Filter out copyright notices, age restrictions, and legal disclaimers
+- Skip empty content, single characters, or pure whitespace
+- Ignore common UI elements like buttons (Subscribe, Follow, Share, etc.)
+- Focus on substantial text blocks with meaningful information
+
+ENHANCED PARSING PRIORITIES:
+1. RATINGS & SCORES: Extract numerical ratings, convert to 1-5 scale
+2. OPERATOR DETAILS: Name, establishment year, company info, legitimacy indicators
+3. REVIEW CONTENT: User experiences, opinions, detailed feedback
+4. TRUST SIGNALS: Trustpilot scores, SSL certificates, licensing info
+5. FEATURES: Bonuses, payment methods, platform features, delivery info
+6. PROS/CONS: Positive and negative points from user perspective
+
+AUTO-CATEGORIZATION RULES:
+- Ratings: "8.0/10", "Our rating:", "Trustpilot 4.5/5" → operator.rating or review.rating
+- Dates: "Published: June 3, 2025", "Established 2025" → metadata.dates
+- Authors: "Andrej Gjorgievski", "Project Lead" → review.author or metadata.author  
+- Company: "Registered in Cyprus", "Operating for 5+ years" → operator.company_background
+- Bonuses: "Welcome Offer", "Free spins" → operator.welcome_bonus
+- Features: "Number of boxes: 7", "Delivery: 5-7 days" → operator.features
+- Trust: "SSL cert", "KYC on wins", "Provably Fair" → operator.trust_indicators
+- Payments: "Visa/Mastercard", "Crypto TBA" → operator.payment_methods
+
+Return ONLY raw JSON (no markdown) with this enhanced structure:
 
 {
   "review_data": {
     "rating": "number 1-5 or null",
-    "title": "string or null", 
-    "content": "string or null",
+    "title": "string or null",
+    "content": "string or null (substantial user feedback)",
     "subscores": {
       "trust": "number 1-5 or null",
-      "fees": "number 1-5 or null", 
-      "ux": "number 1-5 or null",
+      "fees": "number 1-5 or null",
+      "ux": "number 1-5 or null", 
       "support": "number 1-5 or null"
     },
     "username": "string or null",
     "verification_status": "opener|verified|unverified|null",
-    "pros": ["array", "of", "positive", "points"],
-    "cons": ["array", "of", "negative", "points"]
+    "pros": ["meaningful positive points"],
+    "cons": ["meaningful negative points"],
+    "author": "string or null (reviewer name)"
   },
   "operator_info": {
-    "name": "string or null",
-    "site_type": "casino|case_opening|sports_betting|poker|null"
+    "name": "string or null (platform name)",
+    "site_type": "casino|case_opening|sports_betting|poker|null",
+    "rating": "number 1-5 or null (overall/editorial rating)",
+    "establishment_year": "number or null",
+    "company_background": "string or null",
+    "welcome_bonus": "string or null", 
+    "payment_methods": ["array of payment options"],
+    "trust_indicators": ["array of trust/security features"],
+    "features": ["array of platform features"],
+    "verdict": "string or null (editorial conclusion)",
+    "pros": ["platform advantages"],
+    "cons": ["platform disadvantages"]
   },
-  "unmatched_content": ["Array of text that couldn't be categorized"],
+  "metadata": {
+    "publication_date": "string or null",
+    "author": "string or null (article author)",
+    "last_updated": "string or null"
+  },
+  "unmatched_content": ["Only genuinely ambiguous content after smart filtering"],
   "confidence_scores": {
     "review": "number 0-100",
-    "operator": "number 0-100",
-    "overall": "number 0-100"
+    "operator": "number 0-100", 
+    "overall": "number 0-100",
+    "filtering_effectiveness": "number 0-100"
   }
 }
 
-CRITICAL GUIDELINES:
-- Return ONLY raw JSON - NO markdown code blocks, NO backticks, NO extra text
-- Focus on extracting USER REVIEW information first
-- Convert any rating scale to 1-5 for reviews
-- Extract user experience, complaints, praise into pros/cons
-- Identify the platform/operator being reviewed
-- If information is missing, use null
-- Place unstructured text in unmatched_content
-- Provide confidence scores for extraction quality`
+CRITICAL SUCCESS METRICS:
+- Reduce unmatched_content to <10% of original through smart categorization
+- Extract 90%+ of ratings, dates, author info, company details automatically  
+- Focus unmatched_content only on truly ambiguous text requiring human judgment
+- Provide high confidence scores for successful auto-categorization`
             },
             {
               role: 'user',
               content: message
             }
           ],
-          temperature: 0.2,
-          max_completion_tokens: 6000
+          temperature: 0.1,
+          max_completion_tokens: 8000
         })
       });
 
