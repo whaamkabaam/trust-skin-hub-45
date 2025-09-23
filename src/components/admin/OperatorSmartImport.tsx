@@ -96,7 +96,10 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
       // Limit content to 50k characters
       const limitedContent = content.length > 50000 ? content.substring(0, 50000) : content;
       
-      console.log('Sending content to AI:', { contentLength: limitedContent.length });
+      console.log('Sending content to AI:', { 
+        contentLength: limitedContent.length,
+        preview: limitedContent.substring(0, 200) + '...'
+      });
       
       const { data, error: functionError } = await supabase.functions.invoke('ai', {
         body: { 
@@ -105,17 +108,29 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
         }
       });
 
+      console.log('Full AI Response:', data);
+
       if (functionError) {
+        console.error('Function Error:', functionError);
         throw new Error(functionError.message || "Failed to get AI response");
       }
 
       if (!data?.success || !data?.data) {
+        console.error('Invalid AI Response Structure:', data);
         throw new Error("Invalid response from AI service");
       }
 
-      console.log('AI Response:', data.data);
+      console.log('Extracted Data Structure:', {
+        hasName: !!data.data.name,
+        hasSlug: !!data.data.slug,
+        bonusCount: data.data.bonuses?.length || 0,
+        paymentCount: data.data.payments?.length || 0,
+        confidenceScore: data.data.confidence_score,
+        unmatchedLength: data.data.unmatched_content?.length || 0
+      });
+
       setExtractedData(data.data);
-      toast.success('Content parsed successfully!');
+      toast.success(`Content parsed! Confidence: ${data.data.confidence_score || 0}%`);
       
     } catch (error) {
       console.error('Parse error:', error);
@@ -259,44 +274,114 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
   );
 
   const renderStats = () => {
-    const confidence = extractedData?.confidence_score || 0;
+    const overallConfidence = extractedData?.confidence_score || 0;
+    
+    // Calculate category-specific confidence based on actual extraction
+    const basicInfoConfidence = extractedData?.name && extractedData?.ratings ? 
+      Math.min(95, Math.max(70, overallConfidence)) : 
+      Math.max(0, overallConfidence - 30);
+    
+    const bonusConfidence = extractedData?.bonuses && extractedData.bonuses.length > 0 ? 
+      Math.min(95, Math.max(80, overallConfidence)) : 
+      Math.max(0, overallConfidence - 40);
+    
+    const paymentConfidence = extractedData?.payments && extractedData.payments.length > 0 ? 
+      Math.min(95, Math.max(75, overallConfidence)) : 
+      Math.max(0, overallConfidence - 35);
+
     const bonusCount = extractedData?.bonuses?.length || 0;
     const paymentCount = extractedData?.payments?.length || 0;
     const featureCount = extractedData?.features?.length || 0;
     const faqCount = extractedData?.faqs?.length || 0;
 
+    // Calculate unmatched percentage more accurately
+    const totalExtracted = bonusCount + paymentCount + featureCount + faqCount + 
+      (extractedData?.pros?.length || 0) + (extractedData?.cons?.length || 0) +
+      (extractedData?.ratings ? Object.keys(extractedData.ratings).length : 0);
+    
+    const unmatchedItems = extractedData?.unmatched_content ? 
+      extractedData.unmatched_content.split('\n').filter(line => line.trim()).length : 0;
+
     return (
-      <div className="grid grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-primary">{confidence}%</div>
-            <div className="text-xs text-muted-foreground">Confidence</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{bonusCount}</div>
-            <div className="text-xs text-muted-foreground">Bonuses</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{paymentCount}</div>
-            <div className="text-xs text-muted-foreground">Payments</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">{featureCount}</div>
-            <div className="text-xs text-muted-foreground">Features</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-orange-600">{faqCount}</div>
-            <div className="text-xs text-muted-foreground">FAQs</div>
-          </CardContent>
-        </Card>
+      <div className="space-y-4">
+        {/* Confidence Indicators */}
+        <div className="grid grid-cols-4 gap-3">
+          <div className="text-center">
+            <div className="text-sm font-medium text-muted-foreground mb-1">Extraction Confidence</div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs">
+                <span>Basic Info</span>
+                <span className={`font-bold ${basicInfoConfidence > 60 ? 'text-green-600' : basicInfoConfidence > 30 ? 'text-yellow-600' : 'text-red-600'}`}>
+                  {Math.round(basicInfoConfidence)}%
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span>Bonuses</span>
+                <span className={`font-bold ${bonusConfidence > 60 ? 'text-green-600' : bonusConfidence > 30 ? 'text-yellow-600' : 'text-red-600'}`}>
+                  {Math.round(bonusConfidence)}%
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span>Payments</span>
+                <span className={`font-bold ${paymentConfidence > 60 ? 'text-green-600' : paymentConfidence > 30 ? 'text-yellow-600' : 'text-red-600'}`}>
+                  {Math.round(paymentConfidence)}%
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span>Overall</span>
+                <span className={`font-bold ${overallConfidence > 60 ? 'text-green-600' : overallConfidence > 30 ? 'text-yellow-600' : 'text-red-600'}`}>
+                  {Math.round(overallConfidence)}%
+                </span>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {overallConfidence > 80 ? 'HIGH CONFIDENCE' : 
+                 overallConfidence > 50 ? 'MEDIUM CONFIDENCE' : 'LOW CONFIDENCE'}
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <div className="text-sm font-medium text-muted-foreground mb-1">Processing Stats</div>
+            <div className="space-y-1 text-xs">
+              <div>Extracted items: <span className="font-bold text-green-600">{totalExtracted}</span></div>
+              <div>Unmatched: <span className="font-bold text-orange-600">{unmatchedItems}</span></div>
+              <div>Success rate: <span className="font-bold text-blue-600">
+                {totalExtracted + unmatchedItems > 0 ? Math.round((totalExtracted / (totalExtracted + unmatchedItems)) * 100) : 0}%
+              </span></div>
+            </div>
+          </div>
+
+          <div className="col-span-2">
+            <div className="grid grid-cols-4 gap-2">
+              <div className="text-center">
+                <div className="text-lg font-bold text-green-600">{bonusCount}</div>
+                <div className="text-xs text-muted-foreground">Bonuses</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-blue-600">{paymentCount}</div>
+                <div className="text-xs text-muted-foreground">Payment Methods</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-purple-600">{featureCount}</div>
+                <div className="text-xs text-muted-foreground">Features</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-orange-600">{faqCount}</div>
+                <div className="text-xs text-muted-foreground">FAQs</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Debug Info */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+            <strong>Debug:</strong> Overall Confidence: {overallConfidence}%, 
+            Name: {extractedData?.name ? '✓' : '✗'}, 
+            Ratings: {extractedData?.ratings ? '✓' : '✗'}, 
+            Slug: {extractedData?.slug || 'Not generated'}
+          </div>
+        )}
       </div>
     );
   };
@@ -355,10 +440,11 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
             {renderStats()}
             
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
                 <TabsTrigger value="ratings">Ratings</TabsTrigger>
-                <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
+                <TabsTrigger value="bonuses">Bonuses ({extractedData.bonuses?.length || 0})</TabsTrigger>
+                <TabsTrigger value="payments">Payments ({extractedData.payments?.length || 0})</TabsTrigger>
                 <TabsTrigger value="unmatched">Unmatched</TabsTrigger>
               </TabsList>
 
@@ -409,6 +495,36 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
                       </div>
                     ) : (
                       <p className="text-sm text-muted-foreground">No bonuses extracted</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="payments" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm">Extracted Payment Methods</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {extractedData.payments && extractedData.payments.length > 0 ? (
+                      <div className="space-y-3">
+                        {extractedData.payments.map((payment, i) => (
+                          <div key={i} className="border rounded p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline">{payment.method_type}</Badge>
+                              <span className="font-medium">{payment.payment_method}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+                              {payment.processing_time && <div>Time: {payment.processing_time}</div>}
+                              {payment.fees && <div>Fees: {payment.fees}</div>}
+                              {payment.min_amount && <div>Min: {payment.min_amount}</div>}
+                              {payment.max_amount && <div>Max: {payment.max_amount}</div>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No payment methods extracted</p>
                     )}
                   </CardContent>
                 </Card>
