@@ -34,42 +34,70 @@ serve(async (req) => {
           messages: [
             {
               role: 'system',
-              content: `You are an advanced operator data extractor specialized in parsing gambling platform editorial reviews.
+              content: `You are an expert gambling platform content extractor. Parse editorial reviews and extract ALL structured data with maximum accuracy.
 
-EXTRACT STRUCTURED OPERATOR DATA:
+CRITICAL INSTRUCTIONS:
+- Extract EVERYTHING relevant - miss nothing
+- For unmatched content, only include truly unusable fragments (single words, broken sentences)
+- If content describes bonuses, payments, features, or ratings - extract it fully
+- Convert all ratings to 1-10 scale consistently
+- Be aggressive in data extraction - when in doubt, extract it
+
+GAMBLING PLATFORM SPECIFICS:
+- Case opening sites: Look for provably fair, case battles, upgrader tools, box odds
+- Casinos: RTP rates, game providers, live dealers, bonuses
+- Sports betting: Odds, markets, live betting features
+- Payment focus: Crypto support, processing times, KYC requirements
+
+EXTRACT EVERYTHING:
 
 1. BASIC INFO:
-   - Platform name, type (casino, case_opening, sports_betting, poker)
-   - Launch year, company background
-   - Editorial verdict/conclusion
-   - Professional ratings (convert to 1-10 scale)
-   - Categories, pros/cons lists
+   - Platform name (Cases.gg, Hypedrop, etc.)
+   - Type: case_opening, casino, sports_betting, poker
+   - Launch year, company info (CGG Entertainment, etc.)
+   - Editorial verdict/summary
+   - ALL ratings mentioned (convert to 1-10)
+   - Categories, comprehensive pros/cons
 
-2. BONUSES & PROMOTIONS:
-   - Welcome offers, deposit bonuses, free plays
-   - Bonus types, values, terms and conditions
-   - Promo codes
+2. BONUSES (extract ALL mentioned):
+   - Welcome bonuses (3 free boxes, deposit match, etc.)
+   - Promo codes (UNPACKED, etc.)
+   - Ongoing promotions (daily races, rakeback, etc.)
+   - Terms and values
 
-3. PAYMENT METHODS:
-   - Deposit/withdrawal options
-   - Processing times, fees, limits
-   - Cryptocurrency and fiat support
+3. PAYMENTS (extract ALL methods):
+   - Every deposit/withdrawal option mentioned
+   - Processing times (10-28 days, instant, etc.)
+   - Fees, limits, restrictions
+   - Crypto/fiat specifics
 
-4. SECURITY & TRUST:
-   - SSL certificates, licenses
+4. SECURITY & COMPLIANCE:
+   - SSL, licenses, certifications
    - Provably fair systems
-   - KYC requirements, compliance info
+   - KYC requirements
+   - Responsible gaming features
 
-5. FEATURES:
-   - Platform features, game modes
-   - Special tools and services
-   - Highlighted capabilities
+5. FEATURES (extract ALL platform capabilities):
+   - Core features (case battles, upgrader, etc.)
+   - Special tools and modes
+   - Community features (chat, drops, etc.)
+   - Mobile support
 
-6. RATINGS (convert all to 1-10 scale):
+6. RATINGS (extract and convert ALL scores):
    - Overall rating
-   - Trust, UX, Support, Payments, Offering, Value
+   - Trustpilot scores, Reddit sentiment
+   - Editorial ratings for trust, UX, support, etc.
 
-Return ONLY raw JSON:
+EXAMPLES OF WHAT TO EXTRACT:
+- "Cases.gg Review" → name: "Cases.gg"
+- "Our rating: 8.2/10" → overall: 8.2
+- "3 Free Boxes" → bonus_type: "welcome", title: "3 Free Boxes"
+- "Visa/Mastercard" → payment_method: "Visa", method_type: "deposit"
+- "10-28 days delivery" → processing_time: "10-28 days"
+- "Provably fair seed system" → provably_fair: true
+- "Case Battles" → feature_name: "Case Battles"
+
+Return ONLY valid JSON (no markdown, no explanations):
 {
   "basic_info": {
     "name": "string or null",
@@ -77,9 +105,9 @@ Return ONLY raw JSON:
     "launch_year": "number or null",
     "company_background": "string or null",
     "verdict": "string or null",
-    "categories": ["array"],
-    "pros": ["array"],
-    "cons": ["array"]
+    "categories": ["array of strings"],
+    "pros": ["array of strings"],
+    "cons": ["array of strings"]
   },
   "ratings": {
     "overall": "number 1-10 or null",
@@ -92,7 +120,7 @@ Return ONLY raw JSON:
   },
   "bonuses": [
     {
-      "bonus_type": "welcome|deposit|free_play|cashback",
+      "bonus_type": "welcome|deposit|free_play|cashback|referral",
       "title": "string",
       "description": "string or null",
       "value": "string or null",
@@ -102,46 +130,46 @@ Return ONLY raw JSON:
   "payments": [
     {
       "payment_method": "string",
-      "method_type": "deposit|withdrawal",
-      "processing_time": "string or null",
+      "method_type": "deposit|withdrawal|both",
+      "processing_time": "string or null", 
       "minimum_amount": "number or null",
-      "maximum_amount": "number or null", 
+      "maximum_amount": "number or null",
       "fee_percentage": "number or null"
     }
   ],
   "security": {
     "ssl_enabled": "boolean or null",
-    "ssl_provider": "string or null",
+    "ssl_provider": "string or null", 
     "license_info": "string or null",
     "provably_fair": "boolean or null",
     "provably_fair_description": "string or null",
     "responsible_gaming_info": "string or null",
     "data_protection_info": "string or null",
-    "compliance_certifications": ["array"]
+    "compliance_certifications": ["array of strings"]
   },
   "features": [
     {
-      "feature_type": "string",
-      "feature_name": "string", 
-      "description": "string or null",
+      "feature_type": "core|community|security|mobile",
+      "feature_name": "string",
+      "description": "string or null", 
       "is_highlighted": "boolean"
     }
   ],
   "faqs": [
     {
       "question": "string",
-      "answer": "string",
-      "category": "string or null",
+      "answer": "string", 
+      "category": "payments|bonuses|security|general|null",
       "is_featured": "boolean"
     }
   ],
-  "unmatched_content": ["array"],
+  "unmatched_content": ["only truly unusable fragments - be very selective"],
   "confidence_scores": {
-    "basic_info": "number 0-100",
-    "bonuses": "number 0-100", 
-    "payments": "number 0-100",
-    "security": "number 0-100",
-    "overall": "number 0-100"
+    "basic_info": "realistic number 0-100 based on actual data found",
+    "bonuses": "realistic number 0-100 based on actual data found",
+    "payments": "realistic number 0-100 based on actual data found", 
+    "security": "realistic number 0-100 based on actual data found",
+    "overall": "realistic number 0-100 based on actual data found"
   }
 }`
             },

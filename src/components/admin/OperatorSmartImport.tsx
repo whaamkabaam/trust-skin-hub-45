@@ -9,8 +9,6 @@ import { Wand2, Copy, AlertCircle, CheckCircle, Filter, Zap, Upload, Eye, Downlo
 import { ConfidenceIndicator } from './ConfidenceIndicator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/lib/toast';
-import { analyzeContent } from '@/lib/content-filters';
-import { applyAutoAssignmentRules } from '@/lib/auto-assignment-rules';
 
 interface OperatorSmartImportProps {
   onDataExtracted?: (data: ExtractedOperatorData) => void;
@@ -84,19 +82,13 @@ interface ExtractedOperatorData {
   };
 }
 
-interface PreprocessingStats {
-  original_segments: number;
-  filtered_segments: number;
-  removed_noise: number;
-  auto_assigned: number;
-}
 
 export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: OperatorSmartImportProps) {
   const [content, setContent] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedData, setExtractedData] = useState<ExtractedOperatorData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [preprocessingStats, setPreprocessingStats] = useState<PreprocessingStats | null>(null);
+  
 
   const handleParse = useCallback(async () => {
     if (!content.trim()) {
@@ -106,33 +98,22 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
 
     setIsProcessing(true);
     setError(null);
-    setPreprocessingStats(null);
 
     try {
-      console.log('Starting operator content parsing...');
+      console.log('Starting simplified operator content parsing...');
       
-      // Step 1: Content preprocessing
-      const contentAnalysis = analyzeContent(content);
-      console.log('Content analysis:', contentAnalysis);
+      // Simple character limit - truncate if too long
+      const MAX_CHARS = 50000;
+      const processedContent = content.length > MAX_CHARS 
+        ? content.substring(0, MAX_CHARS) + '\n\n[Content truncated at 50k characters]'
+        : content;
       
-      // Step 2: Auto-assignment rules
-      const autoAssignmentResult = applyAutoAssignmentRules(contentAnalysis.filtered_content);
-      console.log('Auto-assignment result:', autoAssignmentResult);
+      console.log(`Processing ${processedContent.length} characters of content`);
       
-      const enhancedContent = contentAnalysis.filtered_content.join('\n\n');
-      
-      // Update preprocessing stats
-      setPreprocessingStats({
-        original_segments: content.split(/[\n\r]+/).length,
-        filtered_segments: contentAnalysis.filtered_content.length,
-        removed_noise: contentAnalysis.removed_noise.length,
-        auto_assigned: autoAssignmentResult.assignments.length
-      });
-      
-      // Step 3: AI processing with operator-focused prompt
+      // Direct AI processing - no preprocessing
       const { data: functionData, error: functionError } = await supabase.functions.invoke('ai', {
         body: { 
-          message: enhancedContent,
+          message: processedContent,
           mode: 'operator-parse'
         }
       });
@@ -148,27 +129,16 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
         throw new Error('No valid data received from AI service');
       }
 
-      // Transform and merge AI results with auto-assignments
+      // Use AI results directly - no merging with preprocessed data
       const transformedData = {
-        basic_info: {
-          ...functionData.data.basic_info,
-          name: autoAssignmentResult.assignments.find(a => a.field === 'operator.name')?.content || functionData.data.basic_info?.name,
-          pros: [
-            ...(functionData.data.basic_info?.pros || []),
-            ...autoAssignmentResult.assignments.filter(a => a.field === 'operator.pros').map(a => a.content)
-          ],
-          cons: [
-            ...(functionData.data.basic_info?.cons || []),
-            ...autoAssignmentResult.assignments.filter(a => a.field === 'operator.cons').map(a => a.content)
-          ]
-        },
+        basic_info: functionData.data.basic_info || {},
         ratings: functionData.data.ratings || {},
         bonuses: functionData.data.bonuses || [],
         payments: functionData.data.payments || [],
         security: functionData.data.security || {},
-        features: functionData.data.features || [],
+        features: functionData.data.features || [], 
         faqs: functionData.data.faqs || [],
-        unmatched_content: autoAssignmentResult.unassigned.concat(functionData.data.unmatched_content || []),
+        unmatched_content: functionData.data.unmatched_content || [],
         confidence_scores: functionData.data.confidence_scores || {
           basic_info: 0,
           bonuses: 0,
@@ -180,8 +150,16 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
 
       setExtractedData(transformedData);
       
-      const reductionPercentage = Math.round((1 - (transformedData.unmatched_content.length / (content.split(/[\n\r]+/).length || 1))) * 100);
-      toast.success(`Operator data extracted successfully! ${reductionPercentage}% auto-categorized`);
+      const extractedItemsCount = (transformedData.bonuses?.length || 0) + 
+                                 (transformedData.payments?.length || 0) + 
+                                 (transformedData.features?.length || 0) + 
+                                 (transformedData.faqs?.length || 0);
+      const unmatchedCount = transformedData.unmatched_content?.length || 0;
+      const successPercentage = extractedItemsCount + unmatchedCount > 0 
+        ? Math.round((extractedItemsCount / (extractedItemsCount + unmatchedCount)) * 100)
+        : 0;
+      
+      toast.success(`Operator data extracted! ${extractedItemsCount} items structured, ${unmatchedCount} unmatched`);
       
     } catch (err) {
       console.error('Parse error:', err);
@@ -214,7 +192,6 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
     setContent('');
     setExtractedData(null);
     setError(null);
-    setPreprocessingStats(null);
   };
 
   const renderBasicInfo = () => (
@@ -367,17 +344,11 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
                           Extracting operator data from editorial content...
                         </p>
                         <div className="mt-2 text-xs text-muted-foreground space-y-1">
-                          <p>• Analyzing content structure</p>
+                          <p>• Processing content with AI</p>
                           <p>• Extracting ratings and scores</p>
                           <p>• Identifying bonuses and features</p>
                           <p>• Mapping payment methods</p>
                         </div>
-                        {preprocessingStats && (
-                          <div className="mt-3 text-xs text-primary">
-                            Processed: {preprocessingStats.filtered_segments} segments, 
-                            removed {preprocessingStats.removed_noise} noise items
-                          </div>
-                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -421,36 +392,35 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
                   </CardContent>
                 </Card>
 
-                {preprocessingStats && (
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        <Filter className="h-4 w-4 text-primary" />
-                        Processing Stats
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span>Original segments:</span>
-                          <Badge variant="outline">{preprocessingStats.original_segments}</Badge>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Processed:</span>
-                          <Badge variant="outline">{preprocessingStats.filtered_segments}</Badge>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Noise removed:</span>
-                          <Badge variant="destructive">{preprocessingStats.removed_noise}</Badge>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Auto-assigned:</span>
-                          <Badge variant="default">{preprocessingStats.auto_assigned}</Badge>
-                        </div>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-primary" />
+                      Processing Stats
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Content length:</span>
+                        <Badge variant="outline">{content.length.toLocaleString()} chars</Badge>
                       </div>
-                    </CardContent>
-                  </Card>
-                )}
+                      <div className="flex justify-between">
+                        <span>Structured items:</span>
+                        <Badge variant="default">
+                          {((extractedData?.bonuses?.length || 0) + 
+                            (extractedData?.payments?.length || 0) + 
+                            (extractedData?.features?.length || 0) + 
+                            (extractedData?.faqs?.length || 0))}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Unmatched items:</span>
+                        <Badge variant="destructive">{extractedData?.unmatched_content?.length || 0}</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
               {/* Extracted Data Count Cards */}
