@@ -29,6 +29,7 @@ import { SecurityManager } from './SecurityManager';
 import { FAQManager } from './FAQManager';
 import { ContentSectionManager, type ContentSection } from './ContentSectionManager';
 import { MediaAssetManager } from './MediaAssetManager';
+import { OperatorSmartImport } from './OperatorSmartImport';
 import { PublishingDebugger } from './PublishingDebugger';
 import { QuickPublishTest } from './QuickPublishTest';
 import { DataIntegrityChecker } from './DataIntegrityChecker';
@@ -494,7 +495,7 @@ export function OperatorForm({
         <Form {...form}>
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Tabs defaultValue="basic" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-10">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
           <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
           <TabsTrigger value="payments">Payments</TabsTrigger>
@@ -503,6 +504,7 @@ export function OperatorForm({
           <TabsTrigger value="seo">SEO</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="media">Media</TabsTrigger>
+          <TabsTrigger value="import">Smart Import</TabsTrigger>
           <TabsTrigger value="debug">Debug</TabsTrigger>
         </TabsList>
 
@@ -1067,6 +1069,59 @@ export function OperatorForm({
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="import" className="space-y-6">
+          <OperatorSmartImport 
+            onDataExtracted={(data) => {
+              // Apply extracted data to form
+              console.log('Applying extracted data:', data);
+              
+              // Basic info
+              if (data.basic_info?.name) setValue('name', data.basic_info.name);
+              if (data.basic_info?.site_type) setValue('site_type', data.basic_info.site_type);
+              if (data.basic_info?.launch_year) setValue('launch_year', data.basic_info.launch_year);
+              if (data.basic_info?.company_background) setValue('company_background', data.basic_info.company_background);
+              if (data.basic_info?.verdict) setValue('verdict', data.basic_info.verdict);
+              if (data.basic_info?.categories) setValue('categories', data.basic_info.categories);
+              if (data.basic_info?.pros) setValue('pros', data.basic_info.pros);
+              if (data.basic_info?.cons) setValue('cons', data.basic_info.cons);
+
+              // Ratings
+              if (data.ratings) {
+                const currentRatings = getValues('ratings') as any || {};
+                setValue('ratings', {
+                  overall: data.ratings.overall || currentRatings.overall || 0,
+                  trust: data.ratings.trust || currentRatings.trust || 0,
+                  ux: data.ratings.ux || currentRatings.ux || 0,
+                  support: data.ratings.support || currentRatings.support || 0,
+                  payments: data.ratings.payments || currentRatings.payments || 0,
+                  offering: data.ratings.offering || currentRatings.offering || 0,
+                  value: data.ratings.value || currentRatings.value || 0
+                });
+              }
+
+              // Store extracted bonuses, payments, etc. in localStorage for extension managers
+              if (data.bonuses?.length > 0) {
+                localStorage.setItem(`operator-bonuses-${effectiveOperatorId}`, JSON.stringify(data.bonuses));
+              }
+              if (data.payments?.length > 0) {
+                localStorage.setItem(`operator-payments-${effectiveOperatorId}`, JSON.stringify(data.payments));
+              }
+              if (data.features?.length > 0) {
+                localStorage.setItem(`operator-features-${effectiveOperatorId}`, JSON.stringify(data.features));
+              }
+              if (data.faqs?.length > 0) {
+                localStorage.setItem(`operator-faqs-${effectiveOperatorId}`, JSON.stringify(data.faqs));
+              }
+              if (data.security && Object.keys(data.security).length > 0) {
+                localStorage.setItem(`operator-security-${effectiveOperatorId}`, JSON.stringify(data.security));
+              }
+
+              toast.success('Extracted data applied to operator form! Check other tabs to review imported bonuses, payments, etc.');
+            }}
+            currentOperatorData={getValues()}
+          />
         </TabsContent>
 
         <TabsContent value="debug" className="space-y-6">
