@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useOperators } from '@/hooks/useOperators';
 import { useReviews } from '@/hooks/useReviews';
 import { RichTextEditor } from '@/components/admin/RichTextEditor';
-import { SmartImportDialog } from '@/components/admin/SmartImportDialog';
+
 import { Plus, Star, Filter, Check, X, Edit, Trash2, MessageSquare } from 'lucide-react';
 import { toast } from '@/lib/toast';
 
