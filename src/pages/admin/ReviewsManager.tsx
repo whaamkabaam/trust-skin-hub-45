@@ -60,6 +60,56 @@ export default function ReviewsManager() {
     setSelectedReviews([]);
   };
 
+  const handleSmartImport = async (data: any) => {
+    try {
+      console.log('Processing imported data:', data);
+      
+      // Find or create operator if operator_info exists
+      let operatorId = null;
+      if (data.operator_info?.name) {
+        const existingOperator = operators.find(op => 
+          op.name.toLowerCase() === data.operator_info.name.toLowerCase()
+        );
+        operatorId = existingOperator?.id;
+        
+        if (!existingOperator) {
+          toast.error(`Operator "${data.operator_info.name}" not found. Please create the operator first.`);
+          return;
+        }
+      }
+      
+      // Create review if review_data exists and has meaningful content
+      if (data.review_data && (data.review_data.content || data.review_data.rating)) {
+        if (!operatorId) {
+          toast.error('Cannot create review: No operator specified');
+          return;
+        }
+        
+        const reviewData = {
+          operator_id: operatorId,
+          rating: data.review_data.rating || 5,
+          content: data.review_data.content || 'Imported review content',
+          status: 'pending' as const,
+          title: data.review_data.title,
+          username: data.review_data.username || data.review_data.author,
+          subscores: data.review_data.subscores || { trust: 5, fees: 5, ux: 5, support: 5 },
+          verification_status: data.review_data.verification_status || 'unverified'
+        };
+        
+        await createReview(reviewData);
+        toast.success('Review created successfully from imported data!');
+      } else if (data.operator_info) {
+        toast.success('Operator information extracted successfully!');
+      } else {
+        toast.info('No actionable review or operator data found in import');
+      }
+      
+    } catch (error) {
+      console.error('Error processing imported data:', error);
+      toast.error('Failed to process imported data');
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: 'secondary',
@@ -87,11 +137,7 @@ export default function ReviewsManager() {
         </div>
         <div className="flex gap-2">
           <SmartImportDialog 
-            onImportComplete={(data) => {
-              // Handle imported data
-              console.log('Imported data:', data);
-              toast.success('Content imported successfully!');
-            }}
+            onImportComplete={handleSmartImport}
             trigger={
               <Button variant="outline">
                 <Wand2 className="h-4 w-4 mr-2" />

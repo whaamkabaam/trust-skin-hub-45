@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -206,9 +206,9 @@ export function SmartImportDialog({ onImportComplete, trigger }: SmartImportDial
             <Zap className="h-5 w-5 text-primary" />
             Enhanced Smart Import
           </DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            Advanced AI parsing with content filtering and auto-categorization
-          </p>
+          <DialogDescription>
+            Advanced AI parsing with content filtering and auto-categorization. Paste content to extract reviews and operator information.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-hidden">

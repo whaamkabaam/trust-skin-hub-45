@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertCircle, Plus, X, ArrowRight, CheckSquare, Zap, Filter } from 'lucide-react';
 import { getBulkAssignmentSuggestions } from '@/lib/auto-assignment-rules';
+import { toast } from '@/lib/toast';
 
 interface EnhancedUnmatchedContentManagerProps {
   content: string[];
@@ -112,6 +113,27 @@ export function EnhancedUnmatchedContentManager({
     // Clear selections
     setSelectedItems(new Set());
     setBulkField('');
+  };
+
+  const handleBulkIgnore = () => {
+    if (selectedItems.size === 0) return;
+    
+    const selectedContent = Array.from(selectedItems);
+    // Filter out ignored items from the content list
+    const remainingContent = content.filter(item => !selectedItems.has(item));
+    
+    // If onBulkAssign exists, call it with ignored items
+    if (onBulkAssign) {
+      const ignoredAssignments = selectedContent.map(item => ({
+        content: item,
+        field: 'ignored',
+        subField: undefined
+      }));
+      onBulkAssign(ignoredAssignments);
+    }
+    
+    setSelectedItems(new Set());
+    toast.success(`Ignored ${selectedContent.length} items`);
   };
 
   const applySuggestion = (field: string, suggestedContent: string[]) => {
@@ -247,6 +269,16 @@ export function EnhancedUnmatchedContentManager({
                 onClick={() => setSelectedItems(new Set())}
               >
                 Clear
+              </Button>
+              
+              <Button 
+                size="sm" 
+                variant="secondary"
+                onClick={handleBulkIgnore}
+                disabled={selectedItems.size === 0}
+              >
+                <X className="h-3 w-3 mr-1" />
+                Ignore Selected
               </Button>
             </div>
           </CardContent>

@@ -44,12 +44,19 @@ PREPROCESSING INTELLIGENCE:
 - Focus on substantial text blocks with meaningful information
 
 ENHANCED PARSING PRIORITIES:
-1. RATINGS & SCORES: Extract numerical ratings, convert to 1-5 scale
-2. OPERATOR DETAILS: Name, establishment year, company info, legitimacy indicators
-3. REVIEW CONTENT: User experiences, opinions, detailed feedback
+1. REVIEW CONTENT: User experiences, opinions, detailed feedback, personal testimonials
+2. RATINGS & SCORES: Extract numerical ratings, convert to 1-5 scale, look for user ratings
+3. OPERATOR DETAILS: Name, establishment year, company info, legitimacy indicators
 4. TRUST SIGNALS: Trustpilot scores, SSL certificates, licensing info
 5. FEATURES: Bonuses, payment methods, platform features, delivery info
 6. PROS/CONS: Positive and negative points from user perspective
+
+REVIEW DATA EXTRACTION FOCUS:
+- Prioritize first-person user experiences over editorial content
+- Look for phrases like "I tried...", "My experience...", "After using..."
+- Extract personal opinions, complaints, praise, and detailed usage stories
+- Identify user ratings vs editorial ratings (user ratings take priority for review_data)
+- Convert review ratings to 1-5 scale, editorial ratings to operator.rating
 
 AUTO-CATEGORIZATION RULES:
 - Ratings: "8.0/10", "Our rating:", "Trustpilot 4.5/5" → operator.rating or review.rating
