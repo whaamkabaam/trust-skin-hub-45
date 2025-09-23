@@ -34,40 +34,12 @@ serve(async (req) => {
           messages: [
             {
               role: 'system',
-              content: `You are a specialized parser for gambling platform reviews and operator information. Extract structured data from the provided text and return a JSON response with the following structure:
+              content: `You are a specialized parser for user reviews about gambling platforms and operators. Your PRIMARY focus is extracting review data from user-submitted text. Extract structured data and return ONLY valid JSON (no markdown, no code blocks) with this structure:
 
 {
-  "operator_data": {
-    "name": "string or null",
-    "site_type": "casino|case_opening|sports_betting|poker|null",
-    "launch_year": "number or null",
-    "verdict": "string or null",
-    "bonus_terms": "string or null",
-    "fairness_info": "string or null",
-    "categories": ["array", "of", "strings"],
-    "pros": ["array", "of", "positives"],
-    "cons": ["array", "of", "negatives"],
-    "supported_countries": ["array", "of", "countries"],
-    "ratings": {
-      "overall": "number 0-10 or null",
-      "trust": "number 0-10 or null", 
-      "value": "number 0-10 or null",
-      "payments": "number 0-10 or null",
-      "offering": "number 0-10 or null",
-      "ux": "number 0-10 or null",
-      "support": "number 0-10 or null"
-    },
-    "kyc_required": "boolean or null",
-    "verification_status": "verified|unverified|pending|null",
-    "company_background": "string or null",
-    "promo_code": "string or null",
-    "withdrawal_time_crypto": "string or null",
-    "withdrawal_time_skins": "string or null",
-    "withdrawal_time_fiat": "string or null"
-  },
   "review_data": {
     "rating": "number 1-5 or null",
-    "title": "string or null",
+    "title": "string or null", 
     "content": "string or null",
     "subscores": {
       "trust": "number 1-5 or null",
@@ -76,73 +48,31 @@ serve(async (req) => {
       "support": "number 1-5 or null"
     },
     "username": "string or null",
-    "verification_status": "opener|verified|unverified|null"
+    "verification_status": "opener|verified|unverified|null",
+    "pros": ["array", "of", "positive", "points"],
+    "cons": ["array", "of", "negative", "points"]
   },
-  "extensions": {
-    "bonuses": [
-      {
-        "bonus_type": "welcome|deposit|cashback|loyalty|null",
-        "title": "string or null",
-        "value": "string or null",
-        "terms": "string or null"
-      }
-    ],
-    "payments": [
-      {
-        "payment_method": "string or null",
-        "method_type": "deposit|withdrawal|null",
-        "processing_time": "string or null",
-        "minimum_amount": "number or null",
-        "maximum_amount": "number or null",
-        "fee_percentage": "number or null",
-        "fee_fixed": "number or null"
-      }
-    ],
-    "features": [
-      {
-        "feature_name": "string or null",
-        "feature_type": "security|gameplay|interface|payment|null",
-        "description": "string or null",
-        "is_highlighted": "boolean or null"
-      }
-    ],
-    "security": {
-      "ssl_enabled": "boolean or null",
-      "ssl_provider": "string or null",
-      "provably_fair": "boolean or null",
-      "provably_fair_description": "string or null",
-      "license_info": "string or null",
-      "compliance_certifications": ["array", "of", "certifications"],
-      "data_protection_info": "string or null",
-      "responsible_gaming_info": "string or null"
-    },
-    "faqs": [
-      {
-        "question": "string or null",
-        "answer": "string or null",
-        "category": "general|payments|security|gameplay|null",
-        "is_featured": "boolean or null"
-      }
-    ]
+  "operator_info": {
+    "name": "string or null",
+    "site_type": "casino|case_opening|sports_betting|poker|null"
   },
-  "unmatched_content": ["Array of text segments that couldn't be categorized"],
+  "unmatched_content": ["Array of text that couldn't be categorized"],
   "confidence_scores": {
+    "review": "number 0-100",
     "operator": "number 0-100",
-    "review": "number 0-100", 
-    "extensions": "number 0-100",
     "overall": "number 0-100"
   }
 }
 
-Important guidelines:
-- Return ONLY valid JSON, no other text
-- If information is not available, use null or empty arrays
-- For ratings, convert any scale to the appropriate 0-10 (operator) or 1-5 (review) scale
-- Extract all bonus codes, promo codes mentioned in the text
-- Identify withdrawal times for different payment methods
-- Separate operator-level information from individual review information
-- Include confidence scores based on how certain you are about extracted data
-- Place any text that doesn't fit into structured fields into unmatched_content`
+CRITICAL GUIDELINES:
+- Return ONLY raw JSON - NO markdown code blocks, NO backticks, NO extra text
+- Focus on extracting USER REVIEW information first
+- Convert any rating scale to 1-5 for reviews
+- Extract user experience, complaints, praise into pros/cons
+- Identify the platform/operator being reviewed
+- If information is missing, use null
+- Place unstructured text in unmatched_content
+- Provide confidence scores for extraction quality`
             },
             {
               role: 'user',
@@ -150,7 +80,7 @@ Important guidelines:
             }
           ],
           temperature: 0.2,
-          max_completion_tokens: 4000
+          max_completion_tokens: 6000
         })
       });
 
@@ -168,10 +98,26 @@ Important guidelines:
         throw new Error('No response from AI');
       }
 
-      // Parse the JSON response from AI
+      // Parse the JSON response from AI - strip markdown if present
       let parsedData;
       try {
-        parsedData = JSON.parse(aiResponse);
+        let cleanResponse = aiResponse.trim();
+        
+        // Remove markdown code blocks if present
+        if (cleanResponse.startsWith('```json\n')) {
+          cleanResponse = cleanResponse.slice(8); // Remove '```json\n'
+        }
+        if (cleanResponse.startsWith('```\n')) {
+          cleanResponse = cleanResponse.slice(4); // Remove '```\n'
+        }
+        if (cleanResponse.endsWith('\n```')) {
+          cleanResponse = cleanResponse.slice(0, -4); // Remove '\n```'
+        }
+        if (cleanResponse.endsWith('```')) {
+          cleanResponse = cleanResponse.slice(0, -3); // Remove '```'
+        }
+        
+        parsedData = JSON.parse(cleanResponse);
       } catch (parseError) {
         console.error('JSON Parse Error:', parseError, 'Raw response:', aiResponse);
         throw new Error('Invalid JSON response from AI');

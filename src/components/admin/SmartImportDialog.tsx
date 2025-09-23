@@ -19,14 +19,12 @@ interface SmartImportDialogProps {
 }
 
 interface ParsedData {
-  operator_data: any;
   review_data: any;
-  extensions: any;
+  operator_info: any;
   unmatched_content: string[];
   confidence_scores: {
-    operator: number;
     review: number;
-    extensions: number;
+    operator: number;
     overall: number;
   };
 }
@@ -76,9 +74,20 @@ export function SmartImportDialog({ onImportComplete, trigger }: SmartImportDial
         throw new Error('No parsed data received from AI service');
       }
 
-      setParsedData(functionData.data);
-      toast.success('Content parsed successfully!');
-      console.log('Successfully parsed data:', functionData.data);
+      // Transform the review-focused data structure for compatibility
+      const reviewData = functionData.data.review_data || {};
+      const operatorInfo = functionData.data.operator_info || {};
+      
+      const transformedData = {
+        review_data: reviewData,
+        operator_info: operatorInfo,
+        unmatched_content: functionData.data.unmatched_content || [],
+        confidence_scores: functionData.data.confidence_scores || {}
+      };
+
+      setParsedData(transformedData);
+      toast.success('Review content parsed successfully!');
+      console.log('Successfully parsed review data:', transformedData);
     } catch (err) {
       console.error('Parse error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
@@ -218,18 +227,14 @@ export function SmartImportDialog({ onImportComplete, trigger }: SmartImportDial
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-4 gap-4">
-                    <ConfidenceIndicator 
-                      label="Operator Data" 
-                      score={parsedData.confidence_scores.operator} 
-                    />
+                  <div className="grid grid-cols-3 gap-4">
                     <ConfidenceIndicator 
                       label="Review Data" 
                       score={parsedData.confidence_scores.review} 
                     />
                     <ConfidenceIndicator 
-                      label="Extensions" 
-                      score={parsedData.confidence_scores.extensions} 
+                      label="Operator Info" 
+                      score={parsedData.confidence_scores.operator} 
                     />
                     <ConfidenceIndicator 
                       label="Overall" 
@@ -241,24 +246,16 @@ export function SmartImportDialog({ onImportComplete, trigger }: SmartImportDial
 
               {/* Extracted Data Tabs */}
               <div className="flex-1 overflow-hidden">
-                <Tabs defaultValue="operator" className="h-full flex flex-col">
-                  <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="operator">Operator Data</TabsTrigger>
+                <Tabs defaultValue="review" className="h-full flex flex-col">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="review">Review Data</TabsTrigger>
-                    <TabsTrigger value="extensions">Extensions</TabsTrigger>
+                    <TabsTrigger value="operator">Operator Info</TabsTrigger>
                     <TabsTrigger value="unmatched">
                       Unmatched ({parsedData.unmatched_content.length})
                     </TabsTrigger>
                   </TabsList>
 
                   <div className="flex-1 overflow-hidden">
-                    <TabsContent value="operator" className="h-full mt-4">
-                      <ExtractedDataPreview 
-                        data={parsedData.operator_data} 
-                        type="operator"
-                      />
-                    </TabsContent>
-
                     <TabsContent value="review" className="h-full mt-4">
                       <ExtractedDataPreview 
                         data={parsedData.review_data} 
@@ -266,10 +263,10 @@ export function SmartImportDialog({ onImportComplete, trigger }: SmartImportDial
                       />
                     </TabsContent>
 
-                    <TabsContent value="extensions" className="h-full mt-4">
+                    <TabsContent value="operator" className="h-full mt-4">
                       <ExtractedDataPreview 
-                        data={parsedData.extensions} 
-                        type="extensions"
+                        data={parsedData.operator_info} 
+                        type="operator"
                       />
                     </TabsContent>
 
