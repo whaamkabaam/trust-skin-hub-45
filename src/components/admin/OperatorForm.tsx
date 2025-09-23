@@ -1077,8 +1077,9 @@ export function OperatorForm({
               // Apply extracted data to form
               console.log('Applying extracted data:', data);
               
-              // Basic info
+              // Basic info - including the critical slug field
               if (data.name) setValue('name', data.name);
+              if (data.slug) setValue('slug', data.slug);
               if (data.site_type) setValue('site_type', data.site_type);
               if (data.launch_year) setValue('launch_year', data.launch_year);
               if (data.verdict) setValue('verdict', data.verdict);
@@ -1103,21 +1104,35 @@ export function OperatorForm({
               // Store extracted bonuses, payments, etc. in localStorage for extension managers
               if (data.bonuses?.length > 0) {
                 localStorage.setItem(`operator-bonuses-${effectiveOperatorId}`, JSON.stringify(data.bonuses));
+                console.log(`Stored ${data.bonuses.length} bonuses for operator ${effectiveOperatorId}`);
               }
               if (data.payments?.length > 0) {
                 localStorage.setItem(`operator-payments-${effectiveOperatorId}`, JSON.stringify(data.payments));
+                console.log(`Stored ${data.payments.length} payments for operator ${effectiveOperatorId}`);
               }
               if (data.features?.length > 0) {
                 localStorage.setItem(`operator-features-${effectiveOperatorId}`, JSON.stringify(data.features));
+                console.log(`Stored ${data.features.length} features for operator ${effectiveOperatorId}`);
               }
               if (data.faqs?.length > 0) {
                 localStorage.setItem(`operator-faqs-${effectiveOperatorId}`, JSON.stringify(data.faqs));
+                console.log(`Stored ${data.faqs.length} FAQs for operator ${effectiveOperatorId}`);
               }
               if (data.security && Object.keys(data.security).length > 0) {
                 localStorage.setItem(`operator-security-${effectiveOperatorId}`, JSON.stringify(data.security));
+                console.log(`Stored security data for operator ${effectiveOperatorId}`);
               }
 
-              toast.success('Extracted data applied to operator form! Check other tabs to review imported bonuses, payments, etc.');
+              // Trigger extension managers to refresh with new data
+              setTimeout(() => {
+                // Force re-render of extension managers by triggering state update
+                const event = new CustomEvent('extensionDataUpdated', { 
+                  detail: { operatorId: effectiveOperatorId } 
+                });
+                window.dispatchEvent(event);
+              }, 100);
+
+              toast.success('Extracted data applied! Name, slug, and ratings are set. Check Bonuses, Payments, Features, and FAQ tabs for imported content.');
             }}
             currentOperatorData={getValues()}
           />

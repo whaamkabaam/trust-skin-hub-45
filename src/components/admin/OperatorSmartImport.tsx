@@ -169,36 +169,24 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
       extractedData.slug = generatedSlug;
     }
     
-    // Store extension data in localStorage for transfer
-    const tempId = localStorage.getItem('new-operator-temp-id') || `temp-${Date.now()}`;
-    
-    if (extractedData.bonuses && extractedData.bonuses.length > 0) {
-      localStorage.setItem(`temp-bonuses-${tempId}`, JSON.stringify(extractedData.bonuses));
+    // Validate required fields before applying
+    if (!extractedData.name) {
+      toast.error('Missing operator name. Please extract data again.');
+      return;
     }
     
-    if (extractedData.payments && extractedData.payments.length > 0) {
-      localStorage.setItem(`temp-payments-${tempId}`, JSON.stringify(extractedData.payments));
+    if (!extractedData.slug) {
+      toast.error('Missing operator slug. Please extract data again.');
+      return;
     }
     
-    if (extractedData.features && extractedData.features.length > 0) {
-      localStorage.setItem(`temp-features-${tempId}`, JSON.stringify(extractedData.features));
-    }
-    
-    if (extractedData.security) {
-      localStorage.setItem(`temp-security-${tempId}`, JSON.stringify(extractedData.security));
-    }
-    
-    if (extractedData.faqs && extractedData.faqs.length > 0) {
-      localStorage.setItem(`temp-faqs-${tempId}`, JSON.stringify(extractedData.faqs));
-    }
-    
+    // Apply data to form - localStorage storage now handled by OperatorForm
     onDataExtracted(extractedData);
-    toast.success('Extracted data applied to operator form - extension data will transfer to tabs');
+    toast.success('Extracted data applied to operator form! Check other tabs to review imported content.');
     
-    // Trigger a page reload after a short delay to ensure extension managers pick up the new data
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+    // Clear the imported data to prevent reapplication
+    setExtractedData(null);
+    setContent('');
   };
 
   const handleReset = () => {
