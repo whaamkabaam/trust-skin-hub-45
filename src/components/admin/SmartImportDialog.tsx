@@ -48,6 +48,8 @@ export function SmartImportDialog({ onImportComplete, trigger }: SmartImportDial
     setError(null);
 
     try {
+      console.log('Calling AI function with content length:', content.length);
+      
       const { data: functionData, error: functionError } = await supabase.functions.invoke('ai', {
         body: { 
           message: content,
@@ -55,20 +57,33 @@ export function SmartImportDialog({ onImportComplete, trigger }: SmartImportDial
         }
       });
 
+      console.log('AI function response:', { data: functionData, error: functionError });
+
       if (functionError) {
-        throw new Error(functionError.message || "Failed to parse content");
+        console.error('Supabase function error:', functionError);
+        throw new Error(`Function invocation failed: ${functionError.message || functionError}`);
+      }
+
+      if (!functionData) {
+        throw new Error('No response received from AI service');
       }
 
       if (!functionData.success) {
-        throw new Error(functionData.error || "Failed to parse content");
+        throw new Error(functionData.error || "AI parsing failed");
+      }
+
+      if (!functionData.data) {
+        throw new Error('No parsed data received from AI service');
       }
 
       setParsedData(functionData.data);
       toast.success('Content parsed successfully!');
+      console.log('Successfully parsed data:', functionData.data);
     } catch (err) {
       console.error('Parse error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to parse content');
-      toast.error('Failed to parse content');
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      setError(`Failed to parse content: ${errorMessage}`);
+      toast.error(`Parsing failed: ${errorMessage}`);
     } finally {
       setIsProcessing(false);
     }
