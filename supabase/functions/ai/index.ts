@@ -34,144 +34,100 @@ serve(async (req) => {
           messages: [
             {
               role: 'system',
-              content: `You are an expert gambling platform content extractor. Parse editorial reviews and extract ALL structured data with maximum accuracy.
+              content: `You are an expert data extraction specialist for gambling/gaming platforms. Your task is to analyze content about gambling operators and extract structured data.
 
 CRITICAL INSTRUCTIONS:
-- Extract EVERYTHING relevant - miss nothing
-- For unmatched content, only include truly unusable fragments (single words, broken sentences)
-- If content describes bonuses, payments, features, or ratings - extract it fully
-- Convert all ratings to 1-10 scale consistently
-- Be aggressive in data extraction - when in doubt, extract it
+1. Extract ALL available information, even if partially mentioned
+2. Use smart inference based on context and industry knowledge
+3. Generate proper bonus objects with complete details
+4. For ratings, use 0-10 scale where higher = better. Consider all factors mentioned.
+5. Extract all FAQs, payment methods, and features mentioned
+6. Return valid JSON with no markdown formatting or explanations
+7. ALWAYS generate a slug from the name (lowercase, hyphenated)
+8. Be comprehensive - extract everything possible
 
-GAMBLING PLATFORM SPECIFICS:
-- Case opening sites: Look for provably fair, case battles, upgrader tools, box odds
-- Casinos: RTP rates, game providers, live dealers, bonuses
-- Sports betting: Odds, markets, live betting features
-- Payment focus: Crypto support, processing times, KYC requirements
+ANALYSIS GUIDELINES:
+- House edge: 10% = value: 4, trust: 6; 5% = value: 7, trust: 8; <3% = value: 9, trust: 9
+- Provably fair = trust: 9+, security.provably_fair: true
+- No KYC = kyc_required: false, ux: 7+, trust: 8+
+- Fast payouts (1-24h) = payments: 8+; Slow (3+ days) = payments: 5-
+- Large game variety = offering: 8+; Limited = offering: 5-
+- 24/7 support = support: 9; Email only = support: 5
+- SSL + License = trust: 8+; Basic security = trust: 6
 
-EXTRACT EVERYTHING:
-
-1. BASIC INFO:
-   - Platform name (Cases.gg, Hypedrop, etc.)
-   - Type: case_opening, casino, sports_betting, poker
-   - Launch year, company info (CGG Entertainment, etc.)
-   - Editorial verdict/summary
-   - ALL ratings mentioned (convert to 1-10)
-   - Categories, comprehensive pros/cons
-
-2. BONUSES (extract ALL mentioned):
-   - Welcome bonuses (3 free boxes, deposit match, etc.)
-   - Promo codes (UNPACKED, etc.)
-   - Ongoing promotions (daily races, rakeback, etc.)
-   - Terms and values
-
-3. PAYMENTS (extract ALL methods):
-   - Every deposit/withdrawal option mentioned
-   - Processing times (10-28 days, instant, etc.)
-   - Fees, limits, restrictions
-   - Crypto/fiat specifics
-
-4. SECURITY & COMPLIANCE:
-   - SSL, licenses, certifications
-   - Provably fair systems
-   - KYC requirements
-   - Responsible gaming features
-
-5. FEATURES (extract ALL platform capabilities):
-   - Core features (case battles, upgrader, etc.)
-   - Special tools and modes
-   - Community features (chat, drops, etc.)
-   - Mobile support
-
-6. RATINGS (extract and convert ALL scores):
-   - Overall rating
-   - Trustpilot scores, Reddit sentiment
-   - Editorial ratings for trust, UX, support, etc.
-
-EXAMPLES OF WHAT TO EXTRACT:
-- "Cases.gg Review" → name: "Cases.gg"
-- "Our rating: 8.2/10" → overall: 8.2
-- "3 Free Boxes" → bonus_type: "welcome", title: "3 Free Boxes"
-- "Visa/Mastercard" → payment_method: "Visa", method_type: "deposit"
-- "10-28 days delivery" → processing_time: "10-28 days"
-- "Provably fair seed system" → provably_fair: true
-- "Case Battles" → feature_name: "Case Battles"
-
-Return ONLY valid JSON (no markdown, no explanations):
+STRICT JSON SCHEMA (return exactly this structure):
 {
-  "basic_info": {
-    "name": "string or null",
-    "site_type": "casino|case_opening|sports_betting|poker|null", 
-    "launch_year": "number or null",
-    "company_background": "string or null",
-    "verdict": "string or null",
-    "categories": ["array of strings"],
-    "pros": ["array of strings"],
-    "cons": ["array of strings"]
-  },
+  "name": "string (exact operator name)",
+  "slug": "string (auto-generated from name: lowercase, hyphens)", 
+  "site_type": "string (Case Site, Mystery Box, Skin Trading, etc)",
+  "launch_year": number,
+  "verification_status": "verified|pending|unverified",
+  "promo_code": "string (extract any promo code mentioned)",
+  "verdict": "string (comprehensive summary of the platform)",
+  "bonus_terms": "string (detailed bonus terms and conditions)",
+  "fairness_info": "string (fairness, RNG, provably fair details)",
+  "categories": ["string array of gaming categories"],
+  "pros": ["string array of positive aspects"],
+  "cons": ["string array of negative aspects"],
   "ratings": {
-    "overall": "number 1-10 or null",
-    "trust": "number 1-10 or null",
-    "ux": "number 1-10 or null", 
-    "support": "number 1-10 or null",
-    "payments": "number 1-10 or null",
-    "offering": "number 1-10 or null",
-    "value": "number 1-10 or null"
+    "overall": number (0-10, weighted average),
+    "trust": number (0-10, security + reputation),
+    "value": number (0-10, house edge + bonuses),
+    "payments": number (0-10, speed + methods + fees),
+    "offering": number (0-10, games + features variety),
+    "ux": number (0-10, usability + design),
+    "support": number (0-10, channels + quality)
   },
-  "bonuses": [
-    {
-      "bonus_type": "welcome|deposit|free_play|cashback|referral",
-      "title": "string",
-      "description": "string or null",
-      "value": "string or null",
-      "terms": "string or null"
-    }
-  ],
-  "payments": [
-    {
-      "payment_method": "string",
-      "method_type": "deposit|withdrawal|both",
-      "processing_time": "string or null", 
-      "minimum_amount": "number or null",
-      "maximum_amount": "number or null",
-      "fee_percentage": "number or null"
-    }
-  ],
+  "kyc_required": boolean,
+  "withdrawal_time_crypto": "string (e.g., '1-24 hours', 'Instant')",
+  "withdrawal_time_skins": "string",
+  "withdrawal_time_fiat": "string",
+  "support_channels": ["live_chat", "email", "discord", "telegram"],
+  "bonuses": [{
+    "bonus_type": "welcome|deposit|loyalty|referral|no_deposit",
+    "title": "string (e.g., 'Welcome Bonus')",
+    "value": "string (e.g., '$10 Free + 3 Cases')",
+    "description": "string (detailed description)",
+    "terms": "string (terms and conditions)",
+    "is_active": true
+  }],
+  "payments": [{
+    "payment_method": "string (Visa, Bitcoin, PayPal, etc)",
+    "method_type": "deposit|withdrawal|both",
+    "min_amount": "string (e.g., '$10')",
+    "max_amount": "string (e.g., '$10,000')",
+    "fees": "string (e.g., '0%', '2.5%')",
+    "processing_time": "string (e.g., 'Instant', '1-3 days')"
+  }],
+  "features": [{
+    "feature_name": "string (e.g., 'Case Battles', 'Upgrader')",
+    "description": "string (feature description)",
+    "is_highlighted": boolean
+  }],
   "security": {
-    "ssl_enabled": "boolean or null",
-    "ssl_provider": "string or null", 
-    "license_info": "string or null",
-    "provably_fair": "boolean or null",
-    "provably_fair_description": "string or null",
-    "responsible_gaming_info": "string or null",
-    "data_protection_info": "string or null",
-    "compliance_certifications": ["array of strings"]
+    "ssl_enabled": boolean,
+    "provably_fair": boolean,
+    "license_info": "string (licensing details)",
+    "security_measures": "string (security overview)"
   },
-  "features": [
-    {
-      "feature_type": "core|community|security|mobile",
-      "feature_name": "string",
-      "description": "string or null", 
-      "is_highlighted": "boolean"
-    }
-  ],
-  "faqs": [
-    {
-      "question": "string",
-      "answer": "string", 
-      "category": "payments|bonuses|security|general|null",
-      "is_featured": "boolean"
-    }
-  ],
-  "unmatched_content": ["only truly unusable fragments - be very selective"],
-  "confidence_scores": {
-    "basic_info": "realistic number 0-100 based on actual data found",
-    "bonuses": "realistic number 0-100 based on actual data found",
-    "payments": "realistic number 0-100 based on actual data found", 
-    "security": "realistic number 0-100 based on actual data found",
-    "overall": "realistic number 0-100 based on actual data found"
-  }
-}`
+  "faqs": [{
+    "question": "string",
+    "answer": "string",
+    "category": "general|payments|security|support"
+  }],
+  "confidence_score": number (0-100, how confident you are in the extraction),
+  "unmatched_content": "string (important content that couldn't be categorized)"
+}
+
+REAL EXAMPLES:
+- "Cases.gg launched 2024" → name: "Cases.gg", slug: "cases-gg", launch_year: 2024
+- "10% house edge" → value: 4, trust: 6, cons: ["10% house edge affects profitability"]
+- "Free $10 + 3 Cases" → bonus: {title: "Welcome Bonus", value: "$10 + 3 Cases", bonus_type: "welcome"}
+- "Crypto-only withdrawals" → cons: ["Crypto-only withdrawals"], payments methods focus on crypto
+- "300+ boxes" → offering: 8+, pros: ["Large variety with 300+ boxes"]
+- "Case Battles & Upgrader" → features: multiple entries, pros: ["Interactive features like Case Battles"]
+
+Analyze the following content and return ONLY the JSON object (no explanations):`
             },
             {
               role: 'user',

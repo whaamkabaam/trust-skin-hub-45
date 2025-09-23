@@ -223,14 +223,21 @@ const OperatorReview = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-background to-muted/30 border-b" style={operator?.hero_image_url ? {
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${operator.hero_image_url})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      } : undefined}>
-        <div className="container mx-auto px-4 py-6 md:py-8">
+      <section className="bg-gradient-to-br from-background to-muted/30 border-b">
+        <div className="container mx-auto px-4 py-6 md:py-8 relative">
+          {/* Hero Background Image - Less Obstructive */}
+          {operator?.hero_image_url && (
+            <div 
+              className="absolute inset-0 opacity-10 rounded-lg" 
+              style={{
+                backgroundImage: `url(${operator.hero_image_url})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            />
+          )}
           {/* Desktop Layout */}
-          <div className="hidden md:block">
+          <div className="hidden md:block relative z-10">
             <div className="flex items-start gap-6 mb-8">
               {/* Left - Site Info */}
               <div className="flex-1">

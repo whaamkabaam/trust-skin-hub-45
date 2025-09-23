@@ -1078,14 +1078,13 @@ export function OperatorForm({
               console.log('Applying extracted data:', data);
               
               // Basic info
-              if (data.basic_info?.name) setValue('name', data.basic_info.name);
-              if (data.basic_info?.site_type) setValue('site_type', data.basic_info.site_type);
-              if (data.basic_info?.launch_year) setValue('launch_year', data.basic_info.launch_year);
-              if (data.basic_info?.company_background) setValue('company_background', data.basic_info.company_background);
-              if (data.basic_info?.verdict) setValue('verdict', data.basic_info.verdict);
-              if (data.basic_info?.categories) setValue('categories', data.basic_info.categories);
-              if (data.basic_info?.pros) setValue('pros', data.basic_info.pros);
-              if (data.basic_info?.cons) setValue('cons', data.basic_info.cons);
+              if (data.name) setValue('name', data.name);
+              if (data.site_type) setValue('site_type', data.site_type);
+              if (data.launch_year) setValue('launch_year', data.launch_year);
+              if (data.verdict) setValue('verdict', data.verdict);
+              if (data.categories) setValue('categories', data.categories);
+              if (data.pros) setValue('pros', data.pros);
+              if (data.cons) setValue('cons', data.cons);
 
               // Ratings
               if (data.ratings) {

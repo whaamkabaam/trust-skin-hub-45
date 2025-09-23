@@ -1,12 +1,11 @@
-import { useState, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { Wand2, Copy, AlertCircle, CheckCircle, Filter, Zap, Upload, Eye, Download } from 'lucide-react';
-import { ConfidenceIndicator } from './ConfidenceIndicator';
+import { Loader2, Clipboard, Zap, RotateCcw, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/lib/toast';
 
@@ -16,176 +15,175 @@ interface OperatorSmartImportProps {
 }
 
 interface ExtractedOperatorData {
-  basic_info: {
-    name?: string;
-    site_type?: string;
-    launch_year?: number;
-    company_background?: string;
-    verdict?: string;
-    categories?: string[];
-    pros?: string[];
-    cons?: string[];
-  };
-  ratings: {
+  name?: string;
+  slug?: string;
+  site_type?: string;
+  launch_year?: number;
+  verification_status?: string;
+  promo_code?: string;
+  verdict?: string;
+  bonus_terms?: string;
+  fairness_info?: string;
+  categories?: string[];
+  pros?: string[];
+  cons?: string[];
+  ratings?: {
     overall?: number;
     trust?: number;
-    ux?: number;
-    support?: number;
+    value?: number;
     payments?: number;
     offering?: number;
-    value?: number;
+    ux?: number;
+    support?: number;
   };
-  bonuses: Array<{
+  kyc_required?: boolean;
+  withdrawal_time_crypto?: string;
+  withdrawal_time_skins?: string;
+  withdrawal_time_fiat?: string;
+  support_channels?: string[];
+  bonuses?: Array<{
     bonus_type: string;
     title: string;
-    description?: string;
     value?: string;
+    description?: string;
     terms?: string;
+    is_active?: boolean;
   }>;
-  payments: Array<{
+  payments?: Array<{
     payment_method: string;
-    method_type: 'deposit' | 'withdrawal';
+    method_type: 'deposit' | 'withdrawal' | 'both';
+    min_amount?: string;
+    max_amount?: string;
+    fees?: string;
     processing_time?: string;
-    minimum_amount?: number;
-    maximum_amount?: number;
-    fee_percentage?: number;
   }>;
-  security: {
-    ssl_enabled?: boolean;
-    ssl_provider?: string;
-    license_info?: string;
-    provably_fair?: boolean;
-    provably_fair_description?: string;
-    responsible_gaming_info?: string;
-    data_protection_info?: string;
-    compliance_certifications?: string[];
-  };
-  features: Array<{
-    feature_type: string;
+  features?: Array<{
     feature_name: string;
     description?: string;
     is_highlighted?: boolean;
   }>;
-  faqs: Array<{
+  security?: {
+    ssl_enabled?: boolean;
+    provably_fair?: boolean;
+    license_info?: string;
+    security_measures?: string;
+  };
+  faqs?: Array<{
     question: string;
     answer: string;
     category?: string;
-    is_featured?: boolean;
   }>;
-  unmatched_content: string[];
-  confidence_scores: {
-    basic_info: number;
-    bonuses: number;
-    payments: number;
-    security: number;
-    overall: number;
-  };
+  confidence_score?: number;
+  unmatched_content?: string;
 }
-
 
 export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: OperatorSmartImportProps) {
   const [content, setContent] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedData, setExtractedData] = useState<ExtractedOperatorData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
 
-  const handleParse = useCallback(async () => {
+  const handleParse = async () => {
     if (!content.trim()) {
-      toast.error('Please paste some content to parse');
+      toast.error('Please enter some content to parse');
       return;
     }
 
     setIsProcessing(true);
     setError(null);
-
+    
     try {
-      console.log('Starting simplified operator content parsing...');
+      // Limit content to 50k characters
+      const limitedContent = content.length > 50000 ? content.substring(0, 50000) : content;
       
-      // Simple character limit - truncate if too long
-      const MAX_CHARS = 50000;
-      const processedContent = content.length > MAX_CHARS 
-        ? content.substring(0, MAX_CHARS) + '\n\n[Content truncated at 50k characters]'
-        : content;
+      console.log('Sending content to AI:', { contentLength: limitedContent.length });
       
-      console.log(`Processing ${processedContent.length} characters of content`);
-      
-      // Direct AI processing - no preprocessing
-      const { data: functionData, error: functionError } = await supabase.functions.invoke('ai', {
+      const { data, error: functionError } = await supabase.functions.invoke('ai', {
         body: { 
-          message: processedContent,
+          message: limitedContent,
           mode: 'operator-parse'
         }
       });
 
-      console.log('AI function response:', { data: functionData, error: functionError });
-
       if (functionError) {
-        console.error('Supabase function error:', functionError);
-        throw new Error(`AI parsing failed: ${functionError.message || functionError}`);
+        throw new Error(functionError.message || "Failed to get AI response");
       }
 
-      if (!functionData?.success || !functionData?.data) {
-        throw new Error('No valid data received from AI service');
+      if (!data?.success || !data?.data) {
+        throw new Error("Invalid response from AI service");
       }
 
-      // Use AI results directly - no merging with preprocessed data
-      const transformedData = {
-        basic_info: functionData.data.basic_info || {},
-        ratings: functionData.data.ratings || {},
-        bonuses: functionData.data.bonuses || [],
-        payments: functionData.data.payments || [],
-        security: functionData.data.security || {},
-        features: functionData.data.features || [], 
-        faqs: functionData.data.faqs || [],
-        unmatched_content: functionData.data.unmatched_content || [],
-        confidence_scores: functionData.data.confidence_scores || {
-          basic_info: 0,
-          bonuses: 0,
-          payments: 0,
-          security: 0,
-          overall: 0
-        }
-      };
-
-      setExtractedData(transformedData);
+      console.log('AI Response:', data.data);
+      setExtractedData(data.data);
+      toast.success('Content parsed successfully!');
       
-      const extractedItemsCount = (transformedData.bonuses?.length || 0) + 
-                                 (transformedData.payments?.length || 0) + 
-                                 (transformedData.features?.length || 0) + 
-                                 (transformedData.faqs?.length || 0);
-      const unmatchedCount = transformedData.unmatched_content?.length || 0;
-      const successPercentage = extractedItemsCount + unmatchedCount > 0 
-        ? Math.round((extractedItemsCount / (extractedItemsCount + unmatchedCount)) * 100)
-        : 0;
-      
-      toast.success(`Operator data extracted! ${extractedItemsCount} items structured, ${unmatchedCount} unmatched`);
-      
-    } catch (err) {
-      console.error('Parse error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      setError(`Failed to parse content: ${errorMessage}`);
-      toast.error(`Parsing failed: ${errorMessage}`);
+    } catch (error) {
+      console.error('Parse error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to parse content';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
     }
-  }, [content]);
+  };
 
   const handlePasteFromClipboard = async () => {
     try {
-      const text = await navigator.clipboard.readText();
-      setContent(text);
+      const clipboardText = await navigator.clipboard.readText();
+      setContent(clipboardText);
       toast.success('Content pasted from clipboard');
-    } catch (err) {
+    } catch (error) {
+      console.error('Clipboard error:', error);
       toast.error('Failed to access clipboard');
     }
   };
 
   const handleApplyData = () => {
-    if (extractedData && onDataExtracted) {
-      onDataExtracted(extractedData);
-      toast.success('Extracted data applied to operator form');
+    if (!extractedData || !onDataExtracted) return;
+    
+    console.log('Applying extracted data:', extractedData);
+    
+    // Generate slug from name if name exists
+    if (extractedData.name) {
+      const generatedSlug = extractedData.name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      extractedData.slug = generatedSlug;
     }
+    
+    // Store extension data in localStorage for transfer
+    const tempId = localStorage.getItem('new-operator-temp-id') || `temp-${Date.now()}`;
+    
+    if (extractedData.bonuses && extractedData.bonuses.length > 0) {
+      localStorage.setItem(`temp-bonuses-${tempId}`, JSON.stringify(extractedData.bonuses));
+    }
+    
+    if (extractedData.payments && extractedData.payments.length > 0) {
+      localStorage.setItem(`temp-payments-${tempId}`, JSON.stringify(extractedData.payments));
+    }
+    
+    if (extractedData.features && extractedData.features.length > 0) {
+      localStorage.setItem(`temp-features-${tempId}`, JSON.stringify(extractedData.features));
+    }
+    
+    if (extractedData.security) {
+      localStorage.setItem(`temp-security-${tempId}`, JSON.stringify(extractedData.security));
+    }
+    
+    if (extractedData.faqs && extractedData.faqs.length > 0) {
+      localStorage.setItem(`temp-faqs-${tempId}`, JSON.stringify(extractedData.faqs));
+    }
+    
+    onDataExtracted(extractedData);
+    toast.success('Extracted data applied to operator form - extension data will transfer to tabs');
+    
+    // Trigger a page reload after a short delay to ensure extension managers pick up the new data
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   };
 
   const handleReset = () => {
@@ -200,40 +198,59 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
         <CardTitle className="text-sm">Basic Information</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {extractedData?.basic_info?.name && (
+        {extractedData?.name && (
           <div>
-            <span className="text-xs font-medium text-muted-foreground">Name:</span>
-            <p className="text-sm">{extractedData.basic_info.name}</p>
+            <span className="text-xs text-muted-foreground">Name:</span>
+            <p className="font-medium">{extractedData.name}</p>
           </div>
         )}
-        {extractedData?.basic_info?.site_type && (
+        {extractedData?.site_type && (
           <div>
-            <span className="text-xs font-medium text-muted-foreground">Type:</span>
-            <Badge variant="outline" className="ml-2">{extractedData.basic_info.site_type}</Badge>
+            <span className="text-xs text-muted-foreground">Type:</span>
+            <Badge variant="outline" className="ml-2">{extractedData.site_type}</Badge>
           </div>
         )}
-        {extractedData?.basic_info?.launch_year && (
+        {extractedData?.launch_year && (
           <div>
-            <span className="text-xs font-medium text-muted-foreground">Launch Year:</span>
-            <p className="text-sm">{extractedData.basic_info.launch_year}</p>
+            <span className="text-xs text-muted-foreground">Launch Year:</span>
+            <p className="font-medium">{extractedData.launch_year}</p>
           </div>
         )}
-        {extractedData?.basic_info?.verdict && (
+        {extractedData?.verification_status && (
           <div>
-            <span className="text-xs font-medium text-muted-foreground">Verdict:</span>
-            <p className="text-sm line-clamp-3">{extractedData.basic_info.verdict}</p>
+            <span className="text-xs text-muted-foreground">Status:</span>
+            <Badge variant={extractedData.verification_status === 'verified' ? 'default' : 'secondary'} className="ml-2">
+              {extractedData.verification_status}
+            </Badge>
           </div>
         )}
-        {extractedData?.basic_info?.pros && extractedData.basic_info.pros.length > 0 && (
+        {extractedData?.categories && extractedData.categories.length > 0 && (
           <div>
-            <span className="text-xs font-medium text-muted-foreground">Pros:</span>
+            <span className="text-xs text-muted-foreground">Categories:</span>
             <div className="flex flex-wrap gap-1 mt-1">
-              {extractedData.basic_info.pros.slice(0, 3).map((pro, idx) => (
-                <Badge key={idx} variant="default" className="text-xs">{pro}</Badge>
+              {extractedData.categories.map((cat, i) => (
+                <Badge key={i} variant="outline" className="text-xs">{cat}</Badge>
               ))}
-              {extractedData.basic_info.pros.length > 3 && (
-                <Badge variant="outline" className="text-xs">+{extractedData.basic_info.pros.length - 3}</Badge>
-              )}
+            </div>
+          </div>
+        )}
+        {extractedData?.pros && extractedData.pros.length > 0 && (
+          <div>
+            <span className="text-xs text-muted-foreground">Pros ({extractedData.pros.length}):</span>
+            <div className="space-y-1 mt-1">
+              {extractedData.pros.slice(0, 3).map((pro, i) => (
+                <p key={i} className="text-xs text-green-600">✓ {pro}</p>
+              ))}
+            </div>
+          </div>
+        )}
+        {extractedData?.cons && extractedData.cons.length > 0 && (
+          <div>
+            <span className="text-xs text-muted-foreground">Cons ({extractedData.cons.length}):</span>
+            <div className="space-y-1 mt-1">
+              {extractedData.cons.slice(0, 3).map((con, i) => (
+                <p key={i} className="text-xs text-red-600">✗ {con}</p>
+              ))}
             </div>
           </div>
         )}
@@ -241,346 +258,189 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
     </Card>
   );
 
-  const renderExtractedCounts = () => (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-2xl font-bold">{extractedData?.bonuses?.length || 0}</div>
-          <p className="text-xs text-muted-foreground">Bonuses</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-2xl font-bold">{extractedData?.payments?.length || 0}</div>
-          <p className="text-xs text-muted-foreground">Payment Methods</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-2xl font-bold">{extractedData?.features?.length || 0}</div>
-          <p className="text-xs text-muted-foreground">Features</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-2xl font-bold">{extractedData?.faqs?.length || 0}</div>
-          <p className="text-xs text-muted-foreground">FAQs</p>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  const renderStats = () => {
+    const confidence = extractedData?.confidence_score || 0;
+    const bonusCount = extractedData?.bonuses?.length || 0;
+    const paymentCount = extractedData?.payments?.length || 0;
+    const featureCount = extractedData?.features?.length || 0;
+    const faqCount = extractedData?.faqs?.length || 0;
+
+    return (
+      <div className="grid grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-primary">{confidence}%</div>
+            <div className="text-xs text-muted-foreground">Confidence</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-600">{bonusCount}</div>
+            <div className="text-xs text-muted-foreground">Bonuses</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">{paymentCount}</div>
+            <div className="text-xs text-muted-foreground">Payments</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-purple-600">{featureCount}</div>
+            <div className="text-xs text-muted-foreground">Features</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-orange-600">{faqCount}</div>
+            <div className="text-xs text-muted-foreground">FAQs</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" />
-            Smart Import for Operators
-          </CardTitle>
-          <CardDescription>
-            Paste editorial review content to automatically extract operator information, ratings, bonuses, payments, and more.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!extractedData ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Review Content to Parse</label>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handlePasteFromClipboard}
-                    className="flex items-center gap-2"
-                  >
-                    <Copy className="h-3 w-3" />
-                    Paste from Clipboard
-                  </Button>
-                </div>
-                <Textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Paste your editorial review content here (e.g., from Cases.gg review article)..."
-                  className="min-h-[200px] resize-none"
-                />
-              </div>
-
-              {error && (
-                <Card className="border-destructive">
-                  <CardContent className="pt-4">
-                    <div className="flex items-center gap-2 text-destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <span className="text-sm">{error}</span>
-                    </div>
-                  </CardContent>
-                </Card>
+    <Card className="mb-6">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Zap className="w-5 h-5 text-primary" />
+          Smart Import
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Textarea
+              placeholder="Paste review content here (up to 50,000 characters)..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="min-h-[120px] flex-1"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={handlePasteFromClipboard} variant="outline" size="sm">
+              <Clipboard className="w-4 h-4 mr-2" />
+              Paste from Clipboard
+            </Button>
+            <Button onClick={handleParse} disabled={isProcessing || !content.trim()}>
+              {isProcessing ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Zap className="w-4 h-4 mr-2" />
               )}
+              Parse Content
+            </Button>
+            {(extractedData || error) && (
+              <Button onClick={handleReset} variant="outline" size="sm">
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Start Over
+              </Button>
+            )}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            Characters: {content.length.toLocaleString()} / 50,000
+          </div>
+        </div>
 
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={handleReset}>
-                  Clear
-                </Button>
-                <Button 
-                  onClick={handleParse} 
-                  disabled={!content.trim() || isProcessing}
-                >
-                  {isProcessing ? (
-                    <LoadingSpinner size="sm" className="mr-2" />
-                  ) : (
-                    <Wand2 className="h-4 w-4 mr-2" />
-                  )}
-                  Extract Operator Data
-                </Button>
-              </div>
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-              {isProcessing && (
+        {extractedData && (
+          <div className="space-y-4">
+            {renderStats()}
+            
+            <Tabs defaultValue="basic" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                <TabsTrigger value="ratings">Ratings</TabsTrigger>
+                <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
+                <TabsTrigger value="unmatched">Unmatched</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="basic" className="space-y-4">
+                {renderBasicInfo()}
+              </TabsContent>
+
+              <TabsContent value="ratings" className="space-y-4">
                 <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-center space-y-2">
-                      <div className="text-center">
-                        <LoadingSpinner size="lg" />
-                        <p className="mt-4 text-sm text-muted-foreground">
-                          Extracting operator data from editorial content...
-                        </p>
-                        <div className="mt-2 text-xs text-muted-foreground space-y-1">
-                          <p>• Processing content with AI</p>
-                          <p>• Extracting ratings and scores</p>
-                          <p>• Identifying bonuses and features</p>
-                          <p>• Mapping payment methods</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Confidence & Stats Dashboard */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-success" />
-                      Extraction Confidence
-                    </CardTitle>
+                  <CardHeader>
+                    <CardTitle className="text-sm">Extracted Ratings</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 gap-3">
-                      <ConfidenceIndicator 
-                        label="Basic Info" 
-                        score={extractedData.confidence_scores.basic_info} 
-                        size="sm"
-                      />
-                      <ConfidenceIndicator 
-                        label="Bonuses" 
-                        score={extractedData.confidence_scores.bonuses} 
-                        size="sm"
-                      />
-                      <ConfidenceIndicator 
-                        label="Payments" 
-                        score={extractedData.confidence_scores.payments} 
-                        size="sm"
-                      />
-                      <ConfidenceIndicator 
-                        label="Overall" 
-                        score={extractedData.confidence_scores.overall} 
-                        size="sm"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-primary" />
-                      Processing Stats
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Content length:</span>
-                        <Badge variant="outline">{content.length.toLocaleString()} chars</Badge>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Structured items:</span>
-                        <Badge variant="default">
-                          {((extractedData?.bonuses?.length || 0) + 
-                            (extractedData?.payments?.length || 0) + 
-                            (extractedData?.features?.length || 0) + 
-                            (extractedData?.faqs?.length || 0))}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Unmatched items:</span>
-                        <Badge variant="destructive">{extractedData?.unmatched_content?.length || 0}</Badge>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Extracted Data Count Cards */}
-              {renderExtractedCounts()}
-
-              {/* Data Preview */}
-              <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-6">
-                  <TabsTrigger value="basic">Basic</TabsTrigger>
-                  <TabsTrigger value="ratings">Ratings</TabsTrigger>
-                  <TabsTrigger value="bonuses">Bonuses ({extractedData.bonuses?.length || 0})</TabsTrigger>
-                  <TabsTrigger value="payments">Payments ({extractedData.payments?.length || 0})</TabsTrigger>
-                  <TabsTrigger value="features">Features ({extractedData.features?.length || 0})</TabsTrigger>
-                  <TabsTrigger value="unmatched">Unmatched ({extractedData.unmatched_content?.length || 0})</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="basic" className="mt-4">
-                  {renderBasicInfo()}
-                </TabsContent>
-
-                <TabsContent value="ratings" className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-sm">Extracted Ratings</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                    {extractedData.ratings ? (
                       <div className="grid grid-cols-2 gap-4">
                         {Object.entries(extractedData.ratings).map(([key, value]) => (
                           <div key={key} className="flex justify-between">
                             <span className="text-sm capitalize">{key}:</span>
-                            <Badge variant="outline">{value || 'N/A'}</Badge>
+                            <span className="font-medium">{value?.toFixed(1) || 'N/A'}/10</span>
                           </div>
                         ))}
                       </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No ratings extracted</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-                <TabsContent value="bonuses" className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-sm">Extracted Bonuses</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {extractedData.bonuses.length > 0 ? (
-                        <div className="space-y-3">
-                          {extractedData.bonuses.map((bonus, idx) => (
-                            <div key={idx} className="border rounded p-3">
-                              <div className="flex items-center justify-between mb-2">
-                                <Badge variant="outline">{bonus.bonus_type}</Badge>
-                                {bonus.value && <Badge>{bonus.value}</Badge>}
-                              </div>
-                              <h4 className="font-medium text-sm">{bonus.title}</h4>
-                              {bonus.description && <p className="text-xs text-muted-foreground mt-1">{bonus.description}</p>}
+              <TabsContent value="bonuses" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm">Extracted Bonuses</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {extractedData.bonuses && extractedData.bonuses.length > 0 ? (
+                      <div className="space-y-3">
+                        {extractedData.bonuses.map((bonus, i) => (
+                          <div key={i} className="border rounded p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline">{bonus.bonus_type}</Badge>
+                              <span className="font-medium">{bonus.title}</span>
                             </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">No bonuses extracted</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+                            {bonus.value && <p className="text-sm text-green-600">Value: {bonus.value}</p>}
+                            {bonus.description && <p className="text-sm text-muted-foreground">{bonus.description}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No bonuses extracted</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-                <TabsContent value="payments" className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-sm">Extracted Payment Methods</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {extractedData.payments.length > 0 ? (
-                        <div className="space-y-2">
-                          {extractedData.payments.map((payment, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-2 border rounded">
-                              <span className="text-sm">{payment.payment_method}</span>
-                              <div className="flex gap-2">
-                                <Badge variant="outline">{payment.method_type}</Badge>
-                                {payment.processing_time && <Badge variant="secondary">{payment.processing_time}</Badge>}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">No payment methods extracted</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+              <TabsContent value="unmatched" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm">Unmatched Content</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {extractedData.unmatched_content ? (
+                      <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+                        {extractedData.unmatched_content}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-green-600">All content successfully categorized! 🎉</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
 
-                <TabsContent value="features" className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-sm">Extracted Features</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {extractedData.features.length > 0 ? (
-                        <div className="space-y-2">
-                          {extractedData.features.map((feature, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-2 border rounded">
-                              <div>
-                                <span className="text-sm font-medium">{feature.feature_name}</span>
-                                {feature.description && <p className="text-xs text-muted-foreground">{feature.description}</p>}
-                              </div>
-                              <div className="flex gap-2">
-                                <Badge variant="outline">{feature.feature_type}</Badge>
-                                {feature.is_highlighted && <Badge>Featured</Badge>}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">No features extracted</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="unmatched" className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-sm">Unmatched Content</CardTitle>
-                      <CardDescription>Content that couldn't be automatically categorized</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {extractedData.unmatched_content.length > 0 ? (
-                        <div className="space-y-2 max-h-60 overflow-y-auto">
-                          {extractedData.unmatched_content.map((item, idx) => (
-                            <div key={idx} className="p-2 bg-muted rounded text-sm">
-                              "{item}"
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">All content was successfully categorized!</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
-
-              {/* Action Buttons */}
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={handleReset}>
-                  Start Over
-                </Button>
-                <div className="flex gap-2">
-                  <Button variant="outline">
-                    <Eye className="h-4 w-4 mr-2" />
-                    Preview Changes
-                  </Button>
-                  <Button onClick={handleApplyData}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Apply to Form
-                  </Button>
-                </div>
-              </div>
+            <div className="flex gap-2 pt-4 border-t">
+              <Button onClick={handleApplyData} className="flex-1">
+                <FileText className="w-4 h-4 mr-2" />
+                Apply to Form
+              </Button>
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
