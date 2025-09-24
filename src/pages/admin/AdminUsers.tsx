@@ -102,7 +102,8 @@ export default function AdminUsers() {
         throw response.error;
       }
 
-      setGeneratedPassword(response.data.tempPassword);
+      console.log('Create user response:', response.data);
+      setGeneratedPassword(response.data.newPassword);
       setShowPasswordDialog(true);
       setShowAddDialog(false);
       setNewUser({ email: '', role: 'editor' });

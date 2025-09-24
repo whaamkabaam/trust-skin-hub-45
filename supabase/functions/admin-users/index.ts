@@ -160,7 +160,7 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({ 
             user: adminUser, 
-            tempPassword: password,
+            newPassword: password,
             message: 'User created successfully'
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
