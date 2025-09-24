@@ -64,12 +64,16 @@ serve(async (req) => {
       );
     }
 
-    // Check if user is admin
-    const { data: isAdminData, error: adminError } = await supabaseClient
-      .rpc('is_admin')
+    // Check if user is admin by querying admin_users table directly
+    const { data: adminCheck, error: adminError } = await supabaseClient
+      .from('admin_users')
+      .select('role')
+      .eq('email', user.email.toLowerCase())
+      .eq('role', 'admin')
       .single();
 
-    if (adminError || !isAdminData) {
+    if (adminError || !adminCheck) {
+      console.error('Admin check failed:', adminError?.message || 'User not found in admin_users');
       return new Response(
         JSON.stringify({ error: 'Insufficient permissions' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -190,7 +194,8 @@ serve(async (req) => {
 
       case 'DELETE':
         // Delete user
-        const deleteId = url.pathname.split('/').pop();
+        const deleteData = await req.json();
+        const deleteId = deleteData.id;
         
         if (!deleteId) {
           return new Response(

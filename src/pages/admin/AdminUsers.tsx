@@ -52,6 +52,7 @@ export default function AdminUsers() {
       }
 
       const response = await supabase.functions.invoke('admin-users', {
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${session.session.access_token}`,
         },
@@ -155,10 +156,13 @@ export default function AdminUsers() {
         return;
       }
 
-      const response = await supabase.functions.invoke(`admin-users/${selectedUser.id}`, {
+      const response = await supabase.functions.invoke('admin-users', {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${session.session.access_token}`,
+        },
+        body: {
+          id: selectedUser.id,
         },
       });
 
