@@ -17,22 +17,31 @@ export type Database = {
       admin_users: {
         Row: {
           created_at: string
+          current_password: string | null
           email: string
           id: string
+          last_password_reset: string | null
+          password_reset_count: number | null
           role: string
           updated_at: string
         }
         Insert: {
           created_at?: string
+          current_password?: string | null
           email: string
           id?: string
+          last_password_reset?: string | null
+          password_reset_count?: number | null
           role?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          current_password?: string | null
           email?: string
           id?: string
+          last_password_reset?: string | null
+          password_reset_count?: number | null
           role?: string
           updated_at?: string
         }

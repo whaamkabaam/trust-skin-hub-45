@@ -134,10 +134,16 @@ serve(async (req) => {
           );
         }
 
-        // Add to admin_users table
+        // Add to admin_users table with password
         const { data: adminUser, error: adminUserError } = await supabaseClient
           .from('admin_users')
-          .insert([{ email: email.toLowerCase(), role }])
+          .insert([{ 
+            email: email.toLowerCase(), 
+            role,
+            current_password: password,
+            password_reset_count: 0,
+            last_password_reset: new Date().toISOString()
+          }])
           .select()
           .single();
 
@@ -154,7 +160,7 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({ 
             user: adminUser, 
-            password,
+            tempPassword: password,
             message: 'User created successfully'
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -191,6 +197,102 @@ serve(async (req) => {
           JSON.stringify({ user: updatedUser, message: 'User updated successfully' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
+
+      case 'PATCH':
+        // Reset user password
+        const resetData = await req.json();
+        const resetId = resetData.id;
+        
+        if (!resetId) {
+          return new Response(
+            JSON.stringify({ error: 'User ID is required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        try {
+          // Get user from admin_users table
+          const { data: adminUser, error: getUserError } = await supabaseClient
+            .from('admin_users')
+            .select('email, password_reset_count')
+            .eq('id', resetId)
+            .single();
+
+          if (getUserError || !adminUser) {
+            return new Response(
+              JSON.stringify({ error: 'User not found' }),
+              { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          // Generate new password
+          const newPassword = generateRandomPassword();
+
+          // Get the auth user ID by email
+          const { data: authUsers, error: authUserError } = await supabaseClient.auth.admin.listUsers();
+          if (authUserError) {
+            return new Response(
+              JSON.stringify({ error: 'Failed to find auth user' }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          const authUser = authUsers.users.find(u => u.email?.toLowerCase() === adminUser.email.toLowerCase());
+          if (!authUser) {
+            return new Response(
+              JSON.stringify({ error: 'Auth user not found' }),
+              { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          // Update password in Supabase Auth
+          const { error: updateAuthError } = await supabaseClient.auth.admin.updateUserById(
+            authUser.id,
+            { password: newPassword }
+          );
+
+          if (updateAuthError) {
+            console.error('Error updating password in Auth:', updateAuthError);
+            return new Response(
+              JSON.stringify({ error: updateAuthError.message }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          // Update password in admin_users table
+          const { data: updatedUser, error: updateUserError } = await supabaseClient
+            .from('admin_users')
+            .update({
+              current_password: newPassword,
+              password_reset_count: (adminUser.password_reset_count || 0) + 1,
+              last_password_reset: new Date().toISOString(),
+            })
+            .eq('id', resetId)
+            .select()
+            .single();
+
+          if (updateUserError) {
+            console.error('Error updating admin user:', updateUserError);
+            return new Response(
+              JSON.stringify({ error: updateUserError.message }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          return new Response(
+            JSON.stringify({ 
+              user: updatedUser,
+              newPassword: newPassword 
+            }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        } catch (error) {
+          console.error('Unexpected error during password reset:', error);
+          return new Response(
+            JSON.stringify({ error: 'Internal server error' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
 
       case 'DELETE':
         // Delete user

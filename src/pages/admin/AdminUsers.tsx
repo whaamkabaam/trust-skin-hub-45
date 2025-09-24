@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Users, Edit, Trash2, Copy, Check } from 'lucide-react';
+import { Plus, Users, Edit, Trash2, Copy, Check, Key, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/lib/toast';
 
@@ -18,6 +18,9 @@ interface AdminUser {
   role: string;
   created_at: string;
   updated_at: string;
+  current_password?: string;
+  password_reset_count?: number;
+  last_password_reset?: string;
 }
 
 interface CreateUserData {
@@ -32,6 +35,8 @@ export default function AdminUsers() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [newUser, setNewUser] = useState<CreateUserData>({ email: '', role: 'editor' });
   const [generatedPassword, setGeneratedPassword] = useState('');
@@ -97,7 +102,7 @@ export default function AdminUsers() {
         throw response.error;
       }
 
-      setGeneratedPassword(response.data.password);
+      setGeneratedPassword(response.data.tempPassword);
       setShowPasswordDialog(true);
       setShowAddDialog(false);
       setNewUser({ email: '', role: 'editor' });
@@ -180,9 +185,51 @@ export default function AdminUsers() {
     }
   };
 
-  const copyPassword = async () => {
+  const handleResetPassword = async () => {
+    if (!selectedUser) return;
+
     try {
-      await navigator.clipboard.writeText(generatedPassword);
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session.session) {
+        toast.error('Not authenticated');
+        return;
+      }
+
+      const response = await supabase.functions.invoke('admin-users', {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+        body: {
+          id: selectedUser.id,
+        },
+      });
+
+      if (response.error) {
+        throw response.error;
+      }
+
+      const { user, newPassword } = response.data;
+      setGeneratedPassword(newPassword);
+      
+      // Update the user in the list
+      setUsers(users.map(u => u.id === selectedUser.id ? user : u));
+      
+      toast.success('Password reset successfully');
+      setShowResetPasswordDialog(false);
+      setShowPasswordDialog(true);
+      setSelectedUser(user);
+    } catch (error: any) {
+      console.error('Error resetting password:', error);
+      toast.error(error.message || 'Failed to reset password');
+    }
+  };
+
+  const copyPassword = async (password?: string) => {
+    const passwordToCopy = password || generatedPassword;
+    try {
+      await navigator.clipboard.writeText(passwordToCopy);
       setPasswordCopied(true);
       setTimeout(() => setPasswordCopied(false), 2000);
       toast.success('Password copied to clipboard');
@@ -206,7 +253,7 @@ export default function AdminUsers() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Admin Users</h1>
-          <p className="text-muted-foreground">Manage admin users and permissions</p>
+          <p className="text-muted-foreground">Manage admin users and passwords</p>
         </div>
         <Button onClick={() => setShowAddDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
@@ -221,7 +268,7 @@ export default function AdminUsers() {
             User Management
           </CardTitle>
           <CardDescription>
-            Manage admin users, roles, and access permissions
+            Manage admin users, roles, and passwords
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -243,6 +290,18 @@ export default function AdminUsers() {
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Created</TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-2">
+                      Password
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowPasswords(!showPasswords)}
+                      >
+                        {showPasswords ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -259,6 +318,26 @@ export default function AdminUsers() {
                       {formatDate(user.created_at)}
                     </TableCell>
                     <TableCell>
+                      {showPasswords && user.current_password ? (
+                        <div className="flex items-center gap-2">
+                          <code className="text-sm bg-muted px-2 py-1 rounded">
+                            {user.current_password}
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyPassword(user.current_password!)}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          {showPasswords ? 'No password stored' : '••••••••'}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <Button
                           variant="ghost"
@@ -269,6 +348,16 @@ export default function AdminUsers() {
                           }}
                         >
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowResetPasswordDialog(true);
+                          }}
+                        >
+                          <Key className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -396,13 +485,44 @@ export default function AdminUsers() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Reset Password Confirmation Dialog */}
+      <Dialog open={showResetPasswordDialog} onOpenChange={setShowResetPasswordDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p>Are you sure you want to reset the password for <strong>{selectedUser?.email}</strong>?</p>
+            <p className="text-sm text-muted-foreground">
+              A new random password will be generated and you'll be able to view and copy it.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowResetPasswordDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleResetPassword}>
+              Reset Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Password Display Dialog */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>User Created Successfully</DialogTitle>
+            <DialogTitle>
+              {selectedUser?.current_password ? 'Password Reset Successfully' : 'User Created Successfully'}
+            </DialogTitle>
             <DialogDescription>
-              The user has been created with the following temporary password. Make sure to share this securely with the user.
+              {selectedUser?.current_password 
+                ? 'The password has been reset. Here is the new password:' 
+                : 'The user has been created with the following temporary password. Make sure to share this securely with the user.'
+              }
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -417,7 +537,7 @@ export default function AdminUsers() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={copyPassword}
+                  onClick={() => copyPassword()}
                   className="shrink-0"
                 >
                   {passwordCopied ? (
@@ -430,8 +550,8 @@ export default function AdminUsers() {
             </div>
             <div className="bg-muted p-4 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                <strong>Important:</strong> This password will only be shown once. 
-                Make sure to copy it and share it securely with the user.
+                <strong>Important:</strong> You can view this password anytime by toggling the password visibility in the table.
+                Make sure to share it securely with the user.
               </p>
             </div>
           </div>
