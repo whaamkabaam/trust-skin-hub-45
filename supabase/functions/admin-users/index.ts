@@ -109,10 +109,26 @@ serve(async (req) => {
         // Create new admin user
         const createData: CreateUserRequest = await req.json();
         const { email, role } = createData;
+        
+        console.log('Creating user with data:', { email, role });
 
         if (!email || !role) {
           return new Response(
             JSON.stringify({ error: 'Email and role are required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Check if user already exists in admin_users table
+        const { data: existingAdminUser } = await supabaseClient
+          .from('admin_users')
+          .select('email')
+          .eq('email', email.toLowerCase())
+          .single();
+
+        if (existingAdminUser) {
+          return new Response(
+            JSON.stringify({ error: 'User already exists in admin system' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
@@ -129,6 +145,23 @@ serve(async (req) => {
 
         if (createAuthError) {
           console.error('Error creating auth user:', createAuthError);
+          
+          // Handle specific case where email already exists in auth
+          if (createAuthError.message?.includes('email address has already been registered')) {
+            // Try to find existing auth user and clean up or provide better error
+            const { data: authUsers } = await supabaseClient.auth.admin.listUsers();
+            const existingAuthUser = authUsers?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+            
+            if (existingAuthUser) {
+              return new Response(
+                JSON.stringify({ 
+                  error: 'User email already exists in authentication system. Please use a different email or contact support to resolve this conflict.' 
+                }),
+                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+          }
+          
           return new Response(
             JSON.stringify({ error: createAuthError.message }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -204,24 +237,41 @@ serve(async (req) => {
         const resetData = await req.json();
         const resetId = resetData.id;
         
+        console.log('Password reset request for ID:', resetId);
+        
         if (!resetId) {
+          console.log('No reset ID provided');
           return new Response(
             JSON.stringify({ error: 'User ID is required' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
 
+        // Validate UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(resetId)) {
+          console.log('Invalid UUID format:', resetId);
+          return new Response(
+            JSON.stringify({ error: 'Invalid user ID format' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
         try {
           // Get user from admin_users table
+          console.log('Looking for user with ID:', resetId);
           const { data: adminUser, error: getUserError } = await supabaseClient
             .from('admin_users')
             .select('email, password_reset_count')
             .eq('id', resetId)
             .single();
 
+          console.log('Admin user query result:', { adminUser, getUserError });
+
           if (getUserError || !adminUser) {
+            console.log('User not found in admin_users table:', getUserError?.message);
             return new Response(
-              JSON.stringify({ error: 'User not found' }),
+              JSON.stringify({ error: 'User not found in admin system' }),
               { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             );
           }

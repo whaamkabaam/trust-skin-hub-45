@@ -99,6 +99,7 @@ export default function AdminUsers() {
       });
 
       if (response.error) {
+        console.error('Create user error details:', response.error);
         throw response.error;
       }
 
@@ -111,7 +112,15 @@ export default function AdminUsers() {
       toast.success('User created successfully');
     } catch (error: any) {
       console.error('Error creating user:', error);
-      toast.error(error.message || 'Failed to create user');
+      
+      // Handle specific error messages
+      if (error.message?.includes('already exists')) {
+        toast.error('A user with this email already exists. Please use a different email address.');
+      } else if (error.message?.includes('email address has already been registered')) {
+        toast.error('This email is already registered in the system. Please contact support to resolve this.');
+      } else {
+        toast.error(error.message || 'Failed to create user. Please try again.');
+      }
     }
   };
 
@@ -197,6 +206,8 @@ export default function AdminUsers() {
         return;
       }
 
+      console.log('Resetting password for user:', selectedUser);
+
       const response = await supabase.functions.invoke('admin-users', {
         method: 'PATCH',
         headers: {
@@ -208,6 +219,7 @@ export default function AdminUsers() {
       });
 
       if (response.error) {
+        console.error('Reset password error details:', response.error);
         throw response.error;
       }
 
@@ -223,7 +235,15 @@ export default function AdminUsers() {
       setSelectedUser(user);
     } catch (error: any) {
       console.error('Error resetting password:', error);
-      toast.error(error.message || 'Failed to reset password');
+      
+      // Handle specific error messages
+      if (error.message?.includes('User not found')) {
+        toast.error('User not found. Please refresh the page and try again.');
+      } else if (error.message?.includes('Invalid user ID')) {
+        toast.error('Invalid user data. Please refresh the page and try again.');
+      } else {
+        toast.error(error.message || 'Failed to reset password. Please try again.');
+      }
     }
   };
 
