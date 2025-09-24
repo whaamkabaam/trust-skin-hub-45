@@ -126,13 +126,86 @@ serve(async (req) => {
           .eq('email', email.toLowerCase())
           .single();
 
-        if (existingAdminUser) {
+        console.log('Admin user check result:', { existingAdminUser });
+
+        // Check if user exists in Supabase Auth
+        const { data: authUsers, error: listUsersError } = await supabaseClient.auth.admin.listUsers();
+        const existingAuthUser = authUsers?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+        
+        console.log('Auth user check result:', { existingAuthUser: !!existingAuthUser, listUsersError });
+
+        // Handle different scenarios
+        if (existingAdminUser && existingAuthUser) {
+          // User exists in both systems
           return new Response(
             JSON.stringify({ error: 'User already exists in admin system' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
 
+        if (existingAdminUser && !existingAuthUser) {
+          // User exists in admin_users but not in Auth (corrupted state)
+          return new Response(
+            JSON.stringify({ error: 'User exists in admin system but not in authentication. Please contact support.' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        if (!existingAdminUser && existingAuthUser) {
+          // User exists in Auth but not in admin_users - Recovery scenario
+          console.log('Found orphaned auth user, adding to admin_users with new password');
+          
+          // Generate new password and reset the auth user's password
+          const recoveryPassword = generateRandomPassword();
+          
+          // Update password in Supabase Auth
+          const { error: updateAuthError } = await supabaseClient.auth.admin.updateUserById(
+            existingAuthUser.id,
+            { password: recoveryPassword }
+          );
+
+          if (updateAuthError) {
+            console.error('Error updating orphaned auth user password:', updateAuthError);
+            return new Response(
+              JSON.stringify({ error: 'Failed to recover existing user' }),
+              { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          // Add to admin_users table
+          const { data: recoveredUser, error: adminUserError } = await supabaseClient
+            .from('admin_users')
+            .insert([{ 
+              email: email.toLowerCase(), 
+              role,
+              current_password: recoveryPassword,
+              password_reset_count: 1,
+              last_password_reset: new Date().toISOString()
+            }])
+            .select()
+            .single();
+
+          if (adminUserError) {
+            console.error('Error adding recovered user to admin_users:', adminUserError);
+            return new Response(
+              JSON.stringify({ error: 'Failed to recover user into admin system' }),
+              { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          return new Response(
+            JSON.stringify({ 
+              user: recoveredUser, 
+              newPassword: recoveryPassword,
+              message: 'User recovered and added to admin system successfully'
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // User doesn't exist in either system - Create new user
+        console.log('Creating new user in both Auth and admin_users');
+        
         // Generate random password
         const password = generateRandomPassword();
 
@@ -144,24 +217,7 @@ serve(async (req) => {
         });
 
         if (createAuthError) {
-          console.error('Error creating auth user:', createAuthError);
-          
-          // Handle specific case where email already exists in auth
-          if (createAuthError.message?.includes('email address has already been registered')) {
-            // Try to find existing auth user and clean up or provide better error
-            const { data: authUsers } = await supabaseClient.auth.admin.listUsers();
-            const existingAuthUser = authUsers?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
-            
-            if (existingAuthUser) {
-              return new Response(
-                JSON.stringify({ 
-                  error: 'User email already exists in authentication system. Please use a different email or contact support to resolve this conflict.' 
-                }),
-                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-              );
-            }
-          }
-          
+          console.error('Error creating new auth user:', createAuthError);
           return new Response(
             JSON.stringify({ error: createAuthError.message }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
