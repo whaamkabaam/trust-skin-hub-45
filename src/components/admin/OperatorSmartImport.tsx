@@ -73,6 +73,12 @@ interface ExtractedOperatorData {
     answer: string;
     category?: string;
   }>;
+  content_sections?: Array<{
+    section_key: string;
+    heading: string;
+    rich_text_content: string;
+    order_number: number;
+  }>;
   confidence_score?: number;
   unmatched_content?: string;
 }
@@ -182,7 +188,15 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
     
     // Apply data to form - localStorage storage now handled by OperatorForm
     onDataExtracted(extractedData);
-    toast.success('Extracted data applied to operator form! Check other tabs to review imported content.');
+    
+    // Show summary of what was imported
+    const importSummary = [];
+    if (extractedData.bonuses?.length) importSummary.push(`${extractedData.bonuses.length} bonuses`);
+    if (extractedData.payments?.length) importSummary.push(`${extractedData.payments.length} payment methods`);
+    if (extractedData.content_sections?.length) importSummary.push(`${extractedData.content_sections.length} content sections`);
+    if (extractedData.faqs?.length) importSummary.push(`${extractedData.faqs.length} FAQs`);
+    
+    toast.success(`Data applied! Imported: ${importSummary.join(', ')}. Check all tabs to review content.`);
     
     // Clear the imported data to prevent reapplication
     setExtractedData(null);
@@ -281,9 +295,10 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
     const paymentCount = extractedData?.payments?.length || 0;
     const featureCount = extractedData?.features?.length || 0;
     const faqCount = extractedData?.faqs?.length || 0;
+    const contentSectionCount = extractedData?.content_sections?.length || 0;
 
     // Calculate unmatched percentage more accurately
-    const totalExtracted = bonusCount + paymentCount + featureCount + faqCount + 
+    const totalExtracted = bonusCount + paymentCount + featureCount + faqCount + contentSectionCount +
       (extractedData?.pros?.length || 0) + (extractedData?.cons?.length || 0) +
       (extractedData?.ratings ? Object.keys(extractedData.ratings).length : 0);
     
@@ -358,6 +373,12 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
                 <div className="text-xs text-muted-foreground">FAQs</div>
               </div>
             </div>
+            <div className="grid grid-cols-1 gap-2 mt-2">
+              <div className="text-center">
+                <div className="text-lg font-bold text-teal-600">{contentSectionCount}</div>
+                <div className="text-xs text-muted-foreground">Content Sections</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -428,11 +449,12 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
             {renderStats()}
             
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
                 <TabsTrigger value="ratings">Ratings</TabsTrigger>
                 <TabsTrigger value="bonuses">Bonuses ({extractedData.bonuses?.length || 0})</TabsTrigger>
                 <TabsTrigger value="payments">Payments ({extractedData.payments?.length || 0})</TabsTrigger>
+                <TabsTrigger value="content">Content ({extractedData.content_sections?.length || 0})</TabsTrigger>
                 <TabsTrigger value="unmatched">Unmatched</TabsTrigger>
               </TabsList>
 
@@ -513,6 +535,33 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
                       </div>
                     ) : (
                       <p className="text-sm text-muted-foreground">No payment methods extracted</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="content" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm">Extracted Content Sections</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {extractedData.content_sections && extractedData.content_sections.length > 0 ? (
+                      <div className="space-y-3">
+                        {extractedData.content_sections.map((section, i) => (
+                          <div key={i} className="border rounded p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline">{section.section_key}</Badge>
+                              <span className="font-medium">{section.heading}</span>
+                            </div>
+                            <div className="text-sm text-muted-foreground max-h-20 overflow-y-auto">
+                              <div dangerouslySetInnerHTML={{ __html: section.rich_text_content.substring(0, 200) + '...' }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No content sections extracted</p>
                     )}
                   </CardContent>
                 </Card>

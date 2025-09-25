@@ -256,32 +256,41 @@ export function OperatorForm({
   // Save content sections independently 
   const saveContentSections = useCallback(async () => {
     if (effectiveOperatorId.startsWith('temp-')) {
-      throw new Error('Please save the operator first');
+      toast.error('Please save the operator first before saving content sections');
+      return;
     }
 
     const sections = getValues('content_sections');
     
-    // Delete existing sections for this operator
-    await supabase
-      .from('content_sections')
-      .delete()
-      .eq('operator_id', effectiveOperatorId);
-
-    // Insert new sections
-    if (sections.length > 0) {
-      const sectionsToInsert = sections.map((section, index) => ({
-        operator_id: effectiveOperatorId,
-        section_key: section.section_key,
-        heading: section.heading,
-        rich_text_content: section.rich_text_content,
-        order_number: index,
-      }));
-
-      const { error } = await supabase
+    try {
+      // Delete existing sections for this operator
+      await supabase
         .from('content_sections')
-        .insert(sectionsToInsert);
+        .delete()
+        .eq('operator_id', effectiveOperatorId);
 
-      if (error) throw error;
+      // Insert new sections
+      if (sections.length > 0) {
+        const sectionsToInsert = sections.map((section, index) => ({
+          operator_id: effectiveOperatorId,
+          section_key: section.section_key,
+          heading: section.heading,
+          rich_text_content: section.rich_text_content,
+          order_number: index,
+        }));
+
+        const { error } = await supabase
+          .from('content_sections')
+          .insert(sectionsToInsert);
+
+        if (error) throw error;
+      }
+      
+      toast.success('Content sections saved successfully');
+    } catch (error) {
+      console.error('Error saving content sections:', error);
+      toast.error('Failed to save content sections');
+      throw error;
     }
   }, [effectiveOperatorId, getValues]);
 
@@ -409,6 +418,8 @@ export function OperatorForm({
       supported_countries: data.supported_countries.filter(c => c.trim() !== ''),
       // Convert empty strings to null for timestamp fields
       scheduled_publish_at: data.scheduled_publish_at === '' ? null : data.scheduled_publish_at,
+      // Ensure content sections are included in the submission
+      content_sections: data.content_sections || [],
     };
     
     // Wrap publishing operations in error boundary

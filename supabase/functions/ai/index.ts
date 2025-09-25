@@ -138,9 +138,30 @@ RETURN JSON STRUCTURE:
     "answer": "Sign up and verify email/phone for 3 free boxes automatically",
     "category": "general"
   }],
+  "content_sections": [{
+    "section_key": "overview",
+    "heading": "Platform Overview",
+    "rich_text_content": "<p>Comprehensive overview content extracted from review</p>",
+    "order_number": 0
+  }, {
+    "section_key": "bonuses",
+    "heading": "Bonuses & Promotions", 
+    "rich_text_content": "<p>Detailed bonus information and terms</p>",
+    "order_number": 1
+  }],
   "confidence_score": 92,
   "unmatched_content": "Minor unrecognized elements only"
 }
+
+CONTENT SECTION GENERATION RULES:
+- Always create "overview" section from verdict and general platform description
+- Create "bonuses" section if bonuses are extracted → detailed bonus terms and conditions
+- Create "security" section if security/licensing info found → provably fair details, licensing
+- Create "payments" section if payment methods found → withdrawal times, fees, supported methods
+- Create "games" section if game types/features found → available games, features, betting options
+- Create "support" section if support channels found → contact methods, response times
+- Generate rich HTML content with proper formatting, lists, and structure
+- Each section should be 2-4 paragraphs with comprehensive information
 
 SPECIFIC EXTRACTION TARGETS FROM CONTENT:
 - Author names, publication dates → metadata (but not unmatched)
@@ -151,6 +172,7 @@ SPECIFIC EXTRACTION TARGETS FROM CONTENT:
 - Pros/cons lists → respective arrays
 - Question/answer pairs → faqs array
 - Company names/licenses → security.license_info
+- Review sections/paragraphs → content_sections array with rich content
 
 Return ONLY the JSON - no markdown, no explanations. Focus on HIGH CONFIDENCE extraction with minimal unmatched content.`
             },

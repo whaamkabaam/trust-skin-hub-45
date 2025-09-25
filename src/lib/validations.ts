@@ -51,6 +51,13 @@ export const operatorSchema = z.object({
   withdrawal_time_crypto: z.string().optional(),
   withdrawal_time_skins: z.string().optional(),
   withdrawal_time_fiat: z.string().optional(),
+  content_sections: z.array(z.object({
+    id: z.string().optional(),
+    section_key: z.string(),
+    heading: z.string(),
+    rich_text_content: z.string(),
+    order_number: z.number(),
+  })).default([]),
 });
 
 export type OperatorFormData = z.infer<typeof operatorSchema>;
