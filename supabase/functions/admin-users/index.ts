@@ -66,6 +66,13 @@ serve(async (req) => {
     }
 
     // Check if user is admin by querying admin_users table directly
+    if (!user.email) {
+      return new Response(
+        JSON.stringify({ error: 'User email not available' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { data: adminCheck, error: adminError } = await supabaseClient
       .from('admin_users')
       .select('role')

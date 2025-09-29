@@ -1,3 +1,64 @@
+// Taxonomy interfaces
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url?: string;
+  description_rich?: string;
+  display_order: number;
+  is_featured: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url?: string;
+  description_rich?: string;
+  display_order: number;
+  is_featured: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MysteryBox {
+  id: string;
+  operator_id?: string;
+  name: string;
+  slug: string;
+  image_url?: string;
+  game?: 'CS2' | 'Rust' | 'TF2' | 'Dota2' | 'Apple' | 'Tech';
+  price: number;
+  expected_value?: number;
+  profit_rate?: number;
+  min_price?: number;
+  odds_disclosed?: 'Yes' | 'Partial' | 'No';
+  verified: boolean;
+  provably_fair: boolean;
+  box_type: 'digital' | 'physical';
+  site_name?: string;
+  rarity_mix?: Record<string, any>;
+  highlights?: Array<{
+    name: string;
+    rarity: string;
+    icon?: string;
+  }>;
+  stats?: {
+    open_count: number;
+    avg_return: number;
+  };
+  popularity_score: number;
+  release_date: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  operator?: Operator;
+  categories?: Category[];
+}
+
 export interface Operator {
   id: string;
   name: string;
@@ -51,8 +112,13 @@ export interface Operator {
   gamingModes?: string[];
   games?: string[];
   categories?: string[];
+  // Relations
+  payment_methods?: PaymentMethod[];
+  mystery_boxes?: MysteryBox[];
+  derived_categories?: Category[];
 }
 
+// Legacy Case interface for backward compatibility
 export interface Case {
   id: string;
   name: string;
@@ -71,11 +137,6 @@ export interface Case {
     avgReturn: number;
   };
   releaseDate: string;
-}
-
-export interface MysteryBox extends Case {
-  type: 'digital' | 'physical';
-  category: string;
 }
 
 export interface Review {

@@ -47,6 +47,42 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          created_at: string
+          description_rich: string | null
+          display_order: number | null
+          id: string
+          is_featured: boolean | null
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_rich?: string | null
+          display_order?: number | null
+          id?: string
+          is_featured?: boolean | null
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_rich?: string | null
+          display_order?: number | null
+          id?: string
+          is_featured?: boolean | null
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       content_sections: {
         Row: {
           created_at: string
@@ -125,6 +161,128 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "media_assets_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: false
+            referencedRelation: "operators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mystery_box_categories: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          id: string
+          mystery_box_id: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          mystery_box_id?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          mystery_box_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mystery_box_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mystery_box_categories_mystery_box_id_fkey"
+            columns: ["mystery_box_id"]
+            isOneToOne: false
+            referencedRelation: "mystery_boxes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mystery_boxes: {
+        Row: {
+          box_type: string | null
+          created_at: string
+          expected_value: number | null
+          game: string | null
+          highlights: Json | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          min_price: number | null
+          name: string
+          odds_disclosed: string | null
+          operator_id: string | null
+          popularity_score: number | null
+          price: number
+          profit_rate: number | null
+          provably_fair: boolean | null
+          rarity_mix: Json | null
+          release_date: string | null
+          site_name: string | null
+          slug: string
+          stats: Json | null
+          updated_at: string
+          verified: boolean | null
+        }
+        Insert: {
+          box_type?: string | null
+          created_at?: string
+          expected_value?: number | null
+          game?: string | null
+          highlights?: Json | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          min_price?: number | null
+          name: string
+          odds_disclosed?: string | null
+          operator_id?: string | null
+          popularity_score?: number | null
+          price: number
+          profit_rate?: number | null
+          provably_fair?: boolean | null
+          rarity_mix?: Json | null
+          release_date?: string | null
+          site_name?: string | null
+          slug: string
+          stats?: Json | null
+          updated_at?: string
+          verified?: boolean | null
+        }
+        Update: {
+          box_type?: string | null
+          created_at?: string
+          expected_value?: number | null
+          game?: string | null
+          highlights?: Json | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          min_price?: number | null
+          name?: string
+          odds_disclosed?: string | null
+          operator_id?: string | null
+          popularity_score?: number | null
+          price?: number
+          profit_rate?: number | null
+          provably_fair?: boolean | null
+          rarity_mix?: Json | null
+          release_date?: string | null
+          site_name?: string | null
+          slug?: string
+          stats?: Json | null
+          updated_at?: string
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mystery_boxes_operator_id_fkey"
             columns: ["operator_id"]
             isOneToOne: false
             referencedRelation: "operators"
@@ -263,6 +421,42 @@ export type Database = {
             columns: ["operator_id"]
             isOneToOne: false
             referencedRelation: "operators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      operator_payment_methods: {
+        Row: {
+          created_at: string
+          id: string
+          operator_id: string | null
+          payment_method_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          operator_id?: string | null
+          payment_method_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          operator_id?: string | null
+          payment_method_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operator_payment_methods_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: false
+            referencedRelation: "operators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operator_payment_methods_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
             referencedColumns: ["id"]
           },
         ]
@@ -496,6 +690,42 @@ export type Database = {
           withdrawal_time_crypto?: string | null
           withdrawal_time_fiat?: string | null
           withdrawal_time_skins?: string | null
+        }
+        Relationships: []
+      }
+      payment_methods: {
+        Row: {
+          created_at: string
+          description_rich: string | null
+          display_order: number | null
+          id: string
+          is_featured: boolean | null
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_rich?: string | null
+          display_order?: number | null
+          id?: string
+          is_featured?: boolean | null
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_rich?: string | null
+          display_order?: number | null
+          id?: string
+          is_featured?: boolean | null
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
         }
         Relationships: []
       }

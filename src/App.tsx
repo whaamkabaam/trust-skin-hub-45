@@ -33,6 +33,8 @@ import SEOManager from "./pages/admin/SEOManager";
 import ReviewsManager from "./pages/admin/ReviewsManager";
 import AdminUsers from "./pages/admin/AdminUsers";
 import PublishingManager from "./pages/admin/PublishingManager";
+import Categories from "./pages/admin/Categories";
+import PaymentMethods from "./pages/admin/PaymentMethods";
 import Auth from "./pages/Auth";
 import LegacyOperatorReview from "./pages/LegacyOperatorReview";
 
@@ -81,6 +83,8 @@ const App = () => (
               <Route path="operators/:id/content" element={<OperatorContent />} />
               <Route path="operators/:id/media" element={<OperatorMedia />} />
               <Route path="operators/:id/seo" element={<OperatorSEO />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="payment-methods" element={<PaymentMethods />} />
               <Route path="publishing" element={<PublishingManager />} />
               <Route path="content" element={<ContentSections />} />
               <Route path="media" element={<MediaLibrary />} />
