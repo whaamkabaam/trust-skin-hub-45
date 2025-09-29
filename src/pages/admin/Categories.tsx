@@ -12,7 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useCategories, CategoryFormData } from '@/hooks/useCategories';
 import { generateUniqueOperatorSlug } from '@/lib/utils';
-import { AdminLayout } from '@/components/admin/AdminLayout';
 import { SEOHead } from '@/components/SEOHead';
 
 const Categories = () => {
@@ -94,8 +93,8 @@ const Categories = () => {
   };
 
   return (
-    <AdminLayout>
-      <SEOHead
+    <>
+      <SEOHead 
         title="Categories Management | Admin Dashboard"
         description="Manage mystery box categories, create new categories, and organize taxonomy structure."
       />
@@ -327,7 +326,7 @@ const Categories = () => {
           </CardContent>
         </Card>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

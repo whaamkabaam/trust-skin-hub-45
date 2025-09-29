@@ -171,23 +171,29 @@ export const sampleMysteryBoxes: MysteryBox[] = [
   {
     id: 'premium-knife-box',
     name: 'Premium Knife Collection',
-    image: '/img/boxes/premium-knife.jpg',
+    slug: 'premium-knife-collection',
+    image_url: '/img/boxes/premium-knife.jpg',
     game: 'CS2',
-    type: 'digital',
-    category: 'Knives',
-    minPrice: 49.99,
-    oddsDisclosed: 'Yes',
+    box_type: 'digital',
+    price: 49.99,
+    min_price: 49.99,
+    odds_disclosed: 'Yes',
     verified: true,
+    provably_fair: true,
+    popularity_score: 3240,
+    is_active: true,
+    created_at: '2024-01-15T00:00:00Z',
+    updated_at: '2024-01-15T00:00:00Z',
+    release_date: '2024-01-15T00:00:00Z',
     highlights: [
       { name: 'Karambit | Fade', icon: '/img/knives/karambit.svg', rarity: 'Legendary' },
       { name: 'Butterfly Knife | Tiger Tooth', icon: '/img/knives/butterfly.svg', rarity: 'Legendary' },
       { name: 'M9 Bayonet | Doppler', icon: '/img/knives/m9.svg', rarity: 'Epic' }
     ],
     stats: {
-      openCount: 3240,
-      avgReturn: 1.15
-    },
-    releaseDate: '2024-01-15'
+      open_count: 3240,
+      avg_return: 1.15
+    }
   }
 ];
 

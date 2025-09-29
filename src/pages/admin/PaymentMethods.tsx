@@ -12,7 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { usePaymentMethods, PaymentMethodFormData } from '@/hooks/usePaymentMethods';
 import { generateUniqueOperatorSlug } from '@/lib/utils';
-import { AdminLayout } from '@/components/admin/AdminLayout';
 import { SEOHead } from '@/components/SEOHead';
 
 const PaymentMethods = () => {
@@ -94,8 +93,8 @@ const PaymentMethods = () => {
   };
 
   return (
-    <AdminLayout>
-      <SEOHead
+    <>
+      <SEOHead 
         title="Payment Methods Management | Admin Dashboard"
         description="Manage operator payment methods, create new payment options, and organize payment taxonomy."
       />
@@ -327,7 +326,7 @@ const PaymentMethods = () => {
           </CardContent>
         </Card>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 
