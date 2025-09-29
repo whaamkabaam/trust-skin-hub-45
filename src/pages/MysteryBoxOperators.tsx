@@ -5,8 +5,17 @@ import Footer from '@/components/Footer';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { usePublicOperatorsQuery } from '@/hooks/usePublicOperatorsQuery';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 const MysteryBoxOperators = () => {
+  const { data, isLoading, error } = usePublicOperatorsQuery({
+    games: ['mystery-boxes'],
+    sortBy: '-rating'
+  });
+
+  const operators = data?.operators || [];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -48,197 +57,80 @@ const MysteryBoxOperators = () => {
       {/* Top Rated Operators */}
       <section className="container mx-auto px-4 pb-12">
         <div className="space-y-4 max-w-4xl mx-auto">
-          {/* Full-width operator card */}
-          <Card className="p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 flex-1">
-                <img 
-                  src="https://wordpress-1472941-5579290.cloudwaysapps.com/hub/images/ccc8c7f7-53cc-41ac-8e6d-0fe13f968fd3.png" 
-                  alt="CSGOEmpire" 
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg"
-                />
-                <div className="space-y-2 flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                    <h3 className="text-lg sm:text-xl font-bold">CSGOEmpire</h3>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">4.8</span>
-                        <span className="text-muted-foreground text-sm">(2,847 reviews)</span>
+          {isLoading ? (
+            // Loading state
+            Array.from({ length: 5 }, (_, i) => (
+              <Card key={i} className="p-4 md:p-6">
+                <div className="animate-pulse">
+                  <div className="flex gap-4">
+                    <div className="w-16 h-16 bg-muted rounded-lg"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-muted rounded w-1/3 mb-2"></div>
+                      <div className="h-3 bg-muted rounded w-1/2 mb-2"></div>
+                      <div className="h-3 bg-muted rounded w-2/3"></div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))
+          ) : operators.length === 0 ? (
+            // Empty state
+            <Card className="p-8 text-center">
+              <p className="text-muted-foreground">No mystery box operators found.</p>
+            </Card>
+          ) : (
+            // Real operators data
+            operators.map((operator) => (
+              <Card key={operator.id} className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 flex-1">
+                    {operator.logo ? (
+                      <img 
+                        src={operator.logo} 
+                        alt={operator.name} 
+                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold text-lg">
+                        {operator.name.charAt(0)}
+                      </div>
+                    )}
+                    <div className="space-y-2 flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <h3 className="text-lg sm:text-xl font-bold">{operator.name}</h3>
+                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                          {operator.verified && <Badge variant="secondary" className="bg-success/10 text-success">Verified</Badge>}
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-warning text-warning" />
+                            <span className="font-semibold">{operator.overallRating}</span>
+                            <span className="text-muted-foreground text-sm">(Trust: {operator.trustScore}/10)</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                        <span>Payment Methods: <span className="text-primary font-medium">{operator.paymentMethods.length}</span></span>
+                        <span>Trust Score: <span className="text-success font-medium">{operator.trustScore}/10</span></span>
+                        <span>Payout Speed: <span className="font-medium">{operator.payoutSpeed}</span></span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {operator.categories.map((category, i) => (
+                          <Badge key={i} variant="outline" className="capitalize">{category.replace('-', ' ')}</Badge>
+                        ))}
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                    <span>Number of boxes: <span className="text-blue-600 font-medium">127</span></span>
-                    <span>Trust Score: <span className="text-green-600 font-medium">9.2/10</span></span>
-                    <span>Payout Speed: <span className="font-medium">Instant</span></span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline">Mystery Boxes</Badge>
-                    <Badge variant="outline">CS2 Cases</Badge>
-                    <Badge variant="outline">Physical Items</Badge>
+                  <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
+                    <Button className="flex-1 sm:flex-none" asChild>
+                      <Link to={`/operator/${operator.slug}`}>Read Review</Link>
+                    </Button>
+                    <Button variant="outline" className="flex-1 sm:flex-none" asChild>
+                      <a href={operator.url} target="_blank" rel="noopener noreferrer">Visit Site</a>
+                    </Button>
                   </div>
                 </div>
-              </div>
-              <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
-                <Button className="flex-1 sm:flex-none">Read Review</Button>
-                <Button variant="outline" className="flex-1 sm:flex-none">Visit Site</Button>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 flex-1">
-                <img 
-                  src="https://wordpress-1472941-5579290.cloudwaysapps.com/hub/images/ccc8c7f7-53cc-41ac-8e6d-0fe13f968fd3.png" 
-                  alt="Cases.GG" 
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg"
-                />
-                <div className="space-y-2 flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                    <h3 className="text-lg sm:text-xl font-bold">Cases.GG</h3>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">4.6</span>
-                        <span className="text-muted-foreground text-sm">(1,923 reviews)</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                    <span>Number of boxes: <span className="text-blue-600 font-medium">89</span></span>
-                    <span>Trust Score: <span className="text-green-600 font-medium">8.9/10</span></span>
-                    <span>Payout Speed: <span className="font-medium">1-2 hours</span></span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline">Mystery Boxes</Badge>
-                    <Badge variant="outline">Novelty Items</Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
-                <Button className="flex-1 sm:flex-none">Read Review</Button>
-                <Button variant="outline" className="flex-1 sm:flex-none">Visit Site</Button>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 flex-1">
-                <img 
-                  src="https://wordpress-1472941-5579290.cloudwaysapps.com/hub/images/ccc8c7f7-53cc-41ac-8e6d-0fe13f968fd3.png" 
-                  alt="DatDrop" 
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg"
-                />
-                <div className="space-y-2 flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                    <h3 className="text-lg sm:text-xl font-bold">DatDrop</h3>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">4.5</span>
-                        <span className="text-muted-foreground text-sm">(1,654 reviews)</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                    <span>Number of boxes: <span className="text-blue-600 font-medium">73</span></span>
-                    <span>Trust Score: <span className="text-green-600 font-medium">8.7/10</span></span>
-                    <span>Payout Speed: <span className="font-medium">2-4 hours</span></span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline">Mystery Boxes</Badge>
-                    <Badge variant="outline">Digital Items</Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
-                <Button className="flex-1 sm:flex-none">Read Review</Button>
-                <Button variant="outline" className="flex-1 sm:flex-none">Visit Site</Button>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 flex-1">
-                <img 
-                  src="https://wordpress-1472941-5579290.cloudwaysapps.com/hub/images/ccc8c7f7-53cc-41ac-8e6d-0fe13f968fd3.png" 
-                  alt="KeyDrop" 
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg"
-                />
-                <div className="space-y-2 flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                    <h3 className="text-lg sm:text-xl font-bold">KeyDrop</h3>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">4.4</span>
-                        <span className="text-muted-foreground text-sm">(1,387 reviews)</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                    <span>Number of boxes: <span className="text-blue-600 font-medium">56</span></span>
-                    <span>Trust Score: <span className="text-green-600 font-medium">8.5/10</span></span>
-                    <span>Payout Speed: <span className="font-medium">3-6 hours</span></span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline">Mystery Boxes</Badge>
-                    <Badge variant="outline">Premium Items</Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
-                <Button className="flex-1 sm:flex-none">Read Review</Button>
-                <Button variant="outline" className="flex-1 sm:flex-none">Visit Site</Button>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 flex-1">
-                <img 
-                  src="https://wordpress-1472941-5579290.cloudwaysapps.com/hub/images/ccc8c7f7-53cc-41ac-8e6d-0fe13f968fd3.png" 
-                  alt="Hellcase" 
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg"
-                />
-                <div className="space-y-2 flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                    <h3 className="text-lg sm:text-xl font-bold">Hellcase</h3>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">4.2</span>
-                        <span className="text-muted-foreground text-sm">(2,156 reviews)</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                    <span>Number of boxes: <span className="text-blue-600 font-medium">42</span></span>
-                    <span>Trust Score: <span className="text-green-600 font-medium">8.3/10</span></span>
-                    <span>Payout Speed: <span className="font-medium">4-8 hours</span></span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline">Mystery Boxes</Badge>
-                    <Badge variant="outline">Budget Options</Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
-                <Button className="flex-1 sm:flex-none">Read Review</Button>
-                <Button variant="outline" className="flex-1 sm:flex-none">Visit Site</Button>
-              </div>
-            </div>
-          </Card>
+              </Card>
+            ))
+          )}
         </div>
 
         <div className="text-center mt-8">

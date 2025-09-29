@@ -13,10 +13,12 @@ import { LogIn } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, Shield, Clock, Users, ArrowRight, CheckCircle, AlertTriangle, ExternalLink, Star, Calendar, FileText, Globe, UserCheck, Award, Database, Target, Zap } from 'lucide-react';
 import { usePublicOperatorsQuery } from '@/hooks/usePublicOperatorsQuery';
+import { useMysteryBoxes } from '@/hooks/useMysteryBoxes';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 const Index = () => {
   const { data, isLoading, error, isError } = usePublicOperatorsQuery({});
+  const { mysteryBoxes, loading: boxesLoading } = useMysteryBoxes({});
   
   // Fallback stats for better UX and SEO
   const defaultStats = { 
@@ -27,6 +29,7 @@ const Index = () => {
   };
   
   const stats = data?.stats || defaultStats;
+  const operators = data?.operators || [];
   const loading = isLoading;
   
   return <div className="min-h-screen bg-background">
@@ -133,106 +136,109 @@ const Index = () => {
               <h2 className="text-2xl font-bold mb-2">Mystery Box Sites</h2>
               <p className="text-muted-foreground">Top verified mystery box platforms with proven fair algorithms</p>
             </div>
-            <Button variant="outline" size="sm">
-              All Mystery Box Sites <ArrowRight className="w-4 h-4 ml-1" />
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/mystery-boxes">
+                All Mystery Box Sites <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Hypedrop",
-                description: "Premium CS2 case opening site with verified drops",
-                rating: 4.5,
-                reviews: 905,
-                verified: true,
-                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
-                games: ["Battles", "Upgrader", "Custom Boxes", "Crash"],
-                paymentMethods: ["💳", "🅱️", "💰"]
-              },
-              {
-                name: "CSGORoll",
-                description: "Premium CS2 case opening site with verified drops",
-                rating: 4.5,
-                reviews: 652,
-                verified: true,
-                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
-                games: ["Battles", "Upgrader", "Roulette", "Crash"],
-                paymentMethods: ["💳", "🅱️", "💰"]
-              },
-              {
-                name: "CSGOEmpire",
-                description: "Premium CS2 case opening site with verified drops",
-                rating: 4.5,
-                reviews: 832,
-                verified: true,
-                features: ["Provably Fair", "Instant Payouts", "24/7 Support"],
-                games: ["Battles", "Upgrader", "Roulette", "Crash"],
-                paymentMethods: ["💳", "🅱️", "💰"]
-              }
-            ].map((site, index) => (
-              <Card key={index} className="border">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold text-lg">
-                        {site.name.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{site.name}</h3>
-                          {site.verified && <Badge variant="secondary" className="bg-success/10 text-success text-xs">Verified</Badge>}
-                        </div>
-                        <p className="text-sm text-muted-foreground">{site.description}</p>
-                      </div>
+            {boxesLoading ? (
+              // Loading state
+              Array.from({ length: 3 }, (_, i) => (
+                <Card key={i} className="border">
+                  <CardContent className="p-6">
+                    <div className="animate-pulse">
+                      <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-muted rounded w-1/2 mb-4"></div>
+                      <div className="h-3 bg-muted rounded w-full mb-2"></div>
+                      <div className="h-3 bg-muted rounded w-2/3"></div>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-1 mb-4">
-                    <Star className="w-4 h-4 fill-warning text-warning" />
-                    <span className="font-medium">{site.rating}</span>
-                    <Badge variant="outline" className="ml-1 text-xs">{site.reviews}</Badge>
-                  </div>
-
-                  <div className="space-y-3 mb-4">
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Accepts:</p>
-                      <div className="flex gap-1">
-                        {site.paymentMethods.map((method, i) => (
-                          <span key={i} className="text-lg">{method}</span>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-2">Key Features</p>
-                      <div className="space-y-1">
-                        {site.features.map((feature, i) => (
-                          <div key={i} className="flex items-center gap-2 text-xs">
-                            <CheckCircle className="w-3 h-3 text-success" />
-                            <span>{feature}</span>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              // Real mystery box operators
+              operators
+                .filter(op => op.categories.includes('mystery-boxes'))
+                .slice(0, 3)
+                .map((operator, index) => (
+                  <Card key={operator.id} className="border">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          {operator.logo ? (
+                            <img 
+                              src={operator.logo} 
+                              alt={operator.name}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold text-lg">
+                              {operator.name.charAt(0)}
+                            </div>
+                          )}
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{operator.name}</h3>
+                              {operator.verified && <Badge variant="secondary" className="bg-success/10 text-success text-xs">Verified</Badge>}
+                            </div>
+                            <p className="text-sm text-muted-foreground">{operator.verdict || 'Premium case opening platform'}</p>
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    </div>
+                      
+                      <div className="flex items-center gap-1 mb-4">
+                        <Star className="w-4 h-4 fill-warning text-warning" />
+                        <span className="font-medium">{operator.overallRating}</span>
+                        <Badge variant="outline" className="ml-1 text-xs">Trust: {operator.trustScore}/10</Badge>
+                      </div>
 
-                    <div className="flex flex-wrap gap-1 pt-2">
-                      {site.games.map((game, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">{game}</Badge>
-                      ))}
-                    </div>
-                  </div>
+                      <div className="space-y-3 mb-4">
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Payment Methods:</p>
+                          <div className="flex gap-1">
+                            {operator.paymentMethods.slice(0, 3).map((method, i) => (
+                              <span key={i} className="text-lg">💳</span>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-2">Key Features</p>
+                          <div className="space-y-1">
+                            {operator.pros.slice(0, 3).map((feature, i) => (
+                              <div key={i} className="flex items-center gap-2 text-xs">
+                                <CheckCircle className="w-3 h-3 text-success" />
+                                <span>{feature}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
 
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      Read Review
-                    </Button>
-                    <Button size="sm" className="flex-1">
-                      Visit Site <ExternalLink className="w-3 h-3 ml-1" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                        <div className="flex flex-wrap gap-1 pt-2">
+                          {operator.categories.slice(0, 3).map((category, i) => (
+                            <Badge key={i} variant="outline" className="text-xs capitalize">{category.replace('-', ' ')}</Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="flex-1" asChild>
+                          <Link to={`/operator/${operator.slug}`}>
+                            Read Review
+                          </Link>
+                        </Button>
+                        <Button size="sm" className="flex-1" asChild>
+                          <a href={operator.url} target="_blank" rel="noopener noreferrer">
+                            Visit Site <ExternalLink className="w-3 h-3 ml-1" />
+                          </a>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+            )}
           </div>
         </section>
 
