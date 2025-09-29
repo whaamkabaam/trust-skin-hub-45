@@ -6,26 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface Database {
-  public: {
-    Tables: {
-      operators: {
-        Row: {
-          id: string;
-          scheduled_publish_at: string | null;
-          publish_status: string;
-          published_at: string | null;
-        };
-        Update: {
-          publish_status?: string;
-          published_at?: string;
-          scheduled_publish_at?: string | null;
-        };
-      };
-    };
-  };
-}
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -35,7 +15,7 @@ serve(async (req) => {
   try {
     console.log('Schedule publisher function started');
     
-    const supabaseClient = createClient<Database>(
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
@@ -73,7 +53,7 @@ serve(async (req) => {
     }
 
     // Update all scheduled operators to published
-    const publishPromises = scheduledOperators.map(async (operator) => {
+    const publishPromises = scheduledOperators.map(async (operator: any) => {
       const { error: updateError } = await supabaseClient
         .from('operators')
         .update({
@@ -117,7 +97,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString()
       }),
       {

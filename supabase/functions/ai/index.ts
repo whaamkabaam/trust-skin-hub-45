@@ -401,7 +401,7 @@ Return ONLY raw JSON (no markdown):
   } catch (error) {
     console.error('Error in AI function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message || "Failed to get AI response",
+      error: error instanceof Error ? error.message : "Failed to get AI response",
       success: false
     }), {
       status: 500,

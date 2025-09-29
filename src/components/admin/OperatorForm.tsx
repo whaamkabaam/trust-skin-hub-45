@@ -79,7 +79,7 @@ export function OperatorForm({
       fairness_info: initialData.fairness_info || '',
       hero_image_url: initialData.hero_image_url || '',
       categories: (initialData.categories as string[]) || [],
-      payment_methods: [], // Will be loaded from relationships
+      payment_methods: [], // Will be loaded from relationships below
       pros: (initialData.pros as string[]) || [],
       cons: (initialData.cons as string[]) || [],
       supported_countries: (initialData.supported_countries as string[]) || [],
@@ -195,6 +195,44 @@ export function OperatorForm({
     };
 
     loadContentSections();
+  }, [initialData?.id, setValue]);
+
+  // Load payment methods for existing operators
+  useEffect(() => {
+    const loadPaymentMethods = async () => {
+      if (initialData?.id && !initialData.id.startsWith('temp-')) {
+        try {
+          const { data, error } = await supabase
+            .from('operator_payment_methods')
+            .select(`
+              payment_method_id,
+              payment_methods(id, name, slug, logo_url)
+            `)
+            .eq('operator_id', initialData.id);
+
+          if (error) throw error;
+          
+          // Transform to the format expected by EnhancedPaymentMethodsManager
+          if (data && data.length > 0) {
+            const paymentMethodDetails = data.map((item: any) => ({
+              payment_method_id: item.payment_method_id,
+              payment_method_name: item.payment_methods?.name || '',
+              minimum_amount: 0,
+              maximum_amount: 10000,
+              fee_percentage: 0,
+              fee_fixed: 0,
+              processing_time: '1-3 business days',
+              is_available: true
+            }));
+            setValue('payment_methods', paymentMethodDetails);
+          }
+        } catch (error) {
+          console.error('Error loading payment methods:', error);
+        }
+      }
+    };
+
+    loadPaymentMethods();
   }, [initialData?.id, setValue]);
 
   // Use stable temporary ID for new operators to prevent data loss during navigation
