@@ -35,6 +35,8 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import PublishingManager from "./pages/admin/PublishingManager";
 import Categories from "./pages/admin/Categories";
 import PaymentMethods from "./pages/admin/PaymentMethods";
+import MysteryBoxes from "./pages/admin/MysteryBoxes";
+import CategoryArchive from "./pages/CategoryArchive";
 import Auth from "./pages/Auth";
 import LegacyOperatorReview from "./pages/LegacyOperatorReview";
 
@@ -65,6 +67,7 @@ const App = () => (
             <Route path="/mystery-boxes/apple" element={<AppleMysteryBoxes />} />
             <Route path="/mystery-boxes/operators" element={<MysteryBoxOperators />} />
             <Route path="/mystery-boxes/:id" element={<MysteryBoxDetail />} />
+            <Route path="/categories/:categorySlug" element={<CategoryArchive />} />
             <Route path="/style-guide" element={<StyleGuide />} />
             <Route path="/auth" element={<Auth />} />
             
@@ -83,6 +86,7 @@ const App = () => (
               <Route path="operators/:id/content" element={<OperatorContent />} />
               <Route path="operators/:id/media" element={<OperatorMedia />} />
               <Route path="operators/:id/seo" element={<OperatorSEO />} />
+              <Route path="mystery-boxes" element={<MysteryBoxes />} />
               <Route path="categories" element={<Categories />} />
               <Route path="payment-methods" element={<PaymentMethods />} />
               <Route path="publishing" element={<PublishingManager />} />

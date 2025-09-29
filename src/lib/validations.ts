@@ -13,7 +13,16 @@ export const operatorSchema = z.object({
   bonus_terms: z.string().optional(),
   fairness_info: z.string().optional(),
   hero_image_url: z.string().refine((val) => val === '' || z.string().url().safeParse(val).success, 'Must be a valid URL or empty').optional(),
-  categories: z.array(z.string()).default([]),
+  categories: z.array(z.string()).default([]), // Category slugs
+  payment_methods: z.array(z.object({
+    payment_method_id: z.string(),
+    minimum_amount: z.number().optional(),
+    maximum_amount: z.number().optional(),
+    fee_percentage: z.number().optional(),
+    fee_fixed: z.number().optional(),
+    processing_time: z.string().optional(),
+    is_available: z.boolean().default(true)
+  })).default([]),
   pros: z.array(z.string()).default([]),
   cons: z.array(z.string()).default([]),
   supported_countries: z.array(z.string()).default([]),

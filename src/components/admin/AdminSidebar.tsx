@@ -9,6 +9,9 @@ import {
   Star,
   Users,
   Globe,
+  Tag,
+  CreditCard,
+  Box,
 } from 'lucide-react';
 
 const sidebarItems = [
@@ -21,6 +24,21 @@ const sidebarItems = [
     title: 'Operators',
     href: '/admin/operators',
     icon: Building2,
+  },
+  {
+    title: 'Mystery Boxes',
+    href: '/admin/mystery-boxes',
+    icon: Box,
+  },
+  {
+    title: 'Categories',
+    href: '/admin/categories',
+    icon: Tag,
+  },
+  {
+    title: 'Payment Methods',
+    href: '/admin/payment-methods',
+    icon: CreditCard,
   },
   {
     title: 'Publishing',

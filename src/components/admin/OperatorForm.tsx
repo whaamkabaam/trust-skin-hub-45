@@ -25,6 +25,8 @@ import { SaveStateIndicator } from '@/components/SaveStateIndicator';
 import { ContentScheduling } from '@/components/ContentScheduling';
 import { BonusManager } from './BonusManager';
 import { PaymentMethodsManager } from './PaymentMethodsManager';
+import { CategoryManager } from './CategoryManager';
+import { EnhancedPaymentMethodsManager } from './EnhancedPaymentMethodsManager';
 import { SecurityManager } from './SecurityManager';
 import { FAQManager } from './FAQManager';
 import { ContentSectionManager, type ContentSection } from './ContentSectionManager';
@@ -77,6 +79,7 @@ export function OperatorForm({
       fairness_info: initialData.fairness_info || '',
       hero_image_url: initialData.hero_image_url || '',
       categories: (initialData.categories as string[]) || [],
+      payment_methods: [], // Will be loaded from relationships
       pros: (initialData.pros as string[]) || [],
       cons: (initialData.cons as string[]) || [],
       supported_countries: (initialData.supported_countries as string[]) || [],
@@ -117,6 +120,7 @@ export function OperatorForm({
       fairness_info: '',
       hero_image_url: '',
       categories: [],
+      payment_methods: [],
       pros: [],
       cons: [],
       supported_countries: [],
@@ -159,6 +163,7 @@ export function OperatorForm({
 
   const ratings = watch('ratings');
   const categories = watch('categories');
+  const paymentMethodsData = watch('payment_methods');
   const pros = watch('pros');
   const cons = watch('cons');
   const countries = watch('supported_countries');
@@ -774,39 +779,20 @@ export function OperatorForm({
       </Card>
 
       {/* Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Categories</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {categories.map((category, index) => (
-            <div key={index} className="flex gap-2">
-              <Input
-                value={category}
-                onChange={(e) => updateArrayItem('categories', index, e.target.value)}
-                placeholder="Category name"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => removeArrayItem('categories', index)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => addArrayItem('categories')}
-            className="w-full"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Category
-          </Button>
-        </CardContent>
-      </Card>
+      <CategoryManager
+        selectedCategories={categories}
+        onCategoriesChange={(newCategories) => setValue('categories', newCategories)}
+        operatorId={effectiveOperatorId}
+        disabled={publishLoading || globalIsPublishing}
+      />
+
+      {/* Payment Methods */}
+      <EnhancedPaymentMethodsManager
+        selectedPaymentMethods={paymentMethodsData}
+        onPaymentMethodsChange={(methods) => setValue('payment_methods', methods)}
+        operatorId={effectiveOperatorId}
+        disabled={publishLoading || globalIsPublishing}
+      />
 
       {/* Pros and Cons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
