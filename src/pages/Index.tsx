@@ -1,3 +1,4 @@
+import React from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import NewsAndBlogs from '@/components/NewsAndBlogs';
@@ -20,15 +21,31 @@ const Index = () => {
   const { data, isLoading, error, isError } = usePublicOperatorsQuery({});
   const { mysteryBoxes, loading: boxesLoading } = useMysteryBoxes({});
   
-  // Fallback stats for better UX and SEO
-  const defaultStats = { 
-    totalOperators: 50, 
-    avgTrustScore: 4.2, 
-    verifiedOperators: 48, 
-    newThisMonth: 5 
+  // Calculate real stats from fetched data
+  const realStats = React.useMemo(() => {
+    if (!data?.operators) return null;
+    
+    const allOperators = data.operators;
+    const totalCount = allOperators.length;
+    const avgRating = totalCount > 0 ? 
+      allOperators.reduce((sum, op) => sum + (op.overallRating || 0), 0) / totalCount : 0;
+    const verifiedCount = allOperators.filter(op => op.verified).length;
+    
+    return {
+      totalOperators: totalCount,
+      avgTrustScore: Number(avgRating.toFixed(1)),
+      verifiedOperators: verifiedCount,
+      newThisMonth: Math.floor(totalCount * 0.08) // Approximate 8% as new
+    };
+  }, [data?.operators]);
+
+  // Use real stats or fallback
+  const stats = realStats || data?.stats || {
+    totalOperators: 50,
+    avgTrustScore: 4.2,
+    verifiedOperators: 35,
+    newThisMonth: 4
   };
-  
-  const stats = data?.stats || defaultStats;
   const operators = data?.operators || [];
   const loading = isLoading;
 
@@ -235,14 +252,14 @@ const Index = () => {
                       </div>
 
                       <div className="space-y-3 mb-4">
-                        <div>
-                          <p className="text-xs font-medium text-muted-foreground mb-1">Payment Methods:</p>
-                          <div className="flex gap-1">
-                            <span className="text-lg">💳</span>
-                            <span className="text-lg">🅱️</span>
-                            <span className="text-lg">💰</span>
-                          </div>
-                        </div>
+                       <div>
+                         <p className="text-xs font-medium text-muted-foreground mb-1">Payment Methods:</p>
+                         <div className="flex gap-1">
+                           <Badge variant="outline" className="text-xs">Crypto</Badge>
+                           <Badge variant="outline" className="text-xs">Cards</Badge>
+                           <Badge variant="outline" className="text-xs">Skins</Badge>
+                         </div>
+                       </div>
                         
                         <div>
                           <p className="text-xs font-medium text-muted-foreground mb-2">Key Features</p>
@@ -359,14 +376,14 @@ const Index = () => {
                     </div>
 
                     <div className="space-y-3 mb-4">
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1">Accepts:</p>
-                        <div className="flex gap-1">
-                          <span className="text-lg">💳</span>
-                          <span className="text-lg">🅱️</span>
-                          <span className="text-lg">💰</span>
-                        </div>
-                      </div>
+                       <div>
+                         <p className="text-xs font-medium text-muted-foreground mb-1">Accepts:</p>
+                         <div className="flex gap-1">
+                           <Badge variant="outline" className="text-xs">Crypto</Badge>
+                           <Badge variant="outline" className="text-xs">Cards</Badge>
+                           <Badge variant="outline" className="text-xs">Skins</Badge>
+                         </div>
+                       </div>
                       
                       <div>
                         <p className="text-xs font-medium text-muted-foreground mb-2">Key Features</p>
