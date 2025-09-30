@@ -35,8 +35,9 @@ export function useGlobalSearch() {
       if (filters.type === 'all' || filters.type === 'operator') {
         const { data: operators } = await supabase
           .from('operators')
-          .select('id, name, verdict, categories, ratings')
+          .select('id, name, slug, verdict, categories, ratings')
           .or(`name.ilike.%${query}%, verdict.ilike.%${query}%`)
+          .eq('published', true)
           .limit(10);
 
         if (operators) {
@@ -47,7 +48,8 @@ export function useGlobalSearch() {
               title: op.name,
               excerpt: op.verdict?.substring(0, 150) + '...' || 'No description available',
               rating: (op.ratings as any)?.overall || 0,
-              categories: op.categories || []
+              categories: op.categories || [],
+              url: `/operators/${op.slug}`
             });
           });
         }

@@ -58,13 +58,13 @@ export function GlobalSearch({ placeholder = "Search operators, content, reviews
   const getResultLink = (result: any) => {
     switch (result.type) {
       case 'operator':
-        return `/admin/operators/edit/${result.id}`;
+        return result.url || `/operators/${result.id}`;
       case 'review':
-        return `/admin/reviews`;
+        return result.url || '/';
       case 'content':
-        return `/admin/content/${result.id}`;
+        return result.url || '/';
       default:
-        return '#';
+        return '/';
     }
   };
 

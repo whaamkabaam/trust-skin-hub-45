@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams, Navigate } from 'react-router-dom';
 import { ArrowLeft, Star, ExternalLink, Home } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -6,15 +6,39 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useMysteryBoxDetail } from '@/hooks/useMysteryBoxDetail';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+
+const getVolatilityRisk = (volatility: number) => {
+  if (volatility <= 50) return 'Low';
+  if (volatility <= 100) return 'Medium';
+  if (volatility <= 200) return 'High';
+  return 'Extreme';
+};
 
 const MysteryBoxDetail = () => {
-  const getVolatilityRisk = (volatility: number) => {
-    if (volatility <= 50) return 'Low';
-    if (volatility <= 100) return 'Medium';
-    if (volatility <= 200) return 'High';
-    return 'Extreme';
-  };
+  const { id } = useParams<{ id: string }>();
+  const { mysteryBox, loading, error } = useMysteryBoxDetail(id || '');
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
+          <LoadingSpinner />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !mysteryBox) {
+    return <Navigate to="/mystery-boxes" replace />;
+  }
+
+  const volatility = mysteryBox.profit_rate ? (1 - mysteryBox.profit_rate) * 100 : 50;
+
+  // Mock items data - replace with actual mystery_box_items table query in production
   const boxData = {
     id: 'reduce-reuse-recycle',
     name: 'Reduce Reuse Recycle',
@@ -78,33 +102,49 @@ const MysteryBoxDetail = () => {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-2">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Home className="w-4 h-4" />
-          <span>Hub</span>
+          <Link to="/" className="hover:text-foreground">
+            <Home className="w-4 h-4" />
+          </Link>
           <span>/</span>
-          <span className="text-foreground">{boxData.name}</span>
+          <Link to="/mystery-boxes" className="hover:text-foreground">Mystery Boxes</Link>
+          <span>/</span>
+          <span className="text-foreground">{mysteryBox.name}</span>
         </div>
       </div>
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-8">
         {/* Title */}
-        <h1 className="text-4xl font-bold text-center mb-4">{boxData.name}</h1>
+        <h1 className="text-4xl font-bold text-center mb-4">{mysteryBox.name}</h1>
         
         {/* Operator */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <img 
-            src={boxData.operator.logo} 
-            alt={boxData.operator.name} 
-            className="w-8 h-8 rounded"
-          />
-          <span className="font-semibold text-purple-600">{boxData.operator.name}</span>
-          <ExternalLink className="w-4 h-4" />
-          <Button variant="outline" size="sm">
-            <Star className="w-4 h-4 mr-2" />
-            Read Review
-            <ExternalLink className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
+        {mysteryBox.operator && (
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <img 
+              src={mysteryBox.operator.logo_url || "https://placehold.co/100x100/1a1f2e/white?text=Logo"} 
+              alt={mysteryBox.operator.name} 
+              className="w-8 h-8 rounded object-cover"
+            />
+            <span className="font-semibold text-purple-600">{mysteryBox.operator.name}</span>
+            {mysteryBox.operator.tracking_link && (
+              <>
+                <ExternalLink className="w-4 h-4" />
+                <Button variant="outline" size="sm" asChild>
+                  <a href={mysteryBox.operator.tracking_link} target="_blank" rel="noopener noreferrer">
+                    Visit Site
+                    <ExternalLink className="w-4 h-4 ml-2" />
+                  </a>
+                </Button>
+              </>
+            )}
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/operators/${mysteryBox.operator.slug}`}>
+                <Star className="w-4 h-4 mr-2" />
+                Read Review
+              </Link>
+            </Button>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Side - Image and Main Stats */}
@@ -112,8 +152,8 @@ const MysteryBoxDetail = () => {
             {/* Mystery Box Image */}
             <div className="flex justify-center">
               <img 
-                src={boxData.image} 
-                alt={boxData.name}
+                src={mysteryBox.image_url || "https://placehold.co/600x400/1a1f2e/white?text=Mystery+Box"} 
+                alt={mysteryBox.name}
                 className="w-80 h-auto rounded-lg"
               />
             </div>
@@ -122,21 +162,25 @@ const MysteryBoxDetail = () => {
             <div className="grid grid-cols-3 gap-4">
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold">${boxData.price.toFixed(2)}</div>
+                  <div className="text-2xl font-bold">${mysteryBox.price.toFixed(2)}</div>
                   <div className="text-sm text-muted-foreground">Mystery Box Price</div>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-600">{boxData.expectedValue}%</div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {mysteryBox.expected_value ? `${mysteryBox.expected_value.toFixed(1)}%` : 'N/A'}
+                  </div>
                   <div className="text-sm text-muted-foreground">Expected Value</div>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-purple-600">{getVolatilityRisk(boxData.volatility)} ({boxData.volatility}%)</div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {getVolatilityRisk(volatility)} ({volatility.toFixed(0)}%)
+                  </div>
                   <div className="text-sm text-muted-foreground">Risk</div>
                 </CardContent>
               </Card>
@@ -145,13 +189,25 @@ const MysteryBoxDetail = () => {
             {/* All Tags */}
             <Card>
               <CardContent className="p-4">
-                <h4 className="font-semibold mb-3">All Tags</h4>
+                <h4 className="font-semibold mb-3">Tags & Categories</h4>
                 <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-purple-100 text-purple-700 border-purple-200">Parody</Badge>
-                  <Badge className="bg-blue-100 text-blue-700 border-blue-200">Novelty</Badge>
-                  <Badge className="bg-gray-100 text-gray-700 border-gray-200">Junk</Badge>
-                  <Badge className="bg-gray-100 text-gray-700 border-gray-200">Misc</Badge>
-                  <Badge className="bg-purple-100 text-purple-700 border-purple-200">Budget</Badge>
+                  {mysteryBox.verified && (
+                    <Badge className="bg-green-100 text-green-700 border-green-200">Verified</Badge>
+                  )}
+                  {mysteryBox.provably_fair && (
+                    <Badge className="bg-blue-100 text-blue-700 border-blue-200">Provably Fair</Badge>
+                  )}
+                  {mysteryBox.game && (
+                    <Badge className="bg-purple-100 text-purple-700 border-purple-200">{mysteryBox.game}</Badge>
+                  )}
+                  {mysteryBox.box_type && (
+                    <Badge className="bg-gray-100 text-gray-700 border-gray-200">{mysteryBox.box_type}</Badge>
+                  )}
+                  {mysteryBox.categories.map((cat) => (
+                    <Badge key={cat.id} className="bg-purple-100 text-purple-700 border-purple-200">
+                      {cat.name}
+                    </Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -160,15 +216,19 @@ const MysteryBoxDetail = () => {
             <div className="grid grid-cols-2 gap-4">
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-red-600">{boxData.floorRate}%</div>
-                  <div className="text-sm text-muted-foreground">Floor Rate</div>
+                  <div className="text-2xl font-bold text-red-600">
+                    ${mysteryBox.min_price?.toFixed(2) || 'N/A'}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Minimum Value</div>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-red-600">{boxData.lossChance}%</div>
-                  <div className="text-sm text-muted-foreground">Loss Chance</div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {mysteryBox.profit_rate ? `${(mysteryBox.profit_rate * 100).toFixed(1)}%` : 'N/A'}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Profit Rate</div>
                 </CardContent>
               </Card>
             </div>
