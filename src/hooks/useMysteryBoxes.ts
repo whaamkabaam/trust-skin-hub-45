@@ -89,7 +89,7 @@ export function useMysteryBoxes(filters?: MysteryBoxFilters) {
     } finally {
       setLoading(false);
     }
-  }, [filters, toast]);
+  }, [JSON.stringify(filters), toast]);
 
   const getMysteryBoxesByCategory = useCallback(async (categorySlug: string) => {
     try {
