@@ -111,24 +111,32 @@ const Index = () => {
   const operators = data?.operators || [];
   const loading = isLoading;
 
-  // Filter operators by category
+  // Filter operators by category with more flexible matching
   const mysteryBoxOperators = (operators || [])
-    .filter(op => op.categories && op.categories.includes('mystery-boxes'))
+    .filter(op => 
+      (op.categories && op.categories.includes('mystery-boxes')) ||
+      op.site_type === 'mystery-box'
+    )
     .slice(0, 3);
 
-  // Skin Sites section - operators with skin-related categories or games
+  // Skin Sites section - operators with skin-related categories or site type
   const skinOperators = (operators || [])
     .filter(op => 
-      (op.categories && (op.categories.includes('skins') || op.categories.includes('cs2-skins'))) ||
-      (op.site_type === 'skins')
+      op.site_type === 'skin-site' ||
+      (op.categories && op.categories.some(cat => 
+        cat.toLowerCase().includes('skin') || 
+        cat === 'cs2-cases' || 
+        cat === 'cs2-skins' ||
+        cat === 'skins'
+      ))
     )
     .slice(0, 3);
 
   // Online Casino operators
   const casinoOperators = (operators || [])
     .filter(op => 
-      (op.categories && op.categories.includes('casino')) ||
-      (op.site_type === 'casino')
+      op.site_type === 'casino' ||
+      (op.categories && op.categories.some(cat => cat.toLowerCase().includes('casino')))
     )
     .slice(0, 3);
   
