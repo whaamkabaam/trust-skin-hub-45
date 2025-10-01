@@ -528,13 +528,7 @@ const OperatorReview = () => {
                         <div className="flex gap-1 mt-1">
                           {payments?.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
                             <Badge key={i} variant="outline" className="text-xs">{formatPaymentMethod(payment.payment_method)}</Badge>
-                          )) || (
-                            <>
-                              <Badge variant="outline" className="text-xs">Visa</Badge>
-                              <Badge variant="outline" className="text-xs">Bitcoin</Badge>
-                              <Badge variant="outline" className="text-xs">Ethereum</Badge>
-                            </>
-                          )}
+                          ))}
                         </div>
                       </div>
                       <div className="flex justify-between">

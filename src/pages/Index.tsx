@@ -115,7 +115,9 @@ const Index = () => {
   const mysteryBoxOperators = (operators || [])
     .filter(op => 
       (op.categories && op.categories.includes('mystery-boxes')) ||
-      op.site_type === 'mystery-box'
+      op.site_type === 'mystery-box' ||
+      op.site_type === 'Mystery Box' ||
+      op.site_type === 'mystery_box'
     )
     .slice(0, 3);
 

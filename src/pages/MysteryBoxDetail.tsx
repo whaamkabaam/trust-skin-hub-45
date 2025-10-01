@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useMysteryBoxDetail } from '@/hooks/useMysteryBoxDetail';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { SimilarCasesSection } from '@/components/SimilarCasesSection';
 
 const getVolatilityRisk = (volatility: number) => {
   if (volatility <= 50) return 'Low';
@@ -297,56 +298,12 @@ const MysteryBoxDetail = () => {
             )}
 
             {/* Similar Cases */}
-            <Card className="bg-gray-50 dark:bg-gray-900/20 border-gray-200">
-              <CardContent className="p-4">
-                <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-4">Similar Cases</h3>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded flex items-center justify-center">
-                        <span className="text-xs text-white">📦</span>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium">Trash & Treasure Box</div>
-                        <div className="text-xs text-muted-foreground">Similar parody theme</div>
-                      </div>
-                    </div>
-                    <div className="text-sm font-bold">$0.25</div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded flex items-center justify-center">
-                        <span className="text-xs text-white">🎁</span>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium">Budget Mystery</div>
-                        <div className="text-xs text-muted-foreground">Low cost option</div>
-                      </div>
-                    </div>
-                    <div className="text-sm font-bold">$0.15</div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-2 bg-white/50 dark:bg-black/20 rounded">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded flex items-center justify-center">
-                        <span className="text-xs text-white">🎲</span>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium">Novelty Collection</div>
-                        <div className="text-xs text-muted-foreground">Fun themed items</div>
-                      </div>
-                    </div>
-                    <div className="text-sm font-bold">$0.50</div>
-                  </div>
-                </div>
-                
-                <Button variant="outline" size="sm" className="w-full mt-4">
-                  View All Similar Cases
-                </Button>
-              </CardContent>
-            </Card>
+            <SimilarCasesSection 
+              currentBoxId={mysteryBox.id}
+              operatorId={mysteryBox.operator?.id}
+              game={mysteryBox.game}
+              price={mysteryBox.price}
+            />
           </div>
         </div>
       </section>
