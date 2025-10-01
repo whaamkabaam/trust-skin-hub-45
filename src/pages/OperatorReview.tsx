@@ -523,14 +523,16 @@ const OperatorReview = () => {
                         <span className="text-muted-foreground">Launched:</span>
                         <span className="font-medium">{operator?.launch_year || 'N/A'}</span>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Payments:</span>
-                        <div className="flex gap-1 mt-1">
-                          {payments?.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
-                            <Badge key={i} variant="outline" className="text-xs">{formatPaymentMethod(payment.payment_method)}</Badge>
-                          ))}
+                      {payments && payments.length > 0 && (
+                        <div>
+                          <span className="text-muted-foreground">Payments:</span>
+                          <div className="flex gap-1 mt-1">
+                            {payments.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
+                              <Badge key={i} variant="outline" className="text-xs">{formatPaymentMethod(payment.payment_method)}</Badge>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">KYC:</span>
                         <span className="font-medium">{operator?.kycRequired ? 'Required' : 'Not Required'}</span>
@@ -544,24 +546,32 @@ const OperatorReview = () => {
             {/* Mobile Best Offer */}
             <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 mb-4">
               <CardContent className="p-4 space-y-3">
-                <div className="text-center">
-                  <div className="text-lg font-bold">{activeBonus?.title || 'Free $10 + 3 Cases'}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {activeBonus?.description || 'Welcome Bonus'}
+                {activeBonus ? (
+                  <>
+                    <div className="text-center">
+                      <div className="text-lg font-bold">{activeBonus.title}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {activeBonus.description}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-background rounded border border-dashed">
+                      <code className="flex-1 text-center font-mono text-sm">{promoCode}</code>
+                      <Button size="sm" variant="ghost" onClick={copyPromoCode}>
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <Button className="w-full" asChild>
+                      <a href={operator?.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Visit Site
+                      </a>
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center text-muted-foreground">
+                    <p>No active bonuses available</p>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 p-2 bg-background rounded border border-dashed">
-                  <code className="flex-1 text-center font-mono text-sm">{promoCode}</code>
-                  <Button size="sm" variant="ghost" onClick={copyPromoCode}>
-                    <Copy className="w-3 h-3" />
-                  </Button>
-                </div>
-                <Button className="w-full" asChild>
-                  <a href={operator?.url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Visit Site
-                  </a>
-                </Button>
+                )}
               </CardContent>
             </Card>
           </div>
