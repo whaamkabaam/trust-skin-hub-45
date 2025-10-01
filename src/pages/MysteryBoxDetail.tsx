@@ -38,14 +38,20 @@ const MysteryBoxDetail = () => {
 
   const volatility = mysteryBox.profit_rate ? (1 - mysteryBox.profit_rate) * 100 : 50;
 
-  // Get items from mystery box data
-  const items = mysteryBox?.rarity_mix?.items || [];
-  const highlights = mysteryBox?.highlights || [];
-  const stats = mysteryBox?.stats || {};
+  // Parse items from mystery box data - use highlights for featured items
+  const highlightedItems = mysteryBox.highlights || [];
+  const rarityMix = mysteryBox.rarity_mix || {};
   
-  const jackpotItems = highlights?.filter((h: any) => h.type === 'jackpot') || [];
-  const commonItems = items?.filter((item: any) => item.rarity === 'common' || item.drop_rate > 10) || [];
-  const allItems = items || [];
+  // Use highlights as all items if available
+  const allItems = highlightedItems.length > 0 ? highlightedItems : [];
+  
+  // Separate jackpot and common items based on rarity and drop rate
+  const jackpotItems = highlightedItems.filter((item: any) => 
+    item.rarity === 'legendary' || item.rarity === 'epic' || (item.drop_rate || 0) < 2
+  );
+  const commonItems = highlightedItems.filter((item: any) => 
+    item.rarity === 'common' || (item.drop_rate || 0) > 50
+  );
 
   return (
     <div className="min-h-screen bg-background">

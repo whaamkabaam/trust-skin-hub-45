@@ -122,23 +122,13 @@ const Index = () => {
   // Skin Sites section - operators with skin-related categories or site type
   const skinOperators = (operators || [])
     .filter(op => {
-      const hasSkinType = op.site_type === 'skin-site';
+      const hasSkinType = op.site_type === 'skin-site' || op.site_type === 'case_opening';
       const hasSkinCategory = op.categories && op.categories.some(cat => 
         cat.toLowerCase().includes('skin') || 
         cat === 'cs2-cases' || 
         cat === 'cs2-skins' ||
         cat === 'skins'
       );
-      if (op.name.toLowerCase().includes('case')) {
-        console.log('Skin filter check:', { 
-          name: op.name, 
-          site_type: op.site_type, 
-          categories: op.categories, 
-          hasSkinType, 
-          hasSkinCategory,
-          result: hasSkinType || hasSkinCategory 
-        });
-      }
       return hasSkinType || hasSkinCategory;
     })
     .slice(0, 3);
@@ -148,16 +138,6 @@ const Index = () => {
     .filter(op => {
       const hasCasinoType = op.site_type === 'casino';
       const hasCasinoCategory = op.categories && op.categories.some(cat => cat.toLowerCase().includes('casino'));
-      if (op.name.toLowerCase().includes('case')) {
-        console.log('Casino filter check:', { 
-          name: op.name, 
-          site_type: op.site_type, 
-          categories: op.categories, 
-          hasCasinoType, 
-          hasCasinoCategory,
-          result: hasCasinoType || hasCasinoCategory 
-        });
-      }
       return hasCasinoType || hasCasinoCategory;
     })
     .slice(0, 3);
