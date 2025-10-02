@@ -356,7 +356,7 @@ const Index = () => {
 
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" className="flex-1" asChild>
-                          <Link to={`/operator/${operator.slug}`}>
+                          <Link to={`/operators/${operator.slug}`}>
                             Read Review
                           </Link>
                         </Button>
@@ -480,7 +480,7 @@ const Index = () => {
 
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" className="flex-1" asChild>
-                        <Link to={`/operator/${operator.slug}`}>
+                        <Link to={`/operators/${operator.slug}`}>
                           Read Review
                         </Link>
                       </Button>
@@ -606,7 +606,7 @@ const Index = () => {
 
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" className="flex-1" asChild>
-                        <Link to={`/operator/${operator.slug}`}>
+                        <Link to={`/operators/${operator.slug}`}>
                           Read Review
                         </Link>
                       </Button>
