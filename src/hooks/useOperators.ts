@@ -79,8 +79,8 @@ export function useOperators() {
         }
         
         try {
-          // Extract content_sections from data since it's a separate table
-          const { content_sections, ...operatorData } = data as any;
+          // Extract relationship table data - these are managed separately, not columns in operators table
+          const { content_sections, payment_methods, ...operatorData } = data as any;
           
           // Consolidate all database updates in a single transaction
           let updateData: any = { 

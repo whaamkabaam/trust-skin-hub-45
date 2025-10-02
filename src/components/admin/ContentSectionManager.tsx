@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -46,6 +46,7 @@ export function ContentSectionManager({
   onSave,
   saveState = 'idle'
 }: ContentSectionManagerProps) {
+  const [selectedValue, setSelectedValue] = useState('');
 
   // Memoize available section options to prevent re-renders
   const availableSections = useMemo(() => {
@@ -68,6 +69,9 @@ export function ContentSectionManager({
 
     const newSections = [...sections, newSection];
     onSectionsChange(newSections);
+    
+    // Reset select value to show placeholder again
+    setSelectedValue('');
     
     // Show success toast with section name
     toast.success(`Added "${template.label}" section`);
@@ -115,7 +119,7 @@ export function ContentSectionManager({
           
           <div className="flex gap-2">
             {availableSections.length > 0 && (
-              <Select onValueChange={addSection} disabled={disabled}>
+              <Select value={selectedValue} onValueChange={addSection} disabled={disabled}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Add Section" />
                 </SelectTrigger>
