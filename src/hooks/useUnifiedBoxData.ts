@@ -53,7 +53,7 @@ interface UnifiedSummaryData {
 
 const PROVIDER_CONFIGS = {
   rillabox: {
-    tableName: 'rillabox_boxes',
+    tableName: 'rillabox',
     displayName: 'RillaBox',
     color: 'purple',
     gradient: 'from-purple-600 to-purple-700',
@@ -62,7 +62,7 @@ const PROVIDER_CONFIGS = {
     textColor: 'text-purple-700'
   },
   hypedrop: {
-    tableName: 'hypedrop_boxes',
+    tableName: 'hypedrop',
     displayName: 'Hypedrop',
     color: 'blue',
     gradient: 'from-blue-600 to-blue-700',
@@ -71,7 +71,7 @@ const PROVIDER_CONFIGS = {
     textColor: 'text-blue-700'
   },
   casesgg: {
-    tableName: 'casesgg_boxes',
+    tableName: 'casesgg',
     displayName: 'Cases.GG',
     color: 'green',
     gradient: 'from-green-600 to-green-700',
@@ -80,7 +80,7 @@ const PROVIDER_CONFIGS = {
     textColor: 'text-green-700'
   },
   luxdrop: {
-    tableName: 'luxdrop_boxes',
+    tableName: 'luxdrop',
     displayName: 'Luxdrop',
     color: 'amber',
     gradient: 'from-amber-600 to-amber-700',
