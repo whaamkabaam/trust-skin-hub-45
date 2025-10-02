@@ -185,5 +185,38 @@ export interface BlogPost {
   readTime: number;
 }
 
+// Mystery Box Data Types
+export interface BoxItem {
+  name: string;
+  value: number;
+  drop_chance: number;
+  image?: string;
+  type?: string;
+}
+
+export interface RillaBoxMetricsBox {
+  box_name: string;
+  box_price: number;
+  box_image: string;
+  expected_value_percent_of_price: number;
+  volatility_bucket: 'Low' | 'Medium' | 'High';
+  standard_deviation_percent: number;
+  floor_rate_percent: number;
+  category: string;
+  tags: string[];
+  jackpot_items: BoxItem[];
+  unwanted_items: BoxItem[];
+  all_items: BoxItem[];
+  provider?: 'rillabox' | 'hypedrop' | 'casesgg' | 'luxdrop';
+  provider_config?: {
+    displayName: string;
+    color: string;
+    gradient: string;
+    bgColor: string;
+    borderColor: string;
+    textColor: string;
+  };
+}
+
 export type TrustLevel = 'high' | 'medium' | 'low';
 export type FeeLevel = 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';
