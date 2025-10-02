@@ -79,9 +79,12 @@ export function useOperators() {
         }
         
         try {
+          // Extract content_sections from data since it's a separate table
+          const { content_sections, ...operatorData } = data as any;
+          
           // Consolidate all database updates in a single transaction
           let updateData: any = { 
-            ...data, 
+            ...operatorData, 
             updated_at: new Date().toISOString()
           };
           
@@ -130,6 +133,43 @@ export function useOperators() {
           if (error) {
             console.error('Database update error:', error);
             throw error;
+          }
+          
+          // Save content sections separately if provided
+          if (content_sections && Array.isArray(content_sections)) {
+            console.log('Saving content sections separately...');
+            
+            // Delete existing content sections
+            const { error: deleteError } = await supabase
+              .from('content_sections')
+              .delete()
+              .eq('operator_id', id);
+            
+            if (deleteError) {
+              console.error('Error deleting old content sections:', deleteError);
+            }
+            
+            // Insert new content sections
+            if (content_sections.length > 0) {
+              const sectionsToInsert = content_sections.map((section: any, index: number) => ({
+                operator_id: id,
+                section_key: section.section_key,
+                heading: section.heading,
+                rich_text_content: section.rich_text_content,
+                order_number: index
+              }));
+              
+              const { error: insertError } = await supabase
+                .from('content_sections')
+                .insert(sectionsToInsert);
+              
+              if (insertError) {
+                console.error('Error inserting content sections:', insertError);
+                throw insertError;
+              }
+              
+              console.log('Content sections saved successfully');
+            }
           }
           
           console.log('Operator record updated successfully:', updatedOperator);

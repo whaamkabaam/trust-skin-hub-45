@@ -43,7 +43,7 @@ export function EnhancedPaymentMethodsManager({
     !selectedMethodIds.includes(method.id)
   );
 
-  const handleAddPaymentMethod = () => {
+  const handleAddPaymentMethod = async () => {
     if (!selectedMethodId) return;
     
     const method = paymentMethods.find(m => m.id === selectedMethodId);
@@ -63,16 +63,54 @@ export function EnhancedPaymentMethodsManager({
     onPaymentMethodsChange(updatedMethods);
     setSelectedMethodId('');
     
-    toast.success(`Added ${method.name} payment method`);
+    // Sync to database if operator exists
+    if (operatorId && !operatorId.startsWith('temp-')) {
+      try {
+        const { supabase } = await import('@/integrations/supabase/client');
+        await supabase
+          .from('operator_payment_methods')
+          .insert({
+            operator_id: operatorId,
+            payment_method_id: selectedMethodId
+          });
+        
+        toast.success(`Added ${method.name} payment method`);
+      } catch (error) {
+        console.error('Error syncing payment method to database:', error);
+        toast.error('Failed to sync payment method');
+      }
+    } else {
+      toast.success(`Added ${method.name} payment method`);
+    }
   };
 
-  const handleRemovePaymentMethod = (index: number) => {
-    const method = paymentMethods.find(m => m.id === selectedPaymentMethods[index].payment_method_id);
+  const handleRemovePaymentMethod = async (index: number) => {
+    const removedMethod = selectedPaymentMethods[index];
+    const method = paymentMethods.find(m => m.id === removedMethod.payment_method_id);
     const updatedMethods = selectedPaymentMethods.filter((_, i) => i !== index);
     onPaymentMethodsChange(updatedMethods);
     
-    if (method) {
-      toast.success(`Removed ${method.name} payment method`);
+    // Sync to database if operator exists
+    if (operatorId && !operatorId.startsWith('temp-')) {
+      try {
+        const { supabase } = await import('@/integrations/supabase/client');
+        await supabase
+          .from('operator_payment_methods')
+          .delete()
+          .eq('operator_id', operatorId)
+          .eq('payment_method_id', removedMethod.payment_method_id);
+        
+        if (method) {
+          toast.success(`Removed ${method.name} payment method`);
+        }
+      } catch (error) {
+        console.error('Error removing payment method from database:', error);
+        toast.error('Failed to remove payment method');
+      }
+    } else {
+      if (method) {
+        toast.success(`Removed ${method.name} payment method`);
+      }
     }
   };
 

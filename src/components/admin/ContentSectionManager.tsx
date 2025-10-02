@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { StableRichTextEditor } from './StableRichTextEditor';
 import { Plus, Trash2, GripVertical, Save } from 'lucide-react';
 import { toast } from '@/lib/toast';
@@ -67,6 +68,9 @@ export function ContentSectionManager({
 
     const newSections = [...sections, newSection];
     onSectionsChange(newSections);
+    
+    // Show success toast with section name
+    toast.success(`Added "${template.label}" section`);
   }, [sections, onSectionsChange, disabled]);
 
   const updateSection = useCallback((index: number, field: keyof ContentSection, value: string | number) => {
@@ -157,13 +161,18 @@ export function ContentSectionManager({
               const template = SECTION_TEMPLATES.find(t => t.key === section.section_key);
               
               return (
-                <Card key={`section-${index}-${section.section_key}`}>
+                <Card key={`section-${index}-${section.section_key}`} className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <GripVertical className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <CardTitle className="text-base">{template?.label || section.section_key}</CardTitle>
+                          <CardTitle className="text-base flex items-center gap-2">
+                            {template?.label || section.section_key}
+                            {index === sections.length - 1 && (
+                              <Badge variant="secondary" className="text-xs">New</Badge>
+                            )}
+                          </CardTitle>
                         </div>
                       </div>
                       
