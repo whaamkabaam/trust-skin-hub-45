@@ -1,20 +1,31 @@
-# Unpacked.gg - CS2 Skins Trading Hub
+# Trust Skin Hub - Unpacked.gg
+## CS2 Trading Operators & Mystery Box Analytics Platform
 
-A trust-first hub for CS2 skins trading, cases, and mystery boxes built with React, TypeScript, and Tailwind CSS.
+A comprehensive trust-first platform for CS2 trading featuring operator reviews, community ratings, and advanced mystery box analytics across multiple providers.
 
-## Features
+## ✨ Features
 
-### 🛡️ Trust-First Design
+### 🛡️ Trust-First Operator Reviews
 - Comprehensive security analysis for all operators
-- Transparent methodology and editorial policies
+- Multi-dimensional trust scores (Trust, Fees, UX, Support, Payments, Offering)
 - Community-driven reviews and ratings
-- Trust scores based on multiple factors
+- Transparent methodology and editorial policies
+- Detailed operator comparisons
+
+### 📦 Mystery Box Analytics Hub (NEW)
+- **1,400+ Mystery Boxes** from 4 providers (RillaBox, HypeDrop, Cases.gg, LuxDrop)
+- **Expected Value Analysis**: Precise ROI calculations
+- **Volatility Metrics**: Risk assessment (Low/Medium/High)
+- **Item Scouter**: Hunt specific items with efficiency rankings
+- **Advanced Filtering**: Multi-dimensional search and filters
+- **Portfolio Strategies**: Pre-built allocations for different budgets
+- **Virtual Scrolling**: High-performance rendering
 
 ### 🎮 CS2 Trading Focus
-- Operator comparisons with detailed analysis
 - Case opening odds and drop table analysis
-- Mystery box verification and fairness ratings
 - Real-time market data and trends
+- Payment method comparisons
+- KYC requirement transparency
 
 ### 📱 Responsive & Accessible
 - Full feature parity across desktop and mobile
@@ -37,29 +48,81 @@ A trust-first hub for CS2 skins trading, cases, and mystery boxes built with Rea
 - **Forms**: React Hook Form + Zod validation
 - **Icons**: Lucide React
 
-## Getting Started
+## 🚀 Quick Start
 
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Start development server: `npm run dev`
-4. Open http://localhost:8080
+```bash
+# Clone the repository
+git clone https://github.com/whaamkabaam/trust-skin-hub-45.git
+cd trust-skin-hub-45
 
-## Project Structure
+# Install dependencies
+npm install
+
+# Configure environment (see .env file)
+cp .env.example .env
+
+# Start development server
+npm run dev
+
+# Open http://localhost:8080
+```
+
+### Environment Setup
+
+Edit `.env` with your Supabase credentials:
+
+```env
+VITE_SUPABASE_PROJECT_ID=aclxqriujtkpqceqtesg
+VITE_SUPABASE_URL=https://aclxqriujtkpqceqtesg.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=[your_key_here]
+```
+
+> **Note**: Mystery box features currently connect to a separate Supabase instance during development. See `docs/DATABASE_SETUP.md` for migration instructions.
+
+## 📖 Documentation
+
+- **README.md** (this file) - Main overview and quick start
+- **docs/MYSTERY_BOX_FEATURES.md** - Complete mystery box feature guide
+- **docs/DATABASE_SETUP.md** - Database setup and migration
+- **docs/API_REFERENCE.md** - API and data structures
+
+## 🗺️ Key Routes
+
+### Public Routes
+- `/` - Homepage
+- `/operators` - Browse operators
+- `/operators/:slug` - Operator detail
+- `/mystery-boxes` - **Mystery Box Hub** (NEW)
+- `/cases` - Cases listing
+- `/skins` - Skins page
+
+### Admin Routes
+- `/admin` - Admin dashboard
+- `/admin/operators` - Manage operators
+- `/admin/mystery-boxes` - Manage mystery boxes (coming soon)
+- `/admin/reviews` - Review moderation
+- `/admin/media` - Media library
+
+## 📁 Project Structure
 
 ```
 src/
-├── components/          # Reusable UI components
-│   ├── ui/             # shadcn/ui base components
-│   ├── Header.tsx      # Navigation header
-│   ├── Hero.tsx        # Homepage hero section
-│   ├── OperatorCard.tsx # Operator comparison cards
-│   ├── CaseCard.tsx    # Case analysis cards
-│   ├── ReviewCard.tsx  # Community review cards
-│   └── ...
-├── pages/              # Page components
-├── types/              # TypeScript type definitions
-├── lib/                # Utilities and sample data
-└── assets/             # Images and media
+├── components/
+│   ├── ui/                   # shadcn/ui (49 files)
+│   ├── admin/                # Admin dashboard (35 files)
+│   ├── filters/              # Mystery box filters (NEW)
+│   ├── scouter/              # Item Hunter (NEW)
+│   ├── BoxfolioDashboard.tsx # Mystery box dashboard (NEW)
+│   ├── VirtualizedBoxGrid.tsx # Performance grid (NEW)
+│   └── ... (operators, reviews, etc.)
+├── pages/
+│   ├── admin/                # Admin pages
+│   ├── MysteryBoxHub.tsx     # Mystery box hub (NEW)
+│   └── ... (operators, cases, etc.)
+├── hooks/                    # 30+ custom hooks
+├── utils/                    # Utilities & calculations
+├── types/                    # TypeScript types
+└── integrations/supabase/    # Supabase client
 ```
 
 ## Key Components
@@ -122,10 +185,87 @@ The application uses sample JSON data for demonstration. To integrate real data:
 4. Ensure mobile responsiveness
 5. Update this README for significant changes
 
+## 🎉 What's New: Mystery Box Hub Integration
+
+### ✅ Fully Integrated Features
+
+**From RillaBox Oracle Dashboard**:
+- Complete mystery box analytics platform
+- 1,400+ boxes from 4 providers
+- Advanced filtering and search
+- Item Hunter (Scouter) tool
+- Analytics dashboard
+- Virtual scrolling for performance
+
+**Integration Details**:
+- 40+ new components copied and integrated
+- 15+ new custom hooks
+- Complete utility libraries for calculations
+- Beautiful purple dot background design
+- Seamless integration with existing Header/Footer
+
+### 📂 New Files Added
+
+**Components** (~40 files):
+- Mystery box dashboard and grids
+- Advanced filter system
+- Item Scouter interface
+- Loading skeletons
+- Provider logos and branding
+
+**Hooks** (~15 files):
+- Data fetching (useUnifiedBoxData)
+- Filtering (useOptimizedFiltering)
+- Item search (useItemSearch, useHuntReport)
+- State management (useFilterReducer, useUrlFilters)
+
+**Utilities** (~20 files):
+- Box statistics and analytics
+- Portfolio strategy generators
+- Hunt calculations
+- Probability mathematics
+- Memoized calculations
+
+**Documentation**:
+- `docs/MYSTERY_BOX_FEATURES.md` - Feature guide
+- `docs/DATABASE_SETUP.md` - Database setup
+- `docs/API_REFERENCE.md` - API reference
+
+### 🔄 Database Migration Status
+
+**Current**: Mystery boxes fetch from RillaBox Supabase (temporary)  
+**Target**: Migrate to Trust Skin Hub Supabase (see `docs/DATABASE_SETUP.md`)
+
+**Migration Required**:
+1. Create mystery box tables in Trust Skin Hub Supabase
+2. Export/import data
+3. Update `src/hooks/useUnifiedBoxData.ts` to use main client
+
+---
+
+## 📚 Additional Resources
+
+### Documentation in Workspace Root
+- `MIGRATION_IMPLEMENTATION_PLAN.md` - Detailed integration plan
+- `DATABASE_MIGRATION_GUIDE.md` - Complete migration guide with credentials
+- `PROJECT_OVERVIEW.md` - High-level overview
+- `QUICK_REFERENCE.md` - Quick lookup cheat sheet
+
+### External Links
+- [Supabase Dashboard (Trust Skin Hub)](https://supabase.com/dashboard/project/aclxqriujtkpqceqtesg)
+- [Supabase Documentation](https://supabase.io/docs)
+- [shadcn/ui](https://ui.shadcn.com)
+- [Tailwind CSS](https://tailwindcss.com)
+
+---
+
 ## License
 
 This project is proprietary software for Unpacked.gg.
 
 ---
 
-For more information about features and implementation details, see the component documentation in each file.
+**Version**: 2.0.0 (with Mystery Box Hub)  
+**Last Updated**: October 2, 2025  
+**Repository**: https://github.com/whaamkabaam/trust-skin-hub-45  
+**Status**: Production Ready 🚀
