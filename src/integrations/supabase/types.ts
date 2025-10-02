@@ -47,6 +47,66 @@ export type Database = {
         }
         Relationships: []
       }
+      casesgg: {
+        Row: {
+          all_items: Json | null
+          box_image: string | null
+          box_name: string
+          box_price: number
+          box_url: string | null
+          category: string | null
+          data_source: string | null
+          ev_to_price_ratio: number | null
+          expected_value_percent: number | null
+          floor_rate_percent: number | null
+          id: number
+          jackpot_items: Json | null
+          last_updated: string | null
+          standard_deviation_percent: number | null
+          tags: Json | null
+          unwanted_items: Json | null
+          volatility_bucket: string | null
+        }
+        Insert: {
+          all_items?: Json | null
+          box_image?: string | null
+          box_name: string
+          box_price: number
+          box_url?: string | null
+          category?: string | null
+          data_source?: string | null
+          ev_to_price_ratio?: number | null
+          expected_value_percent?: number | null
+          floor_rate_percent?: number | null
+          id: number
+          jackpot_items?: Json | null
+          last_updated?: string | null
+          standard_deviation_percent?: number | null
+          tags?: Json | null
+          unwanted_items?: Json | null
+          volatility_bucket?: string | null
+        }
+        Update: {
+          all_items?: Json | null
+          box_image?: string | null
+          box_name?: string
+          box_price?: number
+          box_url?: string | null
+          category?: string | null
+          data_source?: string | null
+          ev_to_price_ratio?: number | null
+          expected_value_percent?: number | null
+          floor_rate_percent?: number | null
+          id?: number
+          jackpot_items?: Json | null
+          last_updated?: string | null
+          standard_deviation_percent?: number | null
+          tags?: Json | null
+          unwanted_items?: Json | null
+          volatility_bucket?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -123,6 +183,126 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      hypedrop: {
+        Row: {
+          all_items: Json | null
+          box_image: string | null
+          box_name: string
+          box_price: number
+          box_url: string | null
+          category: string | null
+          data_source: string | null
+          ev_to_price_ratio: number | null
+          expected_value_percent: number | null
+          floor_rate_percent: number | null
+          id: number
+          jackpot_items: Json | null
+          last_updated: string | null
+          standard_deviation_percent: number | null
+          tags: Json | null
+          unwanted_items: Json | null
+          volatility_bucket: string | null
+        }
+        Insert: {
+          all_items?: Json | null
+          box_image?: string | null
+          box_name: string
+          box_price: number
+          box_url?: string | null
+          category?: string | null
+          data_source?: string | null
+          ev_to_price_ratio?: number | null
+          expected_value_percent?: number | null
+          floor_rate_percent?: number | null
+          id: number
+          jackpot_items?: Json | null
+          last_updated?: string | null
+          standard_deviation_percent?: number | null
+          tags?: Json | null
+          unwanted_items?: Json | null
+          volatility_bucket?: string | null
+        }
+        Update: {
+          all_items?: Json | null
+          box_image?: string | null
+          box_name?: string
+          box_price?: number
+          box_url?: string | null
+          category?: string | null
+          data_source?: string | null
+          ev_to_price_ratio?: number | null
+          expected_value_percent?: number | null
+          floor_rate_percent?: number | null
+          id?: number
+          jackpot_items?: Json | null
+          last_updated?: string | null
+          standard_deviation_percent?: number | null
+          tags?: Json | null
+          unwanted_items?: Json | null
+          volatility_bucket?: string | null
+        }
+        Relationships: []
+      }
+      luxdrop: {
+        Row: {
+          all_items: Json | null
+          box_image: string | null
+          box_name: string
+          box_price: number
+          box_url: string | null
+          category: string | null
+          data_source: string | null
+          ev_to_price_ratio: number | null
+          expected_value_percent: number | null
+          floor_rate_percent: number | null
+          id: number
+          jackpot_items: Json | null
+          last_updated: string | null
+          standard_deviation_percent: number | null
+          tags: Json | null
+          unwanted_items: Json | null
+          volatility_bucket: string | null
+        }
+        Insert: {
+          all_items?: Json | null
+          box_image?: string | null
+          box_name: string
+          box_price: number
+          box_url?: string | null
+          category?: string | null
+          data_source?: string | null
+          ev_to_price_ratio?: number | null
+          expected_value_percent?: number | null
+          floor_rate_percent?: number | null
+          id: number
+          jackpot_items?: Json | null
+          last_updated?: string | null
+          standard_deviation_percent?: number | null
+          tags?: Json | null
+          unwanted_items?: Json | null
+          volatility_bucket?: string | null
+        }
+        Update: {
+          all_items?: Json | null
+          box_image?: string | null
+          box_name?: string
+          box_price?: number
+          box_url?: string | null
+          category?: string | null
+          data_source?: string | null
+          ev_to_price_ratio?: number | null
+          expected_value_percent?: number | null
+          floor_rate_percent?: number | null
+          id?: number
+          jackpot_items?: Json | null
+          last_updated?: string | null
+          standard_deviation_percent?: number | null
+          tags?: Json | null
+          unwanted_items?: Json | null
+          volatility_bucket?: string | null
+        }
+        Relationships: []
       }
       media_assets: {
         Row: {
@@ -828,6 +1008,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rillabox: {
+        Row: {
+          all_items: Json | null
+          box_image: string | null
+          box_name: string
+          box_price: number
+          box_url: string | null
+          category: string | null
+          data_source: string | null
+          ev_to_price_ratio: number | null
+          expected_value_percent: number | null
+          floor_rate_percent: number | null
+          id: number
+          jackpot_items: Json | null
+          last_updated: string | null
+          standard_deviation_percent: number | null
+          tags: Json | null
+          unwanted_items: Json | null
+          volatility_bucket: string | null
+        }
+        Insert: {
+          all_items?: Json | null
+          box_image?: string | null
+          box_name: string
+          box_price: number
+          box_url?: string | null
+          category?: string | null
+          data_source?: string | null
+          ev_to_price_ratio?: number | null
+          expected_value_percent?: number | null
+          floor_rate_percent?: number | null
+          id: number
+          jackpot_items?: Json | null
+          last_updated?: string | null
+          standard_deviation_percent?: number | null
+          tags?: Json | null
+          unwanted_items?: Json | null
+          volatility_bucket?: string | null
+        }
+        Update: {
+          all_items?: Json | null
+          box_image?: string | null
+          box_name?: string
+          box_price?: number
+          box_url?: string | null
+          category?: string | null
+          data_source?: string | null
+          ev_to_price_ratio?: number | null
+          expected_value_percent?: number | null
+          floor_rate_percent?: number | null
+          id?: number
+          jackpot_items?: Json | null
+          last_updated?: string | null
+          standard_deviation_percent?: number | null
+          tags?: Json | null
+          unwanted_items?: Json | null
+          volatility_bucket?: string | null
+        }
+        Relationships: []
       }
       seo_metadata: {
         Row: {
