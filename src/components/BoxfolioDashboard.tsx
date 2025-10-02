@@ -10,7 +10,30 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { FilterState, SortOption } from '@/types/filters';
 import FilterControls from './FilterControls';
 import { useOptimizedFiltering } from '@/hooks/useOptimizedFiltering';
-import { BoxItem, RillaBoxMetricsBox } from '@/types';
+
+interface BoxItem {
+  name: string;
+  value: number;
+  drop_chance: number;
+  image?: string;
+  type?: string;
+}
+
+interface RillaBoxMetricsBox {
+  box_name: string;
+  box_price: number;
+  box_image: string;
+  expected_value_percent_of_price: number;
+  volatility_bucket: 'Low' | 'Medium' | 'High';
+  standard_deviation_percent: number;
+  floor_rate_percent: number;
+  category: string;
+  tags: string[];
+  jackpot_items: BoxItem[];
+  unwanted_items: BoxItem[];
+  all_items: BoxItem[];
+  provider: string;
+}
 
 interface BoxfolioDashboardProps {
   summaryData: any;

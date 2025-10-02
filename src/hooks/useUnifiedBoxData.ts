@@ -1,5 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { createClient } from '@supabase/supabase-js';
+
+// Temporarily connect to RillaBox Supabase for demo (until database migration)
+const supabase = createClient(
+  'https://qsrkzgywbcbfnmailmsp.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzcmt6Z3l3YmNiZm5tYWlsbXNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1MzQ5OTcsImV4cCI6MjA1OTExMDk5N30.uqh8KDM_ks2lzo9Go-0ffCh2CFIURhQRb9qD84i6pQ0'
+);
 
 const fixImagePath = (path: string): string => {
   if (!path) return 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop';
@@ -53,7 +59,7 @@ interface UnifiedSummaryData {
 
 const PROVIDER_CONFIGS = {
   rillabox: {
-    tableName: 'rillabox',
+    tableName: 'rillabox_boxes',
     displayName: 'RillaBox',
     color: 'purple',
     gradient: 'from-purple-600 to-purple-700',
@@ -62,7 +68,7 @@ const PROVIDER_CONFIGS = {
     textColor: 'text-purple-700'
   },
   hypedrop: {
-    tableName: 'hypedrop',
+    tableName: 'hypedrop_boxes',
     displayName: 'Hypedrop',
     color: 'blue',
     gradient: 'from-blue-600 to-blue-700',
@@ -71,7 +77,7 @@ const PROVIDER_CONFIGS = {
     textColor: 'text-blue-700'
   },
   casesgg: {
-    tableName: 'casesgg',
+    tableName: 'casesgg_boxes',
     displayName: 'Cases.GG',
     color: 'green',
     gradient: 'from-green-600 to-green-700',
@@ -80,7 +86,7 @@ const PROVIDER_CONFIGS = {
     textColor: 'text-green-700'
   },
   luxdrop: {
-    tableName: 'luxdrop',
+    tableName: 'luxdrop_boxes',
     displayName: 'Luxdrop',
     color: 'amber',
     gradient: 'from-amber-600 to-amber-700',

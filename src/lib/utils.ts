@@ -6,16 +6,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Fix image path for display
- */
-export function fixImagePath(path: string): string {
-  if (!path) return 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop';
-  if (path.startsWith('http')) return path;
-  if (path.startsWith('/')) return path;
-  return path;
-}
-
-/**
  * Generate a unique operator name by appending (Copy) or incrementing number
  */
 export function generateUniqueOperatorName(originalName: string, existingNames: string[]): string {

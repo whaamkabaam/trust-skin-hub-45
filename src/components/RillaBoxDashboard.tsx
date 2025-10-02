@@ -7,7 +7,6 @@ import { Search, TrendingUp, TrendingDown, Target, BarChart3, ChevronLeft, Chevr
 import VirtualizedBoxGrid from './VirtualizedBoxGrid';
 import PaginationControls from './PaginationControls';
 import { useDebounce } from '@/hooks/useDebounce';
-import { BoxItem, RillaBoxMetricsBox } from '@/types';
 
 // Type definitions for the data structures
 interface RillaBoxMetricsSummary {
@@ -17,6 +16,27 @@ interface RillaBoxMetricsSummary {
   worst_box_by_ev_percent: string;
   worst_box_ev_percent: number;
   portfolio_average_standard_deviation_percent: number;
+}
+interface BoxItem {
+  name: string;
+  value: number;
+  drop_chance: number;
+  image?: string;
+  type?: string;
+}
+interface RillaBoxMetricsBox {
+  box_name: string;
+  box_price: number;
+  box_image: string;
+  expected_value_percent_of_price: number;
+  volatility_bucket: 'Low' | 'Medium' | 'High';
+  standard_deviation_percent: number;
+  floor_rate_percent: number;
+  category: string;
+  tags: string[];
+  jackpot_items: BoxItem[];
+  unwanted_items: BoxItem[];
+  all_items: BoxItem[];
 }
 interface RillaBoxDashboardProps {
   summaryData: RillaBoxMetricsSummary;
