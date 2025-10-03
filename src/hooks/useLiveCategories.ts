@@ -75,7 +75,7 @@ export function useLiveCategories() {
         combined.push({
           ...cat,
           source: isLive ? 'both' : 'manual',
-          box_count: isLive ? categoryCounts[cat.slug] || 0 : 0,
+          box_count: categoryCounts[cat.slug] || 0,
         });
       });
 
