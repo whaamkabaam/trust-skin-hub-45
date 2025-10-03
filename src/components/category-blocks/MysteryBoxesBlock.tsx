@@ -1,0 +1,157 @@
+import { useState, useEffect } from 'react';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useUnifiedBoxData } from '@/hooks/useUnifiedBoxData';
+import CaseCard from '@/components/CaseCard';
+
+interface MysteryBoxesBlockProps {
+  data: {
+    title?: string;
+    description?: string;
+    displayMode?: 'grid-2' | 'grid-3' | 'grid-4' | 'carousel';
+    selectedBoxNames?: string[];
+    provider?: string;
+    maxBoxes?: number;
+  };
+  onChange?: (data: any) => void;
+  isEditing?: boolean;
+  categoryId?: string;
+}
+
+export const MysteryBoxesBlock = ({ 
+  data = {}, 
+  onChange, 
+  isEditing = false,
+  categoryId 
+}: MysteryBoxesBlockProps) => {
+  const [localData, setLocalData] = useState(data);
+  const { boxesData: boxes, loading } = useUnifiedBoxData();
+  
+  const handleChange = (field: string, value: any) => {
+    const newData = { ...localData, [field]: value };
+    setLocalData(newData);
+    onChange?.(newData);
+  };
+
+  const toggleBoxSelection = (boxName: string) => {
+    const currentNames = localData.selectedBoxNames || [];
+    const newNames = currentNames.includes(boxName)
+      ? currentNames.filter(name => name !== boxName)
+      : [...currentNames, boxName];
+    handleChange('selectedBoxNames', newNames);
+  };
+
+  const selectedBoxes = boxes.filter(box => 
+    (localData.selectedBoxNames || []).includes(box.box_name)
+  );
+
+  const gridCols = {
+    'grid-2': 'grid-cols-1 md:grid-cols-2',
+    'grid-3': 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+    'grid-4': 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
+    'carousel': 'flex overflow-x-auto gap-4',
+  };
+
+  if (isEditing) {
+    return (
+      <Card className="p-6 space-y-4">
+        <h3 className="text-lg font-semibold">Mystery Boxes Block</h3>
+        
+        <div className="space-y-2">
+          <Label>Block Title</Label>
+          <Input
+            value={localData.title || ''}
+            onChange={(e) => handleChange('title', e.target.value)}
+            placeholder="Featured Mystery Boxes"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Description</Label>
+          <Input
+            value={localData.description || ''}
+            onChange={(e) => handleChange('description', e.target.value)}
+            placeholder="Check out these amazing boxes..."
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Display Mode</Label>
+            <Select
+              value={localData.displayMode || 'grid-3'}
+              onValueChange={(value) => handleChange('displayMode', value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="grid-2">2 Columns</SelectItem>
+                <SelectItem value="grid-3">3 Columns</SelectItem>
+                <SelectItem value="grid-4">4 Columns</SelectItem>
+                <SelectItem value="carousel">Carousel</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Max Boxes to Show</Label>
+            <Input
+              type="number"
+              value={localData.maxBoxes || 6}
+              onChange={(e) => handleChange('maxBoxes', parseInt(e.target.value))}
+              min={1}
+              max={20}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Select Mystery Boxes ({(localData.selectedBoxNames || []).length} selected)</Label>
+          <div className="max-h-64 overflow-y-auto border rounded-lg p-4 space-y-2">
+            {loading ? (
+              <p className="text-sm text-muted-foreground">Loading boxes...</p>
+            ) : (
+              boxes.slice(0, 50).map((box) => (
+                <div key={box.box_name} className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={(localData.selectedBoxNames || []).includes(box.box_name)}
+                    onCheckedChange={() => toggleBoxSelection(box.box_name)}
+                  />
+                  <label className="text-sm cursor-pointer flex-1">
+                    {box.box_name} - ${box.box_price}
+                  </label>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-12">
+      {localData.title && (
+        <h2 className="text-3xl font-bold mb-2">{localData.title}</h2>
+      )}
+      {localData.description && (
+        <p className="text-muted-foreground mb-8">{localData.description}</p>
+      )}
+      
+      <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
+        {selectedBoxes.slice(0, localData.maxBoxes || 6).map((box) => (
+          <div key={box.box_name} className="border rounded-lg p-4">
+            <img src={box.box_image} alt={box.box_name} className="w-full h-48 object-cover rounded mb-2" />
+            <h3 className="font-semibold">{box.box_name}</h3>
+            <p className="text-sm text-muted-foreground">${box.box_price}</p>
+            <p className="text-sm">EV: {box.expected_value_percent_of_price.toFixed(2)}%</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search, Eye, EyeOff, RefreshCw, AlertTriangle, GripVertical, X, ExternalLink } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Eye, EyeOff, RefreshCw, AlertTriangle, GripVertical, X, ExternalLink, FileText } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -95,6 +95,14 @@ const SortableTableRow = ({ category, onEdit, onDelete }: any) => {
       </TableCell>
       <TableCell className="text-right">
         <div className="flex items-center gap-2 justify-end">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => window.location.href = `/admin/categories/${category.slug}/content`}
+            title="Edit Content"
+          >
+            <FileText className="w-4 h-4" />
+          </Button>
           <Button 
             variant="ghost" 
             size="sm"

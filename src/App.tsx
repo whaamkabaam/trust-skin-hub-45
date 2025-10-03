@@ -35,6 +35,7 @@ import ReviewsManager from "./pages/admin/ReviewsManager";
 import AdminUsers from "./pages/admin/AdminUsers";
 import PublishingManager from "./pages/admin/PublishingManager";
 import Categories from "./pages/admin/Categories";
+import CategoryContent from "./pages/admin/CategoryContent";
 import PaymentMethods from "./pages/admin/PaymentMethods";
 import MysteryBoxes from "./pages/admin/MysteryBoxes";
 import MysteryBoxImport from "./pages/admin/MysteryBoxImport";
@@ -92,6 +93,7 @@ const App = () => (
               <Route path="mystery-boxes" element={<MysteryBoxes />} />
               <Route path="mystery-boxes/import" element={<MysteryBoxImport />} />
               <Route path="categories" element={<Categories />} />
+              <Route path="categories/:slug/content" element={<CategoryContent />} />
               <Route path="payment-methods" element={<PaymentMethods />} />
               <Route path="publishing" element={<PublishingManager />} />
               <Route path="content" element={<ContentSections />} />

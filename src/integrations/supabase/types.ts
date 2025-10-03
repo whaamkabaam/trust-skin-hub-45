@@ -109,39 +109,110 @@ export type Database = {
       }
       categories: {
         Row: {
+          author: string | null
           created_at: string
           description_rich: string | null
           display_order: number | null
+          hero_image_url: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
           id: string
           is_featured: boolean | null
           logo_url: string | null
+          meta_description: string | null
+          meta_title: string | null
           name: string
+          published: boolean | null
+          published_at: string | null
+          reading_time: number | null
+          scheduled_publish_at: string | null
           slug: string
           updated_at: string
         }
         Insert: {
+          author?: string | null
           created_at?: string
           description_rich?: string | null
           display_order?: number | null
+          hero_image_url?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
           id?: string
           is_featured?: boolean | null
           logo_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
           name: string
+          published?: boolean | null
+          published_at?: string | null
+          reading_time?: number | null
+          scheduled_publish_at?: string | null
           slug: string
           updated_at?: string
         }
         Update: {
+          author?: string | null
           created_at?: string
           description_rich?: string | null
           display_order?: number | null
+          hero_image_url?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
           id?: string
           is_featured?: boolean | null
           logo_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
           name?: string
+          published?: boolean | null
+          published_at?: string | null
+          reading_time?: number | null
+          scheduled_publish_at?: string | null
           slug?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      category_content_blocks: {
+        Row: {
+          block_data: Json
+          block_type: string
+          category_id: string
+          created_at: string
+          id: string
+          is_visible: boolean | null
+          order_number: number
+          updated_at: string
+        }
+        Insert: {
+          block_data?: Json
+          block_type: string
+          category_id: string
+          created_at?: string
+          id?: string
+          is_visible?: boolean | null
+          order_number?: number
+          updated_at?: string
+        }
+        Update: {
+          block_data?: Json
+          block_type?: string
+          category_id?: string
+          created_at?: string
+          id?: string
+          is_visible?: boolean | null
+          order_number?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_content_blocks_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       content_sections: {
         Row: {
@@ -937,6 +1008,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "provider_box_category_overrides_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      published_category_content: {
+        Row: {
+          category_id: string
+          content_data: Json
+          created_at: string
+          id: string
+          seo_data: Json
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          content_data?: Json
+          created_at?: string
+          id?: string
+          seo_data?: Json
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          content_data?: Json
+          created_at?: string
+          id?: string
+          seo_data?: Json
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "published_category_content_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
