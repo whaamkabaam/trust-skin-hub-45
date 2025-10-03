@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Search, Upload, Eye, EyeOff, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Eye, EyeOff, RefreshCw, AlertTriangle, GripVertical } from 'lucide-react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,8 +19,128 @@ import { generateUniqueOperatorSlug } from '@/lib/utils';
 import { SEOHead } from '@/components/SEOHead';
 import { toast } from 'sonner';
 
+// Sortable Row Component
+const SortableTableRow = ({ category, onEdit, onDelete }: any) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <TableRow ref={setNodeRef} style={style}>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <button
+            className="cursor-grab active:cursor-grabbing touch-none"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="w-4 h-4 text-muted-foreground" />
+          </button>
+          <div className="flex items-center gap-3">
+            {category.logo_url && (
+              <img 
+                src={category.logo_url} 
+                alt={category.name} 
+                className="w-8 h-8 rounded object-cover"
+              />
+            )}
+            <span className="font-medium">{category.name}</span>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell>
+        <code className="text-xs bg-muted px-2 py-1 rounded">
+          {category.slug}
+        </code>
+      </TableCell>
+      <TableCell>
+        {category.source === 'provider' ? (
+          <Badge variant="default">Provider Only</Badge>
+        ) : category.source === 'both' ? (
+          <Badge variant="secondary">Manual + Provider</Badge>
+        ) : (
+          <Badge variant="outline">Manual Only</Badge>
+        )}
+      </TableCell>
+      <TableCell>
+        <Badge variant="outline">{category.box_count} boxes</Badge>
+      </TableCell>
+      <TableCell>
+        {category.is_featured ? (
+          <Badge variant="default">
+            <Eye className="w-3 h-3 mr-1" />
+            Featured
+          </Badge>
+        ) : (
+          <Badge variant="secondary">
+            <EyeOff className="w-3 h-3 mr-1" />
+            Regular
+          </Badge>
+        )}
+      </TableCell>
+      <TableCell className="text-right">
+        <div className="flex items-center gap-2 justify-end">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => onEdit(category)}
+          >
+            <Edit2 className="w-4 h-4" />
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {category.box_count > 0 ? (
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-orange-600">Warning: Category in use</p>
+                        <p className="mt-1">This category is used by {category.box_count} mystery boxes from providers. Deleting it may affect categorization.</p>
+                        <p className="mt-2">Are you sure you want to delete "{category.name}"?</p>
+                      </div>
+                    </div>
+                  ) : (
+                    `Are you sure you want to delete "${category.name}"? This action cannot be undone.`
+                  )}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={() => onDelete(category.id)}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+};
+
 const Categories = () => {
-  const { categories: liveCategories, loading, syncing, syncCategories } = useLiveCategories();
+  const { categories: liveCategories, loading, syncing, syncCategories, refetch } = useLiveCategories();
   const { createCategory, updateCategory, deleteCategory } = useCategories();
   const [searchQuery, setSearchQuery] = useState('');
   const [showDialog, setShowDialog] = useState(false);
@@ -84,7 +207,48 @@ const Categories = () => {
   };
 
   const handleDelete = async (id: string) => {
-    await deleteCategory(id);
+    const success = await deleteCategory(id);
+    if (success) {
+      await refetch();
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = filteredCategories.findIndex(cat => cat.id === active.id);
+      const newIndex = filteredCategories.findIndex(cat => cat.id === over.id);
+
+      const reordered = arrayMove(filteredCategories, oldIndex, newIndex);
+
+      // Update display_order for all affected categories
+      try {
+        const updates = reordered.map((cat, index) => ({
+          id: cat.id,
+          display_order: index,
+        }));
+
+        // Batch update all categories
+        for (const update of updates) {
+          if (!update.id.startsWith('temp-')) {
+            await updateCategory(update.id, { display_order: update.display_order });
+          }
+        }
+
+        await refetch();
+        toast.success('Category order updated');
+      } catch (error) {
+        toast.error('Failed to update category order');
+      }
+    }
   };
 
   const handleNameChange = (name: string) => {
@@ -185,17 +349,6 @@ const Categories = () => {
                   />
                 </div>
                 
-                <div>
-                  <Label htmlFor="display_order">Display Order</Label>
-                  <Input
-                    id="display_order"
-                    type="number"
-                    value={formData.display_order}
-                    onChange={(e) => setFormData(prev => ({ ...prev, display_order: parseInt(e.target.value) || 0 }))}
-                    placeholder="0"
-                  />
-                </div>
-                
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="featured"
@@ -243,114 +396,39 @@ const Categories = () => {
             {loading ? (
               <div className="text-center py-8">Loading categories...</div>
             ) : (
-              <Table>
-                <TableHeader>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <Table>
+                  <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Slug</TableHead>
                       <TableHead>Source</TableHead>
                       <TableHead>Box Count</TableHead>
-                      <TableHead>Order</TableHead>
                       <TableHead>Featured</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredCategories.map((category) => (
-                    <TableRow key={category.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          {category.logo_url && (
-                            <img 
-                              src={category.logo_url} 
-                              alt={category.name} 
-                              className="w-8 h-8 rounded object-cover"
-                            />
-                          )}
-                          <span className="font-medium">{category.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <code className="text-xs bg-muted px-2 py-1 rounded">
-                          {category.slug}
-                        </code>
-                      </TableCell>
-                      <TableCell>
-                        {category.source === 'provider' ? (
-                          <Badge variant="default">Provider Only</Badge>
-                        ) : category.source === 'both' ? (
-                          <Badge variant="secondary">Manual + Provider</Badge>
-                        ) : (
-                          <Badge variant="outline">Manual Only</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{category.box_count} boxes</Badge>
-                      </TableCell>
-                      <TableCell>{category.display_order}</TableCell>
-                      <TableCell>
-                        {category.is_featured ? (
-                          <Badge variant="default">
-                            <Eye className="w-3 h-3 mr-1" />
-                            Featured
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary">
-                            <EyeOff className="w-3 h-3 mr-1" />
-                            Regular
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center gap-2 justify-end">
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => handleEdit(category)}
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Category</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  {category.box_count > 0 ? (
-                                    <div className="flex items-start gap-2">
-                                      <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-                                      <div>
-                                        <p className="font-medium text-orange-600">Warning: Category in use</p>
-                                        <p className="mt-1">This category is used by {category.box_count} mystery boxes from providers. Deleting it may affect categorization.</p>
-                                        <p className="mt-2">Are you sure you want to delete "{category.name}"?</p>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    `Are you sure you want to delete "${category.name}"? This action cannot be undone.`
-                                  )}
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction 
-                                  onClick={() => handleDelete(category.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    <SortableContext
+                      items={filteredCategories.map(c => c.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {filteredCategories.map((category) => (
+                        <SortableTableRow
+                          key={category.id}
+                          category={category}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                        />
+                      ))}
+                    </SortableContext>
+                  </TableBody>
+                </Table>
+              </DndContext>
             )}
             
             {!loading && filteredCategories.length === 0 && (

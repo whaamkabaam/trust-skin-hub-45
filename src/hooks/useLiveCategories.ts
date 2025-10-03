@@ -37,8 +37,9 @@ export function useLiveCategories() {
         if (!providerError && providerData) {
           providerData.forEach((row: any) => {
             if (row.category) {
+              const slug = row.category.toLowerCase().replace(/[^a-z0-9]+/g, '-');
               liveCategories.add(row.category);
-              categoryCounts[row.category] = (categoryCounts[row.category] || 0) + 1;
+              categoryCounts[slug] = (categoryCounts[slug] || 0) + 1;
             }
           });
         }
@@ -58,7 +59,7 @@ export function useLiveCategories() {
         combined.push({
           ...cat,
           source: isLive ? 'both' : 'manual',
-          box_count: isLive ? categoryCounts[cat.name] || 0 : 0,
+          box_count: isLive ? categoryCounts[cat.slug] || 0 : 0,
         });
       });
 
@@ -75,7 +76,7 @@ export function useLiveCategories() {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             source: 'provider',
-            box_count: categoryCounts[categoryName] || 0,
+            box_count: categoryCounts[slug] || 0,
           });
         }
       });

@@ -95,23 +95,43 @@ export function useCategories() {
 
   const deleteCategory = useCallback(async (id: string) => {
     try {
-      // Check if category is in use
-      const { count, error: countError } = await supabase
-        .from('mystery_box_categories')
-        .select('*', { count: 'exact', head: true })
-        .eq('category_id', id);
+      // Get the category details first
+      const { data: category } = await supabase
+        .from('categories')
+        .select('slug, name')
+        .eq('id', id)
+        .single();
 
-      if (countError) throw countError;
+      if (!category) throw new Error('Category not found');
 
-      if (count && count > 0) {
+      // Check if category is in use across all provider tables
+      const providers = ['rillabox', 'hypedrop', 'casesgg', 'luxdrop'];
+      let totalCount = 0;
+
+      for (const provider of providers) {
+        const { count, error } = await supabase
+          .from(provider as any)
+          .select('*', { count: 'exact', head: true })
+          .eq('category', category.name);
+
+        if (error) {
+          console.warn(`Error checking ${provider}:`, error);
+          continue;
+        }
+
+        totalCount += count || 0;
+      }
+
+      if (totalCount > 0) {
         toast({
           title: "Cannot delete category",
-          description: `This category is being used by ${count} mystery box(es). Remove these associations first.`,
+          description: `This category is used by ${totalCount} mystery box(es) across provider data. It cannot be deleted.`,
           variant: "destructive",
         });
         return false;
       }
 
+      // Proceed with deletion if not in use
       const { error } = await supabase
         .from('categories')
         .delete()
