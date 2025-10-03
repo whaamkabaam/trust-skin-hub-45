@@ -45,6 +45,22 @@ export function useLiveCategories() {
         }
       }
 
+      // Also count manual category overrides
+      const categoryIdToSlug = new Map(
+        dbCategories?.map(cat => [cat.id, cat.slug]) || []
+      );
+
+      const { data: overrides } = await supabase
+        .from('provider_box_category_overrides')
+        .select('category_id');
+
+      overrides?.forEach(override => {
+        const slug = categoryIdToSlug.get(override.category_id);
+        if (slug) {
+          categoryCounts[slug] = (categoryCounts[slug] || 0) + 1;
+        }
+      });
+
       // Combine and classify categories
       const dbCategoryMap = new Map(dbCategories?.map(c => [c.slug, c]) || []);
       const liveCategorySet = new Set(Array.from(liveCategories).map(cat => 

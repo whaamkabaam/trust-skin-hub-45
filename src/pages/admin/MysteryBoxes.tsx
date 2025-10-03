@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Package } from 'lucide-react';
+import { Search, Package, Plus } from 'lucide-react';
 import { useMysteryBoxesFromProviders } from '@/hooks/useMysteryBoxesFromProviders';
 import { SEOHead } from '@/components/SEOHead';
+import { CategoryAssignmentDialog } from '@/components/admin/CategoryAssignmentDialog';
 import type { MysteryBox } from '@/types';
 
 interface MysteryBoxFormData {
@@ -30,29 +31,22 @@ interface MysteryBoxFormData {
 
 const MysteryBoxes = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingBox, setEditingBox] = useState<MysteryBox | null>(null);
-  const [deleteBoxId, setDeleteBoxId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<MysteryBoxFormData>({
-    name: '',
-    slug: '',
-    price: 0,
-    expected_value: null,
-    min_price: null,
-    image_url: '',
-    game: '',
-    box_type: 'digital',
-    odds_disclosed: 'Yes',
-    verified: false,
-    provably_fair: false,
-    operator_id: null,
-    categories: [],
-    highlights: [],
-    site_name: ''
-  });
-
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedBox, setSelectedBox] = useState<any>(null);
   const { mysteryBoxes, loading, totalCount } = useMysteryBoxesFromProviders();
   const [providerFilter, setProviderFilter] = useState<string>('ALL');
+
+  const handleOpenDialog = (box: MysteryBox) => {
+    const [provider, idStr] = box.id.split('-');
+    const boxId = parseInt(idStr, 10);
+    
+    setSelectedBox({
+      ...box,
+      _provider: provider,
+      _boxId: boxId,
+    });
+    setDialogOpen(true);
+  };
 
   const filteredBoxes = mysteryBoxes.filter(box => {
     const matchesSearch = box.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,10 +136,10 @@ const MysteryBoxes = () => {
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Provider</TableHead>
-                      <TableHead>Category</TableHead>
+                      <TableHead>Categories</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Expected Value</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -166,7 +160,21 @@ const MysteryBoxes = () => {
                           <Badge variant="outline">{box.site_name}</Badge>
                         </TableCell>
                         <TableCell>
-                          {box.categories?.[0]?.name || 'Uncategorized'}
+                          <div className="flex gap-1 flex-wrap max-w-xs">
+                            {box.categories && box.categories.length > 0 ? (
+                              box.categories.map((cat: any, idx: number) => (
+                                <Badge
+                                  key={`${cat.id}-${idx}`}
+                                  variant={idx === 0 ? "outline" : "secondary"}
+                                  className="text-xs"
+                                >
+                                  {cat.name}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span className="text-muted-foreground text-sm">None</span>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>${box.price.toFixed(2)}</TableCell>
                         <TableCell>
@@ -180,10 +188,14 @@ const MysteryBoxes = () => {
                           ) : 'N/A'}
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-1">
-                            {box.verified && <Badge variant="secondary">Verified</Badge>}
-                            {box.provably_fair && <Badge variant="outline">Fair</Badge>}
-                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenDialog(box)}
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Manage
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -194,6 +206,20 @@ const MysteryBoxes = () => {
           </CardContent>
         </Card>
       </div>
+
+      {selectedBox && (
+        <CategoryAssignmentDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          box={selectedBox}
+          provider={selectedBox._provider}
+          boxId={selectedBox._boxId}
+          onUpdate={() => {
+            // Trigger reload
+            setSearchQuery(prev => prev);
+          }}
+        />
+      )}
     </>
   );
 };

@@ -909,6 +909,41 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_box_category_overrides: {
+        Row: {
+          box_id: number
+          category_id: string
+          created_at: string | null
+          id: string
+          provider: string
+          updated_at: string | null
+        }
+        Insert: {
+          box_id: number
+          category_id: string
+          created_at?: string | null
+          id?: string
+          provider: string
+          updated_at?: string | null
+        }
+        Update: {
+          box_id?: number
+          category_id?: string
+          created_at?: string | null
+          id?: string
+          provider?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_box_category_overrides_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       published_operator_content: {
         Row: {
           content_data: Json
