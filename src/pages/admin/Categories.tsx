@@ -17,6 +17,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLiveCategories } from '@/hooks/useLiveCategories';
 import { useCategories, CategoryFormData } from '@/hooks/useCategories';
 import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
+import { useProviderBoxCategories } from '@/hooks/useProviderBoxCategories';
+import { useProviderBoxSearch } from '@/hooks/useProviderBoxSearch';
 import { generateUniqueOperatorSlug } from '@/lib/utils';
 import { SEOHead } from '@/components/SEOHead';
 import { toast } from 'sonner';
@@ -145,6 +147,8 @@ const Categories = () => {
   const { categories: liveCategories, loading, syncing, syncCategories, refetch } = useLiveCategories();
   const { createCategory, updateCategory, deleteCategory } = useCategories();
   const { fetchCategoryBoxes, removeBoxFromCategory, loading: boxesLoading } = useCategoryBoxes();
+  const { addCategory } = useProviderBoxCategories();
+  const { query, setQuery, provider, setProvider, results, loading: searchLoading } = useProviderBoxSearch();
   const [searchQuery, setSearchQuery] = useState('');
   const [showDialog, setShowDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
@@ -227,6 +231,17 @@ const Categories = () => {
       const boxes = await fetchCategoryBoxes(editingCategory);
       setCategoryBoxes(boxes);
       await refetch(); // Update category box counts
+    }
+  };
+
+  const handleAddBox = async (box: any) => {
+    if (!editingCategory) return;
+
+    const success = await addCategory(box.provider, box.box_id, editingCategory);
+    if (success) {
+      const boxes = await fetchCategoryBoxes(editingCategory);
+      setCategoryBoxes(boxes);
+      await refetch();
     }
   };
 
@@ -402,47 +417,87 @@ const Categories = () => {
               </form>
                 </TabsContent>
 
-                <TabsContent value="boxes" className="space-y-4">
-                  {boxesLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      Loading boxes...
-                    </div>
-                  ) : categoryBoxes.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <p>No mystery boxes manually assigned to this category yet.</p>
-                      <p className="text-sm mt-2">
-                        Go to <a href="/admin/mystery-boxes" className="text-primary hover:underline inline-flex items-center gap-1">
-                          Mystery Boxes <ExternalLink className="w-3 h-3" />
-                        </a> to assign boxes to this category.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold">Manually Assigned Boxes</h3>
-                        <Badge variant="outline">{categoryBoxes.length} boxes</Badge>
+                <TabsContent value="boxes" className="space-y-6 mt-4">
+                  {/* Search & Add Section */}
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold mb-3">Search & Add Boxes</h3>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Search boxes by name..."
+                          value={query}
+                          onChange={(e) => setQuery(e.target.value)}
+                          className="flex-1"
+                        />
+                        <select
+                          value={provider}
+                          onChange={(e) => setProvider(e.target.value)}
+                          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <option value="all">All Providers</option>
+                          <option value="rillabox">RillaBox</option>
+                          <option value="hypedrop">HypeDrop</option>
+                          <option value="casesgg">Cases.gg</option>
+                          <option value="luxdrop">LuxDrop</option>
+                        </select>
                       </div>
-                      
-                      <div className="grid gap-2 max-h-[400px] overflow-y-auto">
+                    </div>
+
+                    {/* Search Results */}
+                    {(query || provider !== 'all') && (
+                      <div className="border rounded-lg max-h-64 overflow-y-auto">
+                        {searchLoading ? (
+                          <div className="p-4 text-center text-muted-foreground">Searching...</div>
+                        ) : results.length > 0 ? (
+                          <div className="divide-y">
+                            {results.map((box) => {
+                              const isAlreadyAdded = categoryBoxes.some(
+                                cb => cb.provider === box.provider && cb.box_id === box.box_id
+                              );
+                              return (
+                                <div key={box.id} className="flex items-center gap-3 p-3 hover:bg-muted/50">
+                                  {box.box_image && (
+                                    <img src={box.box_image} alt={box.box_name} className="w-10 h-10 object-cover rounded" />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-medium truncate">{box.box_name}</div>
+                                    <div className="text-sm text-muted-foreground">
+                                      {box.provider} • ${box.box_price}
+                                    </div>
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => handleAddBox(box)}
+                                    disabled={isAlreadyAdded}
+                                  >
+                                    {isAlreadyAdded ? 'Added' : 'Add'}
+                                  </Button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="p-4 text-center text-muted-foreground">No boxes found</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Currently Assigned Boxes */}
+                  <div>
+                    <h3 className="font-semibold mb-3">Assigned Boxes ({categoryBoxes.length})</h3>
+                    {categoryBoxes.length > 0 ? (
+                      <div className="space-y-2 border rounded-lg p-3 max-h-80 overflow-y-auto">
                         {categoryBoxes.map((box) => (
-                          <div 
-                            key={box.id}
-                            className="flex items-center gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors"
-                          >
+                          <div key={box.id} className="flex items-center gap-3 p-2 rounded hover:bg-muted/50">
                             {box.box_image && (
-                              <img 
-                                src={box.box_image} 
-                                alt={box.box_name}
-                                className="w-12 h-12 rounded object-cover"
-                              />
+                              <img src={box.box_image} alt={box.box_name} className="w-10 h-10 object-cover rounded" />
                             )}
                             <div className="flex-1 min-w-0">
                               <div className="font-medium truncate">{box.box_name}</div>
-                              <div className="text-sm text-muted-foreground flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs">
-                                  {box.provider}
-                                </Badge>
-                                <span>${box.box_price.toFixed(2)}</span>
+                              <div className="text-sm text-muted-foreground">
+                                {box.provider} • ${box.box_price}
                               </div>
                             </div>
                             <Button
@@ -450,29 +505,18 @@ const Categories = () => {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleRemoveBox(box.id)}
-                              className="text-destructive hover:text-destructive"
                             >
-                              <X className="w-4 h-4" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         ))}
                       </div>
-                      
-                      <div className="pt-4 border-t">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => {
-                            window.location.href = `/admin/mystery-boxes?category=${formData.slug}`;
-                          }}
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add More Boxes
-                        </Button>
+                    ) : (
+                      <div className="text-center py-6 text-muted-foreground border rounded-lg">
+                        <p>No boxes assigned yet. Search above to add boxes.</p>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </TabsContent>
               </Tabs>
             </DialogContent>
