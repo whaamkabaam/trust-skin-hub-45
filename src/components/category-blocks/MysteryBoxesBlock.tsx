@@ -4,16 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useUnifiedBoxData } from '@/hooks/useUnifiedBoxData';
-import CaseCard from '@/components/CaseCard';
+import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
 
 interface MysteryBoxesBlockProps {
   data: {
     title?: string;
     description?: string;
     displayMode?: 'grid-2' | 'grid-3' | 'grid-4' | 'carousel';
-    selectedBoxNames?: string[];
-    provider?: string;
+    selectedBoxIds?: string[];
     maxBoxes?: number;
   };
   onChange?: (data: any) => void;
@@ -28,7 +26,14 @@ export const MysteryBoxesBlock = ({
   categoryId 
 }: MysteryBoxesBlockProps) => {
   const [localData, setLocalData] = useState(data);
-  const { boxesData: boxes, loading } = useUnifiedBoxData();
+  const [boxes, setBoxes] = useState<CategoryBoxAssignment[]>([]);
+  const { loading, fetchCategoryBoxes } = useCategoryBoxes();
+
+  useEffect(() => {
+    if (categoryId && isEditing) {
+      fetchCategoryBoxes(categoryId).then(setBoxes);
+    }
+  }, [categoryId, isEditing]);
   
   const handleChange = (field: string, value: any) => {
     const newData = { ...localData, [field]: value };
@@ -36,16 +41,16 @@ export const MysteryBoxesBlock = ({
     onChange?.(newData);
   };
 
-  const toggleBoxSelection = (boxName: string) => {
-    const currentNames = localData.selectedBoxNames || [];
-    const newNames = currentNames.includes(boxName)
-      ? currentNames.filter(name => name !== boxName)
-      : [...currentNames, boxName];
-    handleChange('selectedBoxNames', newNames);
+  const toggleBoxSelection = (boxId: string) => {
+    const currentIds = localData.selectedBoxIds || [];
+    const newIds = currentIds.includes(boxId)
+      ? currentIds.filter(id => id !== boxId)
+      : [...currentIds, boxId];
+    handleChange('selectedBoxIds', newIds);
   };
 
   const selectedBoxes = boxes.filter(box => 
-    (localData.selectedBoxNames || []).includes(box.box_name)
+    (localData.selectedBoxIds || []).includes(box.id)
   );
 
   const gridCols = {
@@ -110,19 +115,21 @@ export const MysteryBoxesBlock = ({
         </div>
 
         <div className="space-y-2">
-          <Label>Select Mystery Boxes ({(localData.selectedBoxNames || []).length} selected)</Label>
+          <Label>Select Mystery Boxes ({(localData.selectedBoxIds || []).length} selected)</Label>
           <div className="max-h-64 overflow-y-auto border rounded-lg p-4 space-y-2">
             {loading ? (
               <p className="text-sm text-muted-foreground">Loading boxes...</p>
+            ) : boxes.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No boxes assigned to this category yet. Assign boxes from the Providers section first.</p>
             ) : (
-              boxes.slice(0, 50).map((box) => (
-                <div key={box.box_name} className="flex items-center space-x-2">
+              boxes.map((box) => (
+                <div key={box.id} className="flex items-center space-x-2">
                   <Checkbox
-                    checked={(localData.selectedBoxNames || []).includes(box.box_name)}
-                    onCheckedChange={() => toggleBoxSelection(box.box_name)}
+                    checked={(localData.selectedBoxIds || []).includes(box.id)}
+                    onCheckedChange={() => toggleBoxSelection(box.id)}
                   />
                   <label className="text-sm cursor-pointer flex-1">
-                    {box.box_name} - ${box.box_price}
+                    {box.box_name} ({box.provider}) - ${box.box_price}
                   </label>
                 </div>
               ))
@@ -144,11 +151,11 @@ export const MysteryBoxesBlock = ({
       
       <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
         {selectedBoxes.slice(0, localData.maxBoxes || 6).map((box) => (
-          <div key={box.box_name} className="border rounded-lg p-4">
+          <div key={box.id} className="border rounded-lg p-4">
             <img src={box.box_image} alt={box.box_name} className="w-full h-48 object-cover rounded mb-2" />
             <h3 className="font-semibold">{box.box_name}</h3>
             <p className="text-sm text-muted-foreground">${box.box_price}</p>
-            <p className="text-sm">EV: {box.expected_value_percent_of_price.toFixed(2)}%</p>
+            <p className="text-xs text-muted-foreground">Provider: {box.provider}</p>
           </div>
         ))}
       </div>

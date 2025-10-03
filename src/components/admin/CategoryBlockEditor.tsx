@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
@@ -10,6 +10,7 @@ import { HeroBlock } from '@/components/category-blocks/HeroBlock';
 import { TextBlock } from '@/components/category-blocks/TextBlock';
 import { MysteryBoxesBlock } from '@/components/category-blocks/MysteryBoxesBlock';
 import { CategoryContentBlock } from '@/hooks/useCategoryContent';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -106,6 +107,7 @@ export const CategoryBlockEditor = ({
   categoryId,
 }: CategoryBlockEditorProps) => {
   const [localBlocks, setLocalBlocks] = useState(blocks);
+  const debouncedBlocks = useDebounce(localBlocks, 1000);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -113,6 +115,28 @@ export const CategoryBlockEditor = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  // Sync localBlocks with incoming blocks prop (fixes visibility issue)
+  useEffect(() => {
+    setLocalBlocks(blocks);
+  }, [blocks]);
+
+  // Auto-save debounced changes silently
+  useEffect(() => {
+    if (debouncedBlocks.length > 0 && JSON.stringify(debouncedBlocks) !== JSON.stringify(blocks)) {
+      debouncedBlocks.forEach(block => {
+        if (block.id) {
+          // Save silently without toast
+          onSaveBlock({
+            id: block.id,
+            block_data: block.block_data,
+            order_number: block.order_number,
+            is_visible: block.is_visible,
+          });
+        }
+      });
+    }
+  }, [debouncedBlocks]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -138,15 +162,10 @@ export const CategoryBlockEditor = ({
   };
 
   const handleBlockUpdate = (blockId: string, data: any) => {
-    const block = localBlocks.find(b => b.id === blockId);
-    if (block) {
-      onSaveBlock({
-        id: blockId,
-        block_data: data,
-        order_number: block.order_number,
-        is_visible: block.is_visible,
-      });
-    }
+    // Update local state only - auto-save will handle persistence
+    setLocalBlocks(prev => prev.map(b => 
+      b.id === blockId ? { ...b, block_data: data } : b
+    ));
   };
 
   return (

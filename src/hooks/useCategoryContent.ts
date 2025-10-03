@@ -42,7 +42,7 @@ export const useCategoryContent = (categoryId: string) => {
     }
   }, [categoryId]);
 
-  const saveBlock = async (block: Partial<CategoryContentBlock>) => {
+  const saveBlock = async (block: Partial<CategoryContentBlock>, silent = false) => {
     setSaving(true);
     try {
       if (block.id) {
@@ -71,7 +71,9 @@ export const useCategoryContent = (categoryId: string) => {
       }
 
       await fetchBlocks();
-      toast.success('Block saved successfully');
+      if (!silent) {
+        toast.success('Block saved successfully');
+      }
     } catch (error) {
       console.error('Error saving block:', error);
       toast.error('Failed to save block');
@@ -134,6 +136,7 @@ export const useCategoryContent = (categoryId: string) => {
       const { error: publishError } = await supabase
         .from('published_category_content')
         .upsert({
+          category_id: categoryId,
           slug: category.slug,
           content_data: { blocks },
           seo_data: {
