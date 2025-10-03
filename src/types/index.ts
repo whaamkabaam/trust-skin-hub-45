@@ -185,5 +185,124 @@ export interface BlogPost {
   readTime: number;
 }
 
+export interface RillaBoxMetricsBox {
+  box_name: string;
+  box_price: number;
+  box_image: string;
+  expected_value_percent_of_price: number;
+  volatility_bucket: 'Low' | 'Medium' | 'High';
+  standard_deviation_percent: number;
+  floor_rate_percent: number;
+  category: string;
+  tags: string[];
+  jackpot_items: any[];
+  unwanted_items: any[];
+  all_items: any[];
+  provider?: string;
+  provider_config?: {
+    displayName: string;
+    color: string;
+    gradient: string;
+    bgColor: string;
+    borderColor: string;
+    textColor: string;
+  };
+}
+
+export interface BoxItem {
+  name: string;
+  value: number;
+  drop_chance?: number;
+  image?: string;
+  type?: string;
+}
+
+export interface BoxAllocation {
+  boxName?: string;
+  count?: number;
+  totalSpend?: number;
+  box: RillaBoxMetricsBox;
+  quantity: number;
+  cost: number;
+  reasoning?: string;
+}
+
+export interface OutcomeItem {
+  name: string;
+  value: number;
+  chance: number;
+  boxName: string;
+  roi: number;
+  amount?: number;
+  probability?: number;
+  label?: string;
+  color?: string;
+  bgColor?: string;
+}
+
+export interface OutcomeScenario {
+  icon: any;
+  label: string;
+  description: string;
+  amount: string;
+  probability: number;
+  color: string;
+  bgColor: string;
+  calculation: {
+    title: string;
+    formula?: string;
+    result?: number;
+    items: OutcomeItem[];
+    methodology: string;
+    totalItems: number;
+    avgReturn: number;
+  };
+  name?: string;
+}
+
+export interface PortfolioStrategy {
+  name: string;
+  description: string;
+  pros: string[];
+  cons: string[];
+  allocations?: BoxAllocation[];
+  totalBudget?: number;
+  expectedReturn?: number;
+  riskLevel: 'Low' | 'Medium' | 'High' | 'Very High';
+  boxes: BoxAllocation[];
+  totalCost: number;
+  portfolioFloorValue?: number;
+  worstCaseScenario?: string;
+  keyMetric?: string | { label: string; value: string; tooltip: string };
+  topJackpotItem?: {
+    name: string;
+    value: number;
+    box?: string;
+  };
+}
+
+export interface HuntResult {
+  boxName: string;
+  boxPrice: number;
+  boxImage: string;
+  box: RillaBoxMetricsBox;
+  targetItem: {
+    name: string;
+    value: number;
+    dropChance?: number;
+    drop_chance?: number;
+  };
+  expectedCost?: number;
+  targetingCost?: number;
+  expectedMoneyLeft?: number;
+  efficiency: number;
+  costRange?: {
+    min: number;
+    max: number;
+  };
+  profitProbability?: number;
+  rank?: number;
+}
+
 export type TrustLevel = 'high' | 'medium' | 'low';
 export type FeeLevel = 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';

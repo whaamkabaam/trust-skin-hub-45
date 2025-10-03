@@ -37,6 +37,7 @@ import PublishingManager from "./pages/admin/PublishingManager";
 import Categories from "./pages/admin/Categories";
 import PaymentMethods from "./pages/admin/PaymentMethods";
 import MysteryBoxes from "./pages/admin/MysteryBoxes";
+import MysteryBoxImport from "./pages/admin/MysteryBoxImport";
 import CategoryArchive from "./pages/CategoryArchive";
 import Auth from "./pages/Auth";
 import LegacyOperatorReview from "./pages/LegacyOperatorReview";
@@ -89,6 +90,7 @@ const App = () => (
               <Route path="operators/:id/media" element={<OperatorMedia />} />
               <Route path="operators/:id/seo" element={<OperatorSEO />} />
               <Route path="mystery-boxes" element={<MysteryBoxes />} />
+              <Route path="mystery-boxes/import" element={<MysteryBoxImport />} />
               <Route path="categories" element={<Categories />} />
               <Route path="payment-methods" element={<PaymentMethods />} />
               <Route path="publishing" element={<PublishingManager />} />

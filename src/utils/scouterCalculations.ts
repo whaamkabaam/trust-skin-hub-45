@@ -58,8 +58,10 @@ export const generateHuntReport = (boxesData: RillaBoxMetricsBox[], itemName: st
           targetItem,
           targetingCost,
           rank: 0, // Will be set after sorting
-          efficiency: targetingCost < 500 ? 'Excellent' : 
-                     targetingCost < 1000 ? 'Good' : 'Poor'
+          efficiency: targetItem.value / targetingCost,
+          boxName: box.box_name,
+          boxPrice: box.box_price,
+          boxImage: box.box_image
         });
       }
     }
