@@ -35,15 +35,52 @@ const CATEGORY_MAPPING: Record<string, string> = {
   'Premium': 'premium',
 };
 
+function parseLine(line: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let insideQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const nextChar = line[i + 1];
+    
+    if (char === '"') {
+      if (insideQuotes && nextChar === '"') {
+        current += '"';
+        i++;
+      } else {
+        insideQuotes = !insideQuotes;
+      }
+    } else if (char === ',' && !insideQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function safeJSONParse(str: string, fallback: any = null): any {
+  if (!str || str === 'null' || str === 'undefined' || str === '') return fallback;
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    console.error('JSON parse error for:', str.substring(0, 100), e);
+    return fallback;
+  }
+}
+
 function parseCSV(csvText: string): any[] {
   const lines = csvText.trim().split('\n');
   if (lines.length < 2) return [];
   
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  const headers = parseLine(lines[0]);
   const rows = [];
   
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+    const values = parseLine(lines[i]);
     const row: any = {};
     headers.forEach((header, index) => {
       row[header] = values[index] || null;
@@ -117,10 +154,10 @@ serve(async (req) => {
             standard_deviation_percent: parseFloat(row.standard_deviation_percent || '0'),
             volatility_bucket: row.volatility_bucket || 'Medium',
             category: row.category,
-            tags: row.tags ? JSON.parse(row.tags) : [],
-            jackpot_items: row.jackpot_items ? JSON.parse(row.jackpot_items) : [],
-            unwanted_items: row.unwanted_items ? JSON.parse(row.unwanted_items) : [],
-            all_items: row.all_items ? JSON.parse(row.all_items) : [],
+            tags: safeJSONParse(row.tags, []),
+            jackpot_items: safeJSONParse(row.jackpot_items, []),
+            unwanted_items: safeJSONParse(row.unwanted_items, []),
+            all_items: safeJSONParse(row.all_items, []),
             data_source: 'csv_import',
             last_updated: new Date().toISOString(),
           };
