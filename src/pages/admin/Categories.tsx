@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, Edit2, Trash2, Search, Eye, EyeOff, RefreshCw, AlertTriangle, GripVertical } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Edit2, Trash2, Search, Eye, EyeOff, RefreshCw, AlertTriangle, GripVertical, X, ExternalLink } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -13,8 +13,10 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLiveCategories } from '@/hooks/useLiveCategories';
 import { useCategories, CategoryFormData } from '@/hooks/useCategories';
+import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
 import { generateUniqueOperatorSlug } from '@/lib/utils';
 import { SEOHead } from '@/components/SEOHead';
 import { toast } from 'sonner';
@@ -142,9 +144,11 @@ const SortableTableRow = ({ category, onEdit, onDelete }: any) => {
 const Categories = () => {
   const { categories: liveCategories, loading, syncing, syncCategories, refetch } = useLiveCategories();
   const { createCategory, updateCategory, deleteCategory } = useCategories();
+  const { fetchCategoryBoxes, removeBoxFromCategory, loading: boxesLoading } = useCategoryBoxes();
   const [searchQuery, setSearchQuery] = useState('');
   const [showDialog, setShowDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [categoryBoxes, setCategoryBoxes] = useState<CategoryBoxAssignment[]>([]);
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
     slug: '',
@@ -174,26 +178,31 @@ const Categories = () => {
         await createCategory(formData);
       }
       
+      // Refetch categories to update the list
+      await refetch();
       resetForm();
       setShowDialog(false);
     } catch (error) {
-      // Error handling is done in the hook
+      // Error handling is done in the hook, don't close dialog on error
+      console.error('Failed to save category:', error);
     }
   };
 
   const resetForm = () => {
+    const maxOrder = Math.max(0, ...liveCategories.map(c => c.display_order || 0));
     setFormData({
       name: '',
       slug: '',
       logo_url: '',
       description_rich: '',
-      display_order: 0,
+      display_order: maxOrder + 1,
       is_featured: false,
     });
     setEditingCategory(null);
+    setCategoryBoxes([]);
   };
 
-  const handleEdit = (category: any) => {
+  const handleEdit = async (category: any) => {
     setFormData({
       name: category.name,
       slug: category.slug,
@@ -204,6 +213,21 @@ const Categories = () => {
     });
     setEditingCategory(category.id);
     setShowDialog(true);
+    
+    // Load boxes for this category
+    if (category.id && !category.id.startsWith('temp-')) {
+      const boxes = await fetchCategoryBoxes(category.id);
+      setCategoryBoxes(boxes);
+    }
+  };
+
+  const handleRemoveBox = async (overrideId: string) => {
+    const success = await removeBoxFromCategory(overrideId);
+    if (success && editingCategory) {
+      const boxes = await fetchCategoryBoxes(editingCategory);
+      setCategoryBoxes(boxes);
+      await refetch(); // Update category box counts
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -295,13 +319,22 @@ const Categories = () => {
                   Add Category
                 </Button>
               </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {editingCategory ? 'Edit Category' : 'Add New Category'}
                 </DialogTitle>
               </DialogHeader>
               
+              <Tabs defaultValue="details" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="details">Category Details</TabsTrigger>
+                  <TabsTrigger value="boxes" disabled={!editingCategory}>
+                    Mystery Boxes ({categoryBoxes.length})
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="details">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="name">Name *</Label>
@@ -367,6 +400,81 @@ const Categories = () => {
                   </Button>
                 </div>
               </form>
+                </TabsContent>
+
+                <TabsContent value="boxes" className="space-y-4">
+                  {boxesLoading ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Loading boxes...
+                    </div>
+                  ) : categoryBoxes.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p>No mystery boxes manually assigned to this category yet.</p>
+                      <p className="text-sm mt-2">
+                        Go to <a href="/admin/mystery-boxes" className="text-primary hover:underline inline-flex items-center gap-1">
+                          Mystery Boxes <ExternalLink className="w-3 h-3" />
+                        </a> to assign boxes to this category.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold">Manually Assigned Boxes</h3>
+                        <Badge variant="outline">{categoryBoxes.length} boxes</Badge>
+                      </div>
+                      
+                      <div className="grid gap-2 max-h-[400px] overflow-y-auto">
+                        {categoryBoxes.map((box) => (
+                          <div 
+                            key={box.id}
+                            className="flex items-center gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                          >
+                            {box.box_image && (
+                              <img 
+                                src={box.box_image} 
+                                alt={box.box_name}
+                                className="w-12 h-12 rounded object-cover"
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium truncate">{box.box_name}</div>
+                              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs">
+                                  {box.provider}
+                                </Badge>
+                                <span>${box.box_price.toFixed(2)}</span>
+                              </div>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveBox(box.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="pt-4 border-t">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => {
+                            window.location.href = `/admin/mystery-boxes?category=${formData.slug}`;
+                          }}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add More Boxes
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
             </DialogContent>
             </Dialog>
           </div>
