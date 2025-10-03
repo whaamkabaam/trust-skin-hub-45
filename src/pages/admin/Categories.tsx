@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Search, Upload, Eye, EyeOff, RefreshCw, AlertTriangle, Trash } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Upload, Eye, EyeOff, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -87,26 +87,6 @@ const Categories = () => {
     await deleteCategory(id);
   };
 
-  const handleBulkCleanup = async () => {
-    const manualOnlyEmptyCategories = liveCategories.filter(
-      cat => cat.source === 'manual' && cat.box_count === 0
-    );
-    
-    if (manualOnlyEmptyCategories.length === 0) {
-      toast.info('No empty manual categories to clean up');
-      return;
-    }
-
-    try {
-      for (const category of manualOnlyEmptyCategories) {
-        await deleteCategory(category.id);
-      }
-      toast.success(`Deleted ${manualOnlyEmptyCategories.length} empty manual categories`);
-    } catch (error) {
-      // Error already handled in hook
-    }
-  };
-
   const handleNameChange = (name: string) => {
     setFormData(prev => ({
       ...prev,
@@ -132,36 +112,6 @@ const Categories = () => {
           </div>
           
           <div className="flex gap-2">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="text-destructive hover:text-destructive"
-                >
-                  <Trash className="w-4 h-4 mr-2" />
-                  Clean Up Empty
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Clean Up Empty Categories</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will delete all "Manual Only" categories with 0 boxes. 
-                    Are you sure you want to proceed?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction 
-                    onClick={handleBulkCleanup}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Delete Empty Categories
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          
             <Button
               variant="outline"
               onClick={syncCategories}
