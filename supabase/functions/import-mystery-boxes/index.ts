@@ -145,6 +145,7 @@ serve(async (req) => {
         try {
           // Map CSV row to database structure
           const boxData = {
+            id: parseInt(row.id || '0'),
             box_name: row.box_name || row.name,
             box_price: parseFloat(row.box_price || row.price || '0'),
             box_image: row.box_image || row.image,
