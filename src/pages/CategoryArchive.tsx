@@ -16,11 +16,14 @@ import { cn } from '@/lib/utils';
 import { useCategories } from '@/hooks/useCategories';
 import { useMysteryBoxes } from '@/hooks/useMysteryBoxes';
 import { SEOHead } from '@/components/SEOHead';
+import { usePublishedCategoryContent } from '@/hooks/usePublishedCategoryContent';
+import { BlockRenderer } from '@/components/category-blocks-renderer/BlockRenderer';
 
 const CategoryArchive = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
   const { getCategoryBySlug } = useCategories();
   const { mysteryBoxes, loading, getMysteryBoxesByCategory } = useMysteryBoxes();
+  const { content: publishedContent, loading: contentLoading } = usePublishedCategoryContent(categorySlug || '');
   
   const [category, setCategory] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -190,6 +193,19 @@ const CategoryArchive = () => {
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-8">
+        {/* Render Published Content Blocks if available */}
+        {publishedContent?.content_data?.blocks && publishedContent.content_data.blocks.length > 0 ? (
+          <div className="space-y-12 mb-12">
+            {publishedContent.content_data.blocks
+              .filter((block: any) => block.is_visible)
+              .sort((a: any, b: any) => a.order_number - b.order_number)
+              .map((block: any) => (
+                <BlockRenderer key={block.id} block={block} />
+              ))}
+          </div>
+        ) : (
+          <>
+            {/* Fallback to old layout if not published */}
         {/* Filters */}
         <div className="mb-8">
           <div className="md:hidden mb-6">
@@ -426,6 +442,8 @@ const CategoryArchive = () => {
               </div>
             </CardContent>
           </Card>
+        )}
+          </>
         )}
       </section>
 

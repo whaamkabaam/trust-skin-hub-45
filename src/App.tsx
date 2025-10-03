@@ -68,10 +68,9 @@ const App = () => (
             <Route path="/mystery-boxes" element={<MysteryBoxHub />} />
             <Route path="/mystery-boxes/archive" element={<MysteryBoxesArchive />} />
             <Route path="/mystery-boxes/reviews" element={<MysteryBoxReviews />} />
-            <Route path="/mystery-boxes/apple" element={<AppleMysteryBoxes />} />
             <Route path="/mystery-boxes/operators" element={<MysteryBoxOperators />} />
+            <Route path="/mystery-boxes/:categorySlug" element={<CategoryArchive />} />
             <Route path="/mystery-boxes/:id" element={<MysteryBoxDetail />} />
-            <Route path="/categories/:categorySlug" element={<CategoryArchive />} />
             <Route path="/style-guide" element={<StyleGuide />} />
             <Route path="/auth" element={<Auth />} />
             

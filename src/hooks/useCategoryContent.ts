@@ -132,13 +132,88 @@ export const useCategoryContent = (categoryId: string) => {
 
       if (catError) throw catError;
 
-      // Create published content snapshot
+      // Enrich mystery_boxes blocks with full box data
+      const enrichedBlocks = await Promise.all(
+        blocks.map(async (block) => {
+          if (block.block_type === 'mystery_boxes' && block.block_data.selectedBoxIds?.length > 0) {
+            // Fetch full box details for selected IDs
+            const { data: overrides, error: overridesError } = await supabase
+              .from('provider_box_category_overrides')
+              .select('id, provider, box_id')
+              .in('id', block.block_data.selectedBoxIds);
+
+            if (overridesError) throw overridesError;
+
+            const boxesData = [];
+
+            // Fetch box details from provider tables
+            for (const override of overrides || []) {
+              const provider = override.provider;
+              let boxData: any = null;
+
+              // Query the correct provider table
+              if (provider === 'rillabox') {
+                const { data, error } = await supabase
+                  .from('rillabox')
+                  .select('id, box_name, box_image, box_price, box_url')
+                  .eq('id', override.box_id)
+                  .single();
+                if (!error) boxData = data;
+              } else if (provider === 'hypedrop') {
+                const { data, error } = await supabase
+                  .from('hypedrop')
+                  .select('id, box_name, box_image, box_price, box_url')
+                  .eq('id', override.box_id)
+                  .single();
+                if (!error) boxData = data;
+              } else if (provider === 'casesgg') {
+                const { data, error } = await supabase
+                  .from('casesgg')
+                  .select('id, box_name, box_image, box_price, box_url')
+                  .eq('id', override.box_id)
+                  .single();
+                if (!error) boxData = data;
+              } else if (provider === 'luxdrop') {
+                const { data, error } = await supabase
+                  .from('luxdrop')
+                  .select('id, box_name, box_image, box_price, box_url')
+                  .eq('id', override.box_id)
+                  .single();
+                if (!error) boxData = data;
+              }
+
+              if (boxData) {
+                boxesData.push({
+                  id: override.id,
+                  box_id: boxData.id,
+                  box_name: boxData.box_name,
+                  box_image: boxData.box_image,
+                  box_price: boxData.box_price,
+                  box_url: boxData.box_url,
+                  provider: override.provider,
+                });
+              }
+            }
+
+            return {
+              ...block,
+              block_data: {
+                ...block.block_data,
+                boxesData,
+              },
+            };
+          }
+          return block;
+        })
+      );
+
+      // Create published content snapshot with enriched data
       const { error: publishError } = await supabase
         .from('published_category_content')
         .upsert({
           category_id: categoryId,
           slug: category.slug,
-          content_data: { blocks },
+          content_data: { blocks: enrichedBlocks },
           seo_data: {
             meta_title: category.meta_title,
             meta_description: category.meta_description,
