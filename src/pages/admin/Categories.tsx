@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Search, Upload, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Upload, Eye, EyeOff, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,12 +10,15 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useLiveCategories } from '@/hooks/useLiveCategories';
 import { useCategories, CategoryFormData } from '@/hooks/useCategories';
 import { generateUniqueOperatorSlug } from '@/lib/utils';
 import { SEOHead } from '@/components/SEOHead';
+import { toast } from 'sonner';
 
 const Categories = () => {
-  const { categories, loading, createCategory, updateCategory, deleteCategory } = useCategories();
+  const { categories: liveCategories, loading, syncing, syncCategories } = useLiveCategories();
+  const { createCategory, updateCategory, deleteCategory } = useCategories();
   const [searchQuery, setSearchQuery] = useState('');
   const [showDialog, setShowDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
@@ -28,7 +31,7 @@ const Categories = () => {
     is_featured: false,
   });
 
-  const filteredCategories = categories.filter(category =>
+  const filteredCategories = liveCategories.filter(category =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     category.slug.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -42,7 +45,7 @@ const Categories = () => {
       } else {
         // Generate unique slug if not provided
         if (!formData.slug && formData.name) {
-          const existingSlugs = categories.map(c => c.slug);
+          const existingSlugs = liveCategories.map(c => c.slug);
           formData.slug = generateUniqueOperatorSlug(formData.name, existingSlugs);
         }
         await createCategory(formData);
@@ -101,23 +104,33 @@ const Categories = () => {
       
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-bold">Categories</h1>
             <p className="text-muted-foreground mt-1">
               Manage mystery box categories and taxonomy structure
             </p>
           </div>
           
-          <Dialog open={showDialog} onOpenChange={(open) => {
-            setShowDialog(open);
-            if (!open) resetForm();
-          }}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Category
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={syncCategories}
+              disabled={syncing}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Syncing...' : 'Sync from Providers'}
+            </Button>
+          
+            <Dialog open={showDialog} onOpenChange={(open) => {
+              setShowDialog(open);
+              if (!open) resetForm();
+            }}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Category
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>
@@ -202,7 +215,8 @@ const Categories = () => {
                 </div>
               </form>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
 
         {/* Search */}
@@ -231,14 +245,15 @@ const Categories = () => {
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Order</TableHead>
-                    <TableHead>Featured</TableHead>
-                    <TableHead>Count</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Slug</TableHead>
+                      <TableHead>Source</TableHead>
+                      <TableHead>Box Count</TableHead>
+                      <TableHead>Order</TableHead>
+                      <TableHead>Featured</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredCategories.map((category) => (
@@ -260,6 +275,18 @@ const Categories = () => {
                           {category.slug}
                         </code>
                       </TableCell>
+                      <TableCell>
+                        {category.source === 'provider' ? (
+                          <Badge variant="default">Provider Only</Badge>
+                        ) : category.source === 'both' ? (
+                          <Badge variant="secondary">Manual + Provider</Badge>
+                        ) : (
+                          <Badge variant="outline">Manual Only</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{category.box_count} boxes</Badge>
+                      </TableCell>
                       <TableCell>{category.display_order}</TableCell>
                       <TableCell>
                         {category.is_featured ? (
@@ -273,9 +300,6 @@ const Categories = () => {
                             Regular
                           </Badge>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">0 boxes</Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center gap-2 justify-end">
@@ -296,7 +320,18 @@ const Categories = () => {
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Delete Category</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to delete "{category.name}"? This action cannot be undone.
+                                  {category.box_count > 0 ? (
+                                    <div className="flex items-start gap-2">
+                                      <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                                      <div>
+                                        <p className="font-medium text-orange-600">Warning: Category in use</p>
+                                        <p className="mt-1">This category is used by {category.box_count} mystery boxes from providers. Deleting it may affect categorization.</p>
+                                        <p className="mt-2">Are you sure you want to delete "{category.name}"?</p>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    `Are you sure you want to delete "${category.name}"? This action cannot be undone.`
+                                  )}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
