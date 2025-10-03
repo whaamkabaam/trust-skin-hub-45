@@ -2,10 +2,22 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const fixImagePath = (path: string): string => {
-  if (!path) return 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop';
-  if (path.startsWith('http')) return path;
-  if (path.startsWith('/')) return path;
-  return path;
+  const fallback = 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop';
+  
+  if (!path) return fallback;
+  
+  // Validate URL format
+  try {
+    if (path.startsWith('http')) {
+      new URL(path); // This will throw if invalid
+      return path;
+    }
+    if (path.startsWith('/')) return path;
+    return path;
+  } catch (e) {
+    console.warn('Invalid image URL detected:', path);
+    return fallback;
+  }
 };
 
 interface BoxItem {
