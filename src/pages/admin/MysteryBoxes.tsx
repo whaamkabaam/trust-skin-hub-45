@@ -52,14 +52,14 @@ const MysteryBoxes = () => {
   });
 
   const { mysteryBoxes, loading, totalCount } = useMysteryBoxesFromProviders();
-  const [providerFilter, setProviderFilter] = useState<string>('');
+  const [providerFilter, setProviderFilter] = useState<string>('ALL');
 
   const filteredBoxes = mysteryBoxes.filter(box => {
     const matchesSearch = box.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       box.game?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       box.site_name?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesProvider = !providerFilter || box.site_name === providerFilter;
+    const matchesProvider = providerFilter === 'ALL' || box.site_name === providerFilter;
     
     return matchesSearch && matchesProvider;
   });
@@ -111,7 +111,7 @@ const MysteryBoxes = () => {
               <SelectValue placeholder="All Providers" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Providers</SelectItem>
+              <SelectItem value="ALL">All Providers</SelectItem>
               {providers.map(provider => (
                 <SelectItem key={provider} value={provider!}>
                   {provider}
