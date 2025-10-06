@@ -314,6 +314,9 @@ export function useOperatorExtensions(operatorId: string) {
 
   stableSaveRefs.current.saveSecurity = createStableSaveSecurity;
 
+  // Track active save promises to prevent duplicate requests
+  const activeSavePromisesRef = useRef<Map<string, Promise<void>>>(new Map());
+
   const createStableSaveFaqs = useCallback(async (faqData: OperatorFAQ[]) => {
     if (!operatorId) {
       toast.error('No operator ID provided');
@@ -326,34 +329,66 @@ export function useOperatorExtensions(operatorId: string) {
       return;
     }
     
-    // For existing operators: save immediately to database (no queuing)
-    // For temp operators: localStorage handles persistence
-    
-    try {
-      console.log('Saving FAQs for operator:', operatorId, faqData);
-      
-      // Delete existing FAQs
-      const { error: deleteError } = await supabase
-        .from('operator_faqs')
-        .delete()
-        .eq('operator_id', operatorId);
-      
-      if (deleteError) throw deleteError;
-      
-      // Insert new FAQs
-      if (faqData && faqData.length > 0) {
-        const { error: insertError } = await supabase
-          .from('operator_faqs')
-          .insert(faqData);
-        if (insertError) throw insertError;
-      }
-      
-      setFaqs(faqData || []);
-      toast.success('FAQs saved successfully');
-    } catch (error) {
-      console.error('Error saving FAQs:', error);
-      toast.error('Failed to save FAQs');
+    // Phase 5: Request deduplication - check if there's already an active save
+    const saveKey = `faqs-${operatorId}`;
+    if (activeSavePromisesRef.current.has(saveKey)) {
+      console.log('FAQ save already in progress, skipping duplicate request');
+      return activeSavePromisesRef.current.get(saveKey);
     }
+    
+    // For existing operators: Use UPSERT pattern to prevent race conditions
+    const savePromise = (async () => {
+      try {
+        console.log('Saving FAQs for operator:', operatorId, faqData);
+        
+        // Phase 1: UPSERT pattern instead of DELETE+INSERT
+        // First, get existing FAQ IDs
+        const { data: existingFaqs, error: fetchError } = await supabase
+          .from('operator_faqs')
+          .select('id')
+          .eq('operator_id', operatorId);
+        
+        if (fetchError) throw fetchError;
+        
+        const existingIds = new Set(existingFaqs?.map(f => f.id) || []);
+        const newFaqIds = new Set(faqData.filter(f => f.id).map(f => f.id));
+        
+        // Delete FAQs that are no longer present
+        const idsToDelete = Array.from(existingIds).filter(id => !newFaqIds.has(id));
+        if (idsToDelete.length > 0) {
+          const { error: deleteError } = await supabase
+            .from('operator_faqs')
+            .delete()
+            .in('id', idsToDelete);
+          
+          if (deleteError) throw deleteError;
+        }
+        
+        // UPSERT (update existing, insert new) FAQs
+        if (faqData && faqData.length > 0) {
+          const { error: upsertError } = await supabase
+            .from('operator_faqs')
+            .upsert(faqData, { onConflict: 'id' });
+          
+          if (upsertError) throw upsertError;
+        }
+        
+        setFaqs(faqData || []);
+        toast.success('FAQs saved successfully');
+      } catch (error) {
+        console.error('Error saving FAQs:', error);
+        toast.error('Failed to save FAQs');
+        throw error;
+      } finally {
+        // Clean up the active promise
+        activeSavePromisesRef.current.delete(saveKey);
+      }
+    })();
+    
+    // Store the promise to prevent duplicates
+    activeSavePromisesRef.current.set(saveKey, savePromise);
+    
+    return savePromise;
   }, [operatorId, isExtensionActive]);
 
   stableSaveRefs.current.saveFaqs = createStableSaveFaqs;

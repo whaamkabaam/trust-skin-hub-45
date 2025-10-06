@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
+import { Trash2, Plus, AlertCircle, Database, HardDrive, Loader2, Check, Clock } from 'lucide-react';
 import { OperatorFAQ } from '@/hooks/useOperatorExtensions';
 import { toast } from '@/lib/toast';
 import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
@@ -42,27 +42,68 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   // Local state for immediate UI updates
   const [localFaqs, setLocalFaqs] = useState<OperatorFAQ[]>(effectiveFaqs);
   
-  // Update local state when prop changes
+  // Phase 3: Dirty flag tracking instead of JSON.stringify
+  const [isDirty, setIsDirty] = useState(false);
+  const isInitialMount = useRef(true);
+  
+  // Phase 4: Save state tracking
+  const [saveState, setSaveState] = useState<'idle' | 'waiting' | 'saving' | 'saved'>('idle');
+  
+  // Update local state when prop changes (from external updates)
   useEffect(() => {
     setLocalFaqs(effectiveFaqs);
+    setIsDirty(false);
+    setSaveState('idle');
   }, [effectiveFaqs]);
   
   // Debounce the local FAQs with 2 second delay
   const debouncedFaqs = useDebounce(localFaqs, 2000);
   
-  // Auto-save when debounced value changes
+  // Phase 2: Fixed dependencies - Auto-save when debounced value changes
   useEffect(() => {
     // Skip initial render
-    if (JSON.stringify(debouncedFaqs) === JSON.stringify(effectiveFaqs)) {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
       return;
     }
     
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(debouncedFaqs);
-    } else {
-      onSave(debouncedFaqs);
+    // Skip if not dirty
+    if (!isDirty) {
+      return;
     }
-  }, [debouncedFaqs]);
+    
+    // Set saving state
+    setSaveState('saving');
+    
+    const performSave = async () => {
+      try {
+        if (isTemporaryOperator) {
+          localStorage.saveFaqsToLocal(debouncedFaqs);
+        } else {
+          await onSave(debouncedFaqs);
+        }
+        setIsDirty(false);
+        setSaveState('saved');
+        
+        // Reset to idle after showing success
+        setTimeout(() => {
+          setSaveState('idle');
+        }, 2000);
+      } catch (error) {
+        console.error('Auto-save failed:', error);
+        setSaveState('idle');
+      }
+    };
+    
+    performSave();
+  }, [debouncedFaqs, isDirty, isTemporaryOperator, localStorage, onSave]);
+  
+  // Show waiting state when there are pending changes
+  useEffect(() => {
+    if (isDirty && saveState === 'idle') {
+      setSaveState('waiting');
+    }
+  }, [isDirty, saveState]);
 
   const addFaq = () => {
     // Notify parent that user is interacting with extensions
@@ -81,6 +122,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     
     const newFaqs = [...localFaqs, newFaq];
     setLocalFaqs(newFaqs);
+    setIsDirty(true);
   };
 
   const updateFaq = (index: number, updates: Partial<OperatorFAQ>) => {
@@ -94,11 +136,13 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       i === index ? { ...faq, ...updates } : faq
     );
     setLocalFaqs(updated);
+    setIsDirty(true);
   };
 
   const removeFaq = (index: number) => {
     const filtered = localFaqs.filter((_, i) => i !== index);
     setLocalFaqs(filtered);
+    setIsDirty(true);
   };
 
   const moveFaq = (index: number, direction: 'up' | 'down') => {
@@ -119,6 +163,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     });
     
     setLocalFaqs(updated);
+    setIsDirty(true);
   };
 
   const handleSave = () => {
@@ -144,21 +189,42 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            Frequently Asked Questions
+        <CardTitle className="flex items-center gap-2 justify-between">
+          <div className="flex items-center gap-2">
             {isTemporaryOperator ? (
-              <HardDrive className="h-4 w-4 text-orange-500" />
+              <HardDrive className="h-5 w-5 text-muted-foreground" />
             ) : (
-              <Database className="h-4 w-4 text-green-500" />
+              <Database className="h-5 w-5 text-muted-foreground" />
             )}
-          </CardTitle>
-        </div>
+            Frequently Asked Questions
+          </div>
+          {/* Phase 4: Visual save state indicator */}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {saveState === 'waiting' && (
+              <>
+                <Clock className="h-4 w-4" />
+                <span>Waiting...</span>
+              </>
+            )}
+            {saveState === 'saving' && (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            )}
+            {saveState === 'saved' && (
+              <>
+                <Check className="h-4 w-4 text-green-600" />
+                <span className="text-green-600">Saved</span>
+              </>
+            )}
+          </div>
+        </CardTitle>
         {isTemporaryOperator && (
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Data is being stored locally. Save the operator first to enable database storage.
+              FAQs are stored locally until you save this operator.
             </AlertDescription>
           </Alert>
         )}
