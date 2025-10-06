@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
 interface HeroBlockProps {
   data: {
@@ -83,30 +82,23 @@ export const HeroBlock = ({ data = {}, onChange, isEditing = false }: HeroBlockP
 
   return (
     <div 
-      className="relative w-full min-h-[500px] flex items-center justify-center bg-cover bg-center"
-      style={localData.backgroundImage ? {
-        backgroundImage: `url(${localData.backgroundImage})`,
-      } : undefined}
+      className="relative h-[400px] flex items-center justify-center text-white bg-cover bg-center"
+      style={{
+        backgroundImage: localData.backgroundImage 
+          ? `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${localData.backgroundImage})`
+          : 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))',
+      }}
     >
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
-      
-      {/* Content */}
-      <div className="relative z-10 text-center text-white px-4 max-w-4xl py-16">
-        {localData.title && (
-          <h1 className="text-6xl font-bold mb-6 animate-fade-in">{localData.title}</h1>
-        )}
-        {localData.subtitle && (
-          <p className="text-2xl mb-8 opacity-90">{localData.subtitle}</p>
-        )}
+      <div className="container mx-auto px-4 text-center">
+        <h1 className="text-5xl font-bold mb-4">{localData.title || 'Category Title'}</h1>
+        <p className="text-xl mb-8 max-w-2xl mx-auto">{localData.subtitle || 'Discover amazing mystery boxes'}</p>
         {localData.ctaText && (
-          <Button 
-            className="mt-6 text-lg px-8 py-6 hover:scale-105 transition-transform"
-            size="lg"
-            onClick={() => window.location.href = localData.ctaLink || '#'}
+          <a 
+            href={localData.ctaLink || '#'} 
+            className="inline-block bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition"
           >
             {localData.ctaText}
-          </Button>
+          </a>
         )}
       </div>
     </div>
