@@ -1,41 +1,99 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
 
 @layer base {
   :root {
+    /* Base colors - More vibrant base */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 215 25% 15%;
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 215 25% 15%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 270 91% 65%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 270 91% 65%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 270 91% 65%;
-
-    --radius: 0.5rem;
+    --popover-foreground: 215 25% 15%;
+    
+    /* Primary - Vibrant purple */
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 258 90% 60%;
+    
+    /* Secondary - Soft blue-gray */
+    --secondary: 215 15% 95%;
+    --secondary-foreground: 215 25% 25%;
+    --secondary-hover: 215 15% 90%;
+    
+    /* Muted - Subtle backgrounds */
+    --muted: 215 15% 97%;
+    --muted-foreground: 215 15% 45%;
+    
+    /* Accent - Bright cyan */
+    --accent: 189 85% 55%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 189 85% 50%;
+    
+    /* Status colors - More vibrant */
+    --success: 142 85% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 48 96% 53%;
+    --warning-foreground: 48 96% 15%;
+    --destructive: 348 83% 55%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Gaming colors - Vibrant playful palette */
+    --gaming-orange: 25 95% 53%;
+    --gaming-blue: 221 83% 53%;
+    --gaming-purple: 258 90% 66%;
+    --gaming-green: 142 85% 45%;
+    --gaming-red: 348 83% 55%;
+    --gaming-yellow: 48 96% 53%;
+    --gaming-pink: 330 85% 65%;
+    --gaming-cyan: 189 85% 55%;
+    --gaming-gold: 45 93% 58%;
+    
+    /* Playful Card Colors */
+    --card-purple: 258 90% 66%;
+    --card-green: 142 85% 45%;
+    --card-orange: 25 95% 53%;
+    --card-blue: 221 83% 53%;
+    --card-pink: 330 85% 65%;
+    --card-cyan: 189 85% 55%;
+    
+    /* Trust indicators */
+    --trust-high: 142 85% 45%;
+    --trust-medium: 48 96% 53%;
+    --trust-low: 348 83% 55%;
+    
+    /* Borders and inputs */
+    --border: 215 15% 88%;
+    --input: 215 15% 92%;
+    --ring: 258 90% 66%;
+    
+    /* Layout */
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1rem;
+    
+    /* Shadows - More colorful */
+    --shadow-subtle: 0 1px 3px 0 hsl(258 90% 66% / 0.1);
+    --shadow-card: 0 4px 12px 0 hsl(258 90% 66% / 0.08);
+    --shadow-elevated: 0 8px 24px 0 hsl(258 90% 66% / 0.12);
+    --shadow-colorful: 0 10px 30px -10px hsl(258 90% 66% / 0.3);
+    --shadow-glow: 0 0 40px hsl(189 85% 55% / 0.4);
+    
+    /* Vibrant Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(330 85% 65%) 35%, hsl(221 83% 53%) 100%);
+    --gradient-card: linear-gradient(to bottom, hsl(0 0% 100%), hsl(215 15% 99%));
+    --gradient-trust: linear-gradient(90deg, hsl(142 85% 45%), hsl(142 85% 35%));
+    --gradient-card-1: linear-gradient(135deg, hsl(258 90% 66%), hsl(330 85% 65%));
+    --gradient-card-2: linear-gradient(135deg, hsl(142 85% 45%), hsl(189 85% 55%));
+    --gradient-card-3: linear-gradient(135deg, hsl(25 95% 53%), hsl(348 83% 55%));
+    --gradient-card-4: linear-gradient(135deg, hsl(221 83% 53%), hsl(258 90% 66%));
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -45,72 +103,60 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* Enhanced Purple Glass Variables */
-    --glass-rgb: 147 51 234;
-    --glass-opacity: 0.15;
-    --purple-light: 168 85 247;
-    --purple-medium: 147 51 234;
-    --purple-dark: 126 34 206;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 270 91% 65%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 270 91% 65%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 270 91% 65%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 270 91% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* Enhanced dark mode glass variables with purple */
-    --glass-rgb: 147 51 234;
-    --glass-opacity: 0.08;
-    --purple-light: 168 85 247;
-    --purple-medium: 147 51 234;
-    --purple-dark: 126 34 206;
-  }
-
-  @media (prefers-reduced-transparency) {
-    :root {
-      --glass-opacity: 0.9;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
+    /* Base colors - Dark theme */
+    --background: 215 25% 8%;
+    --foreground: 0 0% 95%;
+    
+    --card: 215 25% 10%;
+    --card-foreground: 0 0% 95%;
+    
+    --popover: 215 25% 8%;
+    --popover-foreground: 0 0% 95%;
+    
+    /* Primary - Lighter for dark theme */
+    --primary: 214 85% 55%;
+    --primary-foreground: 215 25% 8%;
+    --primary-hover: 214 85% 60%;
+    
+    /* Secondary - Darker backgrounds */
+    --secondary: 215 25% 12%;
+    --secondary-foreground: 0 0% 85%;
+    --secondary-hover: 215 25% 15%;
+    
+    /* Muted - Dark backgrounds */
+    --muted: 215 25% 12%;
+    --muted-foreground: 0 0% 65%;
+    
+    /* Accent - Brighter for dark */
+    --accent: 214 85% 60%;
+    --accent-foreground: 215 25% 8%;
+    --accent-hover: 214 85% 65%;
+    
+    /* Status colors - adjusted for dark */
+    --success: 142 76% 45%;
+    --success-foreground: 215 25% 8%;
+    --warning: 38 92% 60%;
+    --warning-foreground: 215 25% 8%;
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* CS2 Gaming accents */
+    --gaming-orange: 25 95% 58%;
+    --gaming-blue: 214 85% 60%;
+    --gaming-gold: 45 93% 63%;
+    
+    /* Borders and inputs */
+    --border: 215 25% 15%;
+    --input: 215 25% 15%;
+    --ring: 214 85% 55%;
+    
+    /* Gradients - adjusted for dark */
+    --gradient-hero: linear-gradient(135deg, hsl(214 85% 55%), hsl(214 85% 45%));
+    --gradient-card: linear-gradient(to bottom, hsl(215 25% 10%), hsl(215 25% 8%));
+    --gradient-trust: linear-gradient(90deg, hsl(142 76% 45%), hsl(142 76% 35%));
   }
 }
 
@@ -119,320 +165,288 @@
     @apply border-border;
   }
 
+  html,
   body {
     @apply bg-background text-foreground;
+    scroll-behavior: smooth;
   }
 
-  /* Performance optimizations */
-  img {
-    content-visibility: auto;
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
-  .overflow-y-auto {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(147, 51, 234, 0.3) transparent;
-  }
-
-  .overflow-y-auto::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .overflow-y-auto::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: rgba(147, 51, 234, 0.3);
-    border-radius: 3px;
-  }
-}
-
-@layer components {
-  /* Enhanced Purple Glass Effect */
-  .glass-edge {
-    position: relative;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(147, 51, 234, 0.3);
-    box-shadow: 0 8px 32px rgba(147, 51, 234, 0.15);
-  }
-
-  .glass-edge::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(147, 51, 234, 0.12), rgba(168, 85, 247, 0.08), transparent);
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  /* Purple Hunt Results Glass Cards */
-  .hunt-card {
-    position: relative;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.88);
-    border: 1px solid rgba(147, 51, 234, 0.25);
-    box-shadow: 0 8px 32px rgba(147, 51, 234, 0.12);
-    overflow: hidden;
-  }
-  
-/* Scrollbar Styling */
-.scrollbar-webkit {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
-}
-
-.scrollbar-webkit::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.scrollbar-webkit::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-  border-radius: 4px;
-}
-
-.scrollbar-webkit::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground));
-  border-radius: 4px;
-  border: 1px solid hsl(var(--muted));
-}
-
-.scrollbar-webkit::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--accent-foreground));
-}
-
-/* Scroll indicators for better UX */
-.scroll-indicator-top,
-.scroll-indicator-bottom {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 12px;
-  z-index: 10;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.scroll-indicator-top {
-  top: 0;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), transparent);
-  border-radius: 8px 8px 0 0;
-}
-
-.scroll-indicator-bottom {
-  bottom: 0;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.9), transparent);
-  border-radius: 0 0 8px 8px;
-}
-
-/* Enhanced scroll shadows for depth */
-.scroll-shadow-inset {
-  box-shadow: 
-    inset 0 4px 8px -4px rgba(0, 0, 0, 0.1),
-    inset 0 -4px 8px -4px rgba(0, 0, 0, 0.1);
-}
-  .hunt-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, 
-      rgba(147, 51, 234, 0.08) 0%, 
-      rgba(168, 85, 247, 0.06) 50%, 
-      transparent 100%
-    );
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  /* Box Statistics Background Pattern - More Blurred - Fixed to use Unpacked Logo Pattern */
-  .box-stats-pattern-blurred {
-    position: relative;
+  /* Admin-specific overflow control */
+  .admin-container {
+    height: 100vh;
     overflow: hidden;
   }
 
-  .box-stats-pattern-blurred::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url('/lovable-uploads/57973f30-20da-4af8-b497-e5e129b21fdd.png');
-    background-size: 500px;
-    background-repeat: repeat;
-    background-position: center;
-    opacity: 0.2;
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: -1;
-    filter: blur(1px);
+  /* Scroll containment for admin areas */
+  .admin-scroll-container {
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
   }
 
-  /* Box Statistics Background Pattern - Fixed to use Unpacked Logo Pattern */
-  .box-stats-pattern {
-    position: relative;
-    overflow: hidden;
+  /* Prevent mobile bounce scroll */
+  .no-bounce {
+    overscroll-behavior-y: none;
   }
+}
 
-  .box-stats-pattern::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url('/lovable-uploads/57973f30-20da-4af8-b497-e5e129b21fdd.png');
-    background-size: 120px 120px;
-    background-repeat: repeat;
-    background-position: center;
-    opacity: 0.12;
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: -1;
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px);
   }
-
-  /* Box Container Pattern Background - Uses Mystery Box Image as Single Cover */
-  .box-container-pattern {
-    position: relative;
-    overflow: hidden;
+  50% { 
+    transform: translateY(-20px);
   }
+}
 
-  .box-container-pattern::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url('/lovable-uploads/acb8c7f1-8140-4493-acbe-f80e8eca6b4a.png');
-    background-size: 150%;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.55;
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: -1;
+@keyframes float-delayed {
+  0%, 100% { 
+    transform: translateY(0px);
   }
-
-  /* Unpacked Pattern Background for Box Images - Keep for specific elements */
-  .box-image-pattern {
-    position: relative;
-    overflow: hidden;
+  50% { 
+    transform: translateY(-15px);
   }
+}
 
-  .box-image-pattern::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url('/lovable-uploads/57973f30-20da-4af8-b497-e5e129b21fdd.png');
-    background-size: 120px 120px;
-    background-repeat: repeat;
-    background-position: center;
-    opacity: 0.12;
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: -1;
-    filter: blur(1px);
+@keyframes wiggle {
+  0%, 7% { transform: rotateZ(0); }
+  15% { transform: rotateZ(-15deg); }
+  20% { transform: rotateZ(10deg); }
+  25% { transform: rotateZ(-10deg); }
+  30% { transform: rotateZ(6deg); }
+  35% { transform: rotateZ(-4deg); }
+  40%, 100% { transform: rotateZ(0); }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
   }
-
-  /* Purple Search Bar */
-  .purple-search-focus:focus {
-    border-color: rgb(147 51 234);
-    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+  50% {
+    transform: translateY(-10px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
+}
 
-  /* Liquid Glass Reflective Shimmer Effect */
-  .shimmer-card {
-    position: relative;
-    overflow: hidden;
-    contain: layout style paint;
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px hsl(var(--gaming-purple) / 0.5);
   }
-
-  .shimmer-card::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-      45deg,
-      transparent 30%,
-      rgba(147, 51, 234, 0.1) 40%,
-      rgba(147, 51, 234, 0.6) 50%,
-      rgba(147, 51, 234, 0.1) 60%,
-      transparent 70%
-    );
-    transform: translate3d(-100%, -100%, 0) rotate(45deg);
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 20;
-    mix-blend-mode: overlay;
-    will-change: transform, opacity;
+  50% {
+    box-shadow: 0 0 20px hsl(var(--gaming-purple) / 0.8), 0 0 30px hsl(var(--gaming-purple) / 0.4);
   }
+}
 
-  .shimmer-card:hover::before {
-    transform: translate3d(100%, 100%, 0) rotate(45deg);
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite 2s;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Playful hover effects */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px -12px hsl(var(--gaming-purple) / 0.25);
+}
+
+.hover-rotate {
+  transition: transform 0.3s ease;
+}
+
+.hover-rotate:hover {
+  transform: rotate(5deg) scale(1.05);
+}
+
+.hover-gradient-shift {
+  background-size: 200% 200%;
+  transition: background-position 0.3s ease;
+}
+
+.hover-gradient-shift:hover {
+  background-position: right center;
+}
+
+/* Mystery Box Hub specific styles */
+@keyframes pulse-subtle {
+  0%, 100% {
     opacity: 1;
   }
-
-  /* Disable shimmer during scroll to prevent conflicts */
-  .shimmer-card.scroll-disabled::before,
-  .shimmer-card.scroll-disabled:hover::before {
-    transition: none;
-    opacity: 0;
-    transform: translate3d(-100%, -100%, 0) rotate(45deg);
-  }
-
-  /* Performance optimized animations */
-  .animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: .5;
-    }
-  }
-
-  /* Hardware acceleration for transforms */
-  .will-change-transform {
-    will-change: transform;
-  }
-
-  /* Reduced motion preferences */
-  @media (prefers-reduced-motion: reduce) {
-    .shimmer-card:hover::before,
-    .shimmer-card.scroll-disabled::before,
-    .shimmer-card.scroll-disabled:hover::before {
-      animation: none;
-      opacity: 0;
-      transform: none;
-    }
-
-    .motion-reduce\:hover\:scale-100:hover {
-      transform: scale(1) !important;
-    }
-    
-    .motion-reduce\:hover\:translate-y-0:hover {
-      transform: translateY(0) !important;
-    }
-    
-    .motion-reduce\:group-hover\:scale-100:hover {
-      transform: scale(1) !important;
-    }
-
-    * {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
+  50% {
+    opacity: 0.95;
   }
 }
 
-/* Custom scrollbar styles for better visibility */
-@layer utilities {
-  .scrollbar-thin {
-    scrollbar-width: thin;
-  }
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Box Stats Pattern Background - More Blurred - Fixed to use Unpacked Logo Pattern */
+.box-stats-pattern-blurred {
+  position: relative;
+  overflow: hidden;
+}
+
+.box-stats-pattern-blurred::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/lovable-uploads/57973f30-20da-4af8-b497-e5e129b21fdd.png');
+  background-size: 500px;
+  background-repeat: repeat;
+  background-position: center;
+  opacity: 0.2;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(1px);
+}
+
+/* Box Container Pattern Background - Uses Mystery Box Image as Single Cover */
+.box-container-pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.box-container-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/lovable-uploads/acb8c7f1-8140-4493-acbe-f80e8eca6b4a.png');
+  background-size: 150%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.55;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Unpacked Pattern Background for Box Images */
+.box-image-pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.box-image-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/lovable-uploads/57973f30-20da-4af8-b497-e5e129b21fdd.png');
+  background-size: 120px 120px;
+  background-repeat: repeat;
+  background-position: center;
+  opacity: 0.12;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(1px);
+}
+
+/* Liquid Glass Reflective Shimmer Effect */
+.shimmer-card {
+  position: relative;
+  overflow: hidden;
+  contain: layout style paint;
+}
+
+.shimmer-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(147, 51, 234, 0.1) 40%,
+    rgba(147, 51, 234, 0.6) 50%,
+    rgba(147, 51, 234, 0.1) 60%,
+    transparent 70%
+  );
+  transform: translate3d(-100%, -100%, 0) rotate(45deg);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  mix-blend-mode: overlay;
+  will-change: transform, opacity;
+}
+
+.shimmer-card:hover::before {
+  transform: translate3d(100%, 100%, 0) rotate(45deg);
+  opacity: 1;
+}
+
+/* Disable shimmer during scroll to prevent conflicts */
+.shimmer-card.scroll-disabled::before,
+.shimmer-card.scroll-disabled:hover::before {
+  transition: none;
+  opacity: 0;
+  transform: translate3d(-100%, -100%, 0) rotate(45deg);
+}
+
+/* Box Container Pattern Background - Uses Mystery Box Image as Single Cover */
+.box-container-pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.box-container-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/lovable-uploads/acb8c7f1-8140-4493-acbe-f80e8eca6b4a.png');
+  background-size: 150%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.55;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Unpacked Pattern Background for Box Images */
+.box-image-pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.box-image-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/lovable-uploads/57973f30-20da-4af8-b497-e5e129b21fdd.png');
+  background-size: 120px 120px;
+  background-repeat: repeat;
+  background-position: center;
+  opacity: 0.12;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(1px);
 }
