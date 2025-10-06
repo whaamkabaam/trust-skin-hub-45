@@ -48,7 +48,19 @@ export function usePublicOperatorExtensions(slug: string): OperatorExtensions {
           { data: faqsData }
         ] = await Promise.all([
           supabase.from('operator_bonuses').select('*').eq('operator_id', operator.id).order('order_number'),
-          supabase.from('operator_payments').select('*').eq('operator_id', operator.id),
+          supabase
+            .from('operator_payment_methods')
+            .select(`
+              *,
+              payment_method:payment_methods(
+                id,
+                name,
+                slug,
+                logo_url,
+                description_rich
+              )
+            `)
+            .eq('operator_id', operator.id),
           supabase.from('operator_features').select('*').eq('operator_id', operator.id),
           supabase.from('operator_security').select('*').eq('operator_id', operator.id).maybeSingle(),
           supabase.from('operator_faqs').select('*').eq('operator_id', operator.id).order('order_number')

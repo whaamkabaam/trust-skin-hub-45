@@ -302,8 +302,10 @@ const OperatorReview = () => {
                       <div>
                         <span className="text-muted-foreground">Payments:</span>
                         <div className="flex gap-1 mt-1">
-                          {payments?.filter(p => p.method_type === 'deposit').slice(0, 3).map((payment, i) => (
-                            <Badge key={i} variant="outline" className="text-xs">{payment.payment_method}</Badge>
+                          {payments?.slice(0, 3).map((pm, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">
+                              {pm.payment_method?.name || 'Payment Method'}
+                            </Badge>
                           )) || (
                             <>
                               <Badge variant="outline" className="text-xs">Visa</Badge>
@@ -896,23 +898,25 @@ const OperatorReview = () => {
                       Deposit Methods & Limits
                     </h4>
                     <div className="space-y-2">
-                      {payments?.filter(p => p.method_type === 'deposit').map((payment, i) => (
-                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                             <span className="text-sm">{payment.payment_method}</span>
-                             <div className="text-right">
-                               <Badge className="bg-blue-100 text-blue-800 border-0">
-                                 ${payment.minimum_amount || 0} - ${payment.maximum_amount || 'No limit'}
-                               </Badge>
-                               {(payment.fee_percentage || payment.fee_fixed) && (
-                                 <p className="text-xs text-muted-foreground mt-1">
-                                   Fee: {payment.fee_percentage ? `${payment.fee_percentage}%` : ''}
-                                   {payment.fee_percentage && payment.fee_fixed ? ' + ' : ''}
-                                   {payment.fee_fixed ? `$${payment.fee_fixed}` : ''}
-                                 </p>
-                               )}
-                             </div>
-                           </div>
-                      )) || (
+                      {payments && payments.length > 0 ? (
+                        payments.map((pm, i) => (
+                          <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              {pm.payment_method?.logo_url && (
+                                <img 
+                                  src={pm.payment_method.logo_url} 
+                                  alt={pm.payment_method.name} 
+                                  className="w-6 h-6 object-contain"
+                                />
+                              )}
+                              <span className="text-sm">{pm.payment_method?.name || 'Payment Method'}</span>
+                            </div>
+                            <Badge className="bg-blue-100 text-blue-800 border-0">
+                              Available
+                            </Badge>
+                          </div>
+                        ))
+                      ) : (
                         <>
                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
                             <span className="text-sm">Credit/Debit Cards (Visa, Mastercard)</span>
@@ -935,31 +939,39 @@ const OperatorReview = () => {
                       Withdrawal Timeframes & Fees
                     </h4>
                     <div className="space-y-2">
-                      {payments?.filter(p => p.method_type === 'withdrawal').map((payment, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <div>
-                            <span className="text-sm font-medium">{payment.payment_method}</span>
-                            <p className="text-xs text-muted-foreground">{payment.processing_time || 'Processing time varies'}</p>
+                      {payments && payments.length > 0 ? (
+                        payments.map((pm, i) => (
+                          <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              {pm.payment_method?.logo_url && (
+                                <img 
+                                  src={pm.payment_method.logo_url} 
+                                  alt={pm.payment_method.name} 
+                                  className="w-6 h-6 object-contain"
+                                />
+                              )}
+                              <div>
+                                <span className="text-sm font-medium">{pm.payment_method?.name || 'Payment Method'}</span>
+                                <p className="text-xs text-muted-foreground">Processing time varies</p>
+                              </div>
+                            </div>
+                            <Badge className="bg-green-100 text-green-800 border-0">Available</Badge>
                           </div>
-                          <Badge className="bg-green-100 text-green-800 border-0">
-                            {payment.fee_percentage ? `${payment.fee_percentage}%` : 
-                             payment.fee_fixed ? `$${payment.fee_fixed}` : '0%'} fee
-                          </Badge>
-                        </div>
-                      )) || (
+                        ))
+                      ) : (
                         <>
                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <div>
-                            <span className="text-sm font-medium">Skins</span>
-                            <p className="text-xs text-muted-foreground">{operator?.withdrawal_time_skins || 'Instant - 24 hours'}</p>
-                          </div>
+                            <div>
+                              <span className="text-sm font-medium">Skins</span>
+                              <p className="text-xs text-muted-foreground">{operator?.withdrawal_time_skins || 'Instant - 24 hours'}</p>
+                            </div>
                             <Badge className="bg-green-100 text-green-800 border-0">0% fee</Badge>
                           </div>
                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <div>
-                            <span className="text-sm font-medium">Cryptocurrency</span>
-                            <p className="text-xs text-muted-foreground">{operator?.withdrawal_time_crypto || '1-6 hours'}</p>
-                          </div>
+                            <div>
+                              <span className="text-sm font-medium">Cryptocurrency</span>
+                              <p className="text-xs text-muted-foreground">{operator?.withdrawal_time_crypto || '1-6 hours'}</p>
+                            </div>
                             <Badge className="bg-yellow-100 text-yellow-800 border-0">1-3% fee</Badge>
                           </div>
                         </>
