@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Grid, List, Package, Verified, TrendingUp, SlidersHorizontal } from 'lucide-react';
+import { Grid, List, Package, SlidersHorizontal } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,8 @@ import { CompactHero } from '@/components/category-blocks/CompactHero';
 import { EnhancedBreadcrumbs } from '@/components/category-blocks/EnhancedBreadcrumbs';
 import { CategorySidebar } from '@/components/category-blocks/CategorySidebar';
 import { SectionHeader } from '@/components/category-blocks/SectionHeader';
+import { AtAGlanceCard } from '@/components/category-blocks/AtAGlanceCard';
+import { EnhancedMysteryBoxCard } from '@/components/category-blocks/EnhancedMysteryBoxCard';
 
 const CategoryArchive = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -35,9 +37,58 @@ const CategoryArchive = () => {
   const [priceFilters, setPriceFilters] = useState<string[]>([]);
   const [riskFilters, setRiskFilters] = useState<string[]>([]);
 
+  // Calculate stats from mystery boxes data
+  const categoryStats = useMemo(() => {
+    if (!mysteryBoxes || mysteryBoxes.length === 0) return null;
+    
+    const prices = mysteryBoxes.map(b => b.price).filter(p => p > 0);
+    const evs = mysteryBoxes.map(b => b.expected_value && b.price ? (b.expected_value / b.price) * 100 : 0).filter(ev => ev > 0);
+    const verifiedCount = mysteryBoxes.filter(b => b.verified).length;
+    
+    // Count boxes per operator
+    const operatorCounts = mysteryBoxes.reduce((acc, box) => {
+      if (box.operator?.name) {
+        acc[box.operator.name] = (acc[box.operator.name] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+    
+    const topProviders = Object.entries(operatorCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+    
+    return {
+      priceRange: {
+        min: Math.min(...prices),
+        max: Math.max(...prices)
+      },
+      avgPrice: prices.reduce((a, b) => a + b, 0) / prices.length,
+      avgEV: evs.length > 0 ? evs.reduce((a, b) => a + b, 0) / evs.length : 0,
+      bestROI: evs.length > 0 ? Math.max(...evs) - 100 : 0,
+      verificationRate: (verifiedCount / mysteryBoxes.length) * 100,
+      topProviders,
+      topProvider: topProviders[0]?.name || 'Various'
+    };
+  }, [mysteryBoxes]);
+
+  // Find best value box
+  const bestValueBox = useMemo(() => {
+    if (!mysteryBoxes || mysteryBoxes.length === 0) return null;
+    return mysteryBoxes.reduce((best, current) => {
+      const currentROI = current.expected_value && current.price 
+        ? ((current.expected_value / current.price) * 100) - 100 
+        : -Infinity;
+      const bestROI = best.expected_value && best.price 
+        ? ((best.expected_value / best.price) * 100) - 100 
+        : -Infinity;
+      return currentROI > bestROI ? current : best;
+    }, mysteryBoxes[0]);
+  }, [mysteryBoxes]);
+
   // Define sections for sidebar navigation
   const sections = [
-    { id: 'quick-stats', title: 'Quick Overview' },
+    { id: 'at-a-glance', title: 'At a Glance' },
     { id: 'filters', title: 'Filter & Sort' },
     { id: 'mystery-boxes', title: 'All Mystery Boxes' },
     { id: 'about', title: `About ${category?.name || 'Category'}` },
@@ -158,8 +209,9 @@ const CategoryArchive = () => {
       <CompactHero
         category={category}
         boxCount={mysteryBoxes.length}
-        lastUpdated={monthYear}
-        author="Mystery Box Expert"
+        priceRange={categoryStats?.priceRange}
+        avgEV={categoryStats?.avgEV}
+        topProviders={categoryStats?.topProviders}
       />
 
       {/* Main Content with Sidebar */}
@@ -167,6 +219,20 @@ const CategoryArchive = () => {
         <div className="flex gap-8">
           {/* Main Content Area */}
           <div className="flex-1 min-w-0">
+            {/* At a Glance Summary Card */}
+            {categoryStats && (
+              <div id="at-a-glance" className="mb-8 scroll-mt-24">
+                <AtAGlanceCard 
+                  categoryName={category.name}
+                  stats={{
+                    totalBoxes: mysteryBoxes.length,
+                    priceRange: categoryStats.priceRange,
+                    avgEV: categoryStats.avgEV,
+                    topProvider: categoryStats.topProvider
+                  }}
+                />
+              </div>
+            )}
             {/* Render Published Content Blocks if available */}
             {publishedContent?.content_data?.blocks && publishedContent.content_data.blocks.length > 0 ? (
               <div className="space-y-12 mb-12">
@@ -179,30 +245,6 @@ const CategoryArchive = () => {
               </div>
             ) : (
               <>
-                {/* Quick Stats Section */}
-                <div id="quick-stats" className="mb-8 scroll-mt-24">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="text-3xl font-bold text-primary mb-1">{mysteryBoxes.length}</div>
-                        <div className="text-sm text-muted-foreground">Boxes Available</div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="text-3xl font-bold text-primary mb-1">24/7</div>
-                        <div className="text-sm text-muted-foreground">Customer Support</div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="text-3xl font-bold text-primary mb-1">100%</div>
-                        <div className="text-sm text-muted-foreground">Verified Items</div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
                 {/* Collapsible Filters Section */}
                 <div id="filters" className="mb-8 scroll-mt-24">
                   <Collapsible defaultOpen={false}>
@@ -360,62 +402,11 @@ const CategoryArchive = () => {
                       : "flex flex-col space-y-4"
                   )}>
                     {mysteryBoxes.map((box) => (
-                      <Card key={box.id} className="group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1">
-                        <div className="relative overflow-hidden aspect-square">
-                          <div className="w-full h-full bg-gradient-card rounded group-hover:scale-105 transition-transform duration-200 flex items-center justify-center">
-                            <Package className="w-16 h-16 text-primary/50" />
-                          </div>
-                          {box.verified && (
-                            <Badge className="absolute top-3 left-3">
-                              <Verified className="w-3 h-3 mr-1" />
-                              Verified
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <CardContent className="p-4">
-                          <div className="space-y-3">
-                            <div>
-                              <h3 className="font-semibold text-lg leading-tight group-hover:text-primary transition-colors">
-                                {box.name}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {box.operator?.name}
-                              </p>
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <div className="text-2xl font-bold text-primary">
-                                ${box.price}
-                              </div>
-                              {box.expected_value && (
-                                <div className="text-right">
-                                  <div className="text-sm text-muted-foreground">Expected Value</div>
-                                  <div className="font-semibold">${box.expected_value}</div>
-                                </div>
-                              )}
-                            </div>
-                            
-                            {box.profit_rate && (
-                              <div className="flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4 text-gaming-gold" />
-                                <span className="text-sm font-medium">
-                                  {box.profit_rate}% profit rate
-                                </span>
-                              </div>
-                            )}
-                            
-                            <div className="flex gap-2 pt-2">
-                              <Button className="flex-1" size="sm">
-                                View Details
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                Open Box
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <EnhancedMysteryBoxCard 
+                        key={box.id} 
+                        box={box}
+                        isBestValue={bestValueBox?.id === box.id}
+                      />
                     ))}
                   </div>
                 )}
@@ -441,7 +432,15 @@ const CategoryArchive = () => {
           </div>
 
           {/* Sidebar Navigation */}
-          <CategorySidebar sections={sections} />
+          <CategorySidebar 
+            sections={sections}
+            quickStats={categoryStats ? {
+              avgPrice: categoryStats.avgPrice,
+              bestROI: categoryStats.bestROI,
+              verificationRate: categoryStats.verificationRate
+            } : undefined}
+            topProviders={categoryStats?.topProviders}
+          />
         </div>
       </section>
 

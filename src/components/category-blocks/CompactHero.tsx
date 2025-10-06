@@ -1,19 +1,32 @@
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Package, User } from 'lucide-react';
+import { Calendar, Package, User, TrendingUp, DollarSign } from 'lucide-react';
 
 interface CompactHeroProps {
   category: {
     name: string;
     logo_url?: string;
+    author_name?: string;
+    content_updated_at?: string;
   };
   boxCount: number;
-  lastUpdated?: string;
-  author?: string;
+  priceRange?: { min: number; max: number };
+  avgEV?: number;
+  topProviders?: Array<{ name: string; count: number }>;
 }
 
-export const CompactHero = ({ category, boxCount, lastUpdated, author }: CompactHeroProps) => {
+export const CompactHero = ({ 
+  category, 
+  boxCount, 
+  priceRange,
+  avgEV,
+  topProviders 
+}: CompactHeroProps) => {
   const currentDate = new Date();
   const monthYear = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  
+  const lastUpdated = category.content_updated_at 
+    ? new Date(category.content_updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : monthYear;
 
   return (
     <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-b">
@@ -36,41 +49,45 @@ export const CompactHero = ({ category, boxCount, lastUpdated, author }: Compact
               Best {category.name} Mystery Boxes ({monthYear})
             </h1>
             <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              {author && (
+              {category.author_name && (
                 <>
                   <div className="flex items-center gap-1.5">
                     <User className="w-4 h-4" />
-                    <span>Written by {author}</span>
+                    <span>Written by {category.author_name}</span>
                   </div>
                   <span className="text-border">•</span>
                 </>
               )}
-              {lastUpdated && (
-                <>
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4" />
-                    <span>Last updated {lastUpdated}</span>
-                  </div>
-                  <span className="text-border">•</span>
-                </>
-              )}
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-4 h-4" />
+                <span>Last updated {lastUpdated}</span>
+              </div>
+              <span className="text-border">•</span>
               <div className="flex items-center gap-1.5">
                 <Package className="w-4 h-4" />
                 <span><strong>{boxCount}</strong> boxes reviewed</span>
               </div>
             </div>
             
-            {/* Quick Stats Pills */}
+            {/* Data-Driven Stats Pills */}
             <div className="flex flex-wrap gap-2 mt-4">
-              <Badge variant="secondary" className="text-xs">
-                Worldwide Shipping
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                Verified Items
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                24/7 Support
-              </Badge>
+              {priceRange && (
+                <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                  <DollarSign className="w-3 h-3" />
+                  ${priceRange.min} - ${priceRange.max}
+                </Badge>
+              )}
+              {avgEV && (
+                <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  {avgEV.toFixed(0)}% Avg EV
+                </Badge>
+              )}
+              {topProviders && topProviders.length > 0 && (
+                <Badge variant="secondary" className="text-xs">
+                  Top: {topProviders.slice(0, 2).map(p => p.name).join(', ')}
+                </Badge>
+              )}
             </div>
           </div>
           

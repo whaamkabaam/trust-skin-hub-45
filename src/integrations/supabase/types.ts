@@ -110,6 +110,9 @@ export type Database = {
       categories: {
         Row: {
           author: string | null
+          author_avatar_url: string | null
+          author_name: string | null
+          content_updated_at: string | null
           created_at: string
           description_rich: string | null
           display_order: number | null
@@ -131,6 +134,9 @@ export type Database = {
         }
         Insert: {
           author?: string | null
+          author_avatar_url?: string | null
+          author_name?: string | null
+          content_updated_at?: string | null
           created_at?: string
           description_rich?: string | null
           display_order?: number | null
@@ -152,6 +158,9 @@ export type Database = {
         }
         Update: {
           author?: string | null
+          author_avatar_url?: string | null
+          author_name?: string | null
+          content_updated_at?: string | null
           created_at?: string
           description_rich?: string | null
           display_order?: number | null

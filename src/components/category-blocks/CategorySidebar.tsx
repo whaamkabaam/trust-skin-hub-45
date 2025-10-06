@@ -3,6 +3,7 @@ import { Share2, BookmarkPlus, ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface Section {
@@ -12,9 +13,15 @@ interface Section {
 
 interface CategorySidebarProps {
   sections: Section[];
+  quickStats?: {
+    avgPrice: number;
+    bestROI: number;
+    verificationRate: number;
+  };
+  topProviders?: Array<{ name: string; count: number; logo?: string }>;
 }
 
-export const CategorySidebar = ({ sections }: CategorySidebarProps) => {
+export const CategorySidebar = ({ sections, quickStats, topProviders }: CategorySidebarProps) => {
   const [activeSection, setActiveSection] = useState<string>('');
   const [isSticky, setIsSticky] = useState(false);
 
@@ -81,6 +88,48 @@ export const CategorySidebar = ({ sections }: CategorySidebarProps) => {
     )}>
       <Card className="p-4">
         <div className="space-y-4">
+          {/* Quick Stats Widget */}
+          {quickStats && (
+            <>
+              <div>
+                <h3 className="text-sm font-semibold mb-3 text-foreground">Quick Stats</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-md">
+                    <span className="text-xs text-muted-foreground">Avg. Price</span>
+                    <span className="text-sm font-semibold">${quickStats.avgPrice.toFixed(0)}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-md">
+                    <span className="text-xs text-muted-foreground">Best ROI</span>
+                    <span className="text-sm font-semibold text-success">{quickStats.bestROI.toFixed(0)}%</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-md">
+                    <span className="text-xs text-muted-foreground">Verified</span>
+                    <span className="text-sm font-semibold">{quickStats.verificationRate.toFixed(0)}%</span>
+                  </div>
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Top Providers Widget */}
+          {topProviders && topProviders.length > 0 && (
+            <>
+              <div>
+                <h3 className="text-sm font-semibold mb-3 text-foreground">Top Providers</h3>
+                <div className="space-y-2">
+                  {topProviders.slice(0, 3).map((provider) => (
+                    <div key={provider.name} className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-md">
+                      <span className="text-xs font-medium">{provider.name}</span>
+                      <Badge variant="secondary" className="text-xs">{provider.count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+          
           {/* Table of Contents */}
           <div>
             <h3 className="text-sm font-semibold mb-3 text-foreground">On This Page</h3>

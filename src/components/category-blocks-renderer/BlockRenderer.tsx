@@ -15,7 +15,8 @@ export const BlockRenderer = ({ block }: BlockRendererProps) => {
 
   switch (block.block_type) {
     case 'hero':
-      return <HeroBlock {...commonProps} />;
+      // Skip hero blocks on published pages - using CompactHero instead
+      return null;
     case 'text':
       return <TextBlock {...commonProps} />;
     case 'mystery_boxes':
