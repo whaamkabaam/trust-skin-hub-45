@@ -61,7 +61,7 @@ const SortableBlock = ({
       case 'text':
         return <TextBlock {...commonProps} />;
       case 'mystery_boxes':
-        return <MysteryBoxesBlock {...commonProps} />;
+        return <MysteryBoxesBlock {...commonProps} categoryId={block.category_id} />;
       default:
         return <div className="p-4 border rounded">Unknown block type: {block.block_type}</div>;
     }
@@ -124,8 +124,10 @@ export const CategoryBlockEditor = ({
   // Auto-save debounced changes silently
   useEffect(() => {
     if (debouncedBlocks.length > 0 && JSON.stringify(debouncedBlocks) !== JSON.stringify(blocks)) {
+      console.log('CategoryBlockEditor - Auto-saving blocks:', debouncedBlocks);
       debouncedBlocks.forEach(block => {
         if (block.id) {
+          console.log('CategoryBlockEditor - Saving block:', { id: block.id, block_data: block.block_data });
           // Save silently without toast
           onSaveBlock({
             id: block.id,
@@ -162,6 +164,7 @@ export const CategoryBlockEditor = ({
   };
 
   const handleBlockUpdate = (blockId: string, data: any) => {
+    console.log('CategoryBlockEditor - handleBlockUpdate:', { blockId, data });
     // Update local state only - auto-save will handle persistence
     setLocalBlocks(prev => prev.map(b => 
       b.id === blockId ? { ...b, block_data: data } : b

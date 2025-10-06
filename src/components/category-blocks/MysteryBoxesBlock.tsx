@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
@@ -28,6 +29,7 @@ export const MysteryBoxesBlock = ({
 }: MysteryBoxesBlockProps) => {
   const [localData, setLocalData] = useState(data);
   const [boxes, setBoxes] = useState<CategoryBoxAssignment[]>([]);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { loading, fetchCategoryBoxes } = useCategoryBoxes();
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export const MysteryBoxesBlock = ({
   
   const handleChange = (field: string, value: any) => {
     const newData = { ...localData, [field]: value };
+    console.log('MysteryBoxesBlock - handleChange:', { field, value, newData });
     setLocalData(newData);
     onChange?.(newData);
   };
@@ -47,7 +50,18 @@ export const MysteryBoxesBlock = ({
     const newIds = currentIds.includes(boxId)
       ? currentIds.filter(id => id !== boxId)
       : [...currentIds, boxId];
-    handleChange('selectedBoxIds', newIds);
+    console.log('MysteryBoxesBlock - toggleBoxSelection:', { boxId, currentIds, newIds });
+    const newData = { ...localData, selectedBoxIds: newIds };
+    setLocalData(newData);
+    setHasUnsavedChanges(true);
+    // Immediate call to onChange
+    onChange?.(newData);
+  };
+
+  const handleSaveSelections = () => {
+    console.log('MysteryBoxesBlock - Manual save triggered:', localData);
+    onChange?.(localData);
+    setHasUnsavedChanges(false);
   };
 
   const selectedBoxes = boxes.filter(box => 
@@ -136,6 +150,15 @@ export const MysteryBoxesBlock = ({
               ))
             )}
           </div>
+          {hasUnsavedChanges && (
+            <Button 
+              onClick={handleSaveSelections}
+              className="w-full mt-2"
+              variant="default"
+            >
+              Save {(localData.selectedBoxIds || []).length} Selected Boxes
+            </Button>
+          )}
         </div>
       </Card>
     );

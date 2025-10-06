@@ -135,12 +135,18 @@ export const useCategoryContent = (categoryId: string) => {
       // Enrich mystery_boxes blocks with full box data
       const enrichedBlocks = await Promise.all(
         blocks.map(async (block) => {
-          if (block.block_type === 'mystery_boxes' && block.block_data.selectedBoxIds?.length > 0) {
+          if (block.block_type === 'mystery_boxes') {
+            console.log('Publishing mystery_boxes block:', block.block_data);
+            // Handle both old and new field names for selected boxes
+            const selectedIds = block.block_data.selectedBoxIds || block.block_data.selectedBoxNames || [];
+            console.log('Selected box IDs to enrich:', selectedIds);
+            
+            if (selectedIds.length > 0) {
             // Fetch full box details for selected IDs
             const { data: overrides, error: overridesError } = await supabase
               .from('provider_box_category_overrides')
               .select('id, provider, box_id')
-              .in('id', block.block_data.selectedBoxIds);
+              .in('id', selectedIds);
 
             if (overridesError) throw overridesError;
 
@@ -195,6 +201,7 @@ export const useCategoryContent = (categoryId: string) => {
               }
             }
 
+            console.log('Fetched boxes for publishing:', boxesData);
             return {
               ...block,
               block_data: {
@@ -202,12 +209,14 @@ export const useCategoryContent = (categoryId: string) => {
                 boxesData,
               },
             };
+            }
           }
           return block;
         })
       );
 
       // Create published content snapshot with enriched data
+      console.log('Publishing enriched blocks:', enrichedBlocks);
       const { error: publishError } = await supabase
         .from('published_category_content')
         .upsert({
@@ -220,7 +229,7 @@ export const useCategoryContent = (categoryId: string) => {
             hero_title: category.hero_title,
             hero_subtitle: category.hero_subtitle,
           },
-        } as any);
+        } as any, { onConflict: 'slug' });
 
       if (publishError) throw publishError;
 
@@ -236,9 +245,9 @@ export const useCategoryContent = (categoryId: string) => {
       if (updateError) throw updateError;
 
       toast.success('Category published successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error publishing category:', error);
-      toast.error('Failed to publish category');
+      toast.error(`Failed to publish category: ${error.message || 'Unknown error'}`);
     } finally {
       setSaving(false);
     }
