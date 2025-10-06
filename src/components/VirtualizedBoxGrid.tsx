@@ -49,7 +49,6 @@ interface VirtualizedBoxGridProps {
 
 const BoxCard = React.memo(({ box, index, isVisible }: { box: RillaBoxMetricsBox; index: number; isVisible: boolean }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
   const isScrolling = useScrollState();
 
@@ -127,18 +126,12 @@ const BoxCard = React.memo(({ box, index, isVisible }: { box: RillaBoxMetricsBox
             >
               {!imageLoaded && <div className="w-full h-full bg-gray-200 animate-pulse rounded relative z-20" />}
               <img 
-                src={imageError ? 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop' : box.box_image} 
+                src={box.box_image} 
                 alt={box.box_name}
                 className={`w-full h-full object-contain transition-opacity duration-300 relative z-20 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
                 loading={index < 12 ? "eager" : "lazy"}
                 referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
                 onLoad={() => setImageLoaded(true)}
-                onError={() => {
-                  console.warn(`Failed to load image for box: ${box.box_name}, URL: ${box.box_image}`);
-                  setImageError(true);
-                  setImageLoaded(true);
-                }}
               />
             </div>
             <CardTitle className="text-lg font-bold truncate text-gray-800 pr-16 relative z-10">
