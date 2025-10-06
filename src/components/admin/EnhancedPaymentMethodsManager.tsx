@@ -53,6 +53,16 @@ export function EnhancedPaymentMethodsManager({
     !selectedMethodIds.includes(method.id)
   );
 
+  // Debug logging
+  useEffect(() => {
+    console.log('💳 Payment Methods State:', {
+      totalPaymentMethods: paymentMethods.length,
+      selectedPaymentMethods: selectedPaymentMethods.length,
+      availableMethods: availableMethods.length,
+      selectedMethodIds
+    });
+  }, [paymentMethods, selectedPaymentMethods, availableMethods]);
+
   const handleAddPaymentMethod = async () => {
     console.log('🔍 Add Payment Method clicked', {
       selectedMethodId,
@@ -226,63 +236,78 @@ export function EnhancedPaymentMethodsManager({
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Payment Method Selection */}
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <Label htmlFor="payment-method-select">Add Payment Method</Label>
-            <Select 
-              value={selectedMethodId} 
-              onValueChange={setSelectedMethodId}
-              disabled={disabled || availableMethods.length === 0}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a payment method to add" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableMethods.map((method) => (
-                  <SelectItem key={method.id} value={method.id}>
-                    <div className="flex items-center gap-2">
-                      {method.logo_url && (
-                        <img 
-                          src={method.logo_url} 
-                          alt={method.name}
-                          className="w-4 h-4 rounded"
-                        />
-                      )}
-                      {method.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Label htmlFor="payment-method-select">Add Payment Method</Label>
+              <Select 
+                value={selectedMethodId} 
+                onValueChange={setSelectedMethodId}
+                disabled={disabled || availableMethods.length === 0}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={
+                    availableMethods.length === 0 
+                      ? "All payment methods already configured" 
+                      : "Select a payment method to add"
+                  } />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableMethods.map((method) => (
+                    <SelectItem key={method.id} value={method.id}>
+                      <div className="flex items-center gap-2">
+                        {method.logo_url && (
+                          <img 
+                            src={method.logo_url} 
+                            alt={method.name}
+                            className="w-4 h-4 rounded"
+                          />
+                        )}
+                        {method.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-end">
+              <Button
+                type="button"
+                onClick={handleAddPaymentMethod}
+                disabled={disabled || !selectedMethodId || availableMethods.length === 0}
+                size="sm"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add
+              </Button>
+            </div>
           </div>
-          <div className="flex items-end">
-            <Button
-              type="button"
-              onClick={handleAddPaymentMethod}
-              disabled={disabled || !selectedMethodId}
-              size="sm"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Add
-            </Button>
-          </div>
+          
+          {availableMethods.length === 0 && selectedPaymentMethods.length > 0 && (
+            <Alert>
+              <Database className="h-4 w-4" />
+              <AlertDescription>
+                All available payment methods ({paymentMethods.length}) have been configured. Remove a method to add a different one.
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
 
         {/* Selected Payment Methods */}
         {selectedPaymentMethods.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-2">
             <Label>Configured Payment Methods</Label>
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Method</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Min/Max Amount</TableHead>
-                    <TableHead>Fees</TableHead>
-                    <TableHead>Processing Time</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="min-w-[150px]">Method</TableHead>
+                    <TableHead className="min-w-[100px]">Type</TableHead>
+                    <TableHead className="min-w-[140px]">Min/Max Amount</TableHead>
+                    <TableHead className="min-w-[120px]">Fees</TableHead>
+                    <TableHead className="min-w-[130px]">Processing Time</TableHead>
+                    <TableHead className="min-w-[100px]">Status</TableHead>
+                    <TableHead className="min-w-[100px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
