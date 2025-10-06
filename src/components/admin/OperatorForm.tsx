@@ -214,10 +214,10 @@ export function OperatorForm({
             const paymentMethodDetails = data.map((item: any) => ({
               payment_method_id: item.payment_method_id,
               method_type: item.method_type || 'both',
-              minimum_amount: item.minimum_amount || 0,
-              maximum_amount: item.maximum_amount,
-              fee_percentage: item.fee_percentage || 0,
-              fee_fixed: item.fee_fixed || 0,
+              minimum_amount: item.minimum_amount ?? undefined,
+              maximum_amount: item.maximum_amount ?? undefined,
+              fee_percentage: item.fee_percentage ?? undefined,
+              fee_fixed: item.fee_fixed ?? undefined,
               processing_time: item.processing_time || 'Instant',
               is_available: item.is_available !== false
             }));
