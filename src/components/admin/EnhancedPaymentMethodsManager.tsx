@@ -45,10 +45,26 @@ export function EnhancedPaymentMethodsManager({
   );
 
   const handleAddPaymentMethod = async () => {
-    if (!selectedMethodId) return;
+    console.log('🔍 Add Payment Method clicked', {
+      selectedMethodId,
+      availableMethods: availableMethods.length,
+      paymentMethods: paymentMethods.length
+    });
+    
+    if (!selectedMethodId) {
+      console.warn('⚠️ No method selected');
+      toast.error('Please select a payment method');
+      return;
+    }
     
     const method = paymentMethods.find(m => m.id === selectedMethodId);
-    if (!method) return;
+    if (!method) {
+      console.error('❌ Method not found for ID:', selectedMethodId);
+      toast.error('Payment method not found');
+      return;
+    }
+
+    console.log('✅ Adding payment method:', method.name);
 
     const newMethodDetails: PaymentMethodDetails = {
       payment_method_id: selectedMethodId,
@@ -69,7 +85,7 @@ export function EnhancedPaymentMethodsManager({
     if (operatorId && !operatorId.startsWith('temp-')) {
       try {
         const { supabase } = await import('@/integrations/supabase/client');
-        await supabase
+        const { error } = await supabase
           .from('operator_payment_methods')
           .insert({
             operator_id: operatorId,
@@ -83,12 +99,19 @@ export function EnhancedPaymentMethodsManager({
             is_available: newMethodDetails.is_available
           });
         
+        if (error) {
+          console.error('❌ Database error:', error);
+          throw error;
+        }
+        
+        console.log('✅ Synced to database');
         toast.success(`Added ${method.name} payment method`);
       } catch (error) {
         console.error('Error syncing payment method to database:', error);
         toast.error('Failed to sync payment method');
       }
     } else {
+      console.log('📝 Temporary operator, not syncing to DB');
       toast.success(`Added ${method.name} payment method`);
     }
   };

@@ -1420,9 +1420,9 @@ const OperatorReview = () => {
                     <div>
                       <span className="text-sm font-medium text-muted-foreground">Deposits</span>
                       <div className="flex flex-wrap gap-1.5 mt-2">
-                        {payments?.filter(p => p.method_type === 'deposit').slice(0, 4).map((payment, i) => (
+                        {payments?.filter(p => p.method_type === 'deposit' || p.method_type === 'both').slice(0, 4).map((payment, i) => (
                           <Badge key={i} variant="secondary" className="text-xs">
-                             {formatPaymentMethod(payment.payment_method)}
+                             {payment.payment_method?.name || 'Unknown'}
                           </Badge>
                         )) || (
                           <>
@@ -1437,9 +1437,9 @@ const OperatorReview = () => {
                     <div>
                       <span className="text-sm font-medium text-muted-foreground">Withdrawals</span>
                       <div className="flex flex-wrap gap-1.5 mt-2">
-                        {payments?.filter(p => p.method_type === 'withdrawal').slice(0, 4).map((payment, i) => (
+                        {payments?.filter(p => p.method_type === 'withdrawal' || p.method_type === 'both').slice(0, 4).map((payment, i) => (
                           <Badge key={i} variant="outline" className="text-xs">
-                             {formatPaymentMethod(payment.payment_method)}
+                             {payment.payment_method?.name || 'Unknown'}
                           </Badge>
                         )) || (
                           <>
