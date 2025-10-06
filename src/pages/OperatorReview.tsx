@@ -39,8 +39,8 @@ const OperatorReview = () => {
   const [keyFactsOpen, setKeyFactsOpen] = useState(false);
   const [prosConsOpen, setProsConsOpen] = useState(false);
   
-  const { operator, contentSections, seoMetadata, loading, error } = usePublicOperator(slug || '');
-  const { bonuses, payments, features, security, faqs } = usePublicOperatorExtensions(slug || '');
+  const { operator, contentSections, seoMetadata, paymentMethods: payments, loading, error } = usePublicOperator(slug || '');
+  const { bonuses, features, security, faqs } = usePublicOperatorExtensions(slug || '');
   const { reviews } = usePublicReviews(operator?.id || '');
   const { assets: mediaAssets } = useMedia(operator?.id);
 

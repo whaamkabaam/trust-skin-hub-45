@@ -20,6 +20,24 @@ interface MediaAsset {
   order_number: number;
 }
 
+interface PaymentMethod {
+  id: string;
+  payment_method_id: string;
+  method_type: string;
+  minimum_amount: number | null;
+  maximum_amount: number | null;
+  fee_percentage: number;
+  fee_fixed: number;
+  processing_time: string;
+  is_available: boolean;
+  payment_method: {
+    id: string;
+    name: string;
+    slug: string;
+    logo_url: string | null;
+  };
+}
+
 interface SEOMetadata {
   meta_title: string;
   meta_description: string;
@@ -31,6 +49,7 @@ interface PublicOperatorData {
   contentSections: ContentSection[];
   mediaAssets: MediaAsset[];
   seoMetadata: SEOMetadata | null;
+  paymentMethods: PaymentMethod[];
   loading: boolean;
   error: string | null;
 }
@@ -40,6 +59,7 @@ export function usePublicOperator(slug: string): PublicOperatorData {
   const [contentSections, setContentSections] = useState<ContentSection[]>([]);
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>([]);
   const [seoMetadata, setSeoMetadata] = useState<SEOMetadata | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -157,6 +177,24 @@ export function usePublicOperator(slug: string): PublicOperatorData {
       if (seoError && seoError.code !== 'PGRST116') throw seoError;
       setSeoMetadata(seoData || null);
 
+      // Fetch payment methods with joins
+      const { data: paymentsData, error: paymentsError } = await supabase
+        .from('operator_payment_methods')
+        .select(`
+          *,
+          payment_method:payment_methods(
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('operator_id', operatorData.id)
+        .eq('is_available', true);
+
+      if (paymentsError) throw paymentsError;
+      setPaymentMethods(paymentsData || []);
+
     } catch (err) {
       console.error('❌ Error in fetchOperatorData:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch operator data');
@@ -171,6 +209,7 @@ export function usePublicOperator(slug: string): PublicOperatorData {
     contentSections,
     mediaAssets,
     seoMetadata,
+    paymentMethods,
     loading,
     error
   };

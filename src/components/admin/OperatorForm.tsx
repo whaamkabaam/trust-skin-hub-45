@@ -821,14 +821,6 @@ export function OperatorForm({
         disabled={publishLoading || globalIsPublishing}
       />
 
-      {/* Payment Methods */}
-      <EnhancedPaymentMethodsManager
-        selectedPaymentMethods={paymentMethodsData || []}
-        onPaymentMethodsChange={(methods) => setValue('payment_methods', methods)}
-        operatorId={effectiveOperatorId}
-        disabled={publishLoading || globalIsPublishing}
-      />
-
       {/* Pros and Cons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
