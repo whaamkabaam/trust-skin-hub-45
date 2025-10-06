@@ -3,7 +3,8 @@
  */
 
 export interface PaymentMethodDetails {
-  payment_method_id: string;
+  payment_method_id?: string; // Made optional for smart import
+  payment_method?: string; // Support for custom payment method names  
   method_type: 'deposit' | 'withdrawal' | 'both';
   minimum_amount?: number;
   maximum_amount?: number;

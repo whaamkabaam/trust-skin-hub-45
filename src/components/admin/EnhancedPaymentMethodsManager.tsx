@@ -10,10 +10,12 @@ import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { sanitizePaymentMethodsForForm } from '@/utils/paymentMethodTransforms';
 
 interface PaymentMethodDetails {
-  payment_method_id: string;
+  payment_method_id?: string; // Made optional for smart import
+  payment_method?: string; // Support for custom payment method names
   method_type: 'deposit' | 'withdrawal' | 'both';
   minimum_amount?: number;
   maximum_amount?: number;
@@ -36,9 +38,12 @@ export function EnhancedPaymentMethodsManager({
   operatorId,
   disabled = false 
 }: EnhancedPaymentMethodsManagerProps) {
-  const { paymentMethods, loading } = usePaymentMethods();
+  const { paymentMethods, loading, createPaymentMethod } = usePaymentMethods();
   const [selectedMethodId, setSelectedMethodId] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [customMethodName, setCustomMethodName] = useState('');
+  const [customMethodLogo, setCustomMethodLogo] = useState('');
+  const [addMode, setAddMode] = useState<'existing' | 'custom'>('existing');
 
   // Sanitize incoming payment methods on mount to convert null to undefined
   useEffect(() => {
@@ -48,7 +53,7 @@ export function EnhancedPaymentMethodsManager({
     }
   }, []);
 
-  const selectedMethodIds = selectedPaymentMethods.map(m => m.payment_method_id);
+  const selectedMethodIds = selectedPaymentMethods.map(m => m.payment_method_id).filter(Boolean);
   const availableMethods = paymentMethods.filter(method => 
     !selectedMethodIds.includes(method.id)
   );
@@ -64,80 +69,152 @@ export function EnhancedPaymentMethodsManager({
   }, [paymentMethods, selectedPaymentMethods, availableMethods]);
 
   const handleAddPaymentMethod = async () => {
-    console.log('🔍 Add Payment Method clicked', {
-      selectedMethodId,
-      availableMethods: availableMethods.length,
-      paymentMethods: paymentMethods.length
-    });
-    
-    if (!selectedMethodId) {
-      console.warn('⚠️ No method selected');
-      toast.error('Please select a payment method');
-      return;
-    }
-    
-    const method = paymentMethods.find(m => m.id === selectedMethodId);
-    if (!method) {
-      console.error('❌ Method not found for ID:', selectedMethodId);
-      toast.error('Payment method not found');
-      return;
-    }
+    if (addMode === 'existing') {
+      // Handle existing payment method selection
+      if (!selectedMethodId) {
+        toast.error('Please select a payment method');
+        return;
+      }
+      
+      const method = paymentMethods.find(m => m.id === selectedMethodId);
+      if (!method) {
+        toast.error('Payment method not found');
+        return;
+      }
 
-    console.log('✅ Adding payment method:', method.name);
+      const newMethodDetails: PaymentMethodDetails = {
+        payment_method_id: selectedMethodId,
+        method_type: 'both',
+        minimum_amount: undefined,
+        maximum_amount: undefined,
+        fee_percentage: undefined,
+        fee_fixed: undefined,
+        processing_time: 'Instant',
+        is_available: true
+      };
 
-    const newMethodDetails: PaymentMethodDetails = {
-      payment_method_id: selectedMethodId,
-      method_type: 'both',
-      minimum_amount: undefined,
-      maximum_amount: undefined,
-      fee_percentage: undefined,
-      fee_fixed: undefined,
-      processing_time: 'Instant',
-      is_available: true
-    };
-
-    const updatedMethods = [...selectedPaymentMethods, newMethodDetails];
-    onPaymentMethodsChange(updatedMethods);
-    setSelectedMethodId('');
-    
-    // Sync to database if operator exists
-    if (operatorId && !operatorId.startsWith('temp-')) {
-      try {
-        const { supabase } = await import('@/integrations/supabase/client');
-        const { error } = await supabase
-          .from('operator_payment_methods')
-          .insert({
-            operator_id: operatorId,
-            payment_method_id: selectedMethodId,
-            method_type: newMethodDetails.method_type,
-            minimum_amount: newMethodDetails.minimum_amount ?? null,
-            maximum_amount: newMethodDetails.maximum_amount ?? null,
-            fee_percentage: newMethodDetails.fee_percentage ?? null,
-            fee_fixed: newMethodDetails.fee_fixed ?? null,
-            processing_time: newMethodDetails.processing_time,
-            is_available: newMethodDetails.is_available
-          });
-        
-        if (error) {
-          console.error('❌ Database error:', error);
-          throw error;
+      const updatedMethods = [...selectedPaymentMethods, newMethodDetails];
+      onPaymentMethodsChange(updatedMethods);
+      setSelectedMethodId('');
+      
+      // Sync to database if operator exists
+      if (operatorId && !operatorId.startsWith('temp-')) {
+        try {
+          const { supabase } = await import('@/integrations/supabase/client');
+          const { error } = await supabase
+            .from('operator_payment_methods')
+            .insert({
+              operator_id: operatorId,
+              payment_method_id: selectedMethodId,
+              method_type: newMethodDetails.method_type,
+              minimum_amount: newMethodDetails.minimum_amount ?? null,
+              maximum_amount: newMethodDetails.maximum_amount ?? null,
+              fee_percentage: newMethodDetails.fee_percentage ?? null,
+              fee_fixed: newMethodDetails.fee_fixed ?? null,
+              processing_time: newMethodDetails.processing_time,
+              is_available: newMethodDetails.is_available
+            });
+          
+          if (error) throw error;
+          toast.success(`Added ${method.name} payment method`);
+        } catch (error) {
+          console.error('Error syncing payment method to database:', error);
+          toast.error('Failed to sync payment method');
         }
-        
-        console.log('✅ Synced to database');
+      } else {
         toast.success(`Added ${method.name} payment method`);
-      } catch (error) {
-        console.error('Error syncing payment method to database:', error);
-        toast.error('Failed to sync payment method');
       }
     } else {
-      console.log('📝 Temporary operator, not syncing to DB');
-      toast.success(`Added ${method.name} payment method`);
+      // Handle custom payment method
+      if (!customMethodName.trim()) {
+        toast.error('Please enter a payment method name');
+        return;
+      }
+
+      try {
+        const { supabase } = await import('@/integrations/supabase/client');
+        const slug = customMethodName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        
+        // Check if payment method already exists
+        const { data: existing } = await supabase
+          .from('payment_methods')
+          .select('id, name')
+          .eq('slug', slug)
+          .maybeSingle();
+
+        let paymentMethodId: string;
+        let methodName: string;
+
+        if (existing) {
+          paymentMethodId = existing.id;
+          methodName = existing.name;
+          toast.success(`Using existing payment method: ${existing.name}`);
+        } else {
+          // Create new payment method
+          const newPaymentMethod = await createPaymentMethod({
+            name: customMethodName.trim(),
+            slug,
+            logo_url: customMethodLogo.trim() || undefined,
+            description_rich: '',
+            display_order: 999,
+            is_featured: false
+          });
+
+          if (!newPaymentMethod) {
+            toast.error('Failed to create payment method');
+            return;
+          }
+
+          paymentMethodId = newPaymentMethod.id;
+          methodName = newPaymentMethod.name;
+          toast.success(`Created new payment method: ${methodName}`);
+        }
+
+        // Add to operator's payment methods
+        const newMethod: PaymentMethodDetails = {
+          payment_method_id: paymentMethodId,
+          method_type: 'both',
+          minimum_amount: undefined,
+          maximum_amount: undefined,
+          fee_percentage: undefined,
+          fee_fixed: undefined,
+          processing_time: 'Instant',
+          is_available: true
+        };
+
+        const updatedMethods = [...selectedPaymentMethods, newMethod];
+        onPaymentMethodsChange(updatedMethods);
+
+        // Sync to database if operatorId exists
+        if (operatorId && !operatorId.startsWith('temp-')) {
+          const { error } = await supabase
+            .from('operator_payment_methods')
+            .insert({
+              operator_id: operatorId,
+              payment_method_id: paymentMethodId,
+              method_type: 'both',
+              processing_time: 'Instant',
+              is_available: true
+            });
+
+          if (error) throw error;
+        }
+
+        // Reset form
+        setCustomMethodName('');
+        setCustomMethodLogo('');
+      } catch (error) {
+        console.error('Error adding custom payment method:', error);
+        toast.error('Failed to add payment method');
+      }
     }
   };
 
   const handleRemovePaymentMethod = async (index: number) => {
     const removedMethod = selectedPaymentMethods[index];
-    const method = paymentMethods.find(m => m.id === removedMethod.payment_method_id);
+    const method = removedMethod.payment_method_id 
+      ? paymentMethods.find(m => m.id === removedMethod.payment_method_id)
+      : null;
     const updatedMethods = selectedPaymentMethods.filter((_, i) => i !== index);
     onPaymentMethodsChange(updatedMethods);
     
@@ -195,12 +272,14 @@ export function EnhancedPaymentMethodsManager({
     }
   };
 
-  const getPaymentMethodName = (id: string) => {
+  const getPaymentMethodName = (id?: string) => {
+    if (!id) return 'Unknown Method';
     const method = paymentMethods.find(m => m.id === id);
     return method?.name || 'Unknown Method';
   };
 
-  const getPaymentMethodLogo = (id: string) => {
+  const getPaymentMethodLogo = (id?: string) => {
+    if (!id) return undefined;
     const method = paymentMethods.find(m => m.id === id);
     return method?.logo_url;
   };
@@ -235,63 +314,95 @@ export function EnhancedPaymentMethodsManager({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Payment Method Selection */}
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Label htmlFor="payment-method-select">Add Payment Method</Label>
-              <Select 
-                value={selectedMethodId} 
-                onValueChange={setSelectedMethodId}
-                disabled={disabled || availableMethods.length === 0}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={
-                    availableMethods.length === 0 
-                      ? "All payment methods already configured" 
-                      : "Select a payment method to add"
-                  } />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableMethods.map((method) => (
-                    <SelectItem key={method.id} value={method.id}>
-                      <div className="flex items-center gap-2">
-                        {method.logo_url && (
-                          <img 
-                            src={method.logo_url} 
-                            alt={method.name}
-                            className="w-4 h-4 rounded"
-                          />
-                        )}
-                        {method.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        {/* Payment Method Selection with Tabs */}
+        <Tabs value={addMode} onValueChange={(v) => setAddMode(v as 'existing' | 'custom')}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="existing">Select Existing</TabsTrigger>
+            <TabsTrigger value="custom">Add Custom</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="existing" className="space-y-2 mt-4">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Label>Select Payment Method</Label>
+                <Select 
+                  value={selectedMethodId} 
+                  onValueChange={setSelectedMethodId}
+                  disabled={disabled}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a payment method to add" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableMethods.map((method) => (
+                      <SelectItem key={method.id} value={method.id}>
+                        <div className="flex items-center gap-2">
+                          {method.logo_url && (
+                            <img 
+                              src={method.logo_url} 
+                              alt={method.name}
+                              className="w-4 h-4 rounded"
+                            />
+                          )}
+                          {method.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end">
+                <Button
+                  type="button"
+                  onClick={handleAddPaymentMethod}
+                  disabled={disabled || !selectedMethodId}
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add
+                </Button>
+              </div>
             </div>
-            <div className="flex items-end">
-              <Button
-                type="button"
-                onClick={handleAddPaymentMethod}
-                disabled={disabled || !selectedMethodId || availableMethods.length === 0}
-                size="sm"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add
-              </Button>
+            {availableMethods.length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                All existing payment methods have been added. Use "Add Custom" to create a new one.
+              </p>
+            )}
+          </TabsContent>
+
+          <TabsContent value="custom" className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="custom-method-name">Payment Method Name *</Label>
+              <Input
+                id="custom-method-name"
+                value={customMethodName}
+                onChange={(e) => setCustomMethodName(e.target.value)}
+                placeholder="e.g., Stripe, PayPal, Bitcoin"
+                disabled={disabled}
+              />
             </div>
-          </div>
-          
-          {availableMethods.length === 0 && selectedPaymentMethods.length > 0 && (
-            <Alert>
-              <Database className="h-4 w-4" />
-              <AlertDescription>
-                All available payment methods ({paymentMethods.length}) have been configured. Remove a method to add a different one.
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="custom-method-logo">Logo URL (Optional)</Label>
+              <Input
+                id="custom-method-logo"
+                value={customMethodLogo}
+                onChange={(e) => setCustomMethodLogo(e.target.value)}
+                placeholder="https://example.com/logo.png"
+                disabled={disabled}
+              />
+            </div>
+            <Button
+              type="button"
+              onClick={handleAddPaymentMethod}
+              disabled={disabled || !customMethodName.trim()}
+              size="sm"
+              className="w-full"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create & Add Payment Method
+            </Button>
+          </TabsContent>
+        </Tabs>
 
         {/* Selected Payment Methods */}
         {selectedPaymentMethods.length > 0 ? (

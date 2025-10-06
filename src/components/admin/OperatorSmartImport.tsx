@@ -159,7 +159,7 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
     }
   };
 
-  const handleApplyData = () => {
+  const handleApplyData = async () => {
     if (!extractedData || !onDataExtracted) return;
     
     console.log('Applying extracted data:', extractedData);
@@ -184,6 +184,67 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
     if (!extractedData.slug) {
       toast.error('Missing operator slug. Please extract data again.');
       return;
+    }
+
+    // Process payment methods - auto-create if they don't exist
+    if (extractedData.payments && extractedData.payments.length > 0) {
+      try {
+        const processedPayments = [];
+        
+        for (const payment of extractedData.payments) {
+          const methodName = payment.payment_method.trim();
+          const slug = methodName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+          
+          // Check if payment method exists
+          const { data: existing } = await supabase
+            .from('payment_methods')
+            .select('id, name')
+            .eq('slug', slug)
+            .maybeSingle();
+
+          let paymentMethodId: string;
+
+          if (existing) {
+            paymentMethodId = existing.id;
+          } else {
+            // Create new payment method
+            const { data: newMethod, error } = await supabase
+              .from('payment_methods')
+              .insert({
+                name: methodName,
+                slug,
+                description_rich: '',
+                display_order: 999,
+                is_featured: false
+              })
+              .select()
+              .single();
+
+            if (error || !newMethod) {
+              console.error('Error creating payment method:', error);
+              continue;
+            }
+
+            paymentMethodId = newMethod.id;
+            console.log(`Created payment method: ${methodName}`);
+          }
+
+          processedPayments.push({
+            payment_method_id: paymentMethodId,
+            method_type: payment.method_type || 'both',
+            minimum_amount: payment.min_amount ? parseFloat(payment.min_amount) : undefined,
+            maximum_amount: payment.max_amount ? parseFloat(payment.max_amount) : undefined,
+            processing_time: payment.processing_time || 'Instant',
+            is_available: true
+          });
+        }
+
+        // Replace payments array with processed data
+        extractedData.payments = processedPayments as any;
+      } catch (error) {
+        console.error('Error processing payment methods:', error);
+        toast.error('Some payment methods could not be processed');
+      }
     }
     
     // Apply data to form - localStorage storage now handled by OperatorForm

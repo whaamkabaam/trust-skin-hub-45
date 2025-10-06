@@ -15,7 +15,8 @@ export const operatorSchema = z.object({
   hero_image_url: z.string().refine((val) => val === '' || z.string().url().safeParse(val).success, 'Must be a valid URL or empty').optional(),
   categories: z.array(z.string()).default([]), // Category slugs
   payment_methods: z.array(z.object({
-    payment_method_id: z.string(),
+    payment_method_id: z.string().optional(), // Made optional for smart import
+    payment_method: z.string().optional(), // Support for custom payment method names
     method_type: z.enum(['deposit', 'withdrawal', 'both']).default('both'),
     minimum_amount: z.number().optional(),
     maximum_amount: z.number().optional(),
@@ -23,7 +24,10 @@ export const operatorSchema = z.object({
     fee_fixed: z.number().optional(),
     processing_time: z.string().optional(),
     is_available: z.boolean().default(true)
-  })).default([]),
+  }).refine(
+    (data) => data.payment_method_id || data.payment_method,
+    { message: "Either payment_method_id or payment_method must be provided" }
+  )).default([]),
   pros: z.array(z.string()).default([]),
   cons: z.array(z.string()).default([]),
   supported_countries: z.array(z.string()).default([]),
