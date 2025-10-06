@@ -15,7 +15,6 @@ import OperatorsArchive from "./pages/OperatorsArchive";
 import CasesArchive from "./pages/CasesArchive";
 import MysteryBoxesArchive from "./pages/MysteryBoxesArchive";
 import MysteryBoxHub from "./pages/MysteryBoxHub";
-import BoxDetail from "./pages/BoxDetail";
 import MysteryBoxOperators from "./pages/MysteryBoxOperators";
 import AppleMysteryBoxes from "./pages/AppleMysteryBoxes";
 import Skins from "./pages/Skins";
@@ -67,7 +66,6 @@ const App = () => (
             <Route path="/cases" element={<CasesArchive />} />
             <Route path="/cases/:id" element={<CaseDetail />} />
             <Route path="/mystery-boxes" element={<MysteryBoxHub />} />
-            <Route path="/hub/box/:boxSlug" element={<BoxDetail />} />
             <Route path="/mystery-boxes/archive" element={<MysteryBoxesArchive />} />
             <Route path="/mystery-boxes/reviews" element={<MysteryBoxReviews />} />
             <Route path="/mystery-boxes/operators" element={<MysteryBoxOperators />} />

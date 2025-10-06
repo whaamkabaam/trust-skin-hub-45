@@ -434,4 +434,3 @@ VITE_SUPABASE_PUBLISHABLE_KEY=[YOUR_KEY]
 **Last Updated**: October 2, 2025  
 **Version**: 1.0.0
 
-
