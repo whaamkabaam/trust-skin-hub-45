@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { OperatorFAQ } from '@/hooks/useOperatorExtensions';
 import { toast } from '@/lib/toast';
 import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface FAQManagerProps {
   faqs: OperatorFAQ[];
@@ -37,6 +38,31 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   
   // Always use props data (useOperatorExtensions manages localStorage internally)
   const effectiveFaqs = isTemporaryOperator ? localStorage.faqs : faqs;
+  
+  // Local state for immediate UI updates
+  const [localFaqs, setLocalFaqs] = useState<OperatorFAQ[]>(effectiveFaqs);
+  
+  // Update local state when prop changes
+  useEffect(() => {
+    setLocalFaqs(effectiveFaqs);
+  }, [effectiveFaqs]);
+  
+  // Debounce the local FAQs with 2 second delay
+  const debouncedFaqs = useDebounce(localFaqs, 2000);
+  
+  // Auto-save when debounced value changes
+  useEffect(() => {
+    // Skip initial render
+    if (JSON.stringify(debouncedFaqs) === JSON.stringify(effectiveFaqs)) {
+      return;
+    }
+    
+    if (isTemporaryOperator) {
+      localStorage.saveFaqsToLocal(debouncedFaqs);
+    } else {
+      onSave(debouncedFaqs);
+    }
+  }, [debouncedFaqs]);
 
   const addFaq = () => {
     // Notify parent that user is interacting with extensions
@@ -49,16 +75,12 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       question: '',
       answer: '',
       category: 'general',
-      order_number: effectiveFaqs.length,
+      order_number: localFaqs.length,
       is_featured: false,
     };
     
-    const newFaqs = [...effectiveFaqs, newFaq];
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(newFaqs);
-    } else {
-      onSave(newFaqs);
-    }
+    const newFaqs = [...localFaqs, newFaq];
+    setLocalFaqs(newFaqs);
   };
 
   const updateFaq = (index: number, updates: Partial<OperatorFAQ>) => {
@@ -67,37 +89,28 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       onInteractionStart();
     }
     
-    const updated = effectiveFaqs.map((faq, i) => 
+    // Update local state immediately for responsive UI
+    const updated = localFaqs.map((faq, i) => 
       i === index ? { ...faq, ...updates } : faq
     );
-    
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(updated);
-    } else {
-      onSave(updated);
-    }
+    setLocalFaqs(updated);
   };
 
   const removeFaq = (index: number) => {
-    const filtered = effectiveFaqs.filter((_, i) => i !== index);
-    
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(filtered);
-    } else {
-      onSave(filtered);
-    }
+    const filtered = localFaqs.filter((_, i) => i !== index);
+    setLocalFaqs(filtered);
   };
 
   const moveFaq = (index: number, direction: 'up' | 'down') => {
     if (
       (direction === 'up' && index === 0) ||
-      (direction === 'down' && index === effectiveFaqs.length - 1)
+      (direction === 'down' && index === localFaqs.length - 1)
     ) {
       return;
     }
 
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    const updated = [...effectiveFaqs];
+    const updated = [...localFaqs];
     [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
     
     // Update order numbers
@@ -105,11 +118,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       faq.order_number = i;
     });
     
-    if (isTemporaryOperator) {
-      localStorage.saveFaqsToLocal(updated);
-    } else {
-      onSave(updated);
-    }
+    setLocalFaqs(updated);
   };
 
   const handleSave = () => {
@@ -155,7 +164,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {effectiveFaqs.map((faq, index) => (
+        {localFaqs.map((faq, index) => (
           <Card key={index} className="p-4">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -197,7 +206,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
                       variant="outline"
                       size="sm"
                       onClick={() => moveFaq(index, 'down')}
-                      disabled={index === effectiveFaqs.length - 1}
+                      disabled={index === localFaqs.length - 1}
                     >
                       ↓
                     </Button>
