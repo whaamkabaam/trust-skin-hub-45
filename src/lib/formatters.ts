@@ -3,7 +3,10 @@
 /**
  * Format payment method names from backend format to user-friendly display
  */
-export function formatPaymentMethod(method: string): string {
+export function formatPaymentMethod(method: string | any): string {
+  if (!method) return '';
+  if (typeof method !== 'string') return String(method);
+  
   const methodMap: Record<string, string> = {
     'debit_card': 'Debit Card',
     'credit_card': 'Credit Card',
@@ -39,7 +42,10 @@ export function formatPaymentMethod(method: string): string {
 /**
  * Format support channel names from backend format to user-friendly display
  */
-export function formatSupportChannel(channel: string): string {
+export function formatSupportChannel(channel: string | any): string {
+  if (!channel) return '';
+  if (typeof channel !== 'string') return String(channel);
+  
   const channelMap: Record<string, string> = {
     'live_chat': 'Live Chat',
     'email_support': 'Email Support',
@@ -62,7 +68,10 @@ export function formatSupportChannel(channel: string): string {
 /**
  * Format game names from backend format to user-friendly display
  */
-export function formatGameName(game: string): string {
+export function formatGameName(game: string | any): string {
+  if (!game) return '';
+  if (typeof game !== 'string') return String(game);
+  
   const gameMap: Record<string, string> = {
     'cs2': 'CS2',
     'csgo': 'CS:GO',
@@ -86,7 +95,10 @@ export function formatGameName(game: string): string {
 /**
  * Format gaming mode names from backend format to user-friendly display
  */
-export function formatGamingMode(mode: string): string {
+export function formatGamingMode(mode: string | any): string {
+  if (!mode) return '';
+  if (typeof mode !== 'string') return String(mode);
+  
   const modeMap: Record<string, string> = {
     'case_opening': 'Case Opening',
     'mystery_box': 'Mystery Box',
@@ -111,7 +123,10 @@ export function formatGamingMode(mode: string): string {
 /**
  * Format feature names from backend format to user-friendly display
  */
-export function formatFeatureName(feature: string): string {
+export function formatFeatureName(feature: string | any): string {
+  if (!feature) return '';
+  if (typeof feature !== 'string') return String(feature);
+  
   const featureMap: Record<string, string> = {
     'provably_fair': 'Provably Fair',
     'instant_withdrawal': 'Instant Withdrawal',
@@ -138,7 +153,10 @@ export function formatFeatureName(feature: string): string {
 /**
  * Format category names from backend format to user-friendly display
  */
-export function formatCategoryName(category: string): string {
+export function formatCategoryName(category: string | any): string {
+  if (!category) return '';
+  if (typeof category !== 'string') return String(category);
+  
   const categoryMap: Record<string, string> = {
     'case_opening': 'Case Opening',
     'mystery_boxes': 'Mystery Boxes',

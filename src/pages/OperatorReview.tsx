@@ -899,23 +899,43 @@ const OperatorReview = () => {
                     </h4>
                     <div className="space-y-2">
                       {payments && payments.length > 0 ? (
-                        payments.map((pm, i) => (
-                          <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              {pm.payment_method?.logo_url && (
-                                <img 
-                                  src={pm.payment_method.logo_url} 
-                                  alt={pm.payment_method.name} 
-                                  className="w-6 h-6 object-contain"
-                                />
-                              )}
-                              <span className="text-sm">{pm.payment_method?.name || 'Payment Method'}</span>
+                        payments
+                          .filter(pm => pm.method_type === 'deposit' || pm.method_type === 'both')
+                          .map((pm, i) => (
+                            <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                              <div className="flex items-center gap-2">
+                                {pm.payment_method?.logo_url && (
+                                  <img 
+                                    src={pm.payment_method.logo_url} 
+                                    alt={pm.payment_method.name} 
+                                    className="w-6 h-6 object-contain"
+                                  />
+                                )}
+                                <div>
+                                  <span className="text-sm font-medium">{pm.payment_method?.name || 'Payment Method'}</span>
+                                  {(pm.minimum_amount || pm.maximum_amount) && (
+                                    <p className="text-xs text-muted-foreground">
+                                      {pm.minimum_amount && `Min: $${pm.minimum_amount}`}
+                                      {pm.minimum_amount && pm.maximum_amount && ' • '}
+                                      {pm.maximum_amount && `Max: $${pm.maximum_amount}`}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <Badge className="bg-blue-100 text-blue-800 border-0">
+                                  Available
+                                </Badge>
+                                {(pm.fee_percentage > 0 || pm.fee_fixed > 0) && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {pm.fee_percentage > 0 && `${pm.fee_percentage}% fee`}
+                                    {pm.fee_percentage > 0 && pm.fee_fixed > 0 && ' + '}
+                                    {pm.fee_fixed > 0 && `$${pm.fee_fixed}`}
+                                  </p>
+                                )}
+                              </div>
                             </div>
-                            <Badge className="bg-blue-100 text-blue-800 border-0">
-                              Available
-                            </Badge>
-                          </div>
-                        ))
+                          ))
                       ) : (
                         <>
                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
@@ -936,28 +956,41 @@ const OperatorReview = () => {
                       <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs">⏱️</span>
                       </div>
-                      Withdrawal Timeframes & Fees
+                      Withdrawal Methods & Timeframes
                     </h4>
                     <div className="space-y-2">
                       {payments && payments.length > 0 ? (
-                        payments.map((pm, i) => (
-                          <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              {pm.payment_method?.logo_url && (
-                                <img 
-                                  src={pm.payment_method.logo_url} 
-                                  alt={pm.payment_method.name} 
-                                  className="w-6 h-6 object-contain"
-                                />
-                              )}
-                              <div>
-                                <span className="text-sm font-medium">{pm.payment_method?.name || 'Payment Method'}</span>
-                                <p className="text-xs text-muted-foreground">Processing time varies</p>
+                        payments
+                          .filter(pm => pm.method_type === 'withdrawal' || pm.method_type === 'both')
+                          .map((pm, i) => (
+                            <div key={i} className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                              <div className="flex items-center gap-2">
+                                {pm.payment_method?.logo_url && (
+                                  <img 
+                                    src={pm.payment_method.logo_url} 
+                                    alt={pm.payment_method.name} 
+                                    className="w-6 h-6 object-contain"
+                                  />
+                                )}
+                                <div>
+                                  <span className="text-sm font-medium">{pm.payment_method?.name || 'Payment Method'}</span>
+                                  <p className="text-xs text-muted-foreground">{pm.processing_time || 'Processing time varies'}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <Badge className="bg-green-100 text-green-800 border-0">Available</Badge>
+                                {(pm.fee_percentage > 0 || pm.fee_fixed > 0) ? (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {pm.fee_percentage > 0 && `${pm.fee_percentage}% fee`}
+                                    {pm.fee_percentage > 0 && pm.fee_fixed > 0 && ' + '}
+                                    {pm.fee_fixed > 0 && `$${pm.fee_fixed}`}
+                                  </p>
+                                ) : (
+                                  <p className="text-xs text-green-600 mt-1">No fees</p>
+                                )}
                               </div>
                             </div>
-                            <Badge className="bg-green-100 text-green-800 border-0">Available</Badge>
-                          </div>
-                        ))
+                          ))
                       ) : (
                         <>
                           <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
