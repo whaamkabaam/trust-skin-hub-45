@@ -88,7 +88,8 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         setContentSections(staticContent.contentSections);
         setMediaAssets(staticContent.mediaAssets);
         setSeoMetadata(staticContent.seoMetadata);
-        console.log('🎉 Successfully loaded static content data');
+        setPaymentMethods(staticContent.payments || []);
+        console.log('🎉 Successfully loaded static content data with payment methods:', staticContent.payments?.length);
         return; // Early return, loading will be set to false in finally block
       }
 
