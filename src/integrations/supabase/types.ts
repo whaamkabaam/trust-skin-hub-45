@@ -688,21 +688,42 @@ export type Database = {
       operator_payment_methods: {
         Row: {
           created_at: string
+          fee_fixed: number | null
+          fee_percentage: number | null
           id: string
+          is_available: boolean | null
+          maximum_amount: number | null
+          method_type: string
+          minimum_amount: number | null
           operator_id: string | null
           payment_method_id: string | null
+          processing_time: string | null
         }
         Insert: {
           created_at?: string
+          fee_fixed?: number | null
+          fee_percentage?: number | null
           id?: string
+          is_available?: boolean | null
+          maximum_amount?: number | null
+          method_type?: string
+          minimum_amount?: number | null
           operator_id?: string | null
           payment_method_id?: string | null
+          processing_time?: string | null
         }
         Update: {
           created_at?: string
+          fee_fixed?: number | null
+          fee_percentage?: number | null
           id?: string
+          is_available?: boolean | null
+          maximum_amount?: number | null
+          method_type?: string
+          minimum_amount?: number | null
           operator_id?: string | null
           payment_method_id?: string | null
+          processing_time?: string | null
         }
         Relationships: [
           {
@@ -717,59 +738,6 @@ export type Database = {
             columns: ["payment_method_id"]
             isOneToOne: false
             referencedRelation: "payment_methods"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      operator_payments: {
-        Row: {
-          created_at: string
-          fee_fixed: number | null
-          fee_percentage: number | null
-          id: string
-          is_available: boolean | null
-          maximum_amount: number | null
-          method_type: string
-          minimum_amount: number | null
-          operator_id: string
-          payment_method: string
-          processing_time: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          fee_fixed?: number | null
-          fee_percentage?: number | null
-          id?: string
-          is_available?: boolean | null
-          maximum_amount?: number | null
-          method_type: string
-          minimum_amount?: number | null
-          operator_id: string
-          payment_method: string
-          processing_time?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          fee_fixed?: number | null
-          fee_percentage?: number | null
-          id?: string
-          is_available?: boolean | null
-          maximum_amount?: number | null
-          method_type?: string
-          minimum_amount?: number | null
-          operator_id?: string
-          payment_method?: string
-          processing_time?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "operator_payments_operator_id_fkey"
-            columns: ["operator_id"]
-            isOneToOne: false
-            referencedRelation: "operators"
             referencedColumns: ["id"]
           },
         ]

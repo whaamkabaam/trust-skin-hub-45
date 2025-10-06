@@ -54,7 +54,7 @@ export function useStaticContent() {
         { data: seoMetadata }
       ] = await Promise.all([
         supabase.from('operator_bonuses').select('*').eq('operator_id', operatorId).order('order_number'),
-        supabase.from('operator_payments').select('*').eq('operator_id', operatorId),
+        supabase.from('operator_payment_methods').select('*').eq('operator_id', operatorId),
         supabase.from('operator_features').select('*').eq('operator_id', operatorId),
         supabase.from('operator_security').select('*').eq('operator_id', operatorId).maybeSingle(),
         supabase.from('operator_faqs').select('*').eq('operator_id', operatorId).order('order_number'),

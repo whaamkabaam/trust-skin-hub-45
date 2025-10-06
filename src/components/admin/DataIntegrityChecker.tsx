@@ -47,7 +47,7 @@ export function DataIntegrityChecker({ operatorId }: DataIntegrityCheckerProps) 
       // Check extension data existence
       const [bonusesRes, paymentsRes, securityRes, faqsRes, publishedRes] = await Promise.all([
         supabase.from('operator_bonuses').select('count').eq('operator_id', id),
-        supabase.from('operator_payments').select('count').eq('operator_id', id),
+        supabase.from('operator_payment_methods').select('count').eq('operator_id', id),
         supabase.from('operator_security').select('count').eq('operator_id', id),
         supabase.from('operator_faqs').select('count').eq('operator_id', id),
         supabase.from('published_operator_content').select('count').eq('operator_id', id)

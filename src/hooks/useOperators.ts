@@ -379,7 +379,7 @@ export function useOperators() {
         seoResult
       ] = await Promise.allSettled([
         supabase.from('operator_bonuses').select('*').eq('operator_id', sourceId),
-        supabase.from('operator_payments').select('*').eq('operator_id', sourceId),
+        supabase.from('operator_payment_methods').select('*').eq('operator_id', sourceId),
         supabase.from('operator_features').select('*').eq('operator_id', sourceId),
         supabase.from('operator_security').select('*').eq('operator_id', sourceId),
         supabase.from('operator_faqs').select('*').eq('operator_id', sourceId),
@@ -402,11 +402,11 @@ export function useOperators() {
 
       // Payments
       if (paymentsResult.status === 'fulfilled' && paymentsResult.value.data?.length) {
-        const paymentData = paymentsResult.value.data.map(({ id, created_at, updated_at, ...payment }) => ({
+        const paymentData = paymentsResult.value.data.map(({ id, ...payment }) => ({
           ...payment,
           operator_id: newOperatorId
         }));
-        insertPromises.push(supabase.from('operator_payments').insert(paymentData));
+        insertPromises.push(supabase.from('operator_payment_methods').insert(paymentData));
       }
 
       // Features

@@ -1,4 +1,4 @@
-import type { OperatorBonus, OperatorPayment, OperatorSecurity, OperatorFAQ } from '@/hooks/useOperatorExtensions';
+import type { OperatorBonus, OperatorPaymentMethod, OperatorSecurity, OperatorFAQ } from '@/hooks/useOperatorExtensions';
 
 export const createBonusTemplate = (operatorId: string): OperatorBonus[] => [
   {
@@ -23,57 +23,7 @@ export const createBonusTemplate = (operatorId: string): OperatorBonus[] => [
   }
 ];
 
-export const createPaymentTemplate = (operatorId: string): OperatorPayment[] => [
-  // Deposit methods
-  {
-    operator_id: operatorId,
-    payment_method: 'Visa/Mastercard',
-    method_type: 'deposit',
-    minimum_amount: 10,
-    maximum_amount: 5000,
-    fee_percentage: 0,
-    processing_time: 'Instant',
-    is_available: true
-  },
-  {
-    operator_id: operatorId,
-    payment_method: 'Bitcoin',
-    method_type: 'deposit',
-    minimum_amount: 25,
-    maximum_amount: 10000,
-    fee_percentage: 0,
-    processing_time: '10-30 minutes',
-    is_available: true
-  },
-  {
-    operator_id: operatorId,
-    payment_method: 'Steam Items',
-    method_type: 'deposit',
-    minimum_amount: 5,
-    fee_percentage: 0,
-    processing_time: 'Instant',
-    is_available: true
-  },
-  // Withdrawal methods
-  {
-    operator_id: operatorId,
-    payment_method: 'Steam Trade',
-    method_type: 'withdrawal',
-    minimum_amount: 5,
-    fee_percentage: 0,
-    processing_time: 'Instant - 24 hours',
-    is_available: true
-  },
-  {
-    operator_id: operatorId,
-    payment_method: 'Bitcoin',
-    method_type: 'withdrawal',
-    minimum_amount: 50,
-    fee_percentage: 2,
-    processing_time: '1-6 hours',
-    is_available: true
-  }
-];
+export const createPaymentTemplate = (operatorId: string): OperatorPaymentMethod[] => [];
 
 export const createSecurityTemplate = (operatorId: string): OperatorSecurity => ({
   operator_id: operatorId,

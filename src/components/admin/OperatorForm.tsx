@@ -24,7 +24,7 @@ import { useAutoSave } from '@/hooks/useAutoSave';
 import { SaveStateIndicator } from '@/components/SaveStateIndicator';
 import { ContentScheduling } from '@/components/ContentScheduling';
 import { BonusManager } from './BonusManager';
-import { PaymentMethodsManager } from './PaymentMethodsManager';
+
 import { CategoryManager } from './CategoryManager';
 import { EnhancedPaymentMethodsManager } from './EnhancedPaymentMethodsManager';
 import { SecurityManager } from './SecurityManager';
@@ -79,7 +79,7 @@ export function OperatorForm({
       fairness_info: initialData.fairness_info || '',
       hero_image_url: initialData.hero_image_url || '',
       categories: (initialData.categories as string[]) || [],
-      payment_methods: [], // Will be loaded from relationships below
+      payment_methods: [],
       pros: (initialData.pros as string[]) || [],
       cons: (initialData.cons as string[]) || [],
       supported_countries: (initialData.supported_countries as string[]) || [],
@@ -204,10 +204,7 @@ export function OperatorForm({
         try {
           const { data, error } = await supabase
             .from('operator_payment_methods')
-            .select(`
-              payment_method_id,
-              payment_methods(id, name, slug, logo_url)
-            `)
+            .select('*')
             .eq('operator_id', initialData.id);
 
           if (error) throw error;
@@ -216,13 +213,13 @@ export function OperatorForm({
           if (data && data.length > 0) {
             const paymentMethodDetails = data.map((item: any) => ({
               payment_method_id: item.payment_method_id,
-              payment_method_name: item.payment_methods?.name || '',
-              minimum_amount: 0,
-              maximum_amount: 10000,
-              fee_percentage: 0,
-              fee_fixed: 0,
-              processing_time: '1-3 business days',
-              is_available: true
+              method_type: item.method_type || 'both',
+              minimum_amount: item.minimum_amount || 0,
+              maximum_amount: item.maximum_amount,
+              fee_percentage: item.fee_percentage || 0,
+              fee_fixed: item.fee_fixed || 0,
+              processing_time: item.processing_time || 'Instant',
+              is_available: item.is_available !== false
             }));
             setValue('payment_methods', paymentMethodDetails);
           }
@@ -826,7 +823,7 @@ export function OperatorForm({
 
       {/* Payment Methods */}
       <EnhancedPaymentMethodsManager
-        selectedPaymentMethods={paymentMethodsData}
+        selectedPaymentMethods={paymentMethodsData || []}
         onPaymentMethodsChange={(methods) => setValue('payment_methods', methods)}
         operatorId={effectiveOperatorId}
         disabled={publishLoading || globalIsPublishing}
@@ -1048,9 +1045,11 @@ export function OperatorForm({
 
         <TabsContent value="payments" className="space-y-6">
           <ExtensionErrorBoundary extensionName="Payments">
-            <PaymentMethodsManager 
-              key={stableExtensionProps.payments.key}
-              {...stableExtensionProps.payments} 
+            <EnhancedPaymentMethodsManager
+              selectedPaymentMethods={form.watch('payment_methods') || []}
+              onPaymentMethodsChange={(methods) => form.setValue('payment_methods', methods)}
+              operatorId={effectiveOperatorId}
+              disabled={isLoading || publishingState}
             />
           </ExtensionErrorBoundary>
         </TabsContent>

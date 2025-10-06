@@ -94,23 +94,10 @@ export default function NewOperator() {
         }
       }
       
-      // Migrate payments with proper transformation
+      // Migrate payments - skip as we're using new system
+      // Payments are now managed via EnhancedPaymentMethodsManager
       if (tempData.payments?.length > 0) {
-        const cleanPayments = tempData.payments.map((payment: any) => ({
-          ...transformPaymentForDatabase(payment),
-          operator_id: operatorId
-        }));
-        
-        const paymentResult = await supabase.from('operator_payments').insert(cleanPayments);
-        migrationResults.push({
-          type: 'payments',
-          success: !paymentResult.error,
-          error: paymentResult.error
-        });
-        
-        if (paymentResult.error) {
-          console.error('Payment migration failed:', paymentResult.error);
-        }
+        console.log('Payment migration skipped - using new operator_payment_methods system');
       }
       
       // Migrate features with proper transformation

@@ -16,11 +16,11 @@ export interface OperatorBonus {
   order_number: number;
 }
 
-export interface OperatorPayment {
+export interface OperatorPaymentMethod {
   id?: string;
   operator_id: string;
-  method_type: string;
-  payment_method: string;
+  payment_method_id: string;
+  method_type: 'deposit' | 'withdrawal' | 'both';
   minimum_amount?: number;
   maximum_amount?: number;
   fee_percentage?: number;
@@ -65,7 +65,7 @@ export interface OperatorFAQ {
 
 export function useOperatorExtensions(operatorId: string) {
   const [bonuses, setBonuses] = useState<OperatorBonus[]>([]);
-  const [payments, setPayments] = useState<OperatorPayment[]>([]);
+  const [payments, setPayments] = useState<OperatorPaymentMethod[]>([]);
   const [features, setFeatures] = useState<OperatorFeature[]>([]);
   const [security, setSecurity] = useState<OperatorSecurity | null>(null);
   const [faqs, setFaqs] = useState<OperatorFAQ[]>([]);
@@ -78,7 +78,7 @@ export function useOperatorExtensions(operatorId: string) {
   // Queue system for deferred saves
   const saveQueueRef = useRef<{
     bonuses?: OperatorBonus[];
-    payments?: OperatorPayment[];
+    payments?: OperatorPaymentMethod[];
     features?: OperatorFeature[];
     security?: OperatorSecurity;
     faqs?: OperatorFAQ[];
@@ -87,7 +87,7 @@ export function useOperatorExtensions(operatorId: string) {
   // Stable function references using useRef to prevent recreation
   const stableSaveRefs = useRef({
     saveBonuses: null as ((data: OperatorBonus[]) => Promise<void>) | null,
-    savePayments: null as ((data: OperatorPayment[]) => Promise<void>) | null,
+    savePayments: null as ((data: OperatorPaymentMethod[]) => Promise<void>) | null,
     saveFeatures: null as ((data: OperatorFeature[]) => Promise<void>) | null,
     saveSecurity: null as ((data: OperatorSecurity) => Promise<void>) | null,
     saveFaqs: null as ((data: OperatorFAQ[]) => Promise<void>) | null
@@ -109,7 +109,7 @@ export function useOperatorExtensions(operatorId: string) {
     try {
       const [bonusesRes, paymentsRes, featuresRes, securityRes, faqsRes] = await Promise.all([
         supabase.from('operator_bonuses').select('*').eq('operator_id', operatorId).order('order_number'),
-        supabase.from('operator_payments').select('*').eq('operator_id', operatorId),
+        supabase.from('operator_payment_methods').select('*').eq('operator_id', operatorId),
         supabase.from('operator_features').select('*').eq('operator_id', operatorId),
         supabase.from('operator_security').select('*').eq('operator_id', operatorId).single(),
         supabase.from('operator_faqs').select('*').eq('operator_id', operatorId).order('order_number')
@@ -124,7 +124,7 @@ export function useOperatorExtensions(operatorId: string) {
       if (faqsRes.error) throw faqsRes.error;
 
       setBonuses(bonusesRes.data || []);
-      setPayments(paymentsRes.data || []);
+      setPayments((paymentsRes.data || []) as OperatorPaymentMethod[]);
       setFeatures(featuresRes.data || []);
       setSecurity(securityRes.data || null);
       setFaqs(faqsRes.data || []);
@@ -190,7 +190,7 @@ export function useOperatorExtensions(operatorId: string) {
   // Store stable reference
   stableSaveRefs.current.saveBonuses = createStableSaveBonus;
 
-  const createStableSavePayments = useCallback(async (paymentData: OperatorPayment[]) => {
+  const createStableSavePayments = useCallback(async (paymentData: OperatorPaymentMethod[]) => {
     if (!operatorId) {
       toast.error('No operator ID provided');
       return;
@@ -206,20 +206,20 @@ export function useOperatorExtensions(operatorId: string) {
     // For temp operators: localStorage handles persistence
     
     try {
-      console.log('Saving payments for operator:', operatorId, paymentData);
+      console.log('Saving payment methods for operator:', operatorId, paymentData);
       
-      // Delete existing payments
+      // Delete existing payment methods
       const { error: deleteError } = await supabase
-        .from('operator_payments')
+        .from('operator_payment_methods')
         .delete()
         .eq('operator_id', operatorId);
       
       if (deleteError) throw deleteError;
       
-      // Insert new payments
+      // Insert new payment methods
       if (paymentData && paymentData.length > 0) {
         const { error: insertError } = await supabase
-          .from('operator_payments')
+          .from('operator_payment_methods')
           .insert(paymentData);
         if (insertError) throw insertError;
       }
@@ -227,7 +227,7 @@ export function useOperatorExtensions(operatorId: string) {
       setPayments(paymentData || []);
       toast.success('Payment methods saved successfully');
     } catch (error) {
-      console.error('Error saving payments:', error);
+      console.error('Error saving payment methods:', error);
       toast.error('Failed to save payment methods');
     }
   }, [operatorId, isExtensionActive]);
@@ -439,7 +439,7 @@ export function useOperatorExtensions(operatorId: string) {
     }
   }, []);
 
-  const safeSavePayments = useCallback(async (data: OperatorPayment[]) => {
+  const safeSavePayments = useCallback(async (data: OperatorPaymentMethod[]) => {
     try {
       if (stableSaveRefs.current.savePayments && typeof stableSaveRefs.current.savePayments === 'function') {
         await stableSaveRefs.current.savePayments(data);

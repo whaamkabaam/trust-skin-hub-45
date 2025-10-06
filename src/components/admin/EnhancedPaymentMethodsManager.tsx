@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 interface PaymentMethodDetails {
   payment_method_id: string;
+  method_type: 'deposit' | 'withdrawal' | 'both';
   minimum_amount?: number;
   maximum_amount?: number;
   fee_percentage?: number;
@@ -51,6 +52,7 @@ export function EnhancedPaymentMethodsManager({
 
     const newMethodDetails: PaymentMethodDetails = {
       payment_method_id: selectedMethodId,
+      method_type: 'both',
       minimum_amount: 0,
       maximum_amount: undefined,
       fee_percentage: 0,
@@ -71,7 +73,14 @@ export function EnhancedPaymentMethodsManager({
           .from('operator_payment_methods')
           .insert({
             operator_id: operatorId,
-            payment_method_id: selectedMethodId
+            payment_method_id: selectedMethodId,
+            method_type: newMethodDetails.method_type,
+            minimum_amount: newMethodDetails.minimum_amount,
+            maximum_amount: newMethodDetails.maximum_amount,
+            fee_percentage: newMethodDetails.fee_percentage,
+            fee_fixed: newMethodDetails.fee_fixed,
+            processing_time: newMethodDetails.processing_time,
+            is_available: newMethodDetails.is_available
           });
         
         toast.success(`Added ${method.name} payment method`);
@@ -114,11 +123,34 @@ export function EnhancedPaymentMethodsManager({
     }
   };
 
-  const handleUpdatePaymentMethod = (index: number, updates: Partial<PaymentMethodDetails>) => {
+  const handleUpdatePaymentMethod = async (index: number, updates: Partial<PaymentMethodDetails>) => {
     const updatedMethods = selectedPaymentMethods.map((method, i) => 
       i === index ? { ...method, ...updates } : method
     );
     onPaymentMethodsChange(updatedMethods);
+    
+    // Sync to database if operator exists
+    if (operatorId && !operatorId.startsWith('temp-')) {
+      try {
+        const updatedMethod = updatedMethods[index];
+        const { supabase } = await import('@/integrations/supabase/client');
+        await supabase
+          .from('operator_payment_methods')
+          .update({
+            method_type: updatedMethod.method_type,
+            minimum_amount: updatedMethod.minimum_amount,
+            maximum_amount: updatedMethod.maximum_amount,
+            fee_percentage: updatedMethod.fee_percentage,
+            fee_fixed: updatedMethod.fee_fixed,
+            processing_time: updatedMethod.processing_time,
+            is_available: updatedMethod.is_available
+          })
+          .eq('operator_id', operatorId)
+          .eq('payment_method_id', updatedMethod.payment_method_id);
+      } catch (error) {
+        console.error('Error updating payment method:', error);
+      }
+    }
   };
 
   const getPaymentMethodName = (id: string) => {
@@ -213,6 +245,7 @@ export function EnhancedPaymentMethodsManager({
                 <TableHeader>
                   <TableRow>
                     <TableHead>Method</TableHead>
+                    <TableHead>Type</TableHead>
                     <TableHead>Min/Max Amount</TableHead>
                     <TableHead>Fees</TableHead>
                     <TableHead>Processing Time</TableHead>
@@ -236,6 +269,29 @@ export function EnhancedPaymentMethodsManager({
                             {getPaymentMethodName(methodDetails.payment_method_id)}
                           </span>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        {editingIndex === index ? (
+                          <Select
+                            value={methodDetails.method_type}
+                            onValueChange={(value) => handleUpdatePaymentMethod(index, { 
+                              method_type: value as 'deposit' | 'withdrawal' | 'both'
+                            })}
+                          >
+                            <SelectTrigger className="w-24">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="deposit">Deposit</SelectItem>
+                              <SelectItem value="withdrawal">Withdrawal</SelectItem>
+                              <SelectItem value="both">Both</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Badge variant="outline" className="capitalize">
+                            {methodDetails.method_type}
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell>
                         {editingIndex === index ? (

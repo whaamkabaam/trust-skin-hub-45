@@ -16,6 +16,7 @@ export const operatorSchema = z.object({
   categories: z.array(z.string()).default([]), // Category slugs
   payment_methods: z.array(z.object({
     payment_method_id: z.string(),
+    method_type: z.enum(['deposit', 'withdrawal', 'both']).default('both'),
     minimum_amount: z.number().optional(),
     maximum_amount: z.number().optional(),
     fee_percentage: z.number().optional(),

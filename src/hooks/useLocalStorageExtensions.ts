@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { OperatorBonus, OperatorPayment, OperatorFeature, OperatorSecurity, OperatorFAQ } from './useOperatorExtensions';
+import type { OperatorBonus, OperatorPaymentMethod, OperatorFeature, OperatorSecurity, OperatorFAQ } from './useOperatorExtensions';
 
 interface LocalStorageExtensions {
   bonuses: OperatorBonus[];
-  payments: OperatorPayment[];
+  payments: OperatorPaymentMethod[];
   features: OperatorFeature[];
   security: OperatorSecurity | null;
   faqs: OperatorFAQ[];
   saveBonusesToLocal: (bonuses: OperatorBonus[]) => void;
-  savePaymentsToLocal: (payments: OperatorPayment[]) => void;
+  savePaymentsToLocal: (payments: OperatorPaymentMethod[]) => void;
   saveFeaturesToLocal: (features: OperatorFeature[]) => void;
   saveSecurityToLocal: (security: OperatorSecurity | null) => void;
   saveFaqsToLocal: (faqs: OperatorFAQ[]) => void;
@@ -21,7 +21,7 @@ interface LocalStorageExtensions {
  */
 export function useLocalStorageExtensions(tempId: string): LocalStorageExtensions {
   const [bonuses, setBonuses] = useState<OperatorBonus[]>([]);
-  const [payments, setPayments] = useState<OperatorPayment[]>([]);
+  const [payments, setPayments] = useState<OperatorPaymentMethod[]>([]);
   const [features, setFeatures] = useState<OperatorFeature[]>([]);
   const [security, setSecurity] = useState<OperatorSecurity | null>(null);
   const [faqs, setFaqs] = useState<OperatorFAQ[]>([]);
@@ -71,7 +71,7 @@ export function useLocalStorageExtensions(tempId: string): LocalStorageExtension
     setHasLocalData(true);
   }, [tempId]);
 
-  const savePaymentsToLocal = useCallback((paymentData: OperatorPayment[]) => {
+  const savePaymentsToLocal = useCallback((paymentData: OperatorPaymentMethod[]) => {
     setPayments(paymentData);
     localStorage.setItem(`temp-payments-${tempId}`, JSON.stringify(paymentData));
     setHasLocalData(true);
