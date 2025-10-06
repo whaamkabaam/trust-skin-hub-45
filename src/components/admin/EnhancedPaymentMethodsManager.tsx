@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { sanitizePaymentMethodsForForm } from '@/utils/paymentMethodTransforms';
 
 interface PaymentMethodDetails {
   payment_method_id: string;
@@ -38,6 +39,14 @@ export function EnhancedPaymentMethodsManager({
   const { paymentMethods, loading } = usePaymentMethods();
   const [selectedMethodId, setSelectedMethodId] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  // Sanitize incoming payment methods on mount to convert null to undefined
+  useEffect(() => {
+    if (selectedPaymentMethods.length > 0) {
+      const sanitized = sanitizePaymentMethodsForForm(selectedPaymentMethods);
+      onPaymentMethodsChange(sanitized);
+    }
+  }, []);
 
   const selectedMethodIds = selectedPaymentMethods.map(m => m.payment_method_id);
   const availableMethods = paymentMethods.filter(method => 
@@ -69,10 +78,10 @@ export function EnhancedPaymentMethodsManager({
     const newMethodDetails: PaymentMethodDetails = {
       payment_method_id: selectedMethodId,
       method_type: 'both',
-      minimum_amount: 0,
+      minimum_amount: undefined,
       maximum_amount: undefined,
-      fee_percentage: 0,
-      fee_fixed: 0,
+      fee_percentage: undefined,
+      fee_fixed: undefined,
       processing_time: 'Instant',
       is_available: true
     };
@@ -91,10 +100,10 @@ export function EnhancedPaymentMethodsManager({
             operator_id: operatorId,
             payment_method_id: selectedMethodId,
             method_type: newMethodDetails.method_type,
-            minimum_amount: newMethodDetails.minimum_amount,
-            maximum_amount: newMethodDetails.maximum_amount,
-            fee_percentage: newMethodDetails.fee_percentage,
-            fee_fixed: newMethodDetails.fee_fixed,
+            minimum_amount: newMethodDetails.minimum_amount ?? null,
+            maximum_amount: newMethodDetails.maximum_amount ?? null,
+            fee_percentage: newMethodDetails.fee_percentage ?? null,
+            fee_fixed: newMethodDetails.fee_fixed ?? null,
             processing_time: newMethodDetails.processing_time,
             is_available: newMethodDetails.is_available
           });
@@ -161,10 +170,10 @@ export function EnhancedPaymentMethodsManager({
           .from('operator_payment_methods')
           .update({
             method_type: updatedMethod.method_type,
-            minimum_amount: updatedMethod.minimum_amount,
-            maximum_amount: updatedMethod.maximum_amount,
-            fee_percentage: updatedMethod.fee_percentage,
-            fee_fixed: updatedMethod.fee_fixed,
+            minimum_amount: updatedMethod.minimum_amount ?? null,
+            maximum_amount: updatedMethod.maximum_amount ?? null,
+            fee_percentage: updatedMethod.fee_percentage ?? null,
+            fee_fixed: updatedMethod.fee_fixed ?? null,
             processing_time: updatedMethod.processing_time,
             is_available: updatedMethod.is_available
           })
@@ -322,9 +331,9 @@ export function EnhancedPaymentMethodsManager({
                             <Input
                               type="number"
                               step="0.01"
-                              value={methodDetails.minimum_amount || ''}
+                              value={methodDetails.minimum_amount ?? ''}
                               onChange={(e) => handleUpdatePaymentMethod(index, { 
-                                minimum_amount: parseFloat(e.target.value) || 0 
+                                minimum_amount: e.target.value ? parseFloat(e.target.value) : undefined 
                               })}
                               placeholder="Min"
                               className="w-16 text-xs"
@@ -332,9 +341,9 @@ export function EnhancedPaymentMethodsManager({
                             <Input
                               type="number"
                               step="0.01"
-                              value={methodDetails.maximum_amount || ''}
+                              value={methodDetails.maximum_amount ?? ''}
                               onChange={(e) => handleUpdatePaymentMethod(index, { 
-                                maximum_amount: parseFloat(e.target.value) || undefined 
+                                maximum_amount: e.target.value ? parseFloat(e.target.value) : undefined 
                               })}
                               placeholder="Max"
                               className="w-16 text-xs"
@@ -352,9 +361,9 @@ export function EnhancedPaymentMethodsManager({
                             <Input
                               type="number"
                               step="0.01"
-                              value={methodDetails.fee_percentage || ''}
+                              value={methodDetails.fee_percentage ?? ''}
                               onChange={(e) => handleUpdatePaymentMethod(index, { 
-                                fee_percentage: parseFloat(e.target.value) || 0 
+                                fee_percentage: e.target.value ? parseFloat(e.target.value) : undefined 
                               })}
                               placeholder="%"
                               className="w-12 text-xs"
@@ -362,9 +371,9 @@ export function EnhancedPaymentMethodsManager({
                             <Input
                               type="number"
                               step="0.01"
-                              value={methodDetails.fee_fixed || ''}
+                              value={methodDetails.fee_fixed ?? ''}
                               onChange={(e) => handleUpdatePaymentMethod(index, { 
-                                fee_fixed: parseFloat(e.target.value) || 0 
+                                fee_fixed: e.target.value ? parseFloat(e.target.value) : undefined 
                               })}
                               placeholder="$"
                               className="w-12 text-xs"
