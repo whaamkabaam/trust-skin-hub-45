@@ -9,6 +9,11 @@ import { GripVertical, Trash2, Eye, EyeOff, Plus } from 'lucide-react';
 import { HeroBlock } from '@/components/category-blocks/HeroBlock';
 import { TextBlock } from '@/components/category-blocks/TextBlock';
 import { MysteryBoxesBlock } from '@/components/category-blocks/MysteryBoxesBlock';
+import { ComparisonTableBlock } from '@/components/category-blocks/ComparisonTableBlock';
+import { StatsBlock } from '@/components/category-blocks/StatsBlock';
+import { FAQBlock } from '@/components/category-blocks/FAQBlock';
+import { CTABlock } from '@/components/category-blocks/CTABlock';
+import { TrustIndicatorsBlock } from '@/components/category-blocks/TrustIndicatorsBlock';
 import { CategoryContentBlock } from '@/hooks/useCategoryContent';
 import { useDebounce } from '@/hooks/useDebounce';
 import {
@@ -62,6 +67,16 @@ const SortableBlock = ({
         return <TextBlock {...commonProps} />;
       case 'mystery_boxes':
         return <MysteryBoxesBlock {...commonProps} categoryId={block.category_id} />;
+      case 'comparison_table' as any:
+        return <ComparisonTableBlock {...commonProps} />;
+      case 'stats':
+        return <StatsBlock {...commonProps} />;
+      case 'faq':
+        return <FAQBlock {...commonProps} />;
+      case 'cta_banner' as any:
+        return <CTABlock {...commonProps} />;
+      case 'trust_indicators' as any:
+        return <TrustIndicatorsBlock {...commonProps} />;
       default:
         return <div className="p-4 border rounded">Unknown block type: {block.block_type}</div>;
     }
@@ -152,10 +167,10 @@ export const CategoryBlockEditor = ({
     }
   };
 
-  const addBlock = (blockType: CategoryContentBlock['block_type']) => {
+  const addBlock = (blockType: string) => {
     const newBlock: Partial<CategoryContentBlock> = {
       category_id: categoryId,
-      block_type: blockType,
+      block_type: blockType as any, // Type will update after migration
       block_data: {},
       order_number: localBlocks.length,
       is_visible: true,
@@ -209,6 +224,21 @@ export const CategoryBlockEditor = ({
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => addBlock('mystery_boxes')}>
             Mystery Boxes
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => addBlock('comparison_table')}>
+            Comparison Table
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => addBlock('stats')}>
+            Stats & Metrics
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => addBlock('faq')}>
+            FAQ Accordion
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => addBlock('cta_banner')}>
+            Call-to-Action Banner
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => addBlock('trust_indicators')}>
+            Trust Indicators
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

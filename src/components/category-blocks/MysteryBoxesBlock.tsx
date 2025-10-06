@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
+import { EnhancedMysteryBoxCard } from './EnhancedMysteryBoxCard';
 
 interface MysteryBoxesBlockProps {
   data: {
@@ -168,31 +169,28 @@ export const MysteryBoxesBlock = ({
   const displayBoxes = isEditing ? selectedBoxes : (localData.boxesData || []);
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-16">
       {localData.title && (
-        <h2 className="text-3xl font-bold mb-2">{localData.title}</h2>
+        <h2 className="text-4xl font-bold mb-3">{localData.title}</h2>
       )}
       {localData.description && (
-        <p className="text-muted-foreground mb-8">{localData.description}</p>
+        <p className="text-lg text-muted-foreground mb-12">{localData.description}</p>
       )}
       
-      <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
-        {displayBoxes.slice(0, localData.maxBoxes || 6).map((box) => {
-          const boxLink = box.box_url || `/mystery-boxes/${box.provider}/${box.box_id}`;
+      <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-8`}>
+        {displayBoxes.slice(0, localData.maxBoxes || 6).map((box, idx) => {
+          // Randomly assign ribbons for demo (in real app, this would come from data)
+          const shouldShowRibbon = Math.random() > 0.7;
+          const ribbons: Array<'NEW' | 'SALE' | 'HOT'> = ['NEW', 'SALE', 'HOT'];
+          const ribbon = shouldShowRibbon ? ribbons[Math.floor(Math.random() * ribbons.length)] : null;
           
           return (
-            <a 
-              key={box.id} 
-              href={boxLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border rounded-lg p-4 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 block"
-            >
-              <img src={box.box_image} alt={box.box_name} className="w-full h-48 object-cover rounded mb-2" />
-              <h3 className="font-semibold">{box.box_name}</h3>
-              <p className="text-sm text-muted-foreground">${box.box_price}</p>
-              <p className="text-xs text-muted-foreground">Provider: {box.provider}</p>
-            </a>
+            <EnhancedMysteryBoxCard
+              key={box.id}
+              box={box}
+              featured={idx === 0 && localData.displayMode === 'grid-3'}
+              showRibbon={ribbon}
+            />
           );
         })}
       </div>
