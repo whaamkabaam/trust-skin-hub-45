@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
 import MysteryBoxCard from '@/components/MysteryBoxCard';
-import { useUnifiedBoxData } from '@/hooks/useUnifiedBoxData';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MysteryBoxesBlockProps {
   data: {
@@ -166,32 +166,70 @@ export const MysteryBoxesBlock = ({
     );
   }
 
-  // Fetch real mystery box data from provider tables
-  const { boxesData: allProviderBoxes, loading: providerBoxesLoading } = useUnifiedBoxData(undefined, 5000);
-  
-  // Match CMS box assignments with full provider data
-  const getFullBoxData = (cmsBox: any) => {
-    // If it's already full data from provider tables
-    if (cmsBox.expected_value_percent_of_price !== undefined) {
-      return cmsBox;
-    }
-    
-    // CMS box has provider + box_name, find the full data
-    const found = allProviderBoxes.find(pb => 
-      pb.provider === cmsBox.provider && pb.box_name === cmsBox.box_name
-    );
-    
-    return found || null;
-  };
-  
-  // Get boxes to display
-  let displayBoxes = isEditing ? selectedBoxes : (localData.boxesData || []);
-  
-  // Get full data for each box
-  const transformedBoxes = displayBoxes
-    .map(getFullBoxData)
-    .filter(box => box !== null) // Remove boxes not found in provider tables
-    .slice(0, localData.maxBoxes || 6);
+  const [enrichedBoxes, setEnrichedBoxes] = useState<any[]>([]);
+  const [fetchingBoxes, setFetchingBoxes] = useState(false);
+
+  // Efficiently fetch only the specific boxes we need from CMS
+  useEffect(() => {
+    const fetchSpecificBoxes = async () => {
+      // In edit mode or if no boxesData, use selectedBoxes
+      const boxesToFetch = isEditing ? selectedBoxes : (localData.boxesData || []);
+      
+      if (boxesToFetch.length === 0) {
+        setEnrichedBoxes([]);
+        return;
+      }
+
+      setFetchingBoxes(true);
+      
+      try {
+        const enriched = [];
+        
+        // Group boxes by provider for efficient batch fetching
+        const byProvider: Record<string, any[]> = {};
+        boxesToFetch.forEach(box => {
+          const provider = box.provider || 'rillabox';
+          if (!byProvider[provider]) byProvider[provider] = [];
+          byProvider[provider].push(box);
+        });
+
+        // Fetch from each provider table
+        for (const [provider, providerBoxes] of Object.entries(byProvider)) {
+          const boxNames = providerBoxes.map(b => b.box_name).filter(Boolean);
+          
+          if (boxNames.length === 0) continue;
+
+          // Fetch complete box data for these specific boxes
+          const { data, error } = await supabase
+            .from(provider)
+            .select('*')
+            .in('box_name', boxNames);
+
+          if (!error && data) {
+            // Match and enrich
+            data.forEach(fullBox => {
+              enriched.push({
+                ...fullBox,
+                expected_value_percent_of_price: fullBox.expected_value_percent || 0,
+                provider: provider,
+              });
+            });
+          }
+        }
+
+        setEnrichedBoxes(enriched);
+      } catch (error) {
+        console.error('Error fetching specific boxes:', error);
+        setEnrichedBoxes([]);
+      } finally {
+        setFetchingBoxes(false);
+      }
+    };
+
+    fetchSpecificBoxes();
+  }, [localData.boxesData, selectedBoxes, isEditing]);
+
+  const transformedBoxes = enrichedBoxes;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -202,7 +240,7 @@ export const MysteryBoxesBlock = ({
         <p className="text-muted-foreground mb-8">{localData.description}</p>
       )}
       
-      {providerBoxesLoading ? (
+      {fetchingBoxes ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {Array.from({ length: localData.maxBoxes || 6 }).map((_, i) => (
             <div key={i} className="animate-pulse">
