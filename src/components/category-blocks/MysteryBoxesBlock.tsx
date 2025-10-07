@@ -169,13 +169,29 @@ export const MysteryBoxesBlock = ({
   // Fetch real mystery box data from provider tables
   const { boxesData: allProviderBoxes, loading: providerBoxesLoading } = useUnifiedBoxData(undefined, 5000);
   
-  // Display mode: use real provider data instead of pre-fetched CMS data
-  const displayBoxes = isEditing ? selectedBoxes : allProviderBoxes;
-
-  // Filter boxes based on selectedBoxIds if in CMS mode
-  const filteredBoxes = !isEditing && localData.selectedBoxIds && localData.selectedBoxIds.length > 0
-    ? displayBoxes.filter(box => localData.selectedBoxIds?.includes(box.box_name))
-    : displayBoxes;
+  // Match CMS box assignments with full provider data
+  const getFullBoxData = (cmsBox: any) => {
+    // If it's already full data from provider tables
+    if (cmsBox.expected_value_percent_of_price !== undefined) {
+      return cmsBox;
+    }
+    
+    // CMS box has provider + box_name, find the full data
+    const found = allProviderBoxes.find(pb => 
+      pb.provider === cmsBox.provider && pb.box_name === cmsBox.box_name
+    );
+    
+    return found || null;
+  };
+  
+  // Get boxes to display
+  let displayBoxes = isEditing ? selectedBoxes : (localData.boxesData || []);
+  
+  // Get full data for each box
+  const transformedBoxes = displayBoxes
+    .map(getFullBoxData)
+    .filter(box => box !== null) // Remove boxes not found in provider tables
+    .slice(0, localData.maxBoxes || 6);
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -196,7 +212,7 @@ export const MysteryBoxesBlock = ({
         </div>
       ) : (
         <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
-          {filteredBoxes.slice(0, localData.maxBoxes || 6).map((box, index) => (
+          {transformedBoxes.map((box, index) => (
             <MysteryBoxCard 
               key={box.box_name}
               box={box}
