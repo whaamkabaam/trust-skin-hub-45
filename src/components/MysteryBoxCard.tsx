@@ -15,6 +15,7 @@ import {
 } from '@/utils/memoizedCalculations';
 import { formatBoxPrice } from '@/utils/priceFormatter';
 import { generateSlug } from '@/utils/slugUtils';
+import { fixImagePath } from '@/lib/utils';
 
 export interface MysteryBoxData {
   box_name: string;
@@ -115,7 +116,7 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
             >
               {!imageLoaded && <div className="w-full h-full bg-gray-200 animate-pulse rounded relative z-20" />}
               <img 
-                src={imageError ? 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop' : box.box_image} 
+                src={imageError ? 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop' : fixImagePath(box.box_image)} 
                 alt={box.box_name}
                 className={`w-full h-full object-contain transition-opacity duration-300 relative z-20 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
                 loading={index < 12 ? "eager" : "lazy"}
