@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
 import MysteryBoxCard from '@/components/MysteryBoxCard';
-import { transformToRillaBoxFormat } from '@/utils/mysteryBoxDataTransformer';
+import { useUnifiedBoxData } from '@/hooks/useUnifiedBoxData';
 
 interface MysteryBoxesBlockProps {
   data: {
@@ -166,8 +166,16 @@ export const MysteryBoxesBlock = ({
     );
   }
 
-  // Display mode: use pre-fetched boxesData from published content
-  const displayBoxes = isEditing ? selectedBoxes : (localData.boxesData || []);
+  // Fetch real mystery box data from provider tables
+  const { boxesData: allProviderBoxes, loading: providerBoxesLoading } = useUnifiedBoxData(undefined, 5000);
+  
+  // Display mode: use real provider data instead of pre-fetched CMS data
+  const displayBoxes = isEditing ? selectedBoxes : allProviderBoxes;
+
+  // Filter boxes based on selectedBoxIds if in CMS mode
+  const filteredBoxes = !isEditing && localData.selectedBoxIds && localData.selectedBoxIds.length > 0
+    ? displayBoxes.filter(box => localData.selectedBoxIds?.includes(box.box_name))
+    : displayBoxes;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -178,21 +186,26 @@ export const MysteryBoxesBlock = ({
         <p className="text-muted-foreground mb-8">{localData.description}</p>
       )}
       
-      <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
-        {displayBoxes.slice(0, localData.maxBoxes || 6).map((box, index) => {
-          // Transform the box data to RillaBox format
-          const transformedBox = transformToRillaBoxFormat(box);
-          
-          return (
+      {providerBoxesLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: localData.maxBoxes || 6 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 rounded-xl h-96"></div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
+          {filteredBoxes.slice(0, localData.maxBoxes || 6).map((box, index) => (
             <MysteryBoxCard 
-              key={box.id}
-              box={transformedBox}
+              key={box.box_name}
+              box={box}
               index={index}
               isVisible={true}
             />
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
