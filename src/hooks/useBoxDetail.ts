@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { createClient } from '@supabase/supabase-js';
-
-// Connect to RillaBox Supabase for mystery box data
-const supabase = createClient(
-  'https://qsrkzgywbcbfnmailmsp.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzcmt6Z3l3YmNiZm5tYWlsbXNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1MzQ5OTcsImV4cCI6MjA1OTExMDk5N30.uqh8KDM_ks2lzo9Go-0ffCh2CFIURhQRb9qD84i6pQ0'
-);
+import { supabase } from '@/integrations/supabase/client';
 import { PROVIDER_CONFIGS } from '@/types/filters';
 import { generateSlug, findBestMatches, normalizeString, calculateSimilarity } from '@/utils/slugUtils';
 import { fixImagePath } from '@/lib/utils';
