@@ -7,6 +7,7 @@ import MysteryBoxHero from '@/components/MysteryBoxHero';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -17,7 +18,6 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { cn } from '@/lib/utils';
 import { useMysteryBoxes } from '@/hooks/useMysteryBoxes';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { UnifiedMysteryBoxCard } from '@/components/UnifiedMysteryBoxCard';
 
 const MysteryBoxesArchive = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -233,27 +233,106 @@ const MysteryBoxesArchive = () => {
               "gap-6",
               view === 'grid' 
                 ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
-                : "grid grid-cols-1"
+                : "flex flex-col space-y-4"
             )}>
-              {mysteryBoxes.map((box, index) => (
-                <UnifiedMysteryBoxCard
-                  key={box.id}
-                  box={{
-                    id: box.id,
-                    name: box.name,
-                    image_url: box.image_url || '',
-                    price: box.price || 0,
-                    expected_value_percent: box.expected_value ? (box.expected_value / box.price) * 100 : undefined,
-                    floor_rate_percent: undefined,
-                    volatility_percent: undefined,
-                    provider: box.site_name?.toLowerCase() || 'unknown',
-                    slug: box.slug,
-                    tags: [],
-                    verified: box.verified,
-                  }}
-                  index={index}
-                  showAnimation={false}
-                />
+              {mysteryBoxes.map((box) => (
+                <Card key={box.id} className={cn(
+                  "group hover:shadow-elevated transition-all duration-200 hover:-translate-y-1",
+                  view === 'list' && "flex-row"
+                )}>
+                  <div className={cn(
+                    "relative overflow-hidden",
+                    view === 'list' ? "w-32 flex-shrink-0" : "aspect-square"
+                  )}>
+                    {box.image_url ? (
+                      <img 
+                        src={box.image_url} 
+                        alt={box.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-card rounded group-hover:scale-105 transition-transform duration-200 flex items-center justify-center">
+                        <div className="text-center">
+                          <Package className="h-12 w-12 text-primary mx-auto mb-2" />
+                          <p className="text-sm font-medium">Mystery Box</p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute top-2 right-2 flex flex-col gap-1">
+                      {box.verified && (
+                        <Badge variant="secondary" className="bg-success/10 text-success text-xs">
+                          <Verified className="w-3 h-3 mr-1" />
+                          Verified
+                        </Badge>
+                      )}
+                      {box.provably_fair && (
+                        <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+                          <Hash className="w-3 h-3 mr-1" />
+                          Fair
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <CardContent className="p-4">
+                    <div>
+                      <h3 className="font-semibold text-sm group-hover:text-primary transition-colors">{box.name}</h3>
+                      <p className="text-xs text-muted-foreground">{box.site_name || 'Mystery Box Site'}</p>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge variant="outline" className="text-xs">{box.game || 'CS2'}</Badge>
+                      <Badge variant="outline" className="text-xs">{box.box_type || 'digital'}</Badge>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Price</span>
+                        <span className="font-semibold">${box.price}</span>
+                      </div>
+                      {box.expected_value && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Expected</span>
+                          <span className="font-semibold text-success">${box.expected_value}</span>
+                        </div>
+                      )}
+                      {box.profit_rate && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Profit Rate</span>
+                          <span className="font-semibold text-primary">{box.profit_rate}%</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <Separator className="my-3" />
+
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Box Info</p>
+                      <div className="space-y-1">
+                        {box.highlights && box.highlights.length > 0 ? (
+                          box.highlights.slice(0, 3).map((item, i) => (
+                            <div key={i} className="flex justify-between items-center text-xs">
+                              <span className="truncate flex-1">{item.name}</span>
+                              <span className={cn("font-medium ml-2", getRarityColor(item.rarity))}>
+                                {item.rarity}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-xs text-muted-foreground">No highlight items available</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <Button size="sm" className="w-full" asChild>
+                        <Link to={`/mystery-box/${box.slug}`}>
+                          View Details
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
