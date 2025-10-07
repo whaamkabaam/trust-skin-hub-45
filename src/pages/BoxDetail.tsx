@@ -46,6 +46,11 @@ const BoxDetail = () => {
   const { boxData, loading, error } = useBoxDetail(boxSlug || '');
   const { suggestions, loading: suggestionsLoading, findSuggestions } = useBoxSuggestions();
 
+  // Scroll to top when component mounts or boxSlug changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [boxSlug]);
+
   // Load suggestions when box is not found
   useEffect(() => {
     if (!loading && !boxData && !error && boxSlug) {
