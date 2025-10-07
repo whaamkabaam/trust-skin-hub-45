@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
+import MysteryBoxCard from '@/components/MysteryBoxCard';
+import { transformToRillaBoxFormat } from '@/utils/mysteryBoxDataTransformer';
 
 interface MysteryBoxesBlockProps {
   data: {
@@ -177,22 +179,17 @@ export const MysteryBoxesBlock = ({
       )}
       
       <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
-        {displayBoxes.slice(0, localData.maxBoxes || 6).map((box) => {
-          const boxLink = box.box_url || `/mystery-boxes/${box.provider}/${box.box_id}`;
+        {displayBoxes.slice(0, localData.maxBoxes || 6).map((box, index) => {
+          // Transform the box data to RillaBox format
+          const transformedBox = transformToRillaBoxFormat(box);
           
           return (
-            <a 
-              key={box.id} 
-              href={boxLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border rounded-lg p-4 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 block"
-            >
-              <img src={box.box_image} alt={box.box_name} className="w-full h-48 object-cover rounded mb-2" />
-              <h3 className="font-semibold">{box.box_name}</h3>
-              <p className="text-sm text-muted-foreground">${box.box_price}</p>
-              <p className="text-xs text-muted-foreground">Provider: {box.provider}</p>
-            </a>
+            <MysteryBoxCard 
+              key={box.id}
+              box={transformedBox}
+              index={index}
+              isVisible={true}
+            />
           );
         })}
       </div>
