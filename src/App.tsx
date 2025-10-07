@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-
 import { HelmetProvider } from 'react-helmet-async';
 import { ErrorBoundary, AdminErrorBoundary } from '@/components/ErrorBoundary';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { ScrollToTop } from '@/components/ScrollToTop';
 
 import Index from "./pages/Index";
 import OperatorReview from "./pages/OperatorReview";
@@ -56,6 +57,7 @@ const App = () => (
       <Toaster />
       <ErrorBoundary>
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/skins" element={<Skins />} />

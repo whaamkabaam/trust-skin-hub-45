@@ -22,6 +22,8 @@ import { CategorySidebar } from '@/components/category-blocks/CategorySidebar';
 import { SectionHeader } from '@/components/category-blocks/SectionHeader';
 import { AtAGlanceCard } from '@/components/category-blocks/AtAGlanceCard';
 import { EnhancedMysteryBoxCard } from '@/components/category-blocks/EnhancedMysteryBoxCard';
+import MysteryBoxCard from '@/components/MysteryBoxCard';
+import { transformToRillaBoxFormat } from '@/utils/mysteryBoxDataTransformer';
 
 const CategoryArchive = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -398,14 +400,15 @@ const CategoryArchive = () => {
                   <div className={cn(
                     "gap-6 mb-12",
                     view === 'grid' 
-                      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+                      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
                       : "flex flex-col space-y-4"
                   )}>
-                    {mysteryBoxes.map((box) => (
-                      <EnhancedMysteryBoxCard 
+                    {mysteryBoxes.map((box, index) => (
+                      <MysteryBoxCard 
                         key={box.id} 
-                        box={box}
-                        isBestValue={bestValueBox?.id === box.id}
+                        box={transformToRillaBoxFormat(box)}
+                        index={index}
+                        isVisible={true}
                       />
                     ))}
                   </div>
