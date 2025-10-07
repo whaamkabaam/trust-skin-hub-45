@@ -120,8 +120,6 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
                 alt={box.box_name}
                 className={`w-full h-full object-contain transition-opacity duration-300 relative z-20 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
                 loading={index < 12 ? "eager" : "lazy"}
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
                 onLoad={() => setImageLoaded(true)}
                 onError={() => {
                   console.warn(`Failed to load image for box: ${box.box_name}, URL: ${box.box_image}`);
