@@ -56,8 +56,15 @@ export const useCategoryContent = (categoryId: string) => {
           .eq('id', block.id);
 
         if (error) throw error;
+        
+        // Update local state directly instead of refetching everything
+        setBlocks(prev => prev.map(b => 
+          b.id === block.id 
+            ? { ...b, block_data: block.block_data, is_visible: block.is_visible, order_number: block.order_number, updated_at: new Date().toISOString() }
+            : b
+        ));
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('category_content_blocks')
           .insert({
             category_id: categoryId,
@@ -65,12 +72,18 @@ export const useCategoryContent = (categoryId: string) => {
             block_data: block.block_data || {},
             order_number: block.order_number || blocks.length,
             is_visible: block.is_visible ?? true,
-          });
+          })
+          .select()
+          .single();
 
         if (error) throw error;
+        
+        // Add new block to local state
+        if (data) {
+          setBlocks(prev => [...prev, data as CategoryContentBlock]);
+        }
       }
 
-      await fetchBlocks();
       if (!silent) {
         toast.success('Block saved successfully');
       }

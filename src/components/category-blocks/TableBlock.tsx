@@ -28,14 +28,21 @@ export const TableBlock = ({ data, onChange, isEditing }: TableBlockProps) => {
   });
 
   useEffect(() => {
-    setLocalData({
+    // Only sync if the incoming data is actually different from our local state
+    // This prevents auto-save from wiping out user's current edits
+    const incomingData = {
       hasHeader: data.hasHeader ?? true,
       rows: data.rows ?? [
         ['Header 1', 'Header 2', 'Header 3'],
         ['Cell 1', 'Cell 2', 'Cell 3'],
         ['Cell 4', 'Cell 5', 'Cell 6'],
       ],
-    });
+    };
+    
+    // Deep comparison - only update if structure actually changed
+    if (JSON.stringify(incomingData) !== JSON.stringify(localData)) {
+      setLocalData(incomingData);
+    }
   }, [data]);
 
   const handleChange = (newData: TableData) => {

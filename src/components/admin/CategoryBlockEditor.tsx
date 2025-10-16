@@ -110,7 +110,8 @@ export const CategoryBlockEditor = ({
   categoryId,
 }: CategoryBlockEditorProps) => {
   const [localBlocks, setLocalBlocks] = useState(blocks);
-  const debouncedBlocks = useDebounce(localBlocks, 1000);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const debouncedBlocks = useDebounce(localBlocks, 2000);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -127,18 +128,25 @@ export const CategoryBlockEditor = ({
   // Auto-save debounced changes silently
   useEffect(() => {
     if (debouncedBlocks.length > 0 && JSON.stringify(debouncedBlocks) !== JSON.stringify(blocks)) {
+      setSaveStatus('saving');
       console.log('CategoryBlockEditor - Auto-saving blocks:', debouncedBlocks);
-      debouncedBlocks.forEach(block => {
-        if (block.id) {
-          console.log('CategoryBlockEditor - Saving block:', { id: block.id, block_data: block.block_data });
-          // Save silently without toast - pass true as second parameter
-          onSaveBlock({
-            id: block.id,
-            block_data: block.block_data,
-            order_number: block.order_number,
-            is_visible: block.is_visible,
-          }, true);
-        }
+      
+      Promise.all(
+        debouncedBlocks.map(block => {
+          if (block.id) {
+            console.log('CategoryBlockEditor - Saving block:', { id: block.id, block_data: block.block_data });
+            // Save silently without toast - pass true as second parameter
+            return onSaveBlock({
+              id: block.id,
+              block_data: block.block_data,
+              order_number: block.order_number,
+              is_visible: block.is_visible,
+            }, true);
+          }
+        })
+      ).then(() => {
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
       });
     }
   }, [debouncedBlocks]);
@@ -176,6 +184,23 @@ export const CategoryBlockEditor = ({
 
   return (
     <div className="space-y-6">
+      {saveStatus !== 'idle' && (
+        <div className="text-sm text-muted-foreground flex items-center gap-2">
+          {saveStatus === 'saving' && (
+            <>
+              <div className="h-2 w-2 bg-yellow-500 rounded-full animate-pulse" />
+              Saving...
+            </>
+          )}
+          {saveStatus === 'saved' && (
+            <>
+              <div className="h-2 w-2 bg-green-500 rounded-full" />
+              All changes saved
+            </>
+          )}
+        </div>
+      )}
+      
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
