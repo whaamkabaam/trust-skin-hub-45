@@ -53,3 +53,4 @@ export const transformBoxes = (trustHubBoxes: any[]): MysteryBoxData[] => {
   return trustHubBoxes.map(transformToRillaBoxFormat);
 };
 
+

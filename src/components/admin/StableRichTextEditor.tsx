@@ -1,8 +1,15 @@
 import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import QuillBetterTable from 'quill-better-table';
+import 'quill-better-table/dist/quill-better-table.css';
 import { TableInsertButton } from './TableInsertButton';
+
+// Register table module with Quill
+if (typeof window !== 'undefined') {
+  Quill.register('modules/better-table', QuillBetterTable);
+}
 
 interface StableRichTextEditorProps {
   value: string;
@@ -59,12 +66,46 @@ const QUILL_MODULES = {
     ['blockquote', 'code-block'],
     ['link'],
     ['clean']
-  ]
+  ],
+  'better-table': {
+    operationMenu: {
+      items: {
+        unmergeCells: {
+          text: 'Unmerge cells'
+        },
+        insertColumnRight: {
+          text: 'Insert column right'
+        },
+        insertColumnLeft: {
+          text: 'Insert column left'
+        },
+        insertRowUp: {
+          text: 'Insert row above'
+        },
+        insertRowDown: {
+          text: 'Insert row below'
+        },
+        removeCol: {
+          text: 'Remove column'
+        },
+        removeRow: {
+          text: 'Remove row'
+        },
+        removeTable: {
+          text: 'Remove table'
+        }
+      }
+    }
+  },
+  keyboard: {
+    bindings: QuillBetterTable.keyboardBindings
+  }
 };
 
 const QUILL_FORMATS = [
   'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align'
+  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align',
+  'table', 'table-cell-line'
 ];
 
 export function StableRichTextEditor({ 
@@ -106,7 +147,7 @@ export function StableRichTextEditor({
     setEditorError(true);
   }, []);
 
-  // Handle table insertion
+  // Handle table insertion with better-table module
   const handleInsertTable = useCallback(() => {
     if (!quillRef.current || editorError || disabled) return;
 
@@ -114,34 +155,40 @@ export function StableRichTextEditor({
       const editor = quillRef.current.getEditor();
       if (!editor) return;
 
-      const range = editor.getSelection(true);
-      const tableHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Header 1</th>
-              <th>Header 2</th>
-              <th>Header 3</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><br></td>
-              <td><br></td>
-              <td><br></td>
-            </tr>
-            <tr>
-              <td><br></td>
-              <td><br></td>
-              <td><br></td>
-            </tr>
-          </tbody>
-        </table>
-        <p><br></p>
-      `;
-
-      editor.clipboard.dangerouslyPasteHTML(range.index, tableHTML);
-      editor.setSelection(range.index + 1, 0);
+      const tableModule = editor.getModule('better-table');
+      if (tableModule) {
+        // Insert a 3x3 table using the better-table module
+        tableModule.insertTable(3, 3);
+      } else {
+        console.warn('better-table module not found, falling back to HTML insertion');
+        // Fallback to HTML insertion if module not available
+        const range = editor.getSelection(true);
+        const tableHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Header 1</th>
+                <th>Header 2</th>
+                <th>Header 3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><br></td>
+                <td><br></td>
+                <td><br></td>
+              </tr>
+              <tr>
+                <td><br></td>
+                <td><br></td>
+                <td><br></td>
+              </tr>
+            </tbody>
+          </table>
+          <p><br></p>
+        `;
+        editor.clipboard.dangerouslyPasteHTML(range.index, tableHTML);
+      }
     } catch (error) {
       console.error('Error inserting table:', error);
     }
