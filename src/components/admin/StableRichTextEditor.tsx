@@ -1,18 +1,8 @@
-import React, { useRef, useEffect, useCallback, useMemo, lazy, Suspense, useState } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import Quill from 'quill';
-import QuillTableBetter from 'quill-table-better';
-import 'quill-table-better/dist/quill-table-better.css';
-
-// Register quill-table-better module ONCE
-let isTableBetterRegistered = false;
-if (typeof window !== 'undefined' && Quill && !isTableBetterRegistered) {
-  Quill.register('modules/table-better', QuillTableBetter);
-  isTableBetterRegistered = true;
-}
-
-// Lazy load ReactQuill to prevent SSR issues and reduce bundle size
-const ReactQuill = lazy(() => import('react-quill'));
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { TableInsertButton } from './TableInsertButton';
 
 interface StableRichTextEditorProps {
   value: string;
@@ -61,29 +51,20 @@ class ReactQuillErrorBoundary extends React.Component<
 
 // Stable modules configuration to prevent recreation
 const QUILL_MODULES = {
-  toolbar: {
-    container: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'align': [] }],
-      ['blockquote', 'code-block'],
-      ['link'],
-      ['clean'],
-      [{ 'table-better': ['3x3', '5x5'] }]
-    ]
-  },
-  'table-better': {
-    menus: ['column', 'row', 'merge', 'table', 'cell'],
-    toolbarTable: true
-  }
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'align': [] }],
+    ['blockquote', 'code-block'],
+    ['link'],
+    ['clean']
+  ]
 };
 
 const QUILL_FORMATS = [
   'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align',
-  'table', 'table-cell-line', 'table-cell', 'table-row', 'table-body',
-  'width', 'colspan', 'rowspan', 'height'
+  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align'
 ];
 
 export function StableRichTextEditor({ 
@@ -124,6 +105,47 @@ export function StableRichTextEditor({
   const handleQuillError = useCallback(() => {
     setEditorError(true);
   }, []);
+
+  // Handle table insertion
+  const handleInsertTable = useCallback(() => {
+    if (!quillRef.current || editorError || disabled) return;
+
+    try {
+      const editor = quillRef.current.getEditor();
+      if (!editor) return;
+
+      const range = editor.getSelection(true);
+      const tableHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Header 1</th>
+              <th>Header 2</th>
+              <th>Header 3</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><br></td>
+              <td><br></td>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td><br></td>
+              <td><br></td>
+              <td><br></td>
+            </tr>
+          </tbody>
+        </table>
+        <p><br></p>
+      `;
+
+      editor.clipboard.dangerouslyPasteHTML(range.index, tableHTML);
+      editor.setSelection(range.index + 1, 0);
+    } catch (error) {
+      console.error('Error inserting table:', error);
+    }
+  }, [editorError, disabled]);
 
   // Enhanced cleanup on unmount
   useEffect(() => {
@@ -177,6 +199,9 @@ export function StableRichTextEditor({
     </div>
   ), [className]);
 
+  // Don't show table button if disabled or in error state
+  const showTableButton = !disabled && !editorError;
+
   // Error fallback - simple textarea
   if (editorError) {
     return (
@@ -197,23 +222,25 @@ export function StableRichTextEditor({
 
   return (
     <div className={`stable-rich-text-editor ${className}`}>
+      {showTableButton && (
+        <TableInsertButton onInsertTable={handleInsertTable} />
+      )}
+      
       <ReactQuillErrorBoundary onError={handleQuillError}>
-        <Suspense fallback={LoadingFallback}>
-            <ReactQuill
-              ref={quillRef}
-              theme="snow"
-              value={value || ''}
-              onChange={stableOnChange}
-              modules={QUILL_MODULES}
-              formats={QUILL_FORMATS}
-              placeholder={placeholder}
-              readOnly={disabled}
-              style={{
-                '--quill-border-color': 'hsl(var(--border))',
-                '--quill-toolbar-border-color': 'hsl(var(--border))',
-              } as React.CSSProperties}
-            />
-        </Suspense>
+        <ReactQuill
+          ref={quillRef}
+          theme="snow"
+          value={value || ''}
+          onChange={stableOnChange}
+          modules={QUILL_MODULES}
+          formats={QUILL_FORMATS}
+          placeholder={placeholder}
+          readOnly={disabled}
+          style={{
+            '--quill-border-color': 'hsl(var(--border))',
+            '--quill-toolbar-border-color': 'hsl(var(--border))',
+          } as React.CSSProperties}
+        />
       </ReactQuillErrorBoundary>
       
       <style>{`
@@ -252,34 +279,21 @@ export function StableRichTextEditor({
           border-collapse: collapse;
           width: 100%;
           margin: 1em 0;
+          border: 1px solid hsl(var(--border));
         }
         .ql-editor table td,
         .ql-editor table th {
           border: 1px solid hsl(var(--border));
           padding: 8px 12px;
-          min-width: 50px;
+          min-width: 80px;
         }
         .ql-editor table th {
           background: hsl(var(--muted));
           font-weight: 600;
+          text-align: left;
         }
-        .ql-better-table-wrapper {
-          overflow-x: auto;
-        }
-        
-        /* Table operation menu */
-        .qlbt-operation-menu {
-          background: hsl(var(--background));
-          border: 1px solid hsl(var(--border));
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-          z-index: 100;
-        }
-        .qlbt-operation-menu-item {
-          color: hsl(var(--foreground));
-          padding: 8px 12px;
-        }
-        .qlbt-operation-menu-item:hover {
-          background: hsl(var(--accent));
+        .ql-editor table tbody tr:hover {
+          background: hsl(var(--muted) / 0.3);
         }
       `}</style>
     </div>
