@@ -150,58 +150,70 @@ export const useCategoryContent = (categoryId: string) => {
 
             if (overridesError) throw overridesError;
 
-            const boxesData = [];
+            // Group overrides by provider for batch fetching
+            const providerGroups = (overrides || []).reduce((acc, override) => {
+              const provider = override.provider.toLowerCase();
+              if (!acc[provider]) acc[provider] = [];
+              acc[provider].push({ id: override.id, box_id: override.box_id, provider: override.provider });
+              return acc;
+            }, {} as Record<string, Array<{ id: string; box_id: number; provider: string }>>);
 
-            // Fetch box details from provider tables
-            for (const override of overrides || []) {
-              const provider = override.provider;
-              let boxData: any = null;
+            const boxesData: any[] = [];
 
-              // Query the correct provider table
+            // Fetch complete box data from each provider table in parallel
+            for (const [provider, items] of Object.entries(providerGroups)) {
+              const boxIds = items.map(item => item.box_id);
+              
+              // Type-safe query for each provider table
+              let boxes: any[] | null = null;
+              let boxError: any = null;
+              
               if (provider === 'rillabox') {
-                const { data, error } = await supabase
-                  .from('rillabox')
-                  .select('id, box_name, box_image, box_price, box_url')
-                  .eq('id', override.box_id)
-                  .single();
-                if (!error) boxData = data;
+                const result = await supabase.from('rillabox').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags').in('id', boxIds);
+                boxes = result.data;
+                boxError = result.error;
               } else if (provider === 'hypedrop') {
-                const { data, error } = await supabase
-                  .from('hypedrop')
-                  .select('id, box_name, box_image, box_price, box_url')
-                  .eq('id', override.box_id)
-                  .single();
-                if (!error) boxData = data;
+                const result = await supabase.from('hypedrop').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags').in('id', boxIds);
+                boxes = result.data;
+                boxError = result.error;
               } else if (provider === 'casesgg') {
-                const { data, error } = await supabase
-                  .from('casesgg')
-                  .select('id, box_name, box_image, box_price, box_url')
-                  .eq('id', override.box_id)
-                  .single();
-                if (!error) boxData = data;
+                const result = await supabase.from('casesgg').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags').in('id', boxIds);
+                boxes = result.data;
+                boxError = result.error;
               } else if (provider === 'luxdrop') {
-                const { data, error } = await supabase
-                  .from('luxdrop')
-                  .select('id, box_name, box_image, box_price, box_url')
-                  .eq('id', override.box_id)
-                  .single();
-                if (!error) boxData = data;
+                const result = await supabase.from('luxdrop').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags').in('id', boxIds);
+                boxes = result.data;
+                boxError = result.error;
               }
-
-              if (boxData) {
-                boxesData.push({
-                  id: override.id,
-                  box_id: boxData.id,
-                  box_name: boxData.box_name,
-                  box_image: boxData.box_image,
-                  box_price: boxData.box_price,
-                  box_url: boxData.box_url,
-                  provider: override.provider,
+              
+              if (boxError) {
+                console.error(`Error fetching boxes from ${provider}:`, boxError);
+              } else if (boxes) {
+                // Merge with override data and enrich with full metrics
+                boxes.forEach((box: any) => {
+                  const override = items.find(item => item.box_id === box.id);
+                  if (override) {
+                    boxesData.push({
+                      id: override.id,
+                      box_id: box.id,
+                      box_name: box.box_name,
+                      box_price: Number(box.box_price) || 0,
+                      box_image: box.box_image || '',
+                      box_url: box.box_url || '',
+                      expected_value_percent_of_price: Number(box.expected_value_percent) || 0,
+                      floor_rate_percent: Number(box.floor_rate_percent) || 0,
+                      standard_deviation_percent: Number(box.standard_deviation_percent) || 0,
+                      volatility_bucket: box.volatility_bucket || 'Medium',
+                      category: box.category || 'Mystery Boxes',
+                      tags: Array.isArray(box.tags) ? box.tags : [],
+                      provider: override.provider,
+                    });
+                  }
                 });
               }
             }
 
-            console.log('Fetched boxes for publishing:', boxesData);
+            console.log(`Published ${boxesData.length} enriched boxes with full metrics:`, boxesData);
             return {
               ...block,
               block_data: {

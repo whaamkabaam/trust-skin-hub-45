@@ -69,6 +69,7 @@ const App = () => (
             <Route path="/cases" element={<CasesArchive />} />
             <Route path="/cases/:id" element={<CaseDetail />} />
             <Route path="/mystery-boxes" element={<MysteryBoxHub />} />
+            <Route path="/mystery-box/:boxSlug" element={<BoxDetail />} />
             <Route path="/hub/box/:boxSlug" element={<BoxDetail />} />
             <Route path="/mystery-boxes/archive" element={<MysteryBoxesArchive />} />
             <Route path="/mystery-boxes/reviews" element={<MysteryBoxReviews />} />

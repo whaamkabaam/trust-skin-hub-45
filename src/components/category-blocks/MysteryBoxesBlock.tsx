@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCategoryBoxes, CategoryBoxAssignment } from '@/hooks/useCategoryBoxes';
 import MysteryBoxCard from '@/components/MysteryBoxCard';
-import { useUnifiedBoxData } from '@/hooks/useUnifiedBoxData';
+import { useSpecificBoxesData } from '@/hooks/useSpecificBoxesData';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface MysteryBoxesBlockProps {
   data: {
@@ -166,32 +167,29 @@ export const MysteryBoxesBlock = ({
     );
   }
 
-  // Fetch real mystery box data from provider tables
-  const { boxesData: allProviderBoxes, loading: providerBoxesLoading } = useUnifiedBoxData(undefined, 5000);
+  // Check if published data already has full metrics (Phase 3 optimization)
+  const hasFullMetrics = localData.boxesData?.[0]?.expected_value_percent_of_price !== undefined;
   
-  // Match CMS box assignments with full provider data
-  const getFullBoxData = (cmsBox: any) => {
-    // If it's already full data from provider tables
-    if (cmsBox.expected_value_percent_of_price !== undefined) {
-      return cmsBox;
-    }
-    
-    // CMS box has provider + box_name, find the full data
-    const found = allProviderBoxes.find(pb => 
-      pb.provider === cmsBox.provider && pb.box_name === cmsBox.box_name
-    );
-    
-    return found || null;
-  };
+  // Only fetch from database if we don't have full metrics already
+  const shouldFetch = !isEditing && !hasFullMetrics && (localData.boxesData || []).length > 0;
+  const { boxes: enrichedBoxes, loading: fetchLoading } = useSpecificBoxesData(
+    shouldFetch ? (localData.boxesData || []) : []
+  );
   
-  // Get boxes to display
-  let displayBoxes = isEditing ? selectedBoxes : (localData.boxesData || []);
+  // Determine which boxes to display
+  let displayBoxes;
+  if (isEditing) {
+    displayBoxes = selectedBoxes;
+  } else if (hasFullMetrics) {
+    // Use published data directly (zero DB calls)
+    displayBoxes = localData.boxesData || [];
+  } else {
+    // Use enriched data from targeted fetch
+    displayBoxes = enrichedBoxes;
+  }
   
-  // Get full data for each box
-  const transformedBoxes = displayBoxes
-    .map(getFullBoxData)
-    .filter(box => box !== null) // Remove boxes not found in provider tables
-    .slice(0, localData.maxBoxes || 6);
+  const transformedBoxes = displayBoxes.slice(0, localData.maxBoxes || 6);
+  const isLoading = !isEditing && shouldFetch && fetchLoading;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -202,19 +200,25 @@ export const MysteryBoxesBlock = ({
         <p className="text-muted-foreground mb-8">{localData.description}</p>
       )}
       
-      {providerBoxesLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {isLoading ? (
+        <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
           {Array.from({ length: localData.maxBoxes || 6 }).map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 rounded-xl h-96"></div>
+            <div key={i} className="space-y-4">
+              <Skeleton className="h-64 w-full rounded-xl" />
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
             </div>
           ))}
+        </div>
+      ) : transformedBoxes.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          No mystery boxes to display. Add boxes to this category in the admin panel.
         </div>
       ) : (
         <div className={`grid ${gridCols[localData.displayMode || 'grid-3']} gap-6`}>
           {transformedBoxes.map((box, index) => (
             <MysteryBoxCard 
-              key={box.box_name}
+              key={`${box.provider}_${box.box_name}_${index}`}
               box={box}
               index={index}
               isVisible={true}

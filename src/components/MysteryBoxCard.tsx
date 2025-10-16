@@ -61,8 +61,10 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
   const provider = box.provider || 'rillabox';
 
   const handleClick = useCallback(() => {
-    // Navigate directly to box detail without provider parameter
-    navigate(`/hub/box/${boxSlug}`);
+    // Scroll to top instantly for smooth UX
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Navigate to unified route
+    navigate(`/mystery-box/${boxSlug}`);
   }, [navigate, boxSlug]);
 
   if (!isVisible) {
