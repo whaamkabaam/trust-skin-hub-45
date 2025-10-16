@@ -1,8 +1,19 @@
 import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { TableInsertButton } from './TableInsertButton';
+import quillTableUI from 'quill-table-ui';
+import 'quill-table-ui/dist/index.css';
+import { TableInsertDialog } from './TableInsertDialog';
+
+// Register table module once at module level
+if (typeof window !== 'undefined' && Quill) {
+  try {
+    Quill.register('modules/tableUI', quillTableUI, true);
+  } catch (error) {
+    console.warn('Table module registration error:', error);
+  }
+}
 
 interface StableRichTextEditorProps {
   value: string;
@@ -59,12 +70,14 @@ const QUILL_MODULES = {
     ['blockquote', 'code-block'],
     ['link'],
     ['clean']
-  ]
+  ],
+  tableUI: true
 };
 
 const QUILL_FORMATS = [
   'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align'
+  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align',
+  'table', 'table-cell-line'
 ];
 
 export function StableRichTextEditor({ 
@@ -106,44 +119,20 @@ export function StableRichTextEditor({
     setEditorError(true);
   }, []);
 
-  // Handle table insertion using pure HTML
-  const handleInsertTable = useCallback(() => {
+  // Handle custom table insertion
+  const handleCustomTableInsert = useCallback((rows: number, cols: number) => {
     if (!quillRef.current || editorError || disabled) return;
 
     try {
       const editor = quillRef.current.getEditor();
       if (!editor) return;
 
-      const range = editor.getSelection(true);
-      const tableHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Header 1</th>
-              <th>Header 2</th>
-              <th>Header 3</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><br></td>
-              <td><br></td>
-              <td><br></td>
-            </tr>
-            <tr>
-              <td><br></td>
-              <td><br></td>
-              <td><br></td>
-            </tr>
-          </tbody>
-        </table>
-        <p><br></p>
-      `;
-
-      editor.clipboard.dangerouslyPasteHTML(range.index, tableHTML);
-      editor.setSelection(range.index + 1, 0);
+      const tableModule = editor.getModule('tableUI');
+      if (tableModule && tableModule.insertTable) {
+        tableModule.insertTable(rows, cols);
+      }
     } catch (error) {
-      console.error('Error inserting table:', error);
+      console.error('Error inserting custom table:', error);
     }
   }, [editorError, disabled]);
 
@@ -223,7 +212,7 @@ export function StableRichTextEditor({
   return (
     <div className={`stable-rich-text-editor ${className}`}>
       {showTableButton && (
-        <TableInsertButton onInsertTable={handleInsertTable} />
+        <TableInsertDialog onInsertTable={handleCustomTableInsert} />
       )}
       
       <ReactQuillErrorBoundary onError={handleQuillError}>
@@ -294,6 +283,60 @@ export function StableRichTextEditor({
         }
         .ql-editor table tbody tr:hover {
           background: hsl(var(--muted) / 0.3);
+        }
+
+        /* quill-table-ui specific styles */
+        .ql-editor .quill-better-table-wrapper {
+          overflow-x: auto;
+        }
+
+        .ql-editor table.quill-better-table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 1em 0;
+        }
+
+        .ql-editor table.quill-better-table td,
+        .ql-editor table.quill-better-table th {
+          border: 1px solid hsl(var(--border));
+          padding: 8px 12px;
+          min-width: 80px;
+          position: relative;
+        }
+
+        .ql-editor table.quill-better-table th {
+          background: hsl(var(--muted));
+          font-weight: 600;
+          text-align: left;
+        }
+
+        .ql-editor table.quill-better-table tbody tr:hover {
+          background: hsl(var(--muted) / 0.3);
+        }
+
+        /* Table context menu styling */
+        .qlbt-operation-menu {
+          background: hsl(var(--popover));
+          border: 1px solid hsl(var(--border));
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          border-radius: 4px;
+          z-index: 9999;
+        }
+
+        .qlbt-operation-menu-item {
+          padding: 8px 16px;
+          color: hsl(var(--popover-foreground));
+          cursor: pointer;
+        }
+
+        .qlbt-operation-menu-item:hover {
+          background: hsl(var(--accent));
+        }
+
+        /* Selection styling */
+        .ql-editor .qlbt-col-tool,
+        .ql-editor .qlbt-row-tool {
+          background: hsl(var(--primary));
         }
       `}</style>
     </div>
