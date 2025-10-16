@@ -1,5 +1,13 @@
 import React, { useRef, useEffect, useCallback, useMemo, lazy, Suspense, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import Quill from 'quill';
+import QuillBetterTable from 'quill-better-table';
+import 'quill-better-table/dist/quill-better-table.css';
+
+// Register quill-better-table module
+if (typeof window !== 'undefined' && Quill) {
+  Quill.register('modules/better-table', QuillBetterTable);
+}
 
 // Lazy load ReactQuill to prevent SSR issues and reduce bundle size
 const ReactQuill = lazy(() => import('react-quill'));
@@ -55,15 +63,40 @@ const QUILL_MODULES = {
     [{ 'header': [1, 2, 3, false] }],
     ['bold', 'italic', 'underline', 'strike'],
     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'align': [] }],
     ['blockquote', 'code-block'],
     ['link'],
     ['clean']
   ],
+  table: false,
+  'better-table': {
+    operationMenu: {
+      items: {
+        unmergeCells: { text: 'Unmerge cells' },
+        insertColumnRight: { text: 'Insert column right' },
+        insertColumnLeft: { text: 'Insert column left' },
+        insertRowUp: { text: 'Insert row above' },
+        insertRowDown: { text: 'Insert row below' },
+        removeCol: { text: 'Remove column' },
+        removeRow: { text: 'Remove row' },
+        removeTable: { text: 'Remove table' }
+      },
+      color: {
+        colors: ['#ffffff', '#f3f4f6', '#e5e7eb', '#d1d5db', '#9ca3af'],
+        text: 'Background Colors'
+      }
+    }
+  },
+  keyboard: {
+    bindings: QuillBetterTable.keyboardBindings
+  }
 };
 
 const QUILL_FORMATS = [
   'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet', 'blockquote', 'code-block', 'link'
+  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align',
+  'table', 'table-cell-line', 'table-cell', 'table-row', 'table-body',
+  'width', 'colspan', 'rowspan', 'height'
 ];
 
 export function StableRichTextEditor({ 
@@ -225,6 +258,41 @@ export function StableRichTextEditor({
           background: hsl(var(--background));
           border: 1px solid hsl(var(--border));
           color: hsl(var(--foreground));
+        }
+        
+        /* Table styling */
+        .ql-editor table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 1em 0;
+        }
+        .ql-editor table td,
+        .ql-editor table th {
+          border: 1px solid hsl(var(--border));
+          padding: 8px 12px;
+          min-width: 50px;
+        }
+        .ql-editor table th {
+          background: hsl(var(--muted));
+          font-weight: 600;
+        }
+        .ql-better-table-wrapper {
+          overflow-x: auto;
+        }
+        
+        /* Table operation menu */
+        .qlbt-operation-menu {
+          background: hsl(var(--background));
+          border: 1px solid hsl(var(--border));
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          z-index: 100;
+        }
+        .qlbt-operation-menu-item {
+          color: hsl(var(--foreground));
+          padding: 8px 12px;
+        }
+        .qlbt-operation-menu-item:hover {
+          background: hsl(var(--accent));
         }
       `}</style>
     </div>

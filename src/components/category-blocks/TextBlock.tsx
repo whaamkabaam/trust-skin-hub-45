@@ -36,9 +36,12 @@ export const TextBlock = ({ data = {}, onChange, isEditing = false }: TextBlockP
   return (
     <div className="container mx-auto px-4 py-8">
       <div 
-        className="prose prose-lg max-w-none"
+        className="prose prose-lg max-w-none prose-table:border-collapse prose-th:border prose-th:border-border prose-th:bg-muted prose-th:px-4 prose-th:py-2 prose-th:font-semibold prose-td:border prose-td:border-border prose-td:px-4 prose-td:py-2"
         dangerouslySetInnerHTML={{ 
-          __html: DOMPurify.sanitize(localData.content || '') 
+          __html: DOMPurify.sanitize(localData.content || '', {
+            ADD_TAGS: ['table', 'thead', 'tbody', 'tr', 'th', 'td'],
+            ADD_ATTR: ['colspan', 'rowspan', 'style', 'data-row', 'data-col', 'width', 'height']
+          }) 
         }}
       />
     </div>
