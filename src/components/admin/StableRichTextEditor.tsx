@@ -51,7 +51,7 @@ class ReactQuillErrorBoundary extends React.Component<
 // Stable modules configuration to prevent recreation
 const QUILL_MODULES = {
   toolbar: [
-    [{ 'header': [1, 2, 3, false] }],
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
     ['bold', 'italic', 'underline', 'strike'],
     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
     [{ 'align': [] }],
@@ -225,6 +225,44 @@ export function StableRichTextEditor({
           background: hsl(var(--background));
           border: 1px solid hsl(var(--border));
           color: hsl(var(--foreground));
+        }
+        
+        /* Heading styles in editor */
+        .ql-editor h1 {
+          font-size: 2em;
+          font-weight: bold;
+          margin: 0.67em 0;
+          line-height: 1.2;
+        }
+        .ql-editor h2 {
+          font-size: 1.5em;
+          font-weight: bold;
+          margin: 0.75em 0;
+          line-height: 1.3;
+        }
+        .ql-editor h3 {
+          font-size: 1.17em;
+          font-weight: bold;
+          margin: 0.83em 0;
+          line-height: 1.4;
+        }
+        .ql-editor h4 {
+          font-size: 1em;
+          font-weight: bold;
+          margin: 1em 0;
+          line-height: 1.5;
+        }
+        .ql-editor h5 {
+          font-size: 0.83em;
+          font-weight: bold;
+          margin: 1.5em 0;
+          line-height: 1.5;
+        }
+        .ql-editor h6 {
+          font-size: 0.67em;
+          font-weight: bold;
+          margin: 2em 0;
+          line-height: 1.5;
         }
         
         /* Table styling */

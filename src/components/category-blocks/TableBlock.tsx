@@ -173,36 +173,39 @@ export const TableBlock = ({ data, onChange, isEditing }: TableBlockProps) => {
   // Display mode
   return (
     <div className="w-full max-w-4xl mx-auto my-8">
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-card rounded-lg overflow-hidden">
-          {localData.hasHeader && localData.rows.length > 0 && (
-            <thead>
-              <tr className="bg-muted">
-                {localData.rows[0].map((cell, colIndex) => (
-                  <th
-                    key={colIndex}
-                    className="border border-border px-4 py-3 text-left font-semibold"
-                  >
-                    {cell}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-          )}
-          <tbody>
-            {localData.rows
-              .slice(localData.hasHeader ? 1 : 0)
-              .map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-muted/50 transition-colors">
-                  {row.map((cell, colIndex) => (
-                    <td key={colIndex} className="border border-border px-4 py-3">
+      {/* Wrapper with rounded corners and overflow control */}
+      <div className="rounded-lg border border-border overflow-hidden bg-card shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            {localData.hasHeader && localData.rows.length > 0 && (
+              <thead>
+                <tr className="bg-muted">
+                  {localData.rows[0].map((cell, colIndex) => (
+                    <th
+                      key={colIndex}
+                      className="border-b border-r border-border px-4 py-3 text-left font-semibold last:border-r-0"
+                    >
                       {cell}
-                    </td>
+                    </th>
                   ))}
                 </tr>
-              ))}
-          </tbody>
-        </table>
+              </thead>
+            )}
+            <tbody>
+              {localData.rows
+                .slice(localData.hasHeader ? 1 : 0)
+                .map((row, rowIndex) => (
+                  <tr key={rowIndex} className="hover:bg-muted/50 transition-colors">
+                    {row.map((cell, colIndex) => (
+                      <td key={colIndex} className="border-b border-r border-border px-4 py-3 last:border-r-0">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -39,6 +39,8 @@ export const TextBlock = ({ data = {}, onChange, isEditing = false }: TextBlockP
         className="prose prose-lg max-w-none dark:prose-invert"
         dangerouslySetInnerHTML={{ 
           __html: DOMPurify.sanitize(localData.content || '', {
+            ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'u', 's', 'ol', 'ul', 'li', 'blockquote', 'pre', 'code', 'a', 'span', 'div'],
+            ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
             FORBID_TAGS: ['script', 'iframe', 'object', 'embed'],
             FORBID_ATTR: ['onclick', 'onload', 'onerror']
           }) 
