@@ -1,5 +1,5 @@
 
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useBoxDetail } from "@/hooks/useBoxDetail";
 import { useBoxSuggestions } from "@/hooks/useBoxSuggestions";
 import DotBackground from "@/components/ui/dot-background";
@@ -41,6 +41,8 @@ const BoxDetailSkeleton = () => (
 const BoxDetail = () => {
   const { boxSlug } = useParams<{ boxSlug: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPath = location.state?.from || '/mystery-boxes';
   const isMobile = useIsMobile();
   
   const { boxData, loading, error } = useBoxDetail(boxSlug || '');
@@ -251,14 +253,14 @@ const BoxDetail = () => {
           {/* Enhanced Navigation with Responsive Design */}
           <div className="mb-6 space-y-4">
             <div className="flex items-center gap-4">
-              <Button 
-                onClick={() => navigate('/mystery-boxes', { replace: true })} 
-                variant="outline"
-                className="flex items-center gap-2 shrink-0"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Hub
-              </Button>
+            <Button 
+              onClick={() => navigate(fromPath, { replace: true })} 
+              variant="outline"
+              className="flex items-center gap-2 shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {fromPath.includes('/mystery-boxes/') ? 'Back to Category' : 'Back to Hub'}
+            </Button>
             </div>
             
             {/* Enhanced Breadcrumb Navigation */}

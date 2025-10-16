@@ -236,9 +236,9 @@ const CategoryArchive = () => {
               </div>
             )}
             {/* Render Published Content Blocks if available */}
-            {publishedContent?.content_data?.blocks && publishedContent.content_data.blocks.length > 0 ? (
+            {publishedContent?.content_data && (publishedContent.content_data as any)?.blocks && (publishedContent.content_data as any).blocks.length > 0 ? (
               <div className="space-y-12 mb-12">
-                {publishedContent.content_data.blocks
+                {(publishedContent.content_data as any).blocks
                   .filter((block: any) => block.is_visible)
                   .sort((a: any, b: any) => a.order_number - b.order_number)
                   .map((block: any) => (

@@ -24,7 +24,7 @@ const ProviderBreadcrumb: React.FC<ProviderBreadcrumbProps> = ({
       <div className={`flex items-center gap-2 overflow-x-auto py-3 px-1 ${className}`}>
         {/* Hub Link - Compact Pill */}
         <Link 
-          to="/hub" 
+          to="/mystery-boxes" 
           className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full px-3 py-2 text-sm font-medium text-gray-700 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all duration-200 shadow-sm flex-shrink-0"
         >
           <Home className="w-4 h-4" />
@@ -49,7 +49,7 @@ const ProviderBreadcrumb: React.FC<ProviderBreadcrumbProps> = ({
   return (
     <nav className={`flex items-center space-x-2 text-sm ${className}`}>
       <Link 
-        to="/hub" 
+        to="/mystery-boxes" 
         className="flex items-center gap-2 hover:text-purple-600 transition-colors text-base font-medium text-gray-600"
       >
         <Home className="w-4 h-4" />

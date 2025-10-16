@@ -38,6 +38,7 @@ interface MysteryBoxCardProps {
 export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: MysteryBoxCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
   const isScrolling = useScrollState();
 
@@ -61,10 +62,10 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
   const provider = box.provider || 'rillabox';
 
   const handleClick = useCallback(() => {
-    // Scroll to top instantly for smooth UX
     window.scrollTo({ top: 0, behavior: 'instant' });
-    // Navigate to unified route
-    navigate(`/mystery-box/${boxSlug}`);
+    navigate(`/mystery-box/${boxSlug}`, {
+      state: { from: window.location.pathname }
+    });
   }, [navigate, boxSlug]);
 
   if (!isVisible) {
@@ -117,6 +118,7 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
             >
               {!imageLoaded && <div className="w-full h-full bg-gray-200 animate-pulse rounded relative z-20" />}
               <img 
+                key={`${box.box_image}?retry=${retryCount}`}
                 src={imageError ? 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop' : box.box_image} 
                 alt={box.box_name}
                 className={`w-full h-full object-contain transition-opacity duration-300 relative z-20 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
@@ -125,9 +127,14 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
                 crossOrigin="anonymous"
                 onLoad={() => setImageLoaded(true)}
                 onError={() => {
-                  console.warn(`Failed to load image for box: ${box.box_name}, URL: ${box.box_image}`);
-                  setImageError(true);
-                  setImageLoaded(true);
+                  if (retryCount < 2) {
+                    setRetryCount(prev => prev + 1);
+                    setImageError(false);
+                  } else {
+                    console.error(`Image failed to load: ${box.box_name}`, box.box_image);
+                    setImageError(true);
+                    setImageLoaded(true);
+                  }
                 }}
               />
             </div>

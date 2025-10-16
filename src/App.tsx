@@ -60,6 +60,7 @@ const App = () => (
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/hub" element={<Navigate to="/mystery-boxes" replace />} />
             <Route path="/skins" element={<Skins />} />
             <Route path="/operators" element={<OperatorsArchive />} />
             <Route path="/operators/:slug" element={<OperatorReview />} />
