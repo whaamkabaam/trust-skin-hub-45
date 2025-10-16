@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -176,17 +176,33 @@ export const MysteryBoxesBlock = ({
     shouldFetch ? (localData.boxesData || []) : []
   );
   
-  // Determine which boxes to display
-  let displayBoxes;
-  if (isEditing) {
-    displayBoxes = selectedBoxes;
-  } else if (hasFullMetrics) {
-    // Use published data directly (zero DB calls)
-    displayBoxes = localData.boxesData || [];
-  } else {
-    // Use enriched data from targeted fetch
-    displayBoxes = enrichedBoxes;
-  }
+  // Determine which boxes to display - simplified with useMemo
+  const displayBoxes = useMemo(() => {
+    if (isEditing) {
+      return selectedBoxes;
+    }
+    if (hasFullMetrics) {
+      return localData.boxesData || [];
+    }
+    return enrichedBoxes;
+  }, [isEditing, selectedBoxes, hasFullMetrics, localData.boxesData, enrichedBoxes]);
+
+  // Preload images for first 3 boxes to eliminate loading flicker
+  useEffect(() => {
+    const firstThreeBoxes = displayBoxes.slice(0, 3);
+    firstThreeBoxes.forEach(box => {
+      if (box.box_image) {
+        const img = new Image();
+        const isExternal = box.box_image.startsWith('http') && !box.box_image.includes(window.location.hostname);
+        if (isExternal) {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          img.src = `${supabaseUrl}/functions/v1/image-proxy?url=${encodeURIComponent(box.box_image)}`;
+        } else {
+          img.src = box.box_image;
+        }
+      }
+    });
+  }, [displayBoxes]);
   
   const transformedBoxes = displayBoxes.slice(0, localData.maxBoxes || 6);
   const isLoading = !isEditing && shouldFetch && fetchLoading;

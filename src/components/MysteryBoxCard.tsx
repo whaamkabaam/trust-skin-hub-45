@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
+import { Loader2, RefreshCw } from 'lucide-react';
 import TagDots from './TagDots';
 import ProviderLogo from './ui/ProviderLogo';
 import { useScrollState } from '@/hooks/useScrollState';
@@ -61,6 +62,29 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
   // Determine provider from box data
   const provider = box.provider || 'rillabox';
 
+  // Use image proxy for external images to bypass CORS
+  const proxiedImageUrl = useMemo(() => {
+    if (!box.box_image) return '';
+    
+    // Only proxy external images
+    const isExternalImage = box.box_image.startsWith('http') && 
+                           !box.box_image.includes(window.location.hostname);
+    
+    if (isExternalImage) {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      return `${supabaseUrl}/functions/v1/image-proxy?url=${encodeURIComponent(box.box_image)}`;
+    }
+    
+    return box.box_image;
+  }, [box.box_image]);
+
+  const handleImageRetry = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setImageError(false);
+    setRetryCount(0);
+    setImageLoaded(false);
+  }, []);
+
   const handleClick = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     navigate(`/mystery-box/${boxSlug}`, {
@@ -116,22 +140,43 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
             <div 
               className="w-full h-40 rounded-lg mb-2 overflow-hidden p-2 border border-purple-200 backdrop-blur-sm relative bg-white/70 box-container-pattern"
             >
-              {!imageLoaded && <div className="w-full h-full bg-gray-200 animate-pulse rounded relative z-20" />}
+              {/* Loading spinner */}
+              {!imageLoaded && !imageError && (
+                <div className="absolute inset-0 flex items-center justify-center bg-purple-50 z-20">
+                  <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+                </div>
+              )}
+              
+              {/* Error state with retry button */}
+              {imageError && (
+                <button 
+                  onClick={handleImageRetry}
+                  className="absolute inset-0 flex flex-col items-center justify-center bg-purple-50/90 z-20 hover:bg-purple-100/90 transition-colors"
+                >
+                  <RefreshCw className="h-6 w-6 text-purple-600 mb-2" />
+                  <span className="text-sm text-purple-600 font-medium">Retry Image</span>
+                </button>
+              )}
+              
+              {/* Skeleton loader */}
+              {!imageLoaded && !imageError && (
+                <div className="w-full h-full bg-gray-200 animate-pulse rounded relative z-10" />
+              )}
+              
+              {/* Actual image */}
               <img 
-                key={`${box.box_image}?retry=${retryCount}`}
-                src={imageError ? 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop' : box.box_image} 
+                key={`${proxiedImageUrl}?retry=${retryCount}`}
+                src={proxiedImageUrl} 
                 alt={box.box_name}
                 className={`w-full h-full object-contain transition-opacity duration-300 relative z-20 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
                 loading={index < 12 ? "eager" : "lazy"}
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
                 onLoad={() => setImageLoaded(true)}
                 onError={() => {
                   if (retryCount < 2) {
                     setRetryCount(prev => prev + 1);
                     setImageError(false);
                   } else {
-                    console.error(`Image failed to load: ${box.box_name}`, box.box_image);
+                    console.error(`Image failed to load: ${box.box_name}`, proxiedImageUrl);
                     setImageError(true);
                     setImageLoaded(true);
                   }
