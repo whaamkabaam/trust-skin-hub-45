@@ -2,16 +2,19 @@ import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { Skeleton } from '@/components/ui/skeleton';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import quillTableUI from 'quill-table-ui';
+import * as QuillTableUI from 'quill-table-ui';
 import 'quill-table-ui/dist/index.css';
 import { TableInsertDialog } from './TableInsertDialog';
 
 // Register table module once at module level
 if (typeof window !== 'undefined' && Quill) {
   try {
-    Quill.register('modules/tableUI', quillTableUI, true);
+    Quill.register({
+      'modules/tableUI': QuillTableUI
+    }, true);
+    console.log('✅ quill-table-ui registered successfully');
   } catch (error) {
-    console.warn('Table module registration error:', error);
+    console.error('❌ Table module registration error:', error);
   }
 }
 
@@ -71,6 +74,7 @@ const QUILL_MODULES = {
     ['link'],
     ['clean']
   ],
+  table: false,
   tableUI: true
 };
 
@@ -125,14 +129,30 @@ export function StableRichTextEditor({
 
     try {
       const editor = quillRef.current.getEditor();
-      if (!editor) return;
-
-      const tableModule = editor.getModule('tableUI');
-      if (tableModule && tableModule.insertTable) {
-        tableModule.insertTable(rows, cols);
+      if (!editor) {
+        console.error('❌ Editor not found');
+        return;
       }
+
+      console.log('🔍 Attempting to get tableUI module...');
+      const tableModule = editor.getModule('tableUI');
+      
+      if (!tableModule) {
+        console.error('❌ tableUI module not found. Available modules:', 
+          Object.keys(editor.getModule ? {} : {}));
+        return;
+      }
+      
+      if (!tableModule.insertTable) {
+        console.error('❌ insertTable method not found on tableModule');
+        return;
+      }
+
+      console.log(`✅ Inserting ${rows}x${cols} table...`);
+      tableModule.insertTable(rows, cols);
+      console.log('✅ Table inserted successfully');
     } catch (error) {
-      console.error('Error inserting custom table:', error);
+      console.error('❌ Error inserting custom table:', error);
     }
   }, [editorError, disabled]);
 
