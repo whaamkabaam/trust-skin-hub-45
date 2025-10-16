@@ -1,12 +1,14 @@
 import React, { useRef, useEffect, useCallback, useMemo, lazy, Suspense, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Quill from 'quill';
-import QuillBetterTable from 'quill-better-table';
-import 'quill-better-table/dist/quill-better-table.css';
+import QuillTableBetter from 'quill-table-better';
+import 'quill-table-better/dist/quill-table-better.css';
 
-// Register quill-better-table module
-if (typeof window !== 'undefined' && Quill) {
-  Quill.register('modules/better-table', QuillBetterTable);
+// Register quill-table-better module ONCE
+let isTableBetterRegistered = false;
+if (typeof window !== 'undefined' && Quill && !isTableBetterRegistered) {
+  Quill.register('modules/table-better', QuillTableBetter);
+  isTableBetterRegistered = true;
 }
 
 // Lazy load ReactQuill to prevent SSR issues and reduce bundle size
@@ -68,39 +70,12 @@ const QUILL_MODULES = {
       ['blockquote', 'code-block'],
       ['link'],
       ['clean'],
-      ['table']
-    ],
-    handlers: {
-      table: function() {
-        const quill = (this as any).quill;
-        const tableModule = quill?.getModule?.('better-table');
-        if (tableModule && typeof tableModule.insertTable === 'function') {
-          tableModule.insertTable(3, 3);
-        }
-      }
-    }
+      [{ 'table-better': ['3x3', '5x5'] }]
+    ]
   },
-  table: false,
-  'better-table': {
-    operationMenu: {
-      items: {
-        unmergeCells: { text: 'Unmerge cells' },
-        insertColumnRight: { text: 'Insert column right' },
-        insertColumnLeft: { text: 'Insert column left' },
-        insertRowUp: { text: 'Insert row above' },
-        insertRowDown: { text: 'Insert row below' },
-        removeCol: { text: 'Remove column' },
-        removeRow: { text: 'Remove row' },
-        removeTable: { text: 'Remove table' }
-      },
-      color: {
-        colors: ['#ffffff', '#f3f4f6', '#e5e7eb', '#d1d5db', '#9ca3af'],
-        text: 'Background Colors'
-      }
-    }
-  },
-  keyboard: {
-    bindings: QuillBetterTable?.keyboardBindings || {}
+  'table-better': {
+    menus: ['column', 'row', 'merge', 'table', 'cell'],
+    toolbarTable: true
   }
 };
 
