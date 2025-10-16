@@ -59,15 +59,27 @@ class ReactQuillErrorBoundary extends React.Component<
 
 // Stable modules configuration to prevent recreation
 const QUILL_MODULES = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'align': [] }],
-    ['blockquote', 'code-block'],
-    ['link'],
-    ['clean']
-  ],
+  toolbar: {
+    container: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'align': [] }],
+      ['blockquote', 'code-block'],
+      ['link'],
+      ['clean'],
+      ['table']
+    ],
+    handlers: {
+      table: function() {
+        const quill = (this as any).quill;
+        const tableModule = quill?.getModule?.('better-table');
+        if (tableModule && typeof tableModule.insertTable === 'function') {
+          tableModule.insertTable(3, 3);
+        }
+      }
+    }
+  },
   table: false,
   'better-table': {
     operationMenu: {
@@ -88,7 +100,7 @@ const QUILL_MODULES = {
     }
   },
   keyboard: {
-    bindings: QuillBetterTable.keyboardBindings
+    bindings: QuillBetterTable?.keyboardBindings || {}
   }
 };
 

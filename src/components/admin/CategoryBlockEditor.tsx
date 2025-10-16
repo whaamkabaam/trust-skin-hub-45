@@ -21,7 +21,7 @@ import {
 interface CategoryBlockEditorProps {
   blocks: CategoryContentBlock[];
   onBlocksChange: (blocks: CategoryContentBlock[]) => void;
-  onSaveBlock: (block: Partial<CategoryContentBlock>) => void;
+  onSaveBlock: (block: Partial<CategoryContentBlock>, silent?: boolean) => void;
   onDeleteBlock: (blockId: string) => void;
   categoryId: string;
 }
@@ -128,13 +128,13 @@ export const CategoryBlockEditor = ({
       debouncedBlocks.forEach(block => {
         if (block.id) {
           console.log('CategoryBlockEditor - Saving block:', { id: block.id, block_data: block.block_data });
-          // Save silently without toast
+          // Save silently without toast - pass true as second parameter
           onSaveBlock({
             id: block.id,
             block_data: block.block_data,
             order_number: block.order_number,
             is_visible: block.is_visible,
-          });
+          }, true);
         }
       });
     }
