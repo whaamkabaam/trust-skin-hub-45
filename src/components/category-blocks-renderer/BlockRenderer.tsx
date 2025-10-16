@@ -1,6 +1,7 @@
 import { HeroBlock } from '@/components/category-blocks/HeroBlock';
 import { TextBlock } from '@/components/category-blocks/TextBlock';
 import { MysteryBoxesBlock } from '@/components/category-blocks/MysteryBoxesBlock';
+import { TableBlock } from '@/components/category-blocks/TableBlock';
 import { CategoryContentBlock } from '@/hooks/useCategoryContent';
 
 interface BlockRendererProps {
@@ -21,6 +22,8 @@ export const BlockRenderer = ({ block }: BlockRendererProps) => {
       return <TextBlock {...commonProps} />;
     case 'mystery_boxes':
       return <MysteryBoxesBlock {...commonProps} />;
+    case 'table':
+      return <TableBlock {...commonProps} />;
     default:
       return null;
   }

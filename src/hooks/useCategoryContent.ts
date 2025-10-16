@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 export interface CategoryContentBlock {
   id: string;
   category_id: string;
-  block_type: 'hero' | 'text' | 'mystery_boxes' | 'image' | 'video' | 'stats' | 'comparison' | 'faq';
+  block_type: 'hero' | 'text' | 'mystery_boxes' | 'table' | 'image' | 'video' | 'stats' | 'comparison' | 'faq';
   block_data: any;
   order_number: number;
   is_visible: boolean;

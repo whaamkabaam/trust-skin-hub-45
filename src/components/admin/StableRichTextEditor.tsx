@@ -2,21 +2,6 @@ import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { Skeleton } from '@/components/ui/skeleton';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import * as QuillTableUI from 'quill-table-ui';
-import 'quill-table-ui/dist/index.css';
-import { TableInsertDialog } from './TableInsertDialog';
-
-// Register table module once at module level
-if (typeof window !== 'undefined' && Quill) {
-  try {
-    Quill.register({
-      'modules/tableUI': QuillTableUI
-    }, true);
-    console.log('✅ quill-table-ui registered successfully');
-  } catch (error) {
-    console.error('❌ Table module registration error:', error);
-  }
-}
 
 interface StableRichTextEditorProps {
   value: string;
@@ -73,15 +58,12 @@ const QUILL_MODULES = {
     ['blockquote', 'code-block'],
     ['link'],
     ['clean']
-  ],
-  table: false,
-  tableUI: true
+  ]
 };
 
 const QUILL_FORMATS = [
   'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align',
-  'table', 'table-cell-line'
+  'list', 'bullet', 'blockquote', 'code-block', 'link', 'align'
 ];
 
 export function StableRichTextEditor({ 
@@ -124,37 +106,6 @@ export function StableRichTextEditor({
   }, []);
 
   // Handle custom table insertion
-  const handleCustomTableInsert = useCallback((rows: number, cols: number) => {
-    if (!quillRef.current || editorError || disabled) return;
-
-    try {
-      const editor = quillRef.current.getEditor();
-      if (!editor) {
-        console.error('❌ Editor not found');
-        return;
-      }
-
-      console.log('🔍 Attempting to get tableUI module...');
-      const tableModule = editor.getModule('tableUI');
-      
-      if (!tableModule) {
-        console.error('❌ tableUI module not found. Available modules:', 
-          Object.keys(editor.getModule ? {} : {}));
-        return;
-      }
-      
-      if (!tableModule.insertTable) {
-        console.error('❌ insertTable method not found on tableModule');
-        return;
-      }
-
-      console.log(`✅ Inserting ${rows}x${cols} table...`);
-      tableModule.insertTable(rows, cols);
-      console.log('✅ Table inserted successfully');
-    } catch (error) {
-      console.error('❌ Error inserting custom table:', error);
-    }
-  }, [editorError, disabled]);
 
   // Enhanced cleanup on unmount
   useEffect(() => {
@@ -208,9 +159,6 @@ export function StableRichTextEditor({
     </div>
   ), [className]);
 
-  // Don't show table button if disabled or in error state
-  const showTableButton = !disabled && !editorError;
-
   // Error fallback - simple textarea
   if (editorError) {
     return (
@@ -231,10 +179,6 @@ export function StableRichTextEditor({
 
   return (
     <div className={`stable-rich-text-editor ${className}`}>
-      {showTableButton && (
-        <TableInsertDialog onInsertTable={handleCustomTableInsert} />
-      )}
-      
       <ReactQuillErrorBoundary onError={handleQuillError}>
         <ReactQuill
           ref={quillRef}
