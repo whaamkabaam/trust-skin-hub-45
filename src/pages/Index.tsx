@@ -17,6 +17,7 @@ import { usePublicOperatorsQuery } from '@/hooks/usePublicOperatorsQuery';
 import { useMysteryBoxes } from '@/hooks/useMysteryBoxes';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { supabase } from '@/integrations/supabase/client';
+import DOMPurify from 'dompurify';
 
 const Index = () => {
   const { data, isLoading, error, isError } = usePublicOperatorsQuery({});
@@ -314,7 +315,17 @@ const Index = () => {
                               <h3 className="font-semibold">{operator.name}</h3>
                               {operator.verification_status === 'verified' && <Badge variant="secondary" className="bg-success/10 text-success text-xs">Verified</Badge>}
                             </div>
-                            <p className="text-sm text-muted-foreground">{operator.verdict || 'Premium mystery box platform'}</p>
+                            <div 
+                              className="text-sm text-muted-foreground line-clamp-2"
+                              dangerouslySetInnerHTML={{ 
+                                __html: DOMPurify.sanitize(operator.verdict || 'Premium mystery box platform', {
+                                  ALLOWED_TAGS: ['p', 'strong', 'em', 'br'],
+                                  ALLOWED_ATTR: [],
+                                  FORBID_TAGS: ['script', 'iframe'],
+                                  FORBID_ATTR: ['onclick', 'onload']
+                                })
+                              }}
+                            />
                           </div>
                         </div>
                       </div>
@@ -438,7 +449,17 @@ const Index = () => {
                             <h3 className="font-semibold">{operator.name}</h3>
                             {operator.verification_status === 'verified' && <Badge variant="secondary" className="bg-success/10 text-success text-xs">Verified</Badge>}
                           </div>
-                          <p className="text-sm text-muted-foreground">{operator.verdict || 'Premium skin case platform'}</p>
+                          <div 
+                            className="text-sm text-muted-foreground line-clamp-2"
+                            dangerouslySetInnerHTML={{ 
+                              __html: DOMPurify.sanitize(operator.verdict || 'Premium skin case platform', {
+                                ALLOWED_TAGS: ['p', 'strong', 'em', 'br'],
+                                ALLOWED_ATTR: [],
+                                FORBID_TAGS: ['script', 'iframe'],
+                                FORBID_ATTR: ['onclick', 'onload']
+                              })
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -564,7 +585,17 @@ const Index = () => {
                             <h3 className="font-semibold">{operator.name}</h3>
                             {operator.verification_status === 'verified' && <Badge variant="secondary" className="bg-success/10 text-success text-xs">Verified</Badge>}
                           </div>
-                          <p className="text-sm text-muted-foreground">{operator.verdict || 'Licensed online casino'}</p>
+                          <div 
+                            className="text-sm text-muted-foreground line-clamp-2"
+                            dangerouslySetInnerHTML={{ 
+                              __html: DOMPurify.sanitize(operator.verdict || 'Licensed online casino', {
+                                ALLOWED_TAGS: ['p', 'strong', 'em', 'br'],
+                                ALLOWED_ATTR: [],
+                                FORBID_TAGS: ['script', 'iframe'],
+                                FORBID_ATTR: ['onclick', 'onload']
+                              })
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
