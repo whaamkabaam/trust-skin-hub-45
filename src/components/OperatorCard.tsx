@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Operator, FeeLevel } from '@/types';
 import { cn } from '@/lib/utils';
 import { LazyImage } from '@/components/LazyImage';
+import DOMPurify from 'dompurify';
 interface OperatorCardProps {
   operator: Operator;
   view?: 'grid' | 'list';
@@ -61,7 +62,17 @@ const OperatorCard = ({
                   Verified
                 </Badge>}
             </div>
-            <p className="text-sm text-muted-foreground mb-2">{operator.verdict}</p>
+            <div 
+              className="text-sm text-muted-foreground mb-2 line-clamp-3 verdict-content"
+              dangerouslySetInnerHTML={{ 
+                __html: DOMPurify.sanitize(operator.verdict || '', {
+                  ALLOWED_TAGS: ['p', 'strong', 'em', 'br'],
+                  ALLOWED_ATTR: [],
+                  FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+                  FORBID_ATTR: ['onclick', 'onload', 'onerror']
+                })
+              }}
+            />
             
             {/* Rating */}
             <div className="flex items-center gap-2">
@@ -182,6 +193,16 @@ const OperatorCard = ({
             </Button>
           </div>}
       </CardFooter>
+      
+      <style>{`
+        .verdict-content p {
+          display: inline;
+          margin: 0;
+        }
+        .verdict-content p + p {
+          margin-left: 0.5em;
+        }
+      `}</style>
     </Card>;
 };
 export default OperatorCard;
