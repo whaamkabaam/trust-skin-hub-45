@@ -27,6 +27,7 @@ export interface MysteryBoxData {
   category: string;
   tags: string[];
   provider?: string;
+  site_name?: string;
 }
 
 interface MysteryBoxCardProps {

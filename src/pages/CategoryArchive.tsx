@@ -541,8 +541,7 @@ const CategoryArchive = () => {
             sections={sections}
             quickStats={categoryStats ? {
               avgPrice: categoryStats.avgPrice,
-              bestEV: categoryStats.bestEV || 0,
-              verificationRate: categoryStats.verificationRate || 0
+              bestEV: categoryStats.bestEV || 0
             } : undefined}
             topProviders={categoryStats?.topProviders}
           />
