@@ -517,6 +517,8 @@ const CategoryArchive = () => {
                   </div>
                 )}
 
+                </div>
+
                 {/* Category Description */}
                 {category.description_rich && (
                   <div id="about" className="mt-12">

@@ -2,7 +2,7 @@ import { Link2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SectionHeaderProps {
-  id: string;
+  id?: string;
   title: string;
   description?: string;
   className?: string;
@@ -10,6 +10,7 @@ interface SectionHeaderProps {
 
 export const SectionHeader = ({ id, title, description, className }: SectionHeaderProps) => {
   const copyLink = () => {
+    if (!id) return;
     const url = `${window.location.origin}${window.location.pathname}#${id}`;
     navigator.clipboard.writeText(url);
   };
@@ -20,13 +21,15 @@ export const SectionHeader = ({ id, title, description, className }: SectionHead
         <h2 className="text-2xl font-bold text-foreground">
           {title}
         </h2>
-        <button
-          onClick={copyLink}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
-          aria-label="Copy link to section"
-        >
-          <Link2 className="w-4 h-4 text-muted-foreground" />
-        </button>
+        {id && (
+          <button
+            onClick={copyLink}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
+            aria-label="Copy link to section"
+          >
+            <Link2 className="w-4 h-4 text-muted-foreground" />
+          </button>
+        )}
       </div>
       {description && (
         <p className="text-muted-foreground mb-6">{description}</p>
