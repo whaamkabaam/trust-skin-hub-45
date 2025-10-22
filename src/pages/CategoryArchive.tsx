@@ -59,8 +59,27 @@ const CategoryArchive = () => {
         : 0;
 
       // Count providers
+      const PROVIDER_MAP: Record<string, string> = {
+        'rillabox': 'RillaBox',
+        'hypedrop': 'Hypedrop',
+        'casesgg': 'Cases.GG',
+        'luxdrop': 'LuxDrop',
+      };
+      
       const providerCounts = mysteryBoxes.reduce((acc, box) => {
-        const provider = box.site_name || 'Unknown';
+        // Try to get provider from site_name, operator, or categories
+        let provider = box.site_name;
+        
+        if (!provider || provider === 'Unknown') {
+          // Check if box has categories with provider info
+          const providerCategory = (box.categories as any)?.find((catItem: any) => 
+            ['rillabox', 'hypedrop', 'casesgg', 'luxdrop'].includes(catItem?.category?.slug?.toLowerCase())
+          );
+          const providerSlug = providerCategory?.category?.slug?.toLowerCase();
+          
+          provider = providerSlug ? PROVIDER_MAP[providerSlug] : 'Unknown';
+        }
+        
         acc[provider] = (acc[provider] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);

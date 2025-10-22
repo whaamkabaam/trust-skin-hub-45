@@ -444,12 +444,43 @@ const Categories = () => {
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <option value="">No featured box</option>
-                        {categoryBoxes.map((box) => (
-                          <option key={box.id} value={box.id}>
-                            {box.box_name} ({box.provider}) - ${box.box_price}
-                          </option>
-                        ))}
+                        {categoryBoxes.map((box) => {
+                          const profitRate = (box.expected_value_percent || 100) - 100;
+                          return (
+                            <option key={box.id} value={box.id}>
+                              {box.box_name} ({box.provider}) - ${box.box_price} • {profitRate >= 0 ? '+' : ''}{profitRate.toFixed(0)}% EV
+                            </option>
+                          );
+                        })}
                       </select>
+                      
+                      {/* EV Warning for Selected Box */}
+                      {formData.featured_box_id && (() => {
+                        const selectedBox = categoryBoxes.find(b => b.id === formData.featured_box_id);
+                        const profitRate = selectedBox ? ((selectedBox.expected_value_percent || 100) - 100) : 0;
+                        
+                        if (profitRate < 0) {
+                          const bestBox = categoryBoxes.reduce((best, box) => {
+                            const boxProfit = (box.expected_value_percent || 100) - 100;
+                            const bestProfit = (best.expected_value_percent || 100) - 100;
+                            return boxProfit > bestProfit ? box : best;
+                          }, categoryBoxes[0]);
+                          const bestProfit = (bestBox?.expected_value_percent || 100) - 100;
+                          
+                          return (
+                            <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded-md flex items-start gap-2">
+                              <AlertTriangle className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
+                              <div className="text-sm">
+                                <p className="font-medium text-orange-800">Featured Box has Negative EV</p>
+                                <p className="text-orange-700 mt-1">
+                                  This box has {profitRate.toFixed(0)}% EV (loss). Consider featuring <strong>{bestBox?.box_name}</strong> instead ({bestProfit >= 0 ? '+' : ''}{bestProfit.toFixed(0)}% EV).
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
 
                     {formData.featured_box_id && (

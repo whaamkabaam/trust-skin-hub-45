@@ -29,7 +29,7 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-      <CardContent className="p-3 space-y-2.5">
+      <CardContent className="p-2 space-y-2">
         {/* Badge */}
         <div className="flex items-center gap-2">
           <Badge variant="default" className="bg-gaming-gold text-gaming-gold-foreground text-xs">
@@ -39,7 +39,7 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
         </div>
 
         {/* Box Image */}
-        <div className="relative aspect-video rounded-lg overflow-hidden bg-muted max-h-32">
+        <div className="relative aspect-video rounded-lg overflow-hidden bg-muted max-h-24">
           <img
             src={box.box_image} 
             alt={box.box_name}

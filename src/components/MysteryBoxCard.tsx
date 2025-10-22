@@ -153,8 +153,15 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
               </div>
             </div>
             <div className="text-center">
-              <div className={`text-3xl ${evGradient}`}>
-                {box.expected_value_percent_of_price.toFixed(1)}% EV
+              <div className={`text-3xl font-bold ${
+                box.expected_value_percent_of_price >= 100 
+                  ? 'text-success' 
+                  : box.expected_value_percent_of_price >= 98 
+                    ? 'text-yellow-600' 
+                    : 'text-destructive'
+              }`}>
+                {box.expected_value_percent_of_price >= 100 ? '+' : ''}
+                {(box.expected_value_percent_of_price - 100).toFixed(1)}% EV
               </div>
             </div>
             <div className="text-center">

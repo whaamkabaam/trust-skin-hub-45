@@ -9,6 +9,7 @@ export interface CategoryBoxAssignment {
   box_name: string;
   box_image?: string;
   box_price: number;
+  expected_value_percent?: number;
 }
 
 export function useCategoryBoxes() {
@@ -43,16 +44,16 @@ export function useCategoryBoxes() {
         let boxes: any[] = [];
         
         if (provider === 'rillabox') {
-          const { data, error } = await supabase.from('rillabox').select('id, box_name, box_image, box_price').in('id', boxIds);
+          const { data, error } = await supabase.from('rillabox').select('id, box_name, box_image, box_price, expected_value_percent').in('id', boxIds);
           if (!error && data) boxes = data;
         } else if (provider === 'hypedrop') {
-          const { data, error } = await supabase.from('hypedrop').select('id, box_name, box_image, box_price').in('id', boxIds);
+          const { data, error } = await supabase.from('hypedrop').select('id, box_name, box_image, box_price, expected_value_percent').in('id', boxIds);
           if (!error && data) boxes = data;
         } else if (provider === 'casesgg') {
-          const { data, error } = await supabase.from('casesgg').select('id, box_name, box_image, box_price').in('id', boxIds);
+          const { data, error } = await supabase.from('casesgg').select('id, box_name, box_image, box_price, expected_value_percent').in('id', boxIds);
           if (!error && data) boxes = data;
         } else if (provider === 'luxdrop') {
-          const { data, error } = await supabase.from('luxdrop').select('id, box_name, box_image, box_price').in('id', boxIds);
+          const { data, error } = await supabase.from('luxdrop').select('id, box_name, box_image, box_price, expected_value_percent').in('id', boxIds);
           if (!error && data) boxes = data;
         }
 
@@ -66,6 +67,7 @@ export function useCategoryBoxes() {
               box_name: box.box_name,
               box_image: box.box_image,
               box_price: box.box_price,
+              expected_value_percent: box.expected_value_percent,
             });
           }
         });

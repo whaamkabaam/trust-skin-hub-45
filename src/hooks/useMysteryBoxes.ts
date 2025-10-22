@@ -33,6 +33,14 @@ export function useMysteryBoxes(filters?: MysteryBoxFilters) {
           )
         `, { count: 'exact' })
         .eq('is_active', true);
+      
+      // Provider name mapping for display
+      const PROVIDER_MAP: Record<string, string> = {
+        'rillabox': 'RillaBox',
+        'hypedrop': 'Hypedrop',
+        'casesgg': 'Cases.GG',
+        'luxdrop': 'LuxDrop',
+      };
 
       // Apply filters
       if (filters?.search) {
@@ -78,7 +86,27 @@ export function useMysteryBoxes(filters?: MysteryBoxFilters) {
 
       if (error) throw error;
 
-      setMysteryBoxes(data as any || []);
+      // Map site_name from operator or infer from categories
+      const enrichedData = (data || []).map((box: any) => {
+        let siteName = box.operator?.name;
+        
+        // If no operator, try to infer from category slug
+        if (!siteName && box.categories?.length > 0) {
+          const providerCategory = box.categories.find((c: any) => 
+            ['rillabox', 'hypedrop', 'casesgg', 'luxdrop'].includes(c.category?.slug)
+          );
+          if (providerCategory) {
+            siteName = PROVIDER_MAP[providerCategory.category.slug] || providerCategory.category.name;
+          }
+        }
+        
+        return {
+          ...box,
+          site_name: siteName || 'Unknown',
+        };
+      });
+
+      setMysteryBoxes(enrichedData as any || []);
       setTotalCount(count || 0);
     } catch (error: any) {
       toast({
