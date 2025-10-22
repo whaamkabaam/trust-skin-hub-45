@@ -4,7 +4,7 @@ interface CategoryStatsBarProps {
   stats: {
     totalBoxes: number;
     avgPrice: number;
-    bestROI?: number;
+    bestEV?: number;
     verificationRate?: number;
   };
 }
@@ -40,17 +40,17 @@ export const CategoryStatsBar = ({ stats }: CategoryStatsBarProps) => {
             </div>
           </div>
 
-          {/* Best ROI */}
-          {stats.bestROI !== undefined && (
+          {/* Best EV */}
+          {stats.bestEV !== undefined && (
             <div className="text-center">
               <div className="flex items-center justify-center mb-2">
                 <TrendingUp className="w-5 h-5 text-success mr-2" />
               </div>
               <div className="text-3xl font-bold text-success mb-1">
-                +{stats.bestROI != null ? stats.bestROI.toFixed(0) : '0'}%
+                +{stats.bestEV != null ? stats.bestEV.toFixed(0) : '0'}%
               </div>
               <div className="text-sm text-muted-foreground">
-                Best ROI
+                Best EV
               </div>
             </div>
           )}

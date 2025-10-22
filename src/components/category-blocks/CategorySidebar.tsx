@@ -15,7 +15,7 @@ interface CategorySidebarProps {
   sections: Section[];
   quickStats?: {
     avgPrice: number;
-    bestROI: number;
+    bestEV: number;
     verificationRate: number;
   };
   topProviders?: Array<{ name: string; count: number; logo?: string }>;
@@ -99,8 +99,8 @@ export const CategorySidebar = ({ sections, quickStats, topProviders }: Category
                     <span className="text-sm font-semibold">${quickStats.avgPrice.toFixed(0)}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-md">
-                    <span className="text-xs text-muted-foreground">Best ROI</span>
-                    <span className="text-sm font-semibold text-success">{quickStats.bestROI.toFixed(0)}%</span>
+                    <span className="text-xs text-muted-foreground">Best EV</span>
+                    <span className="text-sm font-semibold text-success">{quickStats.bestEV.toFixed(0)}%</span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-md">
                     <span className="text-xs text-muted-foreground">Verified</span>

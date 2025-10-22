@@ -41,40 +41,101 @@ const CategoryArchive = () => {
   const [riskFilters, setRiskFilters] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Calculate stats from mystery boxes data
+  // Calculate category statistics - prioritize cached DB stats
   const categoryStats = useMemo(() => {
+    // Use cached database stats if available
+    if (category && category.total_boxes > 0 && category.avg_price !== null) {
+      // Calculate EV from mystery boxes (not cached in DB)
+      const avgEV = mysteryBoxes.length > 0 
+        ? mysteryBoxes
+            .map(b => b.expected_value && b.price ? (b.expected_value / b.price) * 100 : 0)
+            .filter(ev => ev > 0)
+            .reduce((a, b) => a + b, 0) / mysteryBoxes.filter(b => b.expected_value && b.price).length
+        : 0;
+
+      const bestEV = mysteryBoxes.length > 0
+        ? Math.max(...mysteryBoxes.map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0))
+        : 0;
+
+      const verificationRate = mysteryBoxes.length > 0
+        ? (mysteryBoxes.filter(b => b.verified).length / mysteryBoxes.length) * 100
+        : 0;
+
+      // Count providers
+      const providerCounts = mysteryBoxes.reduce((acc, box) => {
+        const provider = box.site_name || 'Unknown';
+        acc[provider] = (acc[provider] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const topProviders = Object.entries(providerCounts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+      const topProvider = topProviders[0]?.name || 'Various';
+
+      return {
+        priceRange: {
+          min: category.price_min || 0,
+          max: category.price_max || 0
+        },
+        avgPrice: category.avg_price || 0,
+        avgEV,
+        bestEV,
+        verificationRate,
+        topProviders,
+        topProvider
+      };
+    }
+    
+    // Fallback to client-side calculation if DB stats not available
     if (!mysteryBoxes || mysteryBoxes.length === 0) return null;
-    
+
     const prices = mysteryBoxes.map(b => b.price).filter(p => p > 0);
-    const evs = mysteryBoxes.map(b => b.expected_value && b.price ? (b.expected_value / b.price) * 100 : 0).filter(ev => ev > 0);
-    const verifiedCount = mysteryBoxes.filter(b => b.verified).length;
+    const avgPrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
     
-    // Count boxes per operator
-    const operatorCounts = mysteryBoxes.reduce((acc, box) => {
-      if (box.operator?.name) {
-        acc[box.operator.name] = (acc[box.operator.name] || 0) + 1;
-      }
+    const evValues = mysteryBoxes
+      .map(b => b.expected_value && b.price ? (b.expected_value / b.price) * 100 : 0)
+      .filter(ev => ev > 0);
+    
+    const avgEV = evValues.length > 0 ? evValues.reduce((a, b) => a + b, 0) / evValues.length : 0;
+    
+    const bestEV = mysteryBoxes.length > 0
+      ? Math.max(...mysteryBoxes.map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0))
+      : 0;
+
+    const verificationRate = mysteryBoxes.length > 0
+      ? (mysteryBoxes.filter(b => b.verified).length / mysteryBoxes.length) * 100
+      : 0;
+
+    const providerCounts = mysteryBoxes.reduce((acc, box) => {
+      const provider = box.site_name || 'Unknown';
+      acc[provider] = (acc[provider] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
-    const topProviders = Object.entries(operatorCounts)
+
+    const topProviders = Object.entries(providerCounts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
-    
+
+    const sortedProviders = Object.entries(providerCounts).sort((a, b) => b[1] - a[1]);
+    const topProviderData = sortedProviders[0] || ['Various', 0];
+
     return {
       priceRange: {
         min: Math.min(...prices),
         max: Math.max(...prices)
       },
-      avgPrice: prices.reduce((a, b) => a + b, 0) / prices.length,
-      avgEV: evs.length > 0 ? evs.reduce((a, b) => a + b, 0) / evs.length : 0,
-      bestROI: evs.length > 0 ? Math.max(...evs) - 100 : 0,
-      verificationRate: (verifiedCount / mysteryBoxes.length) * 100,
+      avgPrice,
+      avgEV,
+      bestEV,
+      verificationRate,
       topProviders,
-      topProvider: topProviders[0]?.name || 'Various'
+      topProvider: topProviderData[0]
     };
-  }, [mysteryBoxes]);
+  }, [category, mysteryBoxes]);
 
   // Find best value box
   const bestValueBox = useMemo(() => {
@@ -234,12 +295,12 @@ const CategoryArchive = () => {
       />
 
       {/* Category Stats Bar */}
-      {categoryStats && categoryStats.avgPrice != null && (
+      {categoryStats && categoryStats.avgPrice !== undefined && (
         <CategoryStatsBar 
           stats={{
             totalBoxes: mysteryBoxes.length,
             avgPrice: categoryStats.avgPrice || 0,
-            bestROI: categoryStats.bestROI || 0,
+            bestEV: categoryStats.bestEV || 0,
             verificationRate: categoryStats.verificationRate || 0
           }}
         />
@@ -480,8 +541,8 @@ const CategoryArchive = () => {
             sections={sections}
             quickStats={categoryStats ? {
               avgPrice: categoryStats.avgPrice,
-              bestROI: categoryStats.bestROI,
-              verificationRate: categoryStats.verificationRate
+              bestEV: categoryStats.bestEV || 0,
+              verificationRate: categoryStats.verificationRate || 0
             } : undefined}
             topProviders={categoryStats?.topProviders}
           />

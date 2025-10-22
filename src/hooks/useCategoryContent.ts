@@ -177,6 +177,10 @@ export const useCategoryContent = (categoryId: string) => {
               }
 
               if (boxData) {
+                // Transform featured items using the transformer
+                const { transformFeaturedItems } = await import('@/utils/featuredItemsTransformer');
+                const featuredItems = transformFeaturedItems(boxData.jackpot_items || []);
+                
                 featuredBoxData = {
                   id: featuredOverride.id,
                   box_name: boxData.box_name,
@@ -184,7 +188,7 @@ export const useCategoryContent = (categoryId: string) => {
                   box_price: Number(boxData.box_price),
                   expected_value_percent_of_price: Number(boxData.expected_value_percent) || 0,
                   description: category.featured_box_description || '',
-                  featured_items: boxData.jackpot_items ? JSON.parse(JSON.stringify(boxData.jackpot_items)).slice(0, 3) : [],
+                  featured_items: featuredItems.slice(0, 3),
                   provider: featuredOverride.provider,
                   box_url: boxData.box_url
                 };
