@@ -25,6 +25,7 @@ import { AtAGlanceCard } from '@/components/category-blocks/AtAGlanceCard';
 import { EnhancedMysteryBoxCard } from '@/components/category-blocks/EnhancedMysteryBoxCard';
 import MysteryBoxCard from '@/components/MysteryBoxCard';
 import { transformToRillaBoxFormat } from '@/utils/mysteryBoxDataTransformer';
+import React from 'react';
 
 const CategoryArchive = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -48,17 +49,13 @@ const CategoryArchive = () => {
       // Calculate EV from mystery boxes (not cached in DB)
       const avgEV = mysteryBoxes.length > 0 
         ? mysteryBoxes
-            .map(b => b.expected_value && b.price ? (b.expected_value / b.price) * 100 : 0)
-            .filter(ev => ev > 0)
+            .map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0)
+            .filter(ev => ev !== 0)
             .reduce((a, b) => a + b, 0) / mysteryBoxes.filter(b => b.expected_value && b.price).length
         : 0;
 
       const bestEV = mysteryBoxes.length > 0
         ? Math.max(...mysteryBoxes.map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0))
-        : 0;
-
-      const verificationRate = mysteryBoxes.length > 0
-        ? (mysteryBoxes.filter(b => b.verified).length / mysteryBoxes.length) * 100
         : 0;
 
       // Count providers
@@ -83,7 +80,6 @@ const CategoryArchive = () => {
         avgPrice: category.avg_price || 0,
         avgEV,
         bestEV,
-        verificationRate,
         topProviders,
         topProvider
       };
@@ -96,17 +92,13 @@ const CategoryArchive = () => {
     const avgPrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
     
     const evValues = mysteryBoxes
-      .map(b => b.expected_value && b.price ? (b.expected_value / b.price) * 100 : 0)
-      .filter(ev => ev > 0);
+      .map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0)
+      .filter(ev => ev !== 0);
     
     const avgEV = evValues.length > 0 ? evValues.reduce((a, b) => a + b, 0) / evValues.length : 0;
     
     const bestEV = mysteryBoxes.length > 0
       ? Math.max(...mysteryBoxes.map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0))
-      : 0;
-
-    const verificationRate = mysteryBoxes.length > 0
-      ? (mysteryBoxes.filter(b => b.verified).length / mysteryBoxes.length) * 100
       : 0;
 
     const providerCounts = mysteryBoxes.reduce((acc, box) => {
@@ -131,7 +123,6 @@ const CategoryArchive = () => {
       avgPrice,
       avgEV,
       bestEV,
-      verificationRate,
       topProviders,
       topProvider: topProviderData[0]
     };
@@ -163,13 +154,27 @@ const CategoryArchive = () => {
     );
   }, [mysteryBoxes, searchQuery]);
 
-  // Define sections for sidebar navigation
-  const sections = [
-    { id: 'at-a-glance', title: 'At a Glance' },
-    { id: 'filters', title: 'Filter & Sort' },
-    { id: 'mystery-boxes', title: 'All Mystery Boxes' },
-    { id: 'about', title: `About ${category?.name || 'Category'}` },
-  ];
+  // Generate sections dynamically from published content
+  const sections = React.useMemo(() => {
+    const baseSections = [
+      { id: 'at-a-glance', title: 'At a Glance' },
+      { id: 'filters', title: 'Filter & Sort' },
+      { id: 'mystery-boxes', title: 'All Mystery Boxes' },
+    ];
+
+    // Add content block sections
+    if (publishedContent?.content_data && (publishedContent.content_data as any)?.blocks) {
+      const blockSections = (publishedContent.content_data as any).blocks
+        .filter((block: any) => block.is_visible && ['text', 'table'].includes(block.block_type))
+        .map((block: any) => ({
+          id: `block-${block.block_type}-${block.order_number}`,
+          title: block.block_data?.heading || `${block.block_type} Section`
+        }));
+      return [...baseSections, ...blockSections];
+    }
+
+    return baseSections;
+  }, [publishedContent]);
 
   const sites = [
     { value: 'all', label: 'All Sites' },
@@ -276,45 +281,41 @@ const CategoryArchive = () => {
       
       <Header />
       
-      {/* Enhanced Breadcrumbs */}
       <EnhancedBreadcrumbs 
         categoryName={category.name} 
         categorySlug={category.slug}
       />
 
-      {/* Compact Hero Section */}
-      <CompactHero
-        category={category}
-        boxCount={mysteryBoxes.length}
-        priceRange={categoryStats?.priceRange}
-        avgEV={categoryStats?.avgEV}
-        topProviders={categoryStats?.topProviders}
-        featuredBox={(publishedContent?.content_data as any)?.featuredBox}
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
+      <div id="at-a-glance">
+        <CompactHero
+          category={category}
+          boxCount={mysteryBoxes.length}
+          priceRange={categoryStats?.priceRange}
+          avgEV={categoryStats?.avgEV}
+          topProviders={categoryStats?.topProviders}
+          featuredBox={(publishedContent?.content_data as any)?.featuredBox}
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
+      </div>
 
-      {/* Category Stats Bar */}
       {categoryStats && categoryStats.avgPrice !== undefined && (
         <CategoryStatsBar 
           stats={{
             totalBoxes: mysteryBoxes.length,
             avgPrice: categoryStats.avgPrice || 0,
-            bestEV: categoryStats.bestEV || 0,
-            verificationRate: categoryStats.verificationRate || 0
+            bestEV: categoryStats.bestEV || 0
           }}
         />
       )}
 
-      {/* Main Content with Sidebar */}
       <section className="container mx-auto px-4 py-8">
         <div className="flex gap-8">
-          {/* Main Content Area */}
           <div className="flex-1 min-w-0">
             {/* At a Glance Summary Card */}
             {categoryStats && (
-              <div id="at-a-glance" className="mb-8 scroll-mt-24">
-                <AtAGlanceCard 
+              <div className="mb-8">
+                <AtAGlanceCard
                   categoryName={category.name}
                   stats={{
                     totalBoxes: mysteryBoxes.length,
@@ -338,7 +339,7 @@ const CategoryArchive = () => {
             ) : (
               <>
                 {/* Collapsible Filters Section */}
-                <div id="filters" className="mb-8 scroll-mt-24">
+                <div id="filters" className="mb-8">
                   <Collapsible defaultOpen={false}>
                     <CollapsibleTrigger asChild>
                       <Button variant="outline" className="w-full mb-4 justify-between">
@@ -424,11 +425,11 @@ const CategoryArchive = () => {
                 </div>
 
                 {/* Results Header */}
-                <SectionHeader 
-                  id="mystery-boxes" 
-                  title={`${category.name} Mystery Boxes`}
-                  description={`Showing ${mysteryBoxes.length} verified mystery boxes`}
-                />
+                <div id="mystery-boxes">
+                  <SectionHeader 
+                    title={`${category.name} Mystery Boxes`}
+                    description={`Showing ${mysteryBoxes.length} verified mystery boxes`}
+                  />
 
                 <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
                   <div className="text-sm text-muted-foreground">
@@ -518,16 +519,15 @@ const CategoryArchive = () => {
 
                 {/* Category Description */}
                 {category.description_rich && (
-                  <div id="about" className="mt-12 scroll-mt-24">
+                  <div id="about" className="mt-12">
                     <SectionHeader 
-                      id="about-section"
                       title={`About ${category.name} Mystery Boxes`}
                     />
                     <Card>
                       <CardContent className="p-6">
-              <div className="prose prose-sm max-w-none">
-                <p>{category.description_rich}</p>
-              </div>
+                        <div className="prose prose-sm max-w-none">
+                          <p>{category.description_rich}</p>
+                        </div>
                       </CardContent>
                     </Card>
                   </div>

@@ -28,8 +28,8 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
   const boxSlug = box.box_name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
   return (
-    <Card className="overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
-      <CardContent className="p-4 space-y-3">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      <CardContent className="p-3 space-y-2.5">
         {/* Badge */}
         <div className="flex items-center gap-2">
           <Badge variant="default" className="bg-gaming-gold text-gaming-gold-foreground text-xs">
@@ -39,8 +39,8 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
         </div>
 
         {/* Box Image */}
-        <div className="relative aspect-video rounded-lg overflow-hidden bg-muted max-h-40">
-          <img 
+        <div className="relative aspect-video rounded-lg overflow-hidden bg-muted max-h-32">
+          <img
             src={box.box_image} 
             alt={box.box_name}
             className="w-full h-full object-cover"
@@ -59,14 +59,14 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
 
         {/* Featured Items */}
         {box.featured_items && box.featured_items.length > 0 && (
-          <div className="space-y-1.5">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">Top Items</p>
-            <div className="space-y-1">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Top Items</p>
+            <div className="space-y-0.5">
               {box.featured_items.slice(0, 2).map((item, idx) => (
                 <div key={idx} className="flex items-center justify-between text-xs">
-                  <span className="truncate flex-1">{item.name}</span>
-                  <span className="font-semibold text-gaming-gold ml-2">
-                    ${item.price != null ? item.price.toFixed(2) : '0.00'}
+                  <span className="truncate flex-1 text-xs">{item.name}</span>
+                  <span className="font-semibold text-gaming-gold ml-2 text-xs">
+                    ${item.price != null ? item.price.toFixed(0) : '0'}
                   </span>
                 </div>
               ))}
@@ -78,14 +78,14 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
         <div className="flex items-center justify-between pt-2 border-t">
           <div>
             <p className="text-xs text-muted-foreground">Price</p>
-            <p className="text-lg font-bold flex items-center">
-              <DollarSign className="w-3.5 h-3.5" />
+            <p className="text-base font-bold flex items-center">
+              <DollarSign className="w-3 h-3" />
               {box.box_price != null ? box.box_price.toFixed(2) : '0.00'}
             </p>
           </div>
           <div className="text-right">
             <p className="text-xs text-muted-foreground">EV</p>
-            <p className={`text-lg font-bold ${profitRate >= 0 ? 'text-success' : 'text-destructive'}`}>
+            <p className={`text-base font-bold ${profitRate >= 0 ? 'text-success' : 'text-destructive'}`}>
               {profitRate >= 0 ? '+' : ''}{profitRate != null ? profitRate.toFixed(0) : '0'}%
             </p>
           </div>

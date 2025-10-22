@@ -5,7 +5,6 @@ interface CategoryStatsBarProps {
     totalBoxes: number;
     avgPrice: number;
     bestEV?: number;
-    verificationRate?: number;
   };
 }
 
@@ -13,7 +12,7 @@ export const CategoryStatsBar = ({ stats }: CategoryStatsBarProps) => {
   return (
     <div className="bg-gradient-to-r from-muted/30 to-muted/10 border-y py-6">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {/* Total Cases */}
           <div className="text-center">
             <div className="flex items-center justify-center mb-2">
@@ -47,25 +46,10 @@ export const CategoryStatsBar = ({ stats }: CategoryStatsBarProps) => {
                 <TrendingUp className="w-5 h-5 text-success mr-2" />
               </div>
               <div className="text-3xl font-bold text-success mb-1">
-                +{stats.bestEV != null ? stats.bestEV.toFixed(0) : '0'}%
+                {stats.bestEV > 0 ? '+' : ''}{stats.bestEV != null ? stats.bestEV.toFixed(0) : '0'}%
               </div>
               <div className="text-sm text-muted-foreground">
                 Best EV
-              </div>
-            </div>
-          )}
-
-          {/* Verification Rate */}
-          {stats.verificationRate !== undefined && (
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Award className="w-5 h-5 text-gaming-gold mr-2" />
-              </div>
-              <div className="text-3xl font-bold text-foreground mb-1">
-                {stats.verificationRate != null ? stats.verificationRate.toFixed(0) : '0'}%
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Verified
               </div>
             </div>
           )}

@@ -14,16 +14,18 @@ export const BlockRenderer = ({ block }: BlockRendererProps) => {
     isEditing: false,
   };
 
+  const blockId = `block-${block.block_type}-${block.order_number}`;
+
   switch (block.block_type) {
     case 'hero':
       // Skip hero blocks on published pages - using CompactHero instead
       return null;
     case 'text':
-      return <TextBlock {...commonProps} />;
+      return <div id={blockId}><TextBlock {...commonProps} /></div>;
     case 'mystery_boxes':
-      return <MysteryBoxesBlock {...commonProps} />;
+      return <div id={blockId}><MysteryBoxesBlock {...commonProps} /></div>;
     case 'table':
-      return <TableBlock {...commonProps} />;
+      return <div id={blockId}><TableBlock {...commonProps} /></div>;
     default:
       return null;
   }
