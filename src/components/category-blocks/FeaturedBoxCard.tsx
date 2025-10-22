@@ -66,7 +66,7 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
                 <div key={idx} className="flex items-center justify-between text-sm">
                   <span className="truncate flex-1">{item.name}</span>
                   <span className="font-semibold text-gaming-gold ml-2">
-                    ${item.price.toFixed(2)}
+                    ${item.price != null ? item.price.toFixed(2) : '0.00'}
                   </span>
                 </div>
               ))}
@@ -80,13 +80,13 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
             <p className="text-xs text-muted-foreground">Case Price</p>
             <p className="text-xl font-bold flex items-center">
               <DollarSign className="w-4 h-4" />
-              {box.box_price.toFixed(2)}
+              {box.box_price != null ? box.box_price.toFixed(2) : '0.00'}
             </p>
           </div>
           <div className="text-right">
             <p className="text-xs text-muted-foreground">Expected Value</p>
             <p className={`text-xl font-bold ${profitRate >= 0 ? 'text-success' : 'text-destructive'}`}>
-              {profitRate >= 0 ? '+' : ''}{profitRate.toFixed(0)}%
+              {profitRate >= 0 ? '+' : ''}{profitRate != null ? profitRate.toFixed(0) : '0'}%
             </p>
           </div>
         </div>

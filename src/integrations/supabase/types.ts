@@ -1260,6 +1260,10 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
+      refresh_category_stats: {
+        Args: { p_category_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search, Eye, EyeOff, RefreshCw, AlertTriangle, GripVertical, X, ExternalLink, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Eye, EyeOff, RefreshCw, AlertTriangle, GripVertical, X, ExternalLink, FileText, Loader2 } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -22,6 +22,7 @@ import { useProviderBoxSearch } from '@/hooks/useProviderBoxSearch';
 import { generateUniqueOperatorSlug } from '@/lib/utils';
 import { SEOHead } from '@/components/SEOHead';
 import { toast } from 'sonner';
+import { refreshAllCategoryStats } from '@/utils/categoryStatistics';
 
 // Sortable Row Component
 const SortableTableRow = ({ category, onEdit, onDelete }: any) => {
@@ -336,6 +337,18 @@ const Categories = () => {
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
               {syncing ? 'Syncing...' : 'Sync from Providers'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                const loadingToast = toast.loading('Refreshing statistics...');
+                await refreshAllCategoryStats();
+                toast.dismiss(loadingToast);
+                toast.success('Category statistics refreshed');
+              }}
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh Stats
             </Button>
           
             <Dialog open={showDialog} onOpenChange={(open) => {

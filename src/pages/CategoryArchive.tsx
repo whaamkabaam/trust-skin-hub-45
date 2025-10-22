@@ -234,13 +234,13 @@ const CategoryArchive = () => {
       />
 
       {/* Category Stats Bar */}
-      {categoryStats && (
+      {categoryStats && categoryStats.avgPrice != null && (
         <CategoryStatsBar 
           stats={{
             totalBoxes: mysteryBoxes.length,
-            avgPrice: categoryStats.avgPrice,
-            bestROI: categoryStats.bestROI,
-            verificationRate: categoryStats.verificationRate
+            avgPrice: categoryStats.avgPrice || 0,
+            bestROI: categoryStats.bestROI || 0,
+            verificationRate: categoryStats.verificationRate || 0
           }}
         />
       )}

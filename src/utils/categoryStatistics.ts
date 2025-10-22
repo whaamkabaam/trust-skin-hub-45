@@ -115,3 +115,22 @@ export async function refreshCategoryStatsBySlug(categorySlug: string): Promise<
     return false;
   }
 }
+
+/**
+ * Refresh stats for all categories
+ */
+export async function refreshAllCategoryStats(): Promise<void> {
+  try {
+    const { data: categories } = await supabase
+      .from('categories')
+      .select('id');
+    
+    if (!categories) return;
+    
+    for (const cat of categories) {
+      await refreshCategoryStats(cat.id);
+    }
+  } catch (error) {
+    console.error('Error refreshing all category stats:', error);
+  }
+}

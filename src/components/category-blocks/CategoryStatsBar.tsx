@@ -33,7 +33,7 @@ export const CategoryStatsBar = ({ stats }: CategoryStatsBarProps) => {
               <DollarSign className="w-5 h-5 text-primary mr-2" />
             </div>
             <div className="text-3xl font-bold text-foreground mb-1">
-              ${stats.avgPrice.toFixed(2)}
+              ${stats.avgPrice != null ? stats.avgPrice.toFixed(2) : '0.00'}
             </div>
             <div className="text-sm text-muted-foreground">
               Avg. Price
@@ -47,7 +47,7 @@ export const CategoryStatsBar = ({ stats }: CategoryStatsBarProps) => {
                 <TrendingUp className="w-5 h-5 text-success mr-2" />
               </div>
               <div className="text-3xl font-bold text-success mb-1">
-                +{stats.bestROI.toFixed(0)}%
+                +{stats.bestROI != null ? stats.bestROI.toFixed(0) : '0'}%
               </div>
               <div className="text-sm text-muted-foreground">
                 Best ROI
@@ -62,7 +62,7 @@ export const CategoryStatsBar = ({ stats }: CategoryStatsBarProps) => {
                 <Award className="w-5 h-5 text-gaming-gold mr-2" />
               </div>
               <div className="text-3xl font-bold text-foreground mb-1">
-                {stats.verificationRate.toFixed(0)}%
+                {stats.verificationRate != null ? stats.verificationRate.toFixed(0) : '0'}%
               </div>
               <div className="text-sm text-muted-foreground">
                 Verified
