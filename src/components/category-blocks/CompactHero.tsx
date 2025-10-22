@@ -53,9 +53,9 @@ export const CompactHero = ({
   return (
     <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-b">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Main Content - Left Side */}
-          <div className="flex-1 min-w-0">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Main Content - Left Side (60%) */}
+          <div className="lg:flex-[1.5] min-w-0">
             <div className="flex items-start gap-6">
               {/* Category Icon */}
               {category.logo_url && (
@@ -136,14 +136,14 @@ export const CompactHero = ({
             </div>
           </div>
           
-          {/* Featured Box - Right Side */}
+          {/* Featured Box - Right Side (40%) */}
           {featuredBox ? (
-            <div className="lg:w-96 flex-shrink-0">
+            <div className="lg:flex-1 flex-shrink-0">
               <FeaturedBoxCard box={featuredBox} />
             </div>
           ) : (
             /* Decorative SVG - Right (fallback when no featured box) */
-            <div className="hidden lg:block w-48 h-32 flex-shrink-0">
+            <div className="hidden lg:block lg:flex-1 flex-shrink-0">
               <svg viewBox="0 0 200 130" className="w-full h-full opacity-30">
                 <rect x="20" y="40" width="50" height="50" rx="8" fill="currentColor" className="text-primary" opacity="0.4"/>
                 <rect x="80" y="20" width="50" height="50" rx="8" fill="currentColor" className="text-primary" opacity="0.6"/>

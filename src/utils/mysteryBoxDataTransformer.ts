@@ -32,6 +32,14 @@ export const transformToRillaBoxFormat = (trustHubBox: any): MysteryBoxData => {
   const operatorSlug = trustHubBox.operator?.slug?.toLowerCase() || '';
   const provider = providerMap[operatorSlug] || 'rillabox';
   
+  // Map provider to site name for display
+  const siteNameMap: Record<string, string> = {
+    'rillabox': 'RillaBox',
+    'hypedrop': 'Hypedrop',
+    'casesgg': 'Cases.GG',
+    'luxdrop': 'LuxDrop'
+  };
+  
   return {
     box_name: trustHubBox.name || 'Unknown Box',
     box_price: Number(trustHubBox.price) || 0,
@@ -42,7 +50,8 @@ export const transformToRillaBoxFormat = (trustHubBox: any): MysteryBoxData => {
     floor_rate_percent: Number(trustHubBox.floor_rate_percent) || 0,
     category: trustHubBox.category || 'Mystery Boxes',
     tags: Array.isArray(trustHubBox.tags) ? trustHubBox.tags : [],
-    provider: provider
+    provider: provider,
+    site_name: siteNameMap[provider] || provider
   };
 };
 

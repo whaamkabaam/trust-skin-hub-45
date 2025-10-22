@@ -38,7 +38,7 @@ export const AtAGlanceCard = ({ categoryName, stats }: AtAGlanceCardProps) => {
               <DollarSign className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <div className="text-2xl font-bold">${stats.priceRange.min}-{stats.priceRange.max}</div>
+              <div className="text-2xl font-bold">${stats.priceRange.min.toFixed(0)}-${stats.priceRange.max.toFixed(0)}</div>
               <div className="text-xs text-muted-foreground">Price Range</div>
             </div>
           </div>

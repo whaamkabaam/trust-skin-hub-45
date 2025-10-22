@@ -29,17 +29,17 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
 
   return (
     <Card className="overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-4 space-y-3">
         {/* Badge */}
         <div className="flex items-center gap-2">
-          <Badge variant="default" className="bg-gaming-gold text-gaming-gold-foreground">
+          <Badge variant="default" className="bg-gaming-gold text-gaming-gold-foreground text-xs">
             <TrendingUp className="w-3 h-3 mr-1" />
-            Most Popular
+            Featured
           </Badge>
         </div>
 
         {/* Box Image */}
-        <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+        <div className="relative aspect-video rounded-lg overflow-hidden bg-muted max-h-40">
           <img 
             src={box.box_image} 
             alt={box.box_name}
@@ -48,10 +48,10 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
         </div>
 
         {/* Box Info */}
-        <div className="space-y-2">
-          <h3 className="font-bold text-lg">{box.box_name}</h3>
+        <div className="space-y-1">
+          <h3 className="font-bold text-base leading-tight">{box.box_name}</h3>
           {box.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-xs text-muted-foreground line-clamp-1">
               {box.description}
             </p>
           )}
@@ -59,11 +59,11 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
 
         {/* Featured Items */}
         {box.featured_items && box.featured_items.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">Featured Items</p>
-            <div className="space-y-1.5">
-              {box.featured_items.slice(0, 3).map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between text-sm">
+          <div className="space-y-1.5">
+            <p className="text-xs font-semibold text-muted-foreground uppercase">Top Items</p>
+            <div className="space-y-1">
+              {box.featured_items.slice(0, 2).map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between text-xs">
                   <span className="truncate flex-1">{item.name}</span>
                   <span className="font-semibold text-gaming-gold ml-2">
                     ${item.price != null ? item.price.toFixed(2) : '0.00'}
@@ -75,17 +75,17 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
         )}
 
         {/* Price & EV */}
-        <div className="flex items-center justify-between pt-3 border-t">
+        <div className="flex items-center justify-between pt-2 border-t">
           <div>
-            <p className="text-xs text-muted-foreground">Case Price</p>
-            <p className="text-xl font-bold flex items-center">
-              <DollarSign className="w-4 h-4" />
+            <p className="text-xs text-muted-foreground">Price</p>
+            <p className="text-lg font-bold flex items-center">
+              <DollarSign className="w-3.5 h-3.5" />
               {box.box_price != null ? box.box_price.toFixed(2) : '0.00'}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">Expected Value</p>
-            <p className={`text-xl font-bold ${profitRate >= 0 ? 'text-success' : 'text-destructive'}`}>
+            <p className="text-xs text-muted-foreground">EV</p>
+            <p className={`text-lg font-bold ${profitRate >= 0 ? 'text-success' : 'text-destructive'}`}>
               {profitRate >= 0 ? '+' : ''}{profitRate != null ? profitRate.toFixed(0) : '0'}%
             </p>
           </div>
@@ -93,9 +93,9 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
 
         {/* CTA Button */}
         <Link to={`/mystery-boxes/${boxSlug}`}>
-          <Button className="w-full" size="lg">
-            View Case Details
-            <ExternalLink className="w-4 h-4 ml-2" />
+          <Button className="w-full" size="sm">
+            View Details
+            <ExternalLink className="w-3.5 h-3.5 ml-2" />
           </Button>
         </Link>
       </CardContent>
