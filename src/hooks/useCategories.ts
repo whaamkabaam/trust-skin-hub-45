@@ -10,6 +10,8 @@ export interface CategoryFormData {
   description_rich?: string;
   display_order?: number;
   is_featured?: boolean;
+  featured_box_id?: string;
+  featured_box_description?: string;
 }
 
 export function useCategories() {

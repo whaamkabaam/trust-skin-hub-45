@@ -168,6 +168,8 @@ const Categories = () => {
     description_rich: '',
     display_order: 0,
     is_featured: false,
+    featured_box_id: undefined,
+    featured_box_description: '',
   });
 
   const filteredCategories = liveCategories.filter(category =>
@@ -209,6 +211,8 @@ const Categories = () => {
       description_rich: '',
       display_order: maxOrder + 1,
       is_featured: false,
+      featured_box_id: undefined,
+      featured_box_description: '',
     });
     setEditingCategory(null);
     setCategoryBoxes([]);
@@ -222,6 +226,8 @@ const Categories = () => {
       description_rich: category.description_rich || '',
       display_order: category.display_order,
       is_featured: category.is_featured,
+      featured_box_id: category.featured_box_id || undefined,
+      featured_box_description: category.featured_box_description || '',
     });
     setEditingCategory(category.id);
     setShowDialog(true);
@@ -403,7 +409,53 @@ const Categories = () => {
                     placeholder="Category description for SEO and archive pages"
                     rows={3}
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This appears as a subtitle in the category hero section
+                  </p>
                 </div>
+
+                {/* Featured Box Section */}
+                {editingCategory && categoryBoxes.length > 0 && (
+                  <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">Featured Box</Badge>
+                      <p className="text-xs text-muted-foreground">Select one box to highlight in the category hero</p>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="featured_box">Featured Box</Label>
+                      <select
+                        id="featured_box"
+                        value={formData.featured_box_id || ''}
+                        onChange={(e) => setFormData(prev => ({ ...prev, featured_box_id: e.target.value || undefined }))}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <option value="">No featured box</option>
+                        {categoryBoxes.map((box) => (
+                          <option key={box.id} value={box.id}>
+                            {box.box_name} ({box.provider}) - ${box.box_price}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {formData.featured_box_id && (
+                      <div>
+                        <Label htmlFor="featured_description">Featured Box Description (Optional)</Label>
+                        <Textarea
+                          id="featured_description"
+                          value={formData.featured_box_description || ''}
+                          onChange={(e) => setFormData(prev => ({ ...prev, featured_box_description: e.target.value }))}
+                          placeholder="Custom description for the featured box..."
+                          rows={2}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Leave empty to use default box description
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
                 
                 <div className="flex items-center space-x-2">
                   <Switch

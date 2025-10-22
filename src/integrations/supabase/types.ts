@@ -112,10 +112,13 @@ export type Database = {
           author: string | null
           author_avatar_url: string | null
           author_name: string | null
+          avg_price: number | null
           content_updated_at: string | null
           created_at: string
           description_rich: string | null
           display_order: number | null
+          featured_box_description: string | null
+          featured_box_id: string | null
           hero_image_url: string | null
           hero_subtitle: string | null
           hero_title: string | null
@@ -125,21 +128,27 @@ export type Database = {
           meta_description: string | null
           meta_title: string | null
           name: string
+          price_max: number | null
+          price_min: number | null
           published: boolean | null
           published_at: string | null
           reading_time: number | null
           scheduled_publish_at: string | null
           slug: string
+          total_boxes: number | null
           updated_at: string
         }
         Insert: {
           author?: string | null
           author_avatar_url?: string | null
           author_name?: string | null
+          avg_price?: number | null
           content_updated_at?: string | null
           created_at?: string
           description_rich?: string | null
           display_order?: number | null
+          featured_box_description?: string | null
+          featured_box_id?: string | null
           hero_image_url?: string | null
           hero_subtitle?: string | null
           hero_title?: string | null
@@ -149,21 +158,27 @@ export type Database = {
           meta_description?: string | null
           meta_title?: string | null
           name: string
+          price_max?: number | null
+          price_min?: number | null
           published?: boolean | null
           published_at?: string | null
           reading_time?: number | null
           scheduled_publish_at?: string | null
           slug: string
+          total_boxes?: number | null
           updated_at?: string
         }
         Update: {
           author?: string | null
           author_avatar_url?: string | null
           author_name?: string | null
+          avg_price?: number | null
           content_updated_at?: string | null
           created_at?: string
           description_rich?: string | null
           display_order?: number | null
+          featured_box_description?: string | null
+          featured_box_id?: string | null
           hero_image_url?: string | null
           hero_subtitle?: string | null
           hero_title?: string | null
@@ -173,14 +188,25 @@ export type Database = {
           meta_description?: string | null
           meta_title?: string | null
           name?: string
+          price_max?: number | null
+          price_min?: number | null
           published?: boolean | null
           published_at?: string | null
           reading_time?: number | null
           scheduled_publish_at?: string | null
           slug?: string
+          total_boxes?: number | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "categories_featured_box_id_fkey"
+            columns: ["featured_box_id"]
+            isOneToOne: false
+            referencedRelation: "provider_box_category_overrides"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       category_content_blocks: {
         Row: {
@@ -827,7 +853,7 @@ export type Database = {
           published_at: string | null
           ratings: Json | null
           scheduled_publish_at: string | null
-          search_vector: unknown | null
+          search_vector: unknown
           shipping_info: Json | null
           site_type: string | null
           slug: string
@@ -866,7 +892,7 @@ export type Database = {
           published_at?: string | null
           ratings?: Json | null
           scheduled_publish_at?: string | null
-          search_vector?: unknown | null
+          search_vector?: unknown
           shipping_info?: Json | null
           site_type?: string | null
           slug: string
@@ -905,7 +931,7 @@ export type Database = {
           published_at?: string | null
           ratings?: Json | null
           scheduled_publish_at?: string | null
-          search_vector?: unknown | null
+          search_vector?: unknown
           shipping_info?: Json | null
           site_type?: string | null
           slug?: string
@@ -1233,10 +1259,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

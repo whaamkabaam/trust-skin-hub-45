@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Grid, List, Package, SlidersHorizontal } from 'lucide-react';
+import { CategoryStatsBar } from '@/components/category-blocks/CategoryStatsBar';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,7 @@ const CategoryArchive = () => {
   const [selectedSite, setSelectedSite] = useState('all');
   const [priceFilters, setPriceFilters] = useState<string[]>([]);
   const [riskFilters, setRiskFilters] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Calculate stats from mystery boxes data
   const categoryStats = useMemo(() => {
@@ -87,6 +89,18 @@ const CategoryArchive = () => {
       return currentROI > bestROI ? current : best;
     }, mysteryBoxes[0]);
   }, [mysteryBoxes]);
+
+  // Filter boxes based on search query
+  const filteredBoxes = useMemo(() => {
+    if (!searchQuery.trim()) return mysteryBoxes;
+    
+    const query = searchQuery.toLowerCase();
+    return mysteryBoxes.filter(box => 
+      box.name?.toLowerCase().includes(query) ||
+      box.operator?.name?.toLowerCase().includes(query) ||
+      box.game?.toLowerCase().includes(query)
+    );
+  }, [mysteryBoxes, searchQuery]);
 
   // Define sections for sidebar navigation
   const sections = [
@@ -214,7 +228,22 @@ const CategoryArchive = () => {
         priceRange={categoryStats?.priceRange}
         avgEV={categoryStats?.avgEV}
         topProviders={categoryStats?.topProviders}
+        featuredBox={(publishedContent?.content_data as any)?.featuredBox}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
       />
+
+      {/* Category Stats Bar */}
+      {categoryStats && (
+        <CategoryStatsBar 
+          stats={{
+            totalBoxes: mysteryBoxes.length,
+            avgPrice: categoryStats.avgPrice,
+            bestROI: categoryStats.bestROI,
+            verificationRate: categoryStats.verificationRate
+          }}
+        />
+      )}
 
       {/* Main Content with Sidebar */}
       <section className="container mx-auto px-4 py-8">
@@ -342,7 +371,8 @@ const CategoryArchive = () => {
 
                 <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
                   <div className="text-sm text-muted-foreground">
-                    Found <strong>{mysteryBoxes.length}</strong> boxes
+                    Found <strong>{filteredBoxes.length}</strong> boxes
+                    {searchQuery && ` matching "${searchQuery}"`}
                   </div>
 
                   <div className="flex items-center gap-4">
@@ -385,16 +415,27 @@ const CategoryArchive = () => {
                   <div className="text-center py-16">
                     <div className="text-lg">Loading {category.name.toLowerCase()} mystery boxes...</div>
                   </div>
-                ) : mysteryBoxes.length === 0 ? (
+                ) : filteredBoxes.length === 0 ? (
                   <div className="text-center py-16">
                     <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-xl font-semibold mb-2">No boxes found</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      {searchQuery ? 'No matching boxes' : 'No boxes found'}
+                    </h3>
                     <p className="text-muted-foreground mb-6">
-                      No {category.name.toLowerCase()} mystery boxes are currently available.
+                      {searchQuery 
+                        ? `No boxes match "${searchQuery}". Try a different search term.`
+                        : `No ${category.name.toLowerCase()} mystery boxes are currently available.`
+                      }
                     </p>
-                    <Link to="/mystery-boxes">
-                      <Button variant="outline">Browse All Categories</Button>
-                    </Link>
+                    {searchQuery ? (
+                      <Button variant="outline" onClick={() => setSearchQuery('')}>
+                        Clear Search
+                      </Button>
+                    ) : (
+                      <Link to="/mystery-boxes">
+                        <Button variant="outline">Browse All Categories</Button>
+                      </Link>
+                    )}
                   </div>
                 ) : (
                   <div className={cn(
@@ -403,7 +444,7 @@ const CategoryArchive = () => {
                       ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
                       : "flex flex-col space-y-4"
                   )}>
-                    {mysteryBoxes.map((box, index) => (
+                    {filteredBoxes.map((box, index) => (
                       <MysteryBoxCard 
                         key={box.id} 
                         box={transformToRillaBoxFormat(box)}

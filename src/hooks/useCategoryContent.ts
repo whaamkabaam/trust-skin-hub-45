@@ -145,6 +145,49 @@ export const useCategoryContent = (categoryId: string) => {
 
       if (catError) throw catError;
 
+      // Fetch featured box data if set
+      let featuredBoxData = null;
+      if (category.featured_box_id) {
+        const { data: featuredOverride, error: featuredError } = await supabase
+          .from('provider_box_category_overrides')
+          .select('id, provider, box_id')
+          .eq('id', category.featured_box_id)
+          .single();
+
+        if (!featuredError && featuredOverride) {
+          const provider = featuredOverride.provider.toLowerCase();
+          let boxData: any = null;
+
+          if (provider === 'rillabox') {
+            const { data } = await supabase.from('rillabox').select('*').eq('id', featuredOverride.box_id).single();
+            boxData = data;
+          } else if (provider === 'hypedrop') {
+            const { data } = await supabase.from('hypedrop').select('*').eq('id', featuredOverride.box_id).single();
+            boxData = data;
+          } else if (provider === 'casesgg') {
+            const { data } = await supabase.from('casesgg').select('*').eq('id', featuredOverride.box_id).single();
+            boxData = data;
+          } else if (provider === 'luxdrop') {
+            const { data } = await supabase.from('luxdrop').select('*').eq('id', featuredOverride.box_id).single();
+            boxData = data;
+          }
+
+          if (boxData) {
+            featuredBoxData = {
+              id: featuredOverride.id,
+              box_name: boxData.box_name,
+              box_image: boxData.box_image,
+              box_price: Number(boxData.box_price),
+              expected_value_percent_of_price: Number(boxData.expected_value_percent) || 0,
+              description: category.featured_box_description || '',
+              featured_items: boxData.jackpot_items ? JSON.parse(JSON.stringify(boxData.jackpot_items)).slice(0, 3) : [],
+              provider: featuredOverride.provider,
+              box_url: boxData.box_url
+            };
+          }
+        }
+      }
+
       // Enrich mystery_boxes blocks with full box data
       const enrichedBlocks = await Promise.all(
         blocks.map(async (block) => {
@@ -247,7 +290,10 @@ export const useCategoryContent = (categoryId: string) => {
         .upsert({
           category_id: categoryId,
           slug: category.slug,
-          content_data: { blocks: enrichedBlocks },
+          content_data: { 
+            blocks: enrichedBlocks,
+            featuredBox: featuredBoxData 
+          },
           seo_data: {
             meta_title: category.meta_title,
             meta_description: category.meta_description,
