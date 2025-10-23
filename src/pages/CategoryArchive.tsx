@@ -181,14 +181,30 @@ const CategoryArchive = () => {
       { id: 'mystery-boxes', title: 'All Mystery Boxes' },
     ];
 
-    // Add content block sections
+    // Add content block sections - only include text blocks with headings that should be in nav
     if (publishedContent?.content_data && (publishedContent.content_data as any)?.blocks) {
       const blockSections = (publishedContent.content_data as any).blocks
-        .filter((block: any) => block.is_visible && ['text', 'table'].includes(block.block_type))
-        .map((block: any) => ({
-          id: `block-${block.block_type}-${block.order_number}`,
-          title: block.block_data?.heading || `${block.block_type} Section`
-        }));
+        .filter((block: any) => {
+          // Only include text blocks with a heading and includeInNav is not explicitly false
+          if (block.block_type === 'text') {
+            return block.is_visible && block.block_data?.heading && block.block_data?.includeInNav !== false;
+          }
+          // Include other visible block types
+          return block.is_visible && ['table'].includes(block.block_type);
+        })
+        .map((block: any) => {
+          if (block.block_type === 'text' && block.block_data?.heading) {
+            const headingSlug = block.block_data.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            return {
+              id: headingSlug,
+              title: block.block_data.heading
+            };
+          }
+          return {
+            id: `block-${block.block_type}-${block.order_number}`,
+            title: `${block.block_type} Section`
+          };
+        });
       return [...baseSections, ...blockSections];
     }
 

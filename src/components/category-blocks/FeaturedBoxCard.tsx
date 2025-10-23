@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 interface FeaturedItem {
   name: string;
   price: number;
+  image?: string;
 }
 
 interface FeaturedBoxCardProps {
@@ -57,17 +58,34 @@ export const FeaturedBoxCard = ({ box }: FeaturedBoxCardProps) => {
           )}
         </div>
 
-        {/* Featured Items */}
+        {/* Featured Items with Images */}
         {box.featured_items && box.featured_items.length > 0 && (
-          <div className="space-y-1">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Top Items</p>
-            <div className="space-y-0.5">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+              <span>🏆</span> Top Jackpot Items
+            </p>
+            <div className="space-y-1.5">
               {box.featured_items.slice(0, 2).map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between text-xs">
-                  <span className="truncate flex-1 text-xs">{item.name}</span>
-                  <span className="font-semibold text-gaming-gold ml-2 text-xs">
-                    ${item.price != null ? item.price.toFixed(0) : '0'}
-                  </span>
+                <div 
+                  key={idx} 
+                  className="flex items-center gap-2 p-1.5 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors"
+                >
+                  {item.image && (
+                    <div className="w-10 h-10 flex-shrink-0 rounded bg-background/50 p-1">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate leading-tight">{item.name}</p>
+                    <p className="text-xs text-gaming-gold font-bold">
+                      ${item.price != null ? item.price.toFixed(0) : '0'}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>

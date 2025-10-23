@@ -177,9 +177,16 @@ export const useCategoryContent = (categoryId: string) => {
               }
 
               if (boxData) {
-                // Transform featured items using the transformer
-                const { transformFeaturedItems } = await import('@/utils/featuredItemsTransformer');
-                const featuredItems = transformFeaturedItems(boxData.jackpot_items || []);
+                // Transform featured items to include images
+                const transformedItems = (boxData.jackpot_items || [])
+                  .map((item: any) => ({
+                    name: item.item_name || 'Unknown Item',
+                    price: typeof item.item_value === 'number' ? item.item_value : 0,
+                    image: item.item_image || item.image_url || ''
+                  }))
+                  .filter((item: any) => item.price > 0)
+                  .sort((a: any, b: any) => b.price - a.price)
+                  .slice(0, 3);
                 
                 featuredBoxData = {
                   id: featuredOverride.id,
@@ -188,7 +195,7 @@ export const useCategoryContent = (categoryId: string) => {
                   box_price: Number(boxData.box_price),
                   expected_value_percent_of_price: Number(boxData.expected_value_percent) || 0,
                   description: category.featured_box_description || '',
-                  featured_items: featuredItems.slice(0, 3),
+                  featured_items: transformedItems,
                   provider: featuredOverride.provider,
                   box_url: boxData.box_url
                 };
@@ -241,30 +248,41 @@ export const useCategoryContent = (categoryId: string) => {
               let boxError: any = null;
               
               if (provider === 'rillabox') {
-                const result = await supabase.from('rillabox').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags').in('id', boxIds);
+                const result = await supabase.from('rillabox').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags, jackpot_items').in('id', boxIds);
                 boxes = result.data;
                 boxError = result.error;
               } else if (provider === 'hypedrop') {
-                const result = await supabase.from('hypedrop').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags').in('id', boxIds);
+                const result = await supabase.from('hypedrop').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags, jackpot_items').in('id', boxIds);
                 boxes = result.data;
                 boxError = result.error;
               } else if (provider === 'casesgg') {
-                const result = await supabase.from('casesgg').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags').in('id', boxIds);
+                const result = await supabase.from('casesgg').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags, jackpot_items').in('id', boxIds);
                 boxes = result.data;
                 boxError = result.error;
               } else if (provider === 'luxdrop') {
-                const result = await supabase.from('luxdrop').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags').in('id', boxIds);
+                const result = await supabase.from('luxdrop').select('id, box_name, box_price, box_image, box_url, expected_value_percent, floor_rate_percent, standard_deviation_percent, volatility_bucket, category, tags, jackpot_items').in('id', boxIds);
                 boxes = result.data;
                 boxError = result.error;
               }
               
               if (boxError) {
                 console.error(`Error fetching boxes from ${provider}:`, boxError);
-              } else if (boxes) {
+               } else if (boxes) {
                 // Merge with override data and enrich with full metrics
                 boxes.forEach((box: any) => {
                   const override = items.find(item => item.box_id === box.id);
                   if (override) {
+                    // Transform featured items to include images
+                    const transformedItems = (box.jackpot_items || [])
+                      .map((item: any) => ({
+                        name: item.item_name || 'Unknown Item',
+                        price: typeof item.item_value === 'number' ? item.item_value : 0,
+                        image: item.item_image || item.image_url || ''
+                      }))
+                      .filter((item: any) => item.price > 0)
+                      .sort((a: any, b: any) => b.price - a.price)
+                      .slice(0, 5);
+
                     boxesData.push({
                       id: override.id,
                       box_id: box.id,
@@ -279,6 +297,7 @@ export const useCategoryContent = (categoryId: string) => {
                       category: box.category || 'Mystery Boxes',
                       tags: Array.isArray(box.tags) ? box.tags : [],
                       provider: override.provider,
+                      featured_items: transformedItems,
                     });
                   }
                 });
