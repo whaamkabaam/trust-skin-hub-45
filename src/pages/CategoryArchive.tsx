@@ -25,6 +25,7 @@ import { AtAGlanceCard } from '@/components/category-blocks/AtAGlanceCard';
 import { EnhancedMysteryBoxCard } from '@/components/category-blocks/EnhancedMysteryBoxCard';
 import MysteryBoxCard from '@/components/MysteryBoxCard';
 import { transformToRillaBoxFormat } from '@/utils/mysteryBoxDataTransformer';
+import { FeaturedBoxCard } from '@/components/category-blocks/FeaturedBoxCard';
 import React from 'react';
 
 const CategoryArchive = () => {
@@ -332,11 +333,20 @@ const CategoryArchive = () => {
           priceRange={categoryStats?.priceRange}
           avgEV={categoryStats?.avgEV}
           topProviders={categoryStats?.topProviders}
-          featuredBox={(publishedContent?.content_data as any)?.featuredBox}
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
         />
       </div>
+
+      {/* Full-width Featured Box Section */}
+      {(publishedContent?.content_data as any)?.featuredBox && (
+        <section className="container mx-auto px-4 py-6">
+          <FeaturedBoxCard 
+            box={(publishedContent?.content_data as any).featuredBox} 
+            layout="horizontal-full"
+          />
+        </section>
+      )}
 
       {categoryStats && categoryStats.avgPrice !== undefined && (
         <CategoryStatsBar 
