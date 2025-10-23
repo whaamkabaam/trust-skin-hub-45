@@ -7,6 +7,9 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
 interface TableData {
+  heading?: string;
+  showHeading?: boolean;
+  includeInNav?: boolean;
   hasHeader: boolean;
   rows: string[][];
 }
@@ -19,6 +22,9 @@ interface TableBlockProps {
 
 export const TableBlock = ({ data, onChange, isEditing }: TableBlockProps) => {
   const [localData, setLocalData] = useState<TableData>({
+    heading: data.heading,
+    showHeading: data.showHeading ?? true,
+    includeInNav: data.includeInNav ?? true,
     hasHeader: data.hasHeader ?? true,
     rows: data.rows ?? [
       ['Header 1', 'Header 2', 'Header 3'],
@@ -43,7 +49,7 @@ export const TableBlock = ({ data, onChange, isEditing }: TableBlockProps) => {
     if (JSON.stringify(incomingData) !== JSON.stringify(localData)) {
       setLocalData(incomingData);
     }
-  }, [data]);
+  }, [data.hasHeader, data.rows, data.heading, data.showHeading, data.includeInNav]);
 
   const handleChange = (newData: TableData) => {
     setLocalData(newData);
@@ -88,6 +94,44 @@ export const TableBlock = ({ data, onChange, isEditing }: TableBlockProps) => {
     return (
       <Card className="p-6">
         <div className="space-y-4">
+          {/* Heading Controls */}
+          <div className="space-y-3 pb-4 border-b border-border">
+            <div className="space-y-2">
+              <Label htmlFor="table-heading">Table Heading (Optional)</Label>
+              <Input
+                id="table-heading"
+                value={localData.heading || ''}
+                onChange={(e) => handleChange({ ...localData, heading: e.target.value })}
+                placeholder="e.g., Price Comparison, Feature Matrix"
+                className="text-base font-semibold"
+              />
+              <p className="text-xs text-muted-foreground">
+                Leave empty to exclude from navigation
+              </p>
+            </div>
+
+            {localData.heading && (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="show-heading"
+                    checked={localData.showHeading !== false}
+                    onCheckedChange={(checked) => handleChange({ ...localData, showHeading: checked })}
+                  />
+                  <Label htmlFor="show-heading" className="text-sm">Show heading on page</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="include-in-nav"
+                    checked={localData.includeInNav !== false}
+                    onCheckedChange={(checked) => handleChange({ ...localData, includeInNav: checked })}
+                  />
+                  <Label htmlFor="include-in-nav" className="text-sm">Include in navigation</Label>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Switch
@@ -173,6 +217,18 @@ export const TableBlock = ({ data, onChange, isEditing }: TableBlockProps) => {
   // Display mode
   return (
     <div className="w-full max-w-4xl mx-auto my-8">
+      {/* Heading Section */}
+      {localData.showHeading !== false && localData.heading && (
+        <div className="mb-4">
+          <h2 
+            id={localData.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
+            className="text-2xl font-bold text-foreground mb-2"
+          >
+            {localData.heading}
+          </h2>
+        </div>
+      )}
+      
       {/* Wrapper with rounded corners and overflow control */}
       <div className="rounded-lg border border-border overflow-hidden bg-card shadow-sm">
         <div className="overflow-x-auto">

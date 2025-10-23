@@ -54,9 +54,23 @@ export const CategorySidebar = ({ sections, quickStats, topProviders }: Category
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const yOffset = -100;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      const headerOffset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      
+      // Smooth scroll with custom behavior
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+      
+      // Visual feedback: briefly highlight section
+      element.classList.add('ring-2', 'ring-primary/20', 'rounded-lg', 'transition-all');
+      setTimeout(() => {
+        element.classList.remove('ring-2', 'ring-primary/20', 'rounded-lg');
+      }, 1500);
+    } else {
+      console.warn(`Navigation: Element not found for section "${id}"`);
     }
   };
 

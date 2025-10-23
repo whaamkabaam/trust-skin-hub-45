@@ -185,15 +185,19 @@ const CategoryArchive = () => {
     if (publishedContent?.content_data && (publishedContent.content_data as any)?.blocks) {
       const blockSections = (publishedContent.content_data as any).blocks
         .filter((block: any) => {
-          // Only include text blocks with a heading and includeInNav is not explicitly false
+          // Include text blocks with heading
           if (block.block_type === 'text') {
             return block.is_visible && block.block_data?.heading && block.block_data?.includeInNav !== false;
           }
+          // Include table blocks with heading
+          if (block.block_type === 'table') {
+            return block.is_visible && block.block_data?.heading && block.block_data?.includeInNav !== false;
+          }
           // Include other visible block types
-          return block.is_visible && ['table'].includes(block.block_type);
+          return block.is_visible && ['mystery_boxes'].includes(block.block_type);
         })
         .map((block: any) => {
-          if (block.block_type === 'text' && block.block_data?.heading) {
+          if ((block.block_type === 'text' || block.block_type === 'table') && block.block_data?.heading) {
             const headingSlug = block.block_data.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             return {
               id: headingSlug,
@@ -361,20 +365,20 @@ const CategoryArchive = () => {
                 />
               </div>
             )}
-            {/* Render Published Content Blocks if available */}
-            {publishedContent?.content_data && (publishedContent.content_data as any)?.blocks && (publishedContent.content_data as any).blocks.length > 0 ? (
-              <div className="space-y-12 mb-12">
-                {(publishedContent.content_data as any).blocks
-                  .filter((block: any) => block.is_visible)
-                  .sort((a: any, b: any) => a.order_number - b.order_number)
-                  .map((block: any) => (
-                    <BlockRenderer key={block.id} block={block} />
-                  ))}
-              </div>
-            ) : (
-              <>
-                {/* Collapsible Filters Section */}
-                <div id="filters" className="mb-8">
+          {/* Render Published Content Blocks if available */}
+          {publishedContent?.content_data && (publishedContent.content_data as any)?.blocks && (publishedContent.content_data as any).blocks.length > 0 ? (
+            <div className="space-y-12 mb-12">
+              {(publishedContent.content_data as any).blocks
+                .filter((block: any) => block.is_visible)
+                .sort((a: any, b: any) => a.order_number - b.order_number)
+                .map((block: any) => (
+                  <BlockRenderer key={block.id} block={block} />
+                ))}
+            </div>
+          ) : (
+            <>
+              {/* Collapsible Filters Section */}
+              <section id="filters" className="mb-8">
                   <Collapsible defaultOpen={false}>
                     <CollapsibleTrigger asChild>
                       <Button variant="outline" className="w-full mb-4 justify-between">
@@ -457,10 +461,10 @@ const CategoryArchive = () => {
                       </Card>
                     </CollapsibleContent>
                   </Collapsible>
-                </div>
+                </section>
 
                 {/* Results Header */}
-                <div id="mystery-boxes">
+                <section id="mystery-boxes">
                   <SectionHeader 
                     title={`${category.name} Mystery Boxes`}
                     description={`Showing ${mysteryBoxes.length} verified mystery boxes`}
@@ -552,7 +556,7 @@ const CategoryArchive = () => {
                   </div>
                 )}
 
-                </div>
+                </section>
 
                 {/* Category Description */}
                 {category.description_rich && (
