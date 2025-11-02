@@ -151,21 +151,21 @@ export const FeaturedBoxCard = ({ box, layout = 'sidebar' }: FeaturedBoxCardProp
 
   // Horizontal full-width layout
   return (
-    <Card className="group relative overflow-hidden bg-gradient-to-r from-background/60 via-background/70 to-background/60 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-gaming-gold/20 hover:border-gaming-gold/30 transition-all duration-300">
+    <Card className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-background/60 via-background/70 to-background/60 backdrop-blur-xl border-2 border-white/20 shadow-2xl hover:shadow-gaming-gold/30 hover:border-gaming-gold/40 transition-all duration-300 min-h-[200px]">
       <CardContent className="p-0">
         {/* Featured Badge - Top */}
-        <div className="px-6 pt-4 pb-2">
-          <Badge className="bg-gradient-to-r from-gaming-gold to-yellow-600 text-white border-0 shadow-lg shadow-gaming-gold/50">
-            <Star className="w-3 h-3 mr-1 fill-white" />
-            Featured Box
+        <div className="px-6 lg:px-8 pt-6">
+          <Badge className="bg-gradient-to-r from-gaming-gold via-yellow-500 to-gaming-gold text-black border-0 shadow-lg shadow-gaming-gold/50 text-sm px-4 py-1.5 font-bold animate-pulse">
+            <Star className="w-4 h-4 mr-1.5 fill-black" />
+            FEATURED BOX
           </Badge>
         </div>
 
         {/* Main Horizontal Content */}
-        <div className="flex flex-col lg:flex-row items-center lg:items-stretch gap-4 lg:gap-6 px-6 pb-6">
-          {/* Section 1: Box Image (80px) */}
+        <div className="flex flex-col lg:flex-row items-center lg:items-stretch gap-6 lg:gap-8 px-6 lg:px-8 py-6 lg:py-8">
+          {/* Section 1: Box Image (128px desktop, 96px mobile) */}
           <div className="flex-shrink-0">
-            <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-background/40 to-background/20 backdrop-blur-sm p-3 ring-2 ring-white/10 group-hover:ring-gaming-gold/30 transition-all">
+            <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-xl bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm p-4 border-2 border-white/30 shadow-xl group-hover:shadow-gaming-gold/50 group-hover:scale-110 transition-all duration-300">
               <img 
                 src={box.box_image} 
                 alt={box.box_name}
@@ -174,82 +174,85 @@ export const FeaturedBoxCard = ({ box, layout = 'sidebar' }: FeaturedBoxCardProp
             </div>
           </div>
 
-          {/* Section 2: Box Info (flex-[2] = 40%) */}
-          <div className="flex-[2] min-w-0 text-center lg:text-left">
-            <h3 className="font-bold text-lg text-foreground mb-1 line-clamp-1">
+          {/* Section 2: Box Info (flex-[3]) */}
+          <div className="flex-[3] min-w-0 text-center lg:text-left space-y-3">
+            <h3 className="font-extrabold text-2xl lg:text-3xl bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent line-clamp-2">
               {box.box_name}
             </h3>
-            <Badge variant="secondary" className="text-xs mb-2">
+            <Badge variant="secondary" className="text-sm px-3 py-1.5 font-semibold">
               {box.provider}
             </Badge>
             {box.description && (
-              <p className="text-sm text-muted-foreground line-clamp-2">
+              <p className="text-base text-foreground/70 line-clamp-3">
                 {box.description}
               </p>
             )}
           </div>
 
-          {/* Section 3: Top Items (flex-[2] = 40%) */}
+          {/* Section 3: Top Items (flex-[3]) */}
           {topItems.length > 0 && (
-            <div className="flex-[2] min-w-0 space-y-2 w-full lg:w-auto lg:border-l lg:border-white/10 lg:pl-6">
-              <div className="flex items-center gap-2 text-xs font-semibold">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-r from-gaming-gold to-yellow-600 flex items-center justify-center">
-                  <Star className="w-3 h-3 text-white fill-white" />
-                </div>
-                <span className="bg-gradient-to-r from-gaming-gold to-yellow-600 bg-clip-text text-transparent">
-                  TOP ITEMS
-                </span>
-              </div>
+            <div className="flex-[3] min-w-0 space-y-3 w-full lg:w-auto lg:border-l-2 lg:border-white/10 lg:pl-8">
+              <Badge variant="outline" className="text-sm font-bold border-gaming-gold/40 text-gaming-gold px-3 py-1.5">
+                <Star className="w-5 h-5 mr-1.5 fill-gaming-gold" />
+                TOP ITEMS
+              </Badge>
               
-              {topItems.map((item, idx) => (
-                <div 
-                  key={idx} 
-                  className="flex items-center gap-2 p-2 rounded-full bg-background/20 backdrop-blur-sm border border-white/10 hover:border-gaming-gold/30 transition-all"
-                >
-                  {item.image && (
-                    <div className="w-6 h-6 rounded-full bg-background/50 p-1 ring-1 ring-white/5 flex-shrink-0">
-                      <img 
-                        src={item.image} 
-                        alt={item.name}
-                        className="w-full h-full object-contain"
-                        loading="lazy"
-                      />
-                    </div>
-                  )}
-                  <span className="text-xs font-medium truncate flex-1 text-foreground">{item.name}</span>
-                  <span className="text-xs font-bold text-gaming-gold whitespace-nowrap">
-                    {formatCompactPrice(item.price)}
-                  </span>
-                </div>
-              ))}
+              <div className="space-y-3">
+                {topItems.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className="flex items-center gap-3 p-3 lg:p-4 rounded-lg bg-background/50 backdrop-blur-sm border border-white/10 hover:border-gaming-gold/40 hover:scale-105 transition-all duration-200 shadow-sm"
+                  >
+                    {item.image && (
+                      <div className="w-10 h-10 rounded-lg bg-white/80 p-1.5 ring-2 ring-white/20 flex-shrink-0 shadow-md">
+                        <img 
+                          src={item.image} 
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <span className="text-sm font-medium truncate flex-1 text-foreground">{item.name}</span>
+                    <span className="text-base lg:text-lg font-extrabold bg-gradient-to-r from-gaming-gold to-yellow-600 bg-clip-text text-transparent whitespace-nowrap">
+                      {formatCompactPrice(item.price)}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Section 4: Stats + CTA (w-40 = 160px) */}
-          <div className="w-full lg:w-40 flex-shrink-0 space-y-3">
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-center lg:justify-start gap-1">
-                <DollarSign className="w-3 h-3 text-muted-foreground" />
-                <span className="text-lg font-bold text-foreground">
-                  ${box.box_price != null ? box.box_price.toFixed(0) : '0'}
-                </span>
-              </div>
-              <div className="flex items-center justify-center lg:justify-start gap-1">
-                {isProfit ? (
-                  <TrendingUp className="w-3 h-3 text-success" />
-                ) : (
-                  <TrendingDown className="w-3 h-3 text-destructive" />
-                )}
-                <span className={`text-base font-bold ${isProfit ? 'text-success' : 'text-destructive'}`}>
-                  {isProfit ? '+' : ''}{profitRate != null ? profitRate.toFixed(1) : '0'}%
-                </span>
+          {/* Section 4: Stats + CTA (w-56) */}
+          <div className="w-full lg:w-56 flex-shrink-0 flex flex-row lg:flex-col items-center lg:items-stretch gap-4 lg:gap-5">
+            {/* Price */}
+            <div className="flex-1 lg:flex-none text-center">
+              <div className="text-sm text-muted-foreground mb-2 font-medium">Price</div>
+              <div className="text-3xl lg:text-4xl font-black text-foreground drop-shadow-sm">
+                ${box.box_price != null ? box.box_price.toFixed(0) : '0'}
               </div>
             </div>
             
-            <Link to={`/mystery-boxes/${boxSlug}`} className="block">
-              <Button className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/30 font-semibold text-sm">
-                View Details
-                <ExternalLink className="w-3 h-3 ml-1.5" />
+            {/* EV */}
+            <div className="flex-1 lg:flex-none text-center">
+              <div className="text-sm text-muted-foreground mb-2 font-medium">Expected Value</div>
+              <div className={`text-2xl lg:text-3xl font-extrabold flex items-center justify-center gap-2 ${
+                isProfit ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {isProfit ? (
+                  <TrendingUp className="w-6 h-6" />
+                ) : (
+                  <TrendingDown className="w-6 h-6" />
+                )}
+                {isProfit ? '+' : ''}{profitRate != null ? profitRate.toFixed(1) : '0'}%
+              </div>
+            </div>
+            
+            {/* CTA */}
+            <Link to={`/mystery-boxes/${boxSlug}`} className="block w-full">
+              <Button className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200 font-bold text-base py-6 px-6">
+                View Full Details
+                <ExternalLink className="w-5 h-5 ml-2" />
               </Button>
             </Link>
           </div>
