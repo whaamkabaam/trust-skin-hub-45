@@ -15,8 +15,6 @@ interface CompactHeroProps {
   priceRange?: { min: number; max: number };
   avgEV?: number;
   topProviders?: Array<{ name: string; count: number }>;
-  searchValue?: string;
-  onSearchChange?: (value: string) => void;
 }
 
 export const CompactHero = ({ 
@@ -24,9 +22,7 @@ export const CompactHero = ({
   boxCount, 
   priceRange,
   avgEV,
-  topProviders,
-  searchValue = '',
-  onSearchChange
+  topProviders
 }: CompactHeroProps) => {
   const currentDate = new Date();
   const monthYear = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -81,17 +77,6 @@ export const CompactHero = ({
               <p className="text-muted-foreground mb-4 max-w-2xl">
                 {category.description}
               </p>
-            )}
-
-            {/* Search Bar */}
-            {onSearchChange && (
-              <div className="mb-4">
-                <CategorySearch 
-                  value={searchValue}
-                  onChange={onSearchChange}
-                  categoryName={category.name}
-                />
-              </div>
             )}
             
             {/* Data-Driven Stats Pills */}

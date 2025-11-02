@@ -41,7 +41,6 @@ const CategoryArchive = () => {
   const [selectedSite, setSelectedSite] = useState('all');
   const [priceFilters, setPriceFilters] = useState<string[]>([]);
   const [riskFilters, setRiskFilters] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Helper function to normalize provider names
   const normalizeProviderName = (box: any): string => {
@@ -176,19 +175,9 @@ const CategoryArchive = () => {
     }, mysteryBoxes[0]);
   }, [mysteryBoxes]);
 
-  // Filter boxes based on search query, site, and price
+  // Filter boxes based on site and price
   const filteredBoxes = useMemo(() => {
     let boxes = mysteryBoxes;
-
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      boxes = boxes.filter(box => 
-        box.name?.toLowerCase().includes(query) ||
-        box.operator?.name?.toLowerCase().includes(query) ||
-        box.game?.toLowerCase().includes(query)
-      );
-    }
 
     // Apply site filter
     if (selectedSite !== 'all') {
@@ -220,14 +209,12 @@ const CategoryArchive = () => {
     // Skipping for now as MysteryBox type doesn't include volatility_bucket
 
     return boxes;
-  }, [mysteryBoxes, searchQuery, selectedSite, priceFilters]);
+  }, [mysteryBoxes, selectedSite, priceFilters]);
 
   // Generate sections dynamically from published content
   const sections = React.useMemo(() => {
     const baseSections = [
-      { id: 'at-a-glance', title: 'At a Glance' },
-      { id: 'filters', title: 'Filter & Sort' },
-      { id: 'mystery-boxes', title: 'All Mystery Boxes' },
+      { id: 'at-a-glance', title: 'At a Glance' }
     ];
 
     // Add content block sections - only include text blocks with headings that should be in nav
@@ -409,8 +396,6 @@ const CategoryArchive = () => {
           priceRange={categoryStats?.priceRange}
           avgEV={categoryStats?.avgEV}
           topProviders={categoryStats?.topProviders}
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
         />
       </div>
 
@@ -559,7 +544,6 @@ const CategoryArchive = () => {
                 <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
                   <div className="text-sm text-muted-foreground">
                     Found <strong>{filteredBoxes.length}</strong> boxes
-                    {searchQuery && ` matching "${searchQuery}"`}
                   </div>
 
                   <div className="flex items-center gap-4">
@@ -605,24 +589,13 @@ const CategoryArchive = () => {
                 ) : filteredBoxes.length === 0 ? (
                   <div className="text-center py-16">
                     <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-xl font-semibold mb-2">
-                      {searchQuery ? 'No matching boxes' : 'No boxes found'}
-                    </h3>
+                    <h3 className="text-xl font-semibold mb-2">No boxes found</h3>
                     <p className="text-muted-foreground mb-6">
-                      {searchQuery 
-                        ? `No boxes match "${searchQuery}". Try a different search term.`
-                        : `No ${category.name.toLowerCase()} mystery boxes are currently available.`
-                      }
+                      No {category.name.toLowerCase()} mystery boxes match your filters.
                     </p>
-                    {searchQuery ? (
-                      <Button variant="outline" onClick={() => setSearchQuery('')}>
-                        Clear Search
-                      </Button>
-                    ) : (
-                      <Link to="/mystery-boxes">
-                        <Button variant="outline">Browse All Categories</Button>
-                      </Link>
-                    )}
+                    <Link to="/mystery-boxes">
+                      <Button variant="outline">Browse All Categories</Button>
+                    </Link>
                   </div>
                 ) : (
                   <div className={cn(
