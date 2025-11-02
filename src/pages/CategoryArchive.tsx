@@ -43,6 +43,35 @@ const CategoryArchive = () => {
   const [riskFilters, setRiskFilters] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Helper function to normalize provider names
+  const normalizeProviderName = (box: any): string => {
+    const PROVIDER_MAP: Record<string, string> = {
+      'rillabox': 'RillaBox',
+      'hypedrop': 'Hypedrop',
+      'casesgg': 'Cases.GG',
+      'luxdrop': 'LuxDrop',
+    };
+
+    // Priority 1: Check for provider field (most reliable from transformed data)
+    if (box.provider && PROVIDER_MAP[box.provider.toLowerCase()]) {
+      return PROVIDER_MAP[box.provider.toLowerCase()];
+    }
+
+    // Priority 2: Check site_name and map it if it's a slug
+    if (box.site_name) {
+      const lowerSiteName = box.site_name.toLowerCase();
+      if (PROVIDER_MAP[lowerSiteName]) {
+        return PROVIDER_MAP[lowerSiteName];
+      }
+      // If site_name is already a display name, use it
+      if (Object.values(PROVIDER_MAP).includes(box.site_name)) {
+        return box.site_name;
+      }
+    }
+
+    return 'Unknown';
+  };
+
   // Calculate category statistics - prioritize cached DB stats
   const categoryStats = useMemo(() => {
     // Use cached database stats if available
@@ -59,29 +88,12 @@ const CategoryArchive = () => {
         ? Math.max(...mysteryBoxes.map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0))
         : 0;
 
-      // Count providers
-      const PROVIDER_MAP: Record<string, string> = {
-        'rillabox': 'RillaBox',
-        'hypedrop': 'Hypedrop',
-        'casesgg': 'Cases.GG',
-        'luxdrop': 'LuxDrop',
-      };
-      
+      // Count providers using normalized names
       const providerCounts = mysteryBoxes.reduce((acc, box) => {
-        // Try to get provider from site_name, operator, or categories
-        let provider = box.site_name;
-        
-        if (!provider || provider === 'Unknown') {
-          // Check if box has categories with provider info
-          const providerCategory = (box.categories as any)?.find((catItem: any) => 
-            ['rillabox', 'hypedrop', 'casesgg', 'luxdrop'].includes(catItem?.category?.slug?.toLowerCase())
-          );
-          const providerSlug = providerCategory?.category?.slug?.toLowerCase();
-          
-          provider = providerSlug ? PROVIDER_MAP[providerSlug] : 'Unknown';
+        const provider = normalizeProviderName(box);
+        if (provider !== 'Unknown') {
+          acc[provider] = (acc[provider] || 0) + 1;
         }
-        
-        acc[provider] = (acc[provider] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
 
@@ -122,8 +134,10 @@ const CategoryArchive = () => {
       : 0;
 
     const providerCounts = mysteryBoxes.reduce((acc, box) => {
-      const provider = box.site_name || 'Unknown';
-      acc[provider] = (acc[provider] || 0) + 1;
+      const provider = normalizeProviderName(box);
+      if (provider !== 'Unknown') {
+        acc[provider] = (acc[provider] || 0) + 1;
+      }
       return acc;
     }, {} as Record<string, number>);
 
@@ -162,17 +176,51 @@ const CategoryArchive = () => {
     }, mysteryBoxes[0]);
   }, [mysteryBoxes]);
 
-  // Filter boxes based on search query
+  // Filter boxes based on search query, site, and price
   const filteredBoxes = useMemo(() => {
-    if (!searchQuery.trim()) return mysteryBoxes;
-    
-    const query = searchQuery.toLowerCase();
-    return mysteryBoxes.filter(box => 
-      box.name?.toLowerCase().includes(query) ||
-      box.operator?.name?.toLowerCase().includes(query) ||
-      box.game?.toLowerCase().includes(query)
-    );
-  }, [mysteryBoxes, searchQuery]);
+    let boxes = mysteryBoxes;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      boxes = boxes.filter(box => 
+        box.name?.toLowerCase().includes(query) ||
+        box.operator?.name?.toLowerCase().includes(query) ||
+        box.game?.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply site filter
+    if (selectedSite !== 'all') {
+      boxes = boxes.filter(box => {
+        const provider = normalizeProviderName(box);
+        const providerSlug = provider.toLowerCase().replace(/\./g, '');
+        return providerSlug === selectedSite;
+      });
+    }
+
+    // Apply price filters
+    if (priceFilters.length > 0) {
+      boxes = boxes.filter(box => {
+        return priceFilters.some(filter => {
+          const price = box.price || 0;
+          switch (filter) {
+            case 'under-25': return price < 25;
+            case '25-50': return price >= 25 && price < 50;
+            case '50-100': return price >= 50 && price < 100;
+            case '100-200': return price >= 100 && price < 200;
+            case 'over-200': return price >= 200;
+            default: return true;
+          }
+        });
+      });
+    }
+
+    // Risk filters would require volatility data from provider tables
+    // Skipping for now as MysteryBox type doesn't include volatility_bucket
+
+    return boxes;
+  }, [mysteryBoxes, searchQuery, selectedSite, priceFilters]);
 
   // Generate sections dynamically from published content
   const sections = React.useMemo(() => {
@@ -230,14 +278,28 @@ const CategoryArchive = () => {
     return baseSections;
   }, [publishedContent]);
 
-  const sites = [
-    { value: 'all', label: 'All Sites' },
-    { value: 'premium-skins', label: 'Premium Skins' },
-    { value: 'skin-bay', label: 'Skin Bay' },
-    { value: 'case-king', label: 'Case King' },
-    { value: 'box-empire', label: 'Box Empire' },
-    { value: 'mystery-co', label: 'Mystery Co' },
-  ];
+  // Generate dynamic sites list from actual mystery box data
+  const sites = useMemo(() => {
+    const uniqueProviders = new Set<string>();
+    mysteryBoxes.forEach(box => {
+      const provider = normalizeProviderName(box);
+      if (provider !== 'Unknown') {
+        uniqueProviders.add(provider);
+      }
+    });
+    
+    const providerOptions = Array.from(uniqueProviders)
+      .sort()
+      .map(provider => ({
+        value: provider.toLowerCase().replace(/\./g, ''),
+        label: provider
+      }));
+
+    return [
+      { value: 'all', label: 'All Sites' },
+      ...providerOptions
+    ];
+  }, [mysteryBoxes]);
 
   const priceOptions = [
     { value: 'under-25', label: 'Under $25' },

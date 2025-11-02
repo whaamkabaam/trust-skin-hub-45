@@ -94,20 +94,20 @@ export const MysteryBoxCard = React.memo(({ box, index = 0, isVisible = true }: 
         >
           <CardHeader className="pb-2 relative">
             {/* Enhanced Provider Logo with Tooltip */}
-            <div className="absolute top-3 right-3 z-10">
+            <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div>
+                  <div className="cursor-help">
                     <ProviderLogo 
                       providerId={provider as keyof typeof PROVIDER_CONFIGS} 
                       size="lg"
                       enhanced={true}
-                      className="hover:scale-[1.02] transition-transform duration-200"
+                      className="hover:scale-110 transition-transform duration-200"
                     />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>{PROVIDER_CONFIGS[provider as keyof typeof PROVIDER_CONFIGS]?.displayName || provider}</p>
+                <TooltipContent side="left" className="z-50">
+                  <p className="font-semibold">{PROVIDER_CONFIGS[provider as keyof typeof PROVIDER_CONFIGS]?.displayName || provider}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
