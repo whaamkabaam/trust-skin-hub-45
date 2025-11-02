@@ -757,40 +757,7 @@ export function OperatorForm({
         </CardContent>
       </Card>
 
-      {/* Withdrawal Times */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Withdrawal Processing Times</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="withdrawal_time_crypto">Crypto Withdrawals</Label>
-              <Input
-                id="withdrawal_time_crypto"
-                {...register('withdrawal_time_crypto')}
-                placeholder="e.g., Instant, 1-24 hours"
-              />
-            </div>
-            <div>
-              <Label htmlFor="withdrawal_time_skins">Skin Withdrawals</Label>
-              <Input
-                id="withdrawal_time_skins"
-                {...register('withdrawal_time_skins')}
-                placeholder="e.g., Instant, 1-24 hours"
-              />
-            </div>
-            <div>
-              <Label htmlFor="withdrawal_time_fiat">Fiat Withdrawals</Label>
-              <Input
-                id="withdrawal_time_fiat"
-                {...register('withdrawal_time_fiat')}
-                placeholder="e.g., 1-3 business days"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Withdrawal Times - Moved to Payments Tab */}
 
       {/* Ratings */}
       <Card>
@@ -1043,6 +1010,53 @@ export function OperatorForm({
               operatorId={effectiveOperatorId}
               disabled={isLoading || publishingState}
             />
+            
+            {/* Withdrawal Processing Times */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Withdrawal Processing Times</CardTitle>
+                <FormDescription>
+                  Specify typical processing times for different withdrawal methods
+                </FormDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="withdrawal_time_crypto">Crypto Withdrawals</Label>
+                    <Input
+                      id="withdrawal_time_crypto"
+                      {...register('withdrawal_time_crypto')}
+                      placeholder="e.g., Instant, 1-24 hours"
+                    />
+                    <FormDescription className="mt-1 text-xs">
+                      Typical time for cryptocurrency withdrawals
+                    </FormDescription>
+                  </div>
+                  <div>
+                    <Label htmlFor="withdrawal_time_skins">Skin Withdrawals</Label>
+                    <Input
+                      id="withdrawal_time_skins"
+                      {...register('withdrawal_time_skins')}
+                      placeholder="e.g., Instant, 0-2 days"
+                    />
+                    <FormDescription className="mt-1 text-xs">
+                      Typical time for CS2/gaming skin withdrawals
+                    </FormDescription>
+                  </div>
+                  <div>
+                    <Label htmlFor="withdrawal_time_fiat">Fiat Withdrawals</Label>
+                    <Input
+                      id="withdrawal_time_fiat"
+                      {...register('withdrawal_time_fiat')}
+                      placeholder="e.g., 1-3 business days"
+                    />
+                    <FormDescription className="mt-1 text-xs">
+                      Typical time for traditional currency withdrawals
+                    </FormDescription>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </ExtensionErrorBoundary>
         </TabsContent>
 

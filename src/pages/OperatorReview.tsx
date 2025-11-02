@@ -951,12 +951,51 @@ const OperatorReview = () => {
                     </div>
                   </div>
                   <Separator />
+                  
+                  {/* Withdrawal Processing Times Overview */}
                   <div>
                     <h4 className="font-semibold mb-3 flex items-center gap-2">
                       <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">⏱️</span>
+                        <Clock className="w-3 h-3 text-white" />
                       </div>
-                      Withdrawal Methods & Timeframes
+                      Withdrawal Processing Times
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                      <Card className="bg-blue-50/50 dark:bg-blue-900/10 border-blue-200/50">
+                        <CardContent className="p-4">
+                          <div className="text-xs text-muted-foreground mb-1 font-medium">Crypto Withdrawals</div>
+                          <div className="text-lg font-semibold text-blue-700 dark:text-blue-400">
+                            {formatWithdrawalTime(operator?.withdrawal_time_crypto) || 'N/A'}
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-green-50/50 dark:bg-green-900/10 border-green-200/50">
+                        <CardContent className="p-4">
+                          <div className="text-xs text-muted-foreground mb-1 font-medium">Skin Withdrawals</div>
+                          <div className="text-lg font-semibold text-green-700 dark:text-green-400">
+                            {formatWithdrawalTime(operator?.withdrawal_time_skins) || 'N/A'}
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-purple-50/50 dark:bg-purple-900/10 border-purple-200/50">
+                        <CardContent className="p-4">
+                          <div className="text-xs text-muted-foreground mb-1 font-medium">Fiat Withdrawals</div>
+                          <div className="text-lg font-semibold text-purple-700 dark:text-purple-400">
+                            {formatWithdrawalTime(operator?.withdrawal_time_fiat) || 'N/A'}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <div className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+                        <CreditCard className="w-3 h-3 text-white" />
+                      </div>
+                      Available Withdrawal Methods
                     </h4>
                     <div className="space-y-2">
                       {payments && payments.length > 0 ? (
