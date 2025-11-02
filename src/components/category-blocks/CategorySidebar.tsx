@@ -22,13 +22,9 @@ interface CategorySidebarProps {
 
 export const CategorySidebar = ({ sections, quickStats, topProviders }: CategorySidebarProps) => {
   const [activeSection, setActiveSection] = useState<string>('');
-  const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Make sticky after scrolling past hero
-      setIsSticky(window.scrollY > 200);
-
       // Update active section based on scroll position
       const sectionElements = sections.map(s => ({
         id: s.id,
@@ -70,7 +66,11 @@ export const CategorySidebar = ({ sections, quickStats, topProviders }: Category
         element.classList.remove('ring-2', 'ring-primary/20', 'rounded-lg');
       }, 1500);
     } else {
-      console.warn(`Navigation: Element not found for section "${id}"`);
+      console.warn(`Navigation: Element not found for section "${id}"`, {
+        expectedId: id,
+        availableIds: sections.map(s => s.id),
+        allElementsWithIds: Array.from(document.querySelectorAll('[id]')).map(el => el.id)
+      });
     }
   };
 
@@ -95,10 +95,7 @@ export const CategorySidebar = ({ sections, quickStats, topProviders }: Category
   };
 
   return (
-    <div className={cn(
-      "hidden lg:block w-64 flex-shrink-0 transition-all duration-200",
-      isSticky && "sticky top-20"
-    )}>
+    <div className="hidden lg:block w-64 flex-shrink-0 sticky top-20 self-start">
       <Card className="p-4">
         <div className="space-y-4">
           {/* Quick Stats Widget */}
@@ -181,17 +178,15 @@ export const CategorySidebar = ({ sections, quickStats, topProviders }: Category
               <BookmarkPlus className="w-4 h-4 mr-2" />
               Bookmark
             </Button>
-            {isSticky && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-                onClick={scrollToTop}
-              >
-                <ArrowUp className="w-4 h-4 mr-2" />
-                Back to Top
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full justify-start"
+              onClick={scrollToTop}
+            >
+              <ArrowUp className="w-4 h-4 mr-2" />
+              Back to Top
+            </Button>
           </div>
         </div>
       </Card>

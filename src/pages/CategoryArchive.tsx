@@ -246,12 +246,17 @@ const CategoryArchive = () => {
           }
           
           // Better fallback titles for mystery_boxes blocks
-          if (block.block_type === 'mystery_boxes') {
-            return {
-              id: `block-mystery-boxes-${block.order_number}`,
-              title: block.block_data?.heading || 'Mystery Boxes'
-            };
-          }
+        if (block.block_type === 'mystery_boxes') {
+          // Match the ID generation logic in BlockRenderer
+          const blockId = block.block_data?.heading 
+            ? block.block_data.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+            : `block-mystery_boxes-${block.order_number}`;
+          
+          return {
+            id: blockId,
+            title: block.block_data?.heading || 'Mystery Boxes'
+          };
+        }
           
           // Generic fallback (should rarely be used)
           return {
