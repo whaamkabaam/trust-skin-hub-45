@@ -186,16 +186,20 @@ const CategoryArchive = () => {
     if (publishedContent?.content_data && (publishedContent.content_data as any)?.blocks) {
       const blockSections = (publishedContent.content_data as any).blocks
         .filter((block: any) => {
-          // Include text blocks with heading
-          if (block.block_type === 'text') {
-            return block.is_visible && block.block_data?.heading && block.block_data?.includeInNav !== false;
+          // Only filter out explicitly hidden blocks
+          if (block.is_visible === false) return false;
+          
+          // Include text/table blocks that have headings (unless explicitly excluded from nav)
+          if (block.block_type === 'text' || block.block_type === 'table') {
+            return block.block_data?.heading && block.block_data?.includeInNav !== false;
           }
-          // Include table blocks with heading
-          if (block.block_type === 'table') {
-            return block.is_visible && block.block_data?.heading && block.block_data?.includeInNav !== false;
+          
+          // Include mystery_boxes blocks
+          if (block.block_type === 'mystery_boxes') {
+            return true;
           }
-          // Include other visible block types
-          return block.is_visible && ['mystery_boxes'].includes(block.block_type);
+          
+          return false;
         })
         .map((block: any) => {
           if ((block.block_type === 'text' || block.block_type === 'table') && block.block_data?.heading) {
@@ -205,9 +209,19 @@ const CategoryArchive = () => {
               title: block.block_data.heading
             };
           }
+          
+          // Better fallback titles for mystery_boxes blocks
+          if (block.block_type === 'mystery_boxes') {
+            return {
+              id: `block-mystery-boxes-${block.order_number}`,
+              title: block.block_data?.heading || 'Mystery Boxes'
+            };
+          }
+          
+          // Generic fallback (should rarely be used)
           return {
             id: `block-${block.block_type}-${block.order_number}`,
-            title: `${block.block_type} Section`
+            title: block.block_data?.heading || `${block.block_type.replace('_', ' ')} Section`
           };
         });
       return [...baseSections, ...blockSections];

@@ -211,9 +211,21 @@ export const useCategoryContent = (categoryId: string) => {
         }
       }
 
-      // Enrich mystery_boxes blocks with full box data
+      // Enrich mystery_boxes blocks with full box data and preserve all flags
       const enrichedBlocks = await Promise.all(
         blocks.map(async (block) => {
+          // Preserve all block metadata with defaults
+          const preservedBlock = {
+            ...block,
+            is_visible: block.is_visible !== false, // Default to true
+            block_data: {
+              ...block.block_data,
+              // Preserve navigation flags, default to true if not set
+              includeInNav: block.block_data?.includeInNav !== false,
+              showHeading: block.block_data?.showHeading !== false,
+            }
+          };
+          
           if (block.block_type === 'mystery_boxes') {
             console.log('Publishing mystery_boxes block:', block.block_data);
             // Handle both old and new field names for selected boxes
@@ -306,15 +318,15 @@ export const useCategoryContent = (categoryId: string) => {
 
             console.log(`Published ${boxesData.length} enriched boxes with full metrics:`, boxesData);
             return {
-              ...block,
+              ...preservedBlock,
               block_data: {
-                ...block.block_data,
+                ...preservedBlock.block_data,
                 boxesData,
               },
             };
             }
           }
-          return block;
+          return preservedBlock;
         })
       );
 
