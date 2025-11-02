@@ -42,7 +42,7 @@ const CategoryArchive = () => {
   const [priceFilters, setPriceFilters] = useState<string[]>([]);
   const [riskFilters, setRiskFilters] = useState<string[]>([]);
 
-  // Helper function to normalize provider names
+  // Helper function to normalize provider names from various data sources
   const normalizeProviderName = (box: any): string => {
     const PROVIDER_MAP: Record<string, string> = {
       'rillabox': 'RillaBox',
@@ -51,18 +51,18 @@ const CategoryArchive = () => {
       'luxdrop': 'LuxDrop',
     };
 
-    // Priority 1: Check for provider field (most reliable from transformed data)
-    if (box.provider && PROVIDER_MAP[box.provider.toLowerCase()]) {
-      return PROVIDER_MAP[box.provider.toLowerCase()];
+    // Priority 1: Direct provider field (from published content)
+    if (box.provider) {
+      const lower = box.provider.toLowerCase();
+      return PROVIDER_MAP[lower] || box.provider;
     }
 
-    // Priority 2: Check site_name and map it if it's a slug
+    // Priority 2: Check site_name
     if (box.site_name) {
       const lowerSiteName = box.site_name.toLowerCase();
       if (PROVIDER_MAP[lowerSiteName]) {
         return PROVIDER_MAP[lowerSiteName];
       }
-      // If site_name is already a display name, use it
       if (Object.values(PROVIDER_MAP).includes(box.site_name)) {
         return box.site_name;
       }
@@ -71,68 +71,58 @@ const CategoryArchive = () => {
     return 'Unknown';
   };
 
-  // Calculate category statistics - prioritize cached DB stats
-  const categoryStats = useMemo(() => {
-    // Use cached database stats if available
-    if (category && category.total_boxes > 0 && category.avg_price !== null) {
-      // Calculate EV from mystery boxes (not cached in DB)
-      const avgEV = mysteryBoxes.length > 0 
-        ? mysteryBoxes
-            .map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0)
-            .filter(ev => ev !== 0)
-            .reduce((a, b) => a + b, 0) / mysteryBoxes.filter(b => b.expected_value && b.price).length
-        : 0;
-
-      const bestEV = mysteryBoxes.length > 0
-        ? Math.max(...mysteryBoxes.map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0))
-        : 0;
-
-      // Count providers using normalized names
-      const providerCounts = mysteryBoxes.reduce((acc, box) => {
-        const provider = normalizeProviderName(box);
-        if (provider !== 'Unknown') {
-          acc[provider] = (acc[provider] || 0) + 1;
-        }
-        return acc;
-      }, {} as Record<string, number>);
-
-      const topProviders = Object.entries(providerCounts)
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
-
-      const topProvider = topProviders[0]?.name || 'Various';
-
-      return {
-        priceRange: {
-          min: category.price_min || 0,
-          max: category.price_max || 0
-        },
-        avgPrice: category.avg_price || 0,
-        avgEV,
-        bestEV,
-        topProviders,
-        topProvider
-      };
+  // Extract boxes from published content blocks (source of truth for displayed boxes)
+  const publishedBoxes = useMemo(() => {
+    if (!publishedContent?.content_data) return [];
+    
+    const blocks = (publishedContent.content_data as any)?.blocks || [];
+    const allBoxes: any[] = [];
+    
+    blocks.forEach((block: any) => {
+      if (block.block_type === 'mystery_boxes' && block.block_data?.boxesData) {
+        allBoxes.push(...block.block_data.boxesData);
+      }
+    });
+    
+    // Also add featured box if present
+    if ((publishedContent.content_data as any)?.featuredBox) {
+      allBoxes.push((publishedContent.content_data as any).featuredBox);
     }
     
-    // Fallback to client-side calculation if DB stats not available
-    if (!mysteryBoxes || mysteryBoxes.length === 0) return null;
+    return allBoxes;
+  }, [publishedContent]);
 
-    const prices = mysteryBoxes.map(b => b.price).filter(p => p > 0);
-    const avgPrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
+  // Calculate category statistics - use published boxes if available (source of truth)
+  const categoryStats = useMemo(() => {
+    // Use publishedBoxes if available (preferred source), otherwise fallback to mysteryBoxes
+    const boxesSource = publishedBoxes.length > 0 ? publishedBoxes : mysteryBoxes;
     
-    const evValues = mysteryBoxes
-      .map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0)
+    if (boxesSource.length === 0) return null;
+
+    // Calculate prices from the source
+    const prices = boxesSource
+      .map(b => b.box_price || b.price || 0)
+      .filter(p => p > 0);
+    
+    const avgPrice = prices.length > 0 
+      ? prices.reduce((a, b) => a + b, 0) / prices.length 
+      : category?.avg_price || 0;
+    
+    // Calculate EV values
+    const evValues = boxesSource
+      .map(b => {
+        const price = b.box_price || b.price;
+        const ev = b.expected_value_percent_of_price || 
+                   (b.expected_value && price ? (b.expected_value / price) * 100 : null);
+        return ev ? ev - 100 : 0;
+      })
       .filter(ev => ev !== 0);
     
     const avgEV = evValues.length > 0 ? evValues.reduce((a, b) => a + b, 0) / evValues.length : 0;
-    
-    const bestEV = mysteryBoxes.length > 0
-      ? Math.max(...mysteryBoxes.map(b => b.expected_value && b.price ? ((b.expected_value / b.price) * 100) - 100 : 0))
-      : 0;
+    const bestEV = evValues.length > 0 ? Math.max(...evValues) : 0;
 
-    const providerCounts = mysteryBoxes.reduce((acc, box) => {
+    // Count providers using normalized names from ACTUAL displayed boxes
+    const providerCounts = boxesSource.reduce((acc, box) => {
       const provider = normalizeProviderName(box);
       if (provider !== 'Unknown') {
         acc[provider] = (acc[provider] || 0) + 1;
@@ -141,25 +131,24 @@ const CategoryArchive = () => {
     }, {} as Record<string, number>);
 
     const topProviders = Object.entries(providerCounts)
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, count]) => ({ name, count: count as number }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    const sortedProviders = Object.entries(providerCounts).sort((a, b) => b[1] - a[1]);
-    const topProviderData = sortedProviders[0] || ['Various', 0];
+    const topProvider = topProviders[0]?.name || 'Various';
 
     return {
       priceRange: {
-        min: Math.min(...prices),
-        max: Math.max(...prices)
+        min: category?.price_min || (prices.length > 0 ? Math.min(...prices) : 0),
+        max: category?.price_max || (prices.length > 0 ? Math.max(...prices) : 0)
       },
       avgPrice,
       avgEV,
       bestEV,
       topProviders,
-      topProvider: topProviderData[0]
+      topProvider
     };
-  }, [category, mysteryBoxes]);
+  }, [category, mysteryBoxes, publishedBoxes]);
 
   // Find best value box
   const bestValueBox = useMemo(() => {
