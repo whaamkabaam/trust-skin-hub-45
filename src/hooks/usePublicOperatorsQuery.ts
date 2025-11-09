@@ -38,6 +38,15 @@ const transformOperator = (op: any): Operator => ({
   pros: op.pros || [],
   cons: op.cons || [],
   trustScore: op.ratings?.trust || 0,
+  ratings: op.ratings || {
+    overall: 0,
+    trust: 0,
+    value: 0,
+    ux: 0,
+    support: 0,
+    offering: 0,
+    payments: 0
+  },
   fees: {
     deposit: 0,
     withdrawal: 0,
