@@ -130,7 +130,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     };
     
     performSave();
-  }, [debouncedBonuses, isDirty, stableSave, effectiveBonuses]);
+  }, [debouncedBonuses, isDirty, stableSave]); // Removed effectiveBonuses - not needed
   
   // Show waiting state when there are pending changes
   useEffect(() => {

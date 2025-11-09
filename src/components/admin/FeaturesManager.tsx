@@ -129,7 +129,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     };
     
     performSave();
-  }, [debouncedFeatures, isDirty, stableSave, effectiveFeatures]);
+  }, [debouncedFeatures, isDirty, stableSave]); // Removed effectiveFeatures - not needed
   
   // Show waiting state when there are pending changes
   useEffect(() => {

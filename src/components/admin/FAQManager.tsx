@@ -128,7 +128,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     };
     
     performSave();
-  }, [debouncedFaqs, isDirty, stableSave, effectiveFaqs]);
+  }, [debouncedFaqs, isDirty, stableSave]); // Removed effectiveFaqs - not needed
   
   // Show waiting state when there are pending changes
   useEffect(() => {

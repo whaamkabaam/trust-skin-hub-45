@@ -21,7 +21,8 @@ interface SecurityManagerProps {
 }
 
 export function SecurityManager({ security, onSave, operatorId, disabled = false, onInteractionStart }: SecurityManagerProps) {
-  const defaultSecurity = {
+  // Memoize defaultSecurity to prevent recreation on every render
+  const defaultSecurity = useMemo(() => ({
     operator_id: operatorId,
     ssl_enabled: false,
     ssl_provider: '',
@@ -33,7 +34,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     provably_fair_description: '',
     complaints_platform: '',
     audit_info: '',
-  };
+  }), [operatorId]); // Only recreate if operatorId changes
   
   // Check if this is a temporary operator (new operator)
   const isTemporaryOperator = operatorId.startsWith('temp-');
@@ -138,7 +139,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     };
     
     performSave();
-  }, [debouncedSecurity, isDirty, stableSave, effectiveSecurity]);
+  }, [debouncedSecurity, isDirty, stableSave]); // Removed effectiveSecurity - not needed
   
   // Show waiting state when there are pending changes
   useEffect(() => {
