@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Shield, Clock, CreditCard, Globe, Users, TrendingUp, Star, ChevronDown, CheckCircle, XCircle, AlertTriangle, Copy, Gamepad2, DollarSign, HelpCircle, FileText, MessageCircle } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Shield, Clock, CreditCard, Globe, Users, TrendingUp, Star, ChevronDown, CheckCircle, XCircle, AlertTriangle, Copy, Gamepad2, DollarSign, HelpCircle, FileText, MessageCircle, Sparkles, Package } from 'lucide-react';
 import BoxesCatalog from '@/components/BoxesCatalog';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -21,6 +21,7 @@ import { usePublicOperatorExtensions } from '@/hooks/usePublicOperatorExtensions
 import { useMedia } from '@/hooks/useMedia';
 import { SEOHead } from '@/components/SEOHead';
 import { ContentSectionRenderer } from '@/components/ContentSectionRenderer';
+import { ReviewSubmissionForm } from '@/components/ReviewSubmissionForm';
 import { cn } from '@/lib/utils';
 import { 
   formatSupportChannel, 
@@ -41,7 +42,7 @@ const OperatorReview = () => {
   
   const { operator, contentSections, seoMetadata, paymentMethods: payments, loading, error } = usePublicOperator(slug || '');
   const { bonuses, features, security, faqs } = usePublicOperatorExtensions(slug || '');
-  const { reviews } = usePublicReviews(operator?.id || '');
+  const { reviews, stats: userReviewStats } = usePublicReviews(operator?.id || '');
   const { assets: mediaAssets } = useMedia(operator?.id);
 
   if (loading) {
@@ -111,7 +112,7 @@ const OperatorReview = () => {
   const ratings = operator?.ratings || {};
   const scores = {
     overall: ratings.overall || 0,
-    user: ratings.overall || 0, // Use same for now
+    user: userReviewStats.averageRating || 0, // Use actual user review average
     trust: ratings.trust || 0,
     fees: ratings.value || 0,
     ux: ratings.ux || 0,
@@ -131,10 +132,8 @@ const OperatorReview = () => {
   
   const siteType = operator?.site_type || (operator?.modes?.includes('Case Opening') ? 'Case Site' : 'Mystery Box');
   const userRatings = {
-    total: reviews?.length || 0,
-    breakdown: {
-      5: 45, 4: 30, 3: 15, 2: 7, 1: 3 // Default breakdown
-    }
+    total: userReviewStats.totalReviews || 0,
+    breakdown: userReviewStats.breakdown || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
   };
 
   // Use actual FAQs or fallback
@@ -387,12 +386,25 @@ const OperatorReview = () => {
                     <div>
                       <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Platform Features</span>
                       <div className="flex flex-wrap gap-1.5 mt-2">
-                         {features.filter(f => f.is_highlighted).map((feature) => (
-                           <Badge key={feature.id} variant="secondary" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800">
-                             ⭐ {formatFeatureName(feature.feature_name)}
+                         {features.filter(f => f.is_highlighted && f.feature_type === 'premium').map((feature) => (
+                           <Badge key={feature.id} className="text-xs bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700">
+                             <Sparkles className="w-3 h-3 mr-1" />
+                             {formatFeatureName(feature.feature_name)}
                            </Badge>
                          ))}
-                         {features.filter(f => !f.is_highlighted).map((feature) => (
+                         {features.filter(f => f.is_highlighted && f.feature_type !== 'premium').map((feature) => (
+                           <Badge key={feature.id} className="text-xs bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700">
+                             <CheckCircle className="w-3 h-3 mr-1" />
+                             {formatFeatureName(feature.feature_name)}
+                           </Badge>
+                         ))}
+                         {features.filter(f => !f.is_highlighted && f.feature_type === 'utility').map((feature) => (
+                           <Badge key={feature.id} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-700">
+                             <Package className="w-3 h-3 mr-1" />
+                             {formatFeatureName(feature.feature_name)}
+                           </Badge>
+                         ))}
+                         {features.filter(f => !f.is_highlighted && f.feature_type !== 'utility' && f.feature_type !== 'premium').map((feature) => (
                            <Badge key={feature.id} variant="outline" className="text-xs">
                              {formatFeatureName(feature.feature_name)}
                            </Badge>
@@ -844,22 +856,51 @@ const OperatorReview = () => {
                 <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50">
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-2xl">⭐</span>
+                      <Sparkles className="w-5 h-5 text-emerald-600" />
                       Platform Features
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4">
-                      {features.map((feature) => (
-                        <div key={feature.id} className={`p-4 rounded-lg border ${feature.is_highlighted ? 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800' : 'bg-background border-border'}`}>
-                          <div className="flex items-center gap-2 mb-2">
-                            {feature.is_highlighted && <span className="text-yellow-600">⭐</span>}
-                            <h4 className="font-semibold">{feature.feature_name}</h4>
-                            <Badge variant="outline" className="text-xs">{feature.feature_type}</Badge>
+                      {features.map((feature) => {
+                        const isPremium = feature.feature_type === 'premium';
+                        const isCore = feature.feature_type === 'core';
+                        const isUtility = feature.feature_type === 'utility';
+                        const isHighlighted = feature.is_highlighted;
+                        
+                        return (
+                          <div 
+                            key={feature.id} 
+                            className={cn(
+                              "p-4 rounded-lg border transition-all duration-200",
+                              isPremium && isHighlighted ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-300/50 dark:bg-emerald-900/30 dark:border-emerald-700" :
+                              isCore && isHighlighted ? "bg-blue-50 border-blue-200 ring-2 ring-blue-300/50 dark:bg-blue-900/30 dark:border-blue-700" :
+                              isUtility ? "bg-purple-50 border-purple-200 dark:bg-purple-900/20 dark:border-purple-700" :
+                              "bg-background border-border"
+                            )}
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              {isPremium && <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
+                              {isCore && !isPremium && <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
+                              {isUtility && !isPremium && !isCore && <Package className="w-4 h-4 text-purple-600 dark:text-purple-400" />}
+                              <h4 className="font-semibold">{feature.feature_name}</h4>
+                              <Badge 
+                                variant="outline" 
+                                className={cn(
+                                  "text-xs",
+                                  isPremium ? "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/50 dark:text-emerald-400" :
+                                  isCore ? "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/50 dark:text-blue-400" :
+                                  isUtility ? "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/50 dark:text-purple-400" :
+                                  ""
+                                )}
+                              >
+                                {feature.feature_type}
+                              </Badge>
+                            </div>
+                            {feature.description && (
+                              <p className="text-sm text-muted-foreground">{feature.description}</p>
+                            )}
                           </div>
-                          {feature.description && (
-                            <p className="text-sm text-muted-foreground">{feature.description}</p>
-                          )}
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>
@@ -1423,6 +1464,14 @@ const OperatorReview = () => {
                   </CardContent>
                 </Card>
               )}
+            </div>
+
+            {/* Review Submission Section */}
+            <div id="review-form" className="space-y-4 scroll-mt-20">
+              <ReviewSubmissionForm 
+                operatorId={operator?.id || ''} 
+                operatorName={operator?.name || ''} 
+              />
             </div>
 
             {/* FAQ Section */}

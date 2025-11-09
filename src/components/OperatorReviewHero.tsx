@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, CheckCircle, Copy } from 'lucide-react';
+import { ArrowLeft, ExternalLink, CheckCircle, Copy, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -156,21 +156,37 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
                   
                   <div className="h-6 w-px bg-border" />
                   
-                  <div className="flex items-center gap-3">
-                    <span className="text-muted-foreground font-medium">User Rating:</span>
-                    <div className={cn(
-                      "flex items-center gap-2 px-4 py-2 rounded-lg font-bold",
-                      scores.user >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
-                      scores.user >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
-                      scores.user >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
-                      scores.user >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
-                      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                    )}>
-                      <span className="text-2xl font-black">{scores.user}</span>
-                      <span className="text-sm opacity-70">/10</span>
+                  {userRatings.total > 0 ? (
+                    <div className="flex items-center gap-3">
+                      <span className="text-muted-foreground font-medium">User Rating:</span>
+                      <div className={cn(
+                        "flex items-center gap-2 px-4 py-2 rounded-lg font-bold",
+                        scores.user >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                        scores.user >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                        scores.user >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                        scores.user >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                        "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                      )}>
+                        <span className="text-2xl font-black">{scores.user}</span>
+                        <span className="text-sm opacity-70">/10</span>
+                      </div>
+                      <span className="text-sm text-muted-foreground">({userRatings.total} reviews)</span>
                     </div>
-                    <span className="text-sm text-muted-foreground">({userRatings.total} reviews)</span>
-                  </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <span className="text-muted-foreground font-medium">User Rating:</span>
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted/50">
+                        <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">No reviews yet</span>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => {
+                        const reviewForm = document.getElementById('review-form');
+                        reviewForm?.scrollIntoView({ behavior: 'smooth' });
+                      }}>
+                        Be the first to review
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {/* CTAs */}
@@ -264,20 +280,29 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
                 
                 <div className="h-8 w-px bg-border" />
                 
-                <div className="flex flex-col items-center gap-2">
-                  <div className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold",
-                    scores.user >= 9 ? "bg-green-100 text-green-800" :
-                    scores.user >= 8 ? "bg-blue-100 text-blue-800" :
-                    scores.user >= 7 ? "bg-yellow-100 text-yellow-800" :
-                    scores.user >= 6 ? "bg-orange-100 text-orange-800" :
-                    "bg-red-100 text-red-800"
-                  )}>
-                    <span className="text-xl font-black">{scores.user}</span>
-                    <span className="text-xs opacity-70">/10</span>
+                {userRatings.total > 0 ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <div className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold",
+                      scores.user >= 9 ? "bg-green-100 text-green-800" :
+                      scores.user >= 8 ? "bg-blue-100 text-blue-800" :
+                      scores.user >= 7 ? "bg-yellow-100 text-yellow-800" :
+                      scores.user >= 6 ? "bg-orange-100 text-orange-800" :
+                      "bg-red-100 text-red-800"
+                    )}>
+                      <span className="text-xl font-black">{scores.user}</span>
+                      <span className="text-xs opacity-70">/10</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">User ({userRatings.total})</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">User ({userRatings.total})</span>
-                </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/50">
+                      <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">No reviews</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-2 mb-4">
