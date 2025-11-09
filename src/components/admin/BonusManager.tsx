@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,11 +6,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus, AlertCircle, Database, HardDrive } from 'lucide-react';
+import { Trash2, Plus, AlertCircle, Database, HardDrive, Loader2, Check, Clock } from 'lucide-react';
 import { OperatorBonus } from '@/hooks/useOperatorExtensions';
 import { toast } from 'sonner';
 import { useLocalStorageExtensions } from '@/hooks/useLocalStorageExtensions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface BonusManagerProps {
   bonuses: OperatorBonus[];
@@ -40,6 +41,72 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   // Always use props data (useOperatorExtensions manages localStorage internally)
   const effectiveBonuses = isTemporaryOperator ? localStorage.bonuses : bonuses;
 
+  // Local state for immediate UI updates
+  const [localBonuses, setLocalBonuses] = useState<OperatorBonus[]>(effectiveBonuses);
+  
+  // Dirty flag tracking
+  const [isDirty, setIsDirty] = useState(false);
+  const isInitialMount = useRef(true);
+  
+  // Save state tracking
+  const [saveState, setSaveState] = useState<'idle' | 'waiting' | 'saving' | 'saved'>('idle');
+  
+  // Update local state when prop changes (from external updates)
+  useEffect(() => {
+    setLocalBonuses(effectiveBonuses);
+    setIsDirty(false);
+    setSaveState('idle');
+  }, [effectiveBonuses]);
+  
+  // Debounce the local bonuses with 2 second delay
+  const debouncedBonuses = useDebounce(localBonuses, 2000);
+  
+  // Auto-save when debounced value changes
+  useEffect(() => {
+    // Skip initial render
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    // Skip if not dirty
+    if (!isDirty) {
+      return;
+    }
+    
+    // Set saving state
+    setSaveState('saving');
+    
+    const performSave = async () => {
+      try {
+        if (isTemporaryOperator) {
+          localStorage.saveBonusesToLocal(debouncedBonuses);
+        } else {
+          await onSave(debouncedBonuses);
+        }
+        setIsDirty(false);
+        setSaveState('saved');
+        
+        // Reset to idle after showing success
+        setTimeout(() => {
+          setSaveState('idle');
+        }, 2000);
+      } catch (error) {
+        console.error('Auto-save failed:', error);
+        setSaveState('idle');
+      }
+    };
+    
+    performSave();
+  }, [debouncedBonuses, isDirty, isTemporaryOperator, localStorage, onSave]);
+  
+  // Show waiting state when there are pending changes
+  useEffect(() => {
+    if (isDirty && saveState === 'idle') {
+      setSaveState('waiting');
+    }
+  }, [isDirty, saveState]);
+
   const addBonus = () => {
     // Notify parent that user is interacting with extensions
     if (onInteractionStart) {
@@ -54,14 +121,11 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       value: '',
       terms: '',
       is_active: true,
-      order_number: effectiveBonuses.length,
+      order_number: localBonuses.length,
     };
-    const newBonuses = [...effectiveBonuses, newBonus];
-    if (isTemporaryOperator) {
-      localStorage.saveBonusesToLocal(newBonuses);
-    } else {
-      onSave(newBonuses);
-    }
+    const newBonuses = [...localBonuses, newBonus];
+    setLocalBonuses(newBonuses);
+    setIsDirty(true);
   };
 
   const updateBonus = (index: number, updates: Partial<OperatorBonus>) => {
@@ -70,25 +134,18 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       onInteractionStart();
     }
     
-    const updated = effectiveBonuses.map((bonus, i) => 
+    // Update local state immediately for responsive UI
+    const updated = localBonuses.map((bonus, i) => 
       i === index ? { ...bonus, ...updates } : bonus
     );
-    
-    if (isTemporaryOperator) {
-      localStorage.saveBonusesToLocal(updated);
-    } else {
-      onSave(updated);
-    }
+    setLocalBonuses(updated);
+    setIsDirty(true);
   };
 
   const removeBonus = (index: number) => {
-    const filtered = effectiveBonuses.filter((_, i) => i !== index);
-    
-    if (isTemporaryOperator) {
-      localStorage.saveBonusesToLocal(filtered);
-    } else {
-      onSave(filtered);
-    }
+    const filtered = localBonuses.filter((_, i) => i !== index);
+    setLocalBonuses(filtered);
+    setIsDirty(true);
   };
 
   const handleSave = () => {
@@ -114,16 +171,37 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            Bonuses & Promotions
+        <CardTitle className="flex items-center gap-2 justify-between">
+          <div className="flex items-center gap-2">
             {isTemporaryOperator ? (
-              <HardDrive className="h-4 w-4 text-orange-500" />
+              <HardDrive className="h-5 w-5 text-muted-foreground" />
             ) : (
-              <Database className="h-4 w-4 text-green-500" />
+              <Database className="h-5 w-5 text-muted-foreground" />
             )}
-          </CardTitle>
-        </div>
+            Bonuses & Promotions
+          </div>
+          {/* Visual save state indicator */}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {saveState === 'waiting' && (
+              <>
+                <Clock className="h-4 w-4" />
+                <span>Waiting...</span>
+              </>
+            )}
+            {saveState === 'saving' && (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            )}
+            {saveState === 'saved' && (
+              <>
+                <Check className="h-4 w-4 text-green-600" />
+                <span className="text-green-600">Saved</span>
+              </>
+            )}
+          </div>
+        </CardTitle>
         {isTemporaryOperator && (
           <Alert>
             <AlertCircle className="h-4 w-4" />
@@ -134,7 +212,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {effectiveBonuses.map((bonus, index) => (
+        {localBonuses.map((bonus, index) => (
           <Card key={index} className="p-4">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -159,11 +237,11 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
                     onCheckedChange={(checked) => updateBonus(index, { is_active: checked })}
                   />
                   <Label>Active</Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => removeBonus(index)}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeBonus(index)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
