@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,8 +38,10 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // Always use props data (useOperatorExtensions manages localStorage internally)
-  const effectiveBonuses = isTemporaryOperator ? localStorage.bonuses : bonuses;
+  // Stabilize effectiveBonuses with useMemo to prevent unnecessary re-renders
+  const effectiveBonuses = useMemo(() => {
+    return isTemporaryOperator ? localStorage.bonuses : bonuses;
+  }, [isTemporaryOperator, localStorage.bonuses, bonuses]);
 
   // Local state for immediate UI updates
   const [localBonuses, setLocalBonuses] = useState<OperatorBonus[]>(effectiveBonuses);
@@ -54,6 +56,25 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   // Debounce the local bonuses with 3 second delay
   const debouncedBonuses = useDebounce(localBonuses, 3000);
   const prevDebouncedBonusesRef = useRef(debouncedBonuses);
+  
+  // Create stable save function using useRef and useCallback
+  const performSaveRef = useRef<(data: OperatorBonus[]) => Promise<void>>();
+  
+  useEffect(() => {
+    performSaveRef.current = async (data: OperatorBonus[]) => {
+      if (isTemporaryOperator) {
+        localStorage.saveBonusesToLocal(data);
+      } else {
+        await onSave(data);
+      }
+    };
+  }, [isTemporaryOperator, localStorage, onSave]);
+  
+  const stableSave = useCallback(async (data: OperatorBonus[]) => {
+    if (performSaveRef.current) {
+      await performSaveRef.current(data);
+    }
+  }, []);
   
   // Update local state when prop changes (from external updates)
   useEffect(() => {
@@ -92,11 +113,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     
     const performSave = async () => {
       try {
-        if (isTemporaryOperator) {
-          localStorage.saveBonusesToLocal(debouncedBonuses);
-        } else {
-          await onSave(debouncedBonuses);
-        }
+        await stableSave(debouncedBonuses);
         setIsDirty(false);
         setSaveState('saved');
         
@@ -113,7 +130,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     };
     
     performSave();
-  }, [debouncedBonuses, isDirty, isTemporaryOperator, localStorage, onSave, effectiveBonuses]);
+  }, [debouncedBonuses, isDirty, stableSave, effectiveBonuses]);
   
   // Show waiting state when there are pending changes
   useEffect(() => {

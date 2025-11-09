@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,8 +36,10 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // Always use props data (useOperatorExtensions manages localStorage internally)
-  const effectiveFaqs = isTemporaryOperator ? localStorage.faqs : faqs;
+  // Stabilize effectiveFaqs with useMemo to prevent unnecessary re-renders
+  const effectiveFaqs = useMemo(() => {
+    return isTemporaryOperator ? localStorage.faqs : faqs;
+  }, [isTemporaryOperator, localStorage.faqs, faqs]);
   
   // Local state for immediate UI updates
   const [localFaqs, setLocalFaqs] = useState<OperatorFAQ[]>(effectiveFaqs);
@@ -52,6 +54,25 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   // Debounce the local FAQs with 3 second delay
   const debouncedFaqs = useDebounce(localFaqs, 3000);
   const prevDebouncedFaqsRef = useRef(debouncedFaqs);
+  
+  // Create stable save function using useRef and useCallback
+  const performSaveRef = useRef<(data: OperatorFAQ[]) => Promise<void>>();
+  
+  useEffect(() => {
+    performSaveRef.current = async (data: OperatorFAQ[]) => {
+      if (isTemporaryOperator) {
+        localStorage.saveFaqsToLocal(data);
+      } else {
+        await onSave(data);
+      }
+    };
+  }, [isTemporaryOperator, localStorage, onSave]);
+  
+  const stableSave = useCallback(async (data: OperatorFAQ[]) => {
+    if (performSaveRef.current) {
+      await performSaveRef.current(data);
+    }
+  }, []);
   
   // Update local state when prop changes (from external updates)
   useEffect(() => {
@@ -90,11 +111,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     
     const performSave = async () => {
       try {
-        if (isTemporaryOperator) {
-          localStorage.saveFaqsToLocal(debouncedFaqs);
-        } else {
-          await onSave(debouncedFaqs);
-        }
+        await stableSave(debouncedFaqs);
         setIsDirty(false);
         setSaveState('saved');
         
@@ -111,7 +128,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     };
     
     performSave();
-  }, [debouncedFaqs, isDirty, isTemporaryOperator, localStorage, onSave, effectiveFaqs]);
+  }, [debouncedFaqs, isDirty, stableSave, effectiveFaqs]);
   
   // Show waiting state when there are pending changes
   useEffect(() => {

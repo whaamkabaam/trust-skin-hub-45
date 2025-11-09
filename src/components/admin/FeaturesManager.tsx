@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,8 +37,10 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
   // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // Always use props data (useOperatorExtensions manages localStorage internally)
-  const effectiveFeatures = isTemporaryOperator ? localStorage.features : features;
+  // Stabilize effectiveFeatures with useMemo to prevent unnecessary re-renders
+  const effectiveFeatures = useMemo(() => {
+    return isTemporaryOperator ? localStorage.features : features;
+  }, [isTemporaryOperator, localStorage.features, features]);
 
   // Local state for immediate UI updates
   const [localFeatures, setLocalFeatures] = useState<OperatorFeature[]>(effectiveFeatures);
@@ -53,6 +55,25 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
   // Debounce the local features with 3 second delay
   const debouncedFeatures = useDebounce(localFeatures, 3000);
   const prevDebouncedFeaturesRef = useRef(debouncedFeatures);
+  
+  // Create stable save function using useRef and useCallback
+  const performSaveRef = useRef<(data: OperatorFeature[]) => Promise<void>>();
+  
+  useEffect(() => {
+    performSaveRef.current = async (data: OperatorFeature[]) => {
+      if (isTemporaryOperator) {
+        localStorage.saveFeaturesToLocal(data);
+      } else {
+        await onSave(data);
+      }
+    };
+  }, [isTemporaryOperator, localStorage, onSave]);
+  
+  const stableSave = useCallback(async (data: OperatorFeature[]) => {
+    if (performSaveRef.current) {
+      await performSaveRef.current(data);
+    }
+  }, []);
   
   // Update local state when prop changes (from external updates)
   useEffect(() => {
@@ -91,11 +112,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     
     const performSave = async () => {
       try {
-        if (isTemporaryOperator) {
-          localStorage.saveFeaturesToLocal(debouncedFeatures);
-        } else {
-          await onSave(debouncedFeatures);
-        }
+        await stableSave(debouncedFeatures);
         setIsDirty(false);
         setSaveState('saved');
         
@@ -112,7 +129,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     };
     
     performSave();
-  }, [debouncedFeatures, isDirty, isTemporaryOperator, localStorage, onSave, effectiveFeatures]);
+  }, [debouncedFeatures, isDirty, stableSave, effectiveFeatures]);
   
   // Show waiting state when there are pending changes
   useEffect(() => {

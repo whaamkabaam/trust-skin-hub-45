@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,13 +41,15 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
   // Use localStorage for temporary operators only - useOperatorExtensions handles all logic
   const localStorage = useLocalStorageExtensions(operatorId);
   
-  // Always use props data (useOperatorExtensions manages localStorage internally)
-  const effectiveSecurity = isTemporaryOperator ? (localStorage.security || defaultSecurity) : (security || defaultSecurity);
-  
-  // Ensure compliance_certifications is always an array to prevent map errors
-  if (!effectiveSecurity.compliance_certifications || !Array.isArray(effectiveSecurity.compliance_certifications)) {
-    effectiveSecurity.compliance_certifications = [];
-  }
+  // Stabilize effectiveSecurity with useMemo to prevent unnecessary re-renders
+  const effectiveSecurity = useMemo(() => {
+    const data = isTemporaryOperator ? (localStorage.security || defaultSecurity) : (security || defaultSecurity);
+    // Ensure compliance_certifications is always an array to prevent map errors
+    if (!data.compliance_certifications || !Array.isArray(data.compliance_certifications)) {
+      data.compliance_certifications = [];
+    }
+    return data;
+  }, [isTemporaryOperator, localStorage.security, security, defaultSecurity]);
 
   // Local state for immediate UI updates
   const [localSecurity, setLocalSecurity] = useState<OperatorSecurity>(effectiveSecurity);
@@ -62,6 +64,25 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
   // Debounce the local security with 3 second delay
   const debouncedSecurity = useDebounce(localSecurity, 3000);
   const prevDebouncedSecurityRef = useRef(debouncedSecurity);
+  
+  // Create stable save function using useRef and useCallback
+  const performSaveRef = useRef<(data: OperatorSecurity) => Promise<void>>();
+  
+  useEffect(() => {
+    performSaveRef.current = async (data: OperatorSecurity) => {
+      if (isTemporaryOperator) {
+        localStorage.saveSecurityToLocal(data);
+      } else {
+        await onSave(data);
+      }
+    };
+  }, [isTemporaryOperator, localStorage, onSave]);
+  
+  const stableSave = useCallback(async (data: OperatorSecurity) => {
+    if (performSaveRef.current) {
+      await performSaveRef.current(data);
+    }
+  }, []);
   
   // Update local state when prop changes (from external updates)
   useEffect(() => {
@@ -100,11 +121,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     
     const performSave = async () => {
       try {
-        if (isTemporaryOperator) {
-          localStorage.saveSecurityToLocal(debouncedSecurity);
-        } else {
-          await onSave(debouncedSecurity);
-        }
+        await stableSave(debouncedSecurity);
         setIsDirty(false);
         setSaveState('saved');
         
@@ -121,7 +138,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     };
     
     performSave();
-  }, [debouncedSecurity, isDirty, isTemporaryOperator, localStorage, onSave, effectiveSecurity]);
+  }, [debouncedSecurity, isDirty, stableSave, effectiveSecurity]);
   
   // Show waiting state when there are pending changes
   useEffect(() => {
