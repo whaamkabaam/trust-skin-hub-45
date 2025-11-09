@@ -59,15 +59,16 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     // Deep equality check: only sync if props changed from a different source
     const propsMatchLastSave = JSON.stringify(effectiveFeatures) === JSON.stringify(prevDebouncedFeaturesRef.current);
     
-    // Skip sync if user is actively typing (isDirty) and props match last save
-    if (isDirty && propsMatchLastSave) {
+    // Skip sync if user is actively typing (isDirty)
+    // OR if props match what we last saved (prevents overwrite during save)
+    if (isDirty || propsMatchLastSave) {
       return;
     }
     
     setLocalFeatures(effectiveFeatures);
     setIsDirty(false);
     setSaveState('idle');
-  }, [effectiveFeatures, isDirty]);
+  }, [effectiveFeatures]);
   
   // Auto-save when debounced value changes
   useEffect(() => {
@@ -85,6 +86,9 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     // Set saving state
     setSaveState('saving');
     
+    // Update ref BEFORE save to prevent race condition
+    prevDebouncedFeaturesRef.current = debouncedFeatures;
+    
     const performSave = async () => {
       try {
         if (isTemporaryOperator) {
@@ -92,8 +96,6 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
         } else {
           await onSave(debouncedFeatures);
         }
-        // Store the debounced value to compare with future prop updates
-        prevDebouncedFeaturesRef.current = debouncedFeatures;
         setIsDirty(false);
         setSaveState('saved');
         
@@ -104,11 +106,13 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
       } catch (error) {
         console.error('Auto-save failed:', error);
         setSaveState('idle');
+        // Revert ref on error
+        prevDebouncedFeaturesRef.current = effectiveFeatures;
       }
     };
     
     performSave();
-  }, [debouncedFeatures, isDirty, isTemporaryOperator, localStorage, onSave]);
+  }, [debouncedFeatures, isDirty, isTemporaryOperator, localStorage, onSave, effectiveFeatures]);
   
   // Show waiting state when there are pending changes
   useEffect(() => {

@@ -58,17 +58,18 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     // Deep equality check: only sync if props changed from a different source
     const propsMatchLastSave = JSON.stringify(effectiveFaqs) === JSON.stringify(prevDebouncedFaqsRef.current);
     
-    // Skip sync if user is actively typing (isDirty) and props match last save
-    if (isDirty && propsMatchLastSave) {
+    // Skip sync if user is actively typing (isDirty)
+    // OR if props match what we last saved (prevents overwrite during save)
+    if (isDirty || propsMatchLastSave) {
       return;
     }
     
     setLocalFaqs(effectiveFaqs);
     setIsDirty(false);
     setSaveState('idle');
-  }, [effectiveFaqs, isDirty]);
+  }, [effectiveFaqs]);
   
-  // Phase 2: Fixed dependencies - Auto-save when debounced value changes
+  // Auto-save when debounced value changes
   useEffect(() => {
     // Skip initial render
     if (isInitialMount.current) {
@@ -84,6 +85,9 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     // Set saving state
     setSaveState('saving');
     
+    // Update ref BEFORE save to prevent race condition
+    prevDebouncedFaqsRef.current = debouncedFaqs;
+    
     const performSave = async () => {
       try {
         if (isTemporaryOperator) {
@@ -91,8 +95,6 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
         } else {
           await onSave(debouncedFaqs);
         }
-        // Store the debounced value to compare with future prop updates
-        prevDebouncedFaqsRef.current = debouncedFaqs;
         setIsDirty(false);
         setSaveState('saved');
         
@@ -103,11 +105,13 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       } catch (error) {
         console.error('Auto-save failed:', error);
         setSaveState('idle');
+        // Revert ref on error
+        prevDebouncedFaqsRef.current = effectiveFaqs;
       }
     };
     
     performSave();
-  }, [debouncedFaqs, isDirty, isTemporaryOperator, localStorage, onSave]);
+  }, [debouncedFaqs, isDirty, isTemporaryOperator, localStorage, onSave, effectiveFaqs]);
   
   // Show waiting state when there are pending changes
   useEffect(() => {

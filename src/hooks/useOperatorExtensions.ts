@@ -161,8 +161,6 @@ export function useOperatorExtensions(operatorId: string) {
     }
     
     try {
-      console.log('Saving bonuses for operator:', operatorId, bonusData);
-      
       // Delete existing bonuses
       const { error: deleteError } = await supabase
         .from('operator_bonuses')
@@ -205,8 +203,6 @@ export function useOperatorExtensions(operatorId: string) {
     // For temp operators: localStorage handles persistence
     
     try {
-      console.log('Saving payment methods for operator:', operatorId, paymentData);
-      
       // Delete existing payment methods
       const { error: deleteError } = await supabase
         .from('operator_payment_methods')
@@ -288,8 +284,6 @@ export function useOperatorExtensions(operatorId: string) {
     // For temp operators: localStorage handles persistence
     
     try {
-      console.log('Saving security for operator:', operatorId, securityData);
-      
       if (!securityData) {
         console.error('No security data provided');
         return;

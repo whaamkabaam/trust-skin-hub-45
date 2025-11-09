@@ -60,15 +60,16 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     // Deep equality check: only sync if props changed from a different source
     const propsMatchLastSave = JSON.stringify(effectiveBonuses) === JSON.stringify(prevDebouncedBonusesRef.current);
     
-    // Skip sync if user is actively typing (isDirty) and props match last save
-    if (isDirty && propsMatchLastSave) {
+    // Skip sync if user is actively typing (isDirty)
+    // OR if props match what we last saved (prevents overwrite during save)
+    if (isDirty || propsMatchLastSave) {
       return;
     }
     
     setLocalBonuses(effectiveBonuses);
     setIsDirty(false);
     setSaveState('idle');
-  }, [effectiveBonuses, isDirty]);
+  }, [effectiveBonuses]);
   
   // Auto-save when debounced value changes
   useEffect(() => {
@@ -86,6 +87,9 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     // Set saving state
     setSaveState('saving');
     
+    // Update ref BEFORE save to prevent race condition
+    prevDebouncedBonusesRef.current = debouncedBonuses;
+    
     const performSave = async () => {
       try {
         if (isTemporaryOperator) {
@@ -93,8 +97,6 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
         } else {
           await onSave(debouncedBonuses);
         }
-        // Store the debounced value to compare with future prop updates
-        prevDebouncedBonusesRef.current = debouncedBonuses;
         setIsDirty(false);
         setSaveState('saved');
         
@@ -105,11 +107,13 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       } catch (error) {
         console.error('Auto-save failed:', error);
         setSaveState('idle');
+        // Revert ref on error
+        prevDebouncedBonusesRef.current = effectiveBonuses;
       }
     };
     
     performSave();
-  }, [debouncedBonuses, isDirty, isTemporaryOperator, localStorage, onSave]);
+  }, [debouncedBonuses, isDirty, isTemporaryOperator, localStorage, onSave, effectiveBonuses]);
   
   // Show waiting state when there are pending changes
   useEffect(() => {

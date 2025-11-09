@@ -68,15 +68,16 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     // Deep equality check: only sync if props changed from a different source
     const propsMatchLastSave = JSON.stringify(effectiveSecurity) === JSON.stringify(prevDebouncedSecurityRef.current);
     
-    // Skip sync if user is actively typing (isDirty) and props match last save
-    if (isDirty && propsMatchLastSave) {
+    // Skip sync if user is actively typing (isDirty)
+    // OR if props match what we last saved (prevents overwrite during save)
+    if (isDirty || propsMatchLastSave) {
       return;
     }
     
     setLocalSecurity(effectiveSecurity);
     setIsDirty(false);
     setSaveState('idle');
-  }, [effectiveSecurity, isDirty]);
+  }, [effectiveSecurity]);
   
   // Auto-save when debounced value changes
   useEffect(() => {
@@ -94,6 +95,9 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     // Set saving state
     setSaveState('saving');
     
+    // Update ref BEFORE save to prevent race condition
+    prevDebouncedSecurityRef.current = debouncedSecurity;
+    
     const performSave = async () => {
       try {
         if (isTemporaryOperator) {
@@ -101,8 +105,6 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         } else {
           await onSave(debouncedSecurity);
         }
-        // Store the debounced value to compare with future prop updates
-        prevDebouncedSecurityRef.current = debouncedSecurity;
         setIsDirty(false);
         setSaveState('saved');
         
@@ -113,11 +115,13 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
       } catch (error) {
         console.error('Auto-save failed:', error);
         setSaveState('idle');
+        // Revert ref on error
+        prevDebouncedSecurityRef.current = effectiveSecurity;
       }
     };
     
     performSave();
-  }, [debouncedSecurity, isDirty, isTemporaryOperator, localStorage, onSave]);
+  }, [debouncedSecurity, isDirty, isTemporaryOperator, localStorage, onSave, effectiveSecurity]);
   
   // Show waiting state when there are pending changes
   useEffect(() => {
