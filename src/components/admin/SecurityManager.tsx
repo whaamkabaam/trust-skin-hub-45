@@ -114,6 +114,15 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
       return;
     }
     
+    // Deep equality check - don't save if content hasn't actually changed
+    const currentJson = JSON.stringify(debouncedSecurity);
+    const previousJson = JSON.stringify(prevDebouncedSecurityRef.current);
+    
+    if (currentJson === previousJson) {
+      console.log('⏭️ Skipping auto-save - no actual changes detected');
+      return;
+    }
+    
     console.log('🔄 Auto-save triggered for security settings');
     setSaveState('saving');
     
@@ -127,7 +136,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         setSaveState('saved');
         console.log('✅ Auto-save completed successfully');
         
-        toast.success(isTemporaryOperator 
+        toast.success(operatorId.startsWith('temp-')
           ? 'Security settings auto-saved locally' 
           : 'Security settings auto-saved'
         );
@@ -145,7 +154,7 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
     };
     
     performSave();
-  }, [debouncedSecurity, isDirty, stableSave, isTemporaryOperator]);
+  }, [debouncedSecurity, isDirty, stableSave, operatorId]);
   
   // Save on unmount (tab switch)
   useEffect(() => {

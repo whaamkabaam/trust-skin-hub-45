@@ -105,6 +105,15 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       return;
     }
     
+    // Deep equality check - don't save if content hasn't actually changed
+    const currentJson = JSON.stringify(debouncedBonuses);
+    const previousJson = JSON.stringify(prevDebouncedBonusesRef.current);
+    
+    if (currentJson === previousJson) {
+      console.log('⏭️ Skipping auto-save - no actual changes detected');
+      return;
+    }
+    
     console.log('🔄 Auto-save triggered for bonuses');
     setSaveState('saving');
     
@@ -118,7 +127,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
         setSaveState('saved');
         console.log('✅ Auto-save completed successfully');
         
-        toast.success(isTemporaryOperator 
+        toast.success(operatorId.startsWith('temp-')
           ? 'Bonuses auto-saved locally' 
           : 'Bonuses auto-saved'
         );
@@ -136,7 +145,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     };
     
     performSave();
-  }, [debouncedBonuses, isDirty, stableSave, isTemporaryOperator]);
+  }, [debouncedBonuses, isDirty, stableSave, operatorId]);
   
   // Save on unmount (tab switch)
   useEffect(() => {

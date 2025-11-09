@@ -104,6 +104,15 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
       return;
     }
     
+    // Deep equality check - don't save if content hasn't actually changed
+    const currentJson = JSON.stringify(debouncedFeatures);
+    const previousJson = JSON.stringify(prevDebouncedFeaturesRef.current);
+    
+    if (currentJson === previousJson) {
+      console.log('⏭️ Skipping auto-save - no actual changes detected');
+      return;
+    }
+    
     console.log('🔄 Auto-save triggered for features');
     setSaveState('saving');
     
@@ -117,7 +126,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
         setSaveState('saved');
         console.log('✅ Auto-save completed successfully');
         
-        toast.success(isTemporaryOperator 
+        toast.success(operatorId.startsWith('temp-')
           ? 'Features auto-saved locally' 
           : 'Features auto-saved'
         );
@@ -135,7 +144,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     };
     
     performSave();
-  }, [debouncedFeatures, isDirty, stableSave, isTemporaryOperator]);
+  }, [debouncedFeatures, isDirty, stableSave, operatorId]);
   
   // Save on unmount (tab switch)
   useEffect(() => {

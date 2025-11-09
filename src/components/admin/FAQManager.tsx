@@ -103,6 +103,15 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
       return;
     }
     
+    // Deep equality check - don't save if content hasn't actually changed
+    const currentJson = JSON.stringify(debouncedFaqs);
+    const previousJson = JSON.stringify(prevDebouncedFaqsRef.current);
+    
+    if (currentJson === previousJson) {
+      console.log('⏭️ Skipping auto-save - no actual changes detected');
+      return;
+    }
+    
     console.log('🔄 Auto-save triggered for FAQs');
     setSaveState('saving');
     
@@ -116,7 +125,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
         setSaveState('saved');
         console.log('✅ Auto-save completed successfully');
         
-        toast.success(isTemporaryOperator 
+        toast.success(operatorId.startsWith('temp-')
           ? 'FAQs auto-saved locally' 
           : 'FAQs auto-saved'
         );
@@ -134,7 +143,7 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
     };
     
     performSave();
-  }, [debouncedFaqs, isDirty, stableSave, isTemporaryOperator]);
+  }, [debouncedFaqs, isDirty, stableSave, operatorId]);
   
   // Save on unmount (tab switch)
   useEffect(() => {
