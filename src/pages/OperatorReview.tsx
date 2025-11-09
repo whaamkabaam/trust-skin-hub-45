@@ -272,10 +272,10 @@ const OperatorReview = () => {
                         <div className="flex items-center gap-1">
                           <div className="flex">
                             {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall / 2) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
                             ))}
                           </div>
-                          <span className="font-bold text-lg">{scores.overall.toFixed(1)}/5</span>
+                          <span className="font-bold text-lg">{scores.overall.toFixed(1)}/10</span>
                         </div>
                       </div>
                       <div className="h-6 w-px bg-border" />
@@ -284,10 +284,10 @@ const OperatorReview = () => {
                         <div className="flex items-center gap-1">
                           <div className="flex">
                             {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user / 2) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
                             ))}
                           </div>
-                          <span className="font-bold">{scores.user.toFixed(1)}/5</span>
+                          <span className="font-bold">{scores.user.toFixed(1)}/10</span>
                           <span className="text-muted-foreground">({userRatings.total})</span>
                         </div>
                       </div>
@@ -1326,28 +1326,28 @@ const OperatorReview = () => {
                            )}
                          </div>
                        </div>
-                       <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                         <span className="text-sm">UX Rating</span>
-                         <div className="flex items-center gap-2">
-                           <div className="flex">
-                             {[...Array(5)].map((_, i) => (
-                               <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.ux) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                             ))}
-                           </div>
-                           <span className="font-semibold">{scores.ux.toFixed(1)}/5</span>
-                         </div>
-                       </div>
-                       <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                         <span className="text-sm">Support Rating</span>
-                         <div className="flex items-center gap-2">
-                           <div className="flex">
-                             {[...Array(5)].map((_, i) => (
-                               <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.support) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                             ))}
-                           </div>
-                           <span className="font-semibold">{scores.support.toFixed(1)}/5</span>
-                         </div>
-                       </div>
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <span className="text-sm">UX Rating</span>
+                          <div className="flex items-center gap-2">
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.ux / 2) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                              ))}
+                            </div>
+                            <span className="font-semibold">{scores.ux.toFixed(1)}/10</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                          <span className="text-sm">Support Rating</span>
+                          <div className="flex items-center gap-2">
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.support / 2) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                              ))}
+                            </div>
+                            <span className="font-semibold">{scores.support.toFixed(1)}/10</span>
+                          </div>
+                        </div>
                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
                          <span className="text-sm">Mobile Friendly</span>
                          <Badge className="bg-green-100 text-green-800">Yes</Badge>

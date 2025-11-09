@@ -103,7 +103,14 @@ export function useStaticContent() {
         launch_year: operator.launch_year,
         ratings: operator.ratings as any,
         bonus_terms: operator.bonus_terms,
-        fairness_info: operator.fairness_info
+        fairness_info: operator.fairness_info,
+        withdrawal_time_crypto: operator.withdrawal_time_crypto,
+        withdrawal_time_skins: operator.withdrawal_time_skins,
+        withdrawal_time_fiat: operator.withdrawal_time_fiat,
+        promo_code: operator.promo_code,
+        support_channels: operator.support_channels,
+        verification_status: operator.verification_status,
+        site_type: operator.site_type
       };
 
       return {
