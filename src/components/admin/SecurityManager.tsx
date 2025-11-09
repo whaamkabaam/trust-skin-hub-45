@@ -59,15 +59,24 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
   // Save state tracking
   const [saveState, setSaveState] = useState<'idle' | 'waiting' | 'saving' | 'saved'>('idle');
   
+  // Debounce the local security with 3 second delay
+  const debouncedSecurity = useDebounce(localSecurity, 3000);
+  const prevDebouncedSecurityRef = useRef(debouncedSecurity);
+  
   // Update local state when prop changes (from external updates)
   useEffect(() => {
+    // Deep equality check: only sync if props changed from a different source
+    const propsMatchLastSave = JSON.stringify(effectiveSecurity) === JSON.stringify(prevDebouncedSecurityRef.current);
+    
+    // Skip sync if user is actively typing (isDirty) and props match last save
+    if (isDirty && propsMatchLastSave) {
+      return;
+    }
+    
     setLocalSecurity(effectiveSecurity);
     setIsDirty(false);
     setSaveState('idle');
-  }, [effectiveSecurity]);
-  
-  // Debounce the local security with 2 second delay
-  const debouncedSecurity = useDebounce(localSecurity, 2000);
+  }, [effectiveSecurity, isDirty]);
   
   // Auto-save when debounced value changes
   useEffect(() => {
@@ -92,6 +101,8 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
         } else {
           await onSave(debouncedSecurity);
         }
+        // Store the debounced value to compare with future prop updates
+        prevDebouncedSecurityRef.current = debouncedSecurity;
         setIsDirty(false);
         setSaveState('saved');
         
@@ -177,26 +188,26 @@ export function SecurityManager({ security, onSave, operatorId, disabled = false
             Security & Compliance
           </div>
           {/* Visual save state indicator */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            {saveState === 'waiting' && (
-              <>
-                <Clock className="h-4 w-4" />
-                <span>Waiting...</span>
-              </>
-            )}
-            {saveState === 'saving' && (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Saving...</span>
-              </>
-            )}
-            {saveState === 'saved' && (
-              <>
-                <Check className="h-4 w-4 text-green-600" />
-                <span className="text-green-600">Saved</span>
-              </>
-            )}
-          </div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {saveState === 'waiting' && (
+            <>
+              <Clock className="h-3 w-3" />
+              <span>Waiting...</span>
+            </>
+          )}
+          {saveState === 'saving' && (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Saving...</span>
+            </>
+          )}
+          {saveState === 'saved' && (
+            <>
+              <Check className="h-3 w-3 text-green-600" />
+              <span className="text-green-600">Saved</span>
+            </>
+          )}
+        </div>
         </CardTitle>
         {isTemporaryOperator && (
           <Alert>

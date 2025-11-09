@@ -49,15 +49,24 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
   // Phase 4: Save state tracking
   const [saveState, setSaveState] = useState<'idle' | 'waiting' | 'saving' | 'saved'>('idle');
   
+  // Debounce the local FAQs with 3 second delay
+  const debouncedFaqs = useDebounce(localFaqs, 3000);
+  const prevDebouncedFaqsRef = useRef(debouncedFaqs);
+  
   // Update local state when prop changes (from external updates)
   useEffect(() => {
+    // Deep equality check: only sync if props changed from a different source
+    const propsMatchLastSave = JSON.stringify(effectiveFaqs) === JSON.stringify(prevDebouncedFaqsRef.current);
+    
+    // Skip sync if user is actively typing (isDirty) and props match last save
+    if (isDirty && propsMatchLastSave) {
+      return;
+    }
+    
     setLocalFaqs(effectiveFaqs);
     setIsDirty(false);
     setSaveState('idle');
-  }, [effectiveFaqs]);
-  
-  // Debounce the local FAQs with 2 second delay
-  const debouncedFaqs = useDebounce(localFaqs, 2000);
+  }, [effectiveFaqs, isDirty]);
   
   // Phase 2: Fixed dependencies - Auto-save when debounced value changes
   useEffect(() => {
@@ -82,6 +91,8 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
         } else {
           await onSave(debouncedFaqs);
         }
+        // Store the debounced value to compare with future prop updates
+        prevDebouncedFaqsRef.current = debouncedFaqs;
         setIsDirty(false);
         setSaveState('saved');
         
@@ -199,26 +210,26 @@ export function FAQManager({ faqs, onSave, operatorId, disabled = false, onInter
             Frequently Asked Questions
           </div>
           {/* Phase 4: Visual save state indicator */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            {saveState === 'waiting' && (
-              <>
-                <Clock className="h-4 w-4" />
-                <span>Waiting...</span>
-              </>
-            )}
-            {saveState === 'saving' && (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Saving...</span>
-              </>
-            )}
-            {saveState === 'saved' && (
-              <>
-                <Check className="h-4 w-4 text-green-600" />
-                <span className="text-green-600">Saved</span>
-              </>
-            )}
-          </div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {saveState === 'waiting' && (
+            <>
+              <Clock className="h-3 w-3" />
+              <span>Waiting...</span>
+            </>
+          )}
+          {saveState === 'saving' && (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Saving...</span>
+            </>
+          )}
+          {saveState === 'saved' && (
+            <>
+              <Check className="h-3 w-3 text-green-600" />
+              <span className="text-green-600">Saved</span>
+            </>
+          )}
+        </div>
         </CardTitle>
         {isTemporaryOperator && (
           <Alert>

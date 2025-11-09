@@ -180,7 +180,6 @@ export function useOperatorExtensions(operatorId: string) {
       }
       
       setBonuses(bonusData || []);
-      toast.success('Bonuses saved successfully');
     } catch (error) {
       console.error('Error saving bonuses:', error);
       toast.error('Failed to save bonuses');
@@ -225,7 +224,6 @@ export function useOperatorExtensions(operatorId: string) {
       }
       
       setPayments(paymentData || []);
-      toast.success('Payment methods saved successfully');
     } catch (error) {
       console.error('Error saving payment methods:', error);
       toast.error('Failed to save payment methods');
@@ -266,7 +264,6 @@ export function useOperatorExtensions(operatorId: string) {
       }
       
       setFeatures(featureData);
-      toast.success('Features saved successfully');
     } catch (error) {
       console.error('Error saving features:', error);
       toast.error('Failed to save features');
@@ -305,7 +302,6 @@ export function useOperatorExtensions(operatorId: string) {
       if (error) throw error;
       
       setSecurity(securityData);
-      toast.success('Security settings saved successfully');
     } catch (error) {
       console.error('Error saving security:', error);
       toast.error('Failed to save security settings');
@@ -374,7 +370,6 @@ export function useOperatorExtensions(operatorId: string) {
         }
         
         setFaqs(faqData || []);
-        toast.success('FAQs saved successfully');
       } catch (error) {
         console.error('Error saving FAQs:', error);
         toast.error('Failed to save FAQs');

@@ -51,15 +51,24 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   // Save state tracking
   const [saveState, setSaveState] = useState<'idle' | 'waiting' | 'saving' | 'saved'>('idle');
   
+  // Debounce the local bonuses with 3 second delay
+  const debouncedBonuses = useDebounce(localBonuses, 3000);
+  const prevDebouncedBonusesRef = useRef(debouncedBonuses);
+  
   // Update local state when prop changes (from external updates)
   useEffect(() => {
+    // Deep equality check: only sync if props changed from a different source
+    const propsMatchLastSave = JSON.stringify(effectiveBonuses) === JSON.stringify(prevDebouncedBonusesRef.current);
+    
+    // Skip sync if user is actively typing (isDirty) and props match last save
+    if (isDirty && propsMatchLastSave) {
+      return;
+    }
+    
     setLocalBonuses(effectiveBonuses);
     setIsDirty(false);
     setSaveState('idle');
-  }, [effectiveBonuses]);
-  
-  // Debounce the local bonuses with 2 second delay
-  const debouncedBonuses = useDebounce(localBonuses, 2000);
+  }, [effectiveBonuses, isDirty]);
   
   // Auto-save when debounced value changes
   useEffect(() => {
@@ -84,6 +93,8 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
         } else {
           await onSave(debouncedBonuses);
         }
+        // Store the debounced value to compare with future prop updates
+        prevDebouncedBonusesRef.current = debouncedBonuses;
         setIsDirty(false);
         setSaveState('saved');
         
@@ -181,26 +192,26 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
             Bonuses & Promotions
           </div>
           {/* Visual save state indicator */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            {saveState === 'waiting' && (
-              <>
-                <Clock className="h-4 w-4" />
-                <span>Waiting...</span>
-              </>
-            )}
-            {saveState === 'saving' && (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Saving...</span>
-              </>
-            )}
-            {saveState === 'saved' && (
-              <>
-                <Check className="h-4 w-4 text-green-600" />
-                <span className="text-green-600">Saved</span>
-              </>
-            )}
-          </div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {saveState === 'waiting' && (
+            <>
+              <Clock className="h-3 w-3" />
+              <span>Waiting...</span>
+            </>
+          )}
+          {saveState === 'saving' && (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Saving...</span>
+            </>
+          )}
+          {saveState === 'saved' && (
+            <>
+              <Check className="h-3 w-3 text-green-600" />
+              <span className="text-green-600">Saved</span>
+            </>
+          )}
+        </div>
         </CardTitle>
         {isTemporaryOperator && (
           <Alert>
