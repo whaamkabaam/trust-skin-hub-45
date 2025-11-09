@@ -53,8 +53,8 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
   // Save state tracking
   const [saveState, setSaveState] = useState<'idle' | 'waiting' | 'saving' | 'saved'>('idle');
   
-  // Debounce the local bonuses with 3 second delay
-  const debouncedBonuses = useDebounce(localBonuses, 3000);
+  // Debounce the local bonuses with 5 second delay
+  const debouncedBonuses = useDebounce(localBonuses, 5000);
   const prevDebouncedBonusesRef = useRef(debouncedBonuses);
   
   // Create stable save function using useRef and useCallback
@@ -105,7 +105,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
       return;
     }
     
-    // Set saving state
+    console.log('🔄 Auto-save triggered for bonuses');
     setSaveState('saving');
     
     // Update ref BEFORE save to prevent race condition
@@ -116,28 +116,39 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
         await stableSave(debouncedBonuses);
         setIsDirty(false);
         setSaveState('saved');
+        console.log('✅ Auto-save completed successfully');
+        
+        toast.success(isTemporaryOperator 
+          ? 'Bonuses auto-saved locally' 
+          : 'Bonuses auto-saved'
+        );
         
         // Reset to idle after showing success
         setTimeout(() => {
           setSaveState('idle');
         }, 2000);
       } catch (error) {
-        console.error('Auto-save failed:', error);
+        console.error('❌ Auto-save failed:', error);
         setSaveState('idle');
-        // Revert ref on error
         prevDebouncedBonusesRef.current = effectiveBonuses;
+        toast.error('Auto-save failed. Please try manual save.');
       }
     };
     
     performSave();
-  }, [debouncedBonuses, isDirty, stableSave]); // Removed effectiveBonuses - not needed
+  }, [debouncedBonuses, isDirty, stableSave, isTemporaryOperator]);
   
-  // Show waiting state when there are pending changes
+  // Save on unmount (tab switch)
   useEffect(() => {
-    if (isDirty && saveState === 'idle') {
-      setSaveState('waiting');
-    }
-  }, [isDirty, saveState]);
+    return () => {
+      if (isDirty && performSaveRef.current) {
+        console.log('💾 Saving bonuses on unmount...');
+        performSaveRef.current(localBonuses).catch(error => {
+          console.error('Save on unmount failed:', error);
+        });
+      }
+    };
+  }, []); // Empty deps - cleanup uses current ref values
 
   const addBonus = () => {
     // Notify parent that user is interacting with extensions
@@ -158,6 +169,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     const newBonuses = [...localBonuses, newBonus];
     setLocalBonuses(newBonuses);
     setIsDirty(true);
+    setSaveState('waiting'); // Set waiting state immediately
   };
 
   const updateBonus = (index: number, updates: Partial<OperatorBonus>) => {
@@ -172,6 +184,7 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     );
     setLocalBonuses(updated);
     setIsDirty(true);
+    setSaveState('waiting'); // Set waiting state immediately
   };
 
   const removeBonus = (index: number) => {
@@ -180,22 +193,30 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
     setIsDirty(true);
   };
 
-  const handleSave = () => {
+  const handleManualSave = async () => {
     if (disabled) {
       toast.error('Cannot save while publishing is in progress');
       return;
     }
     
+    console.log('💾 Manual save triggered for bonuses');
+    setSaveState('saving');
+    
     try {
-      if (isTemporaryOperator) {
-        // Data is already saved to localStorage automatically
-        toast.success('Bonuses saved locally - will be saved to database when operator is created');
-      } else {
-        // No manual save needed - data is automatically saved via onSave calls
-        toast.success('Bonuses are automatically saved to database');
-      }
+      await stableSave(localBonuses);
+      prevDebouncedBonusesRef.current = localBonuses;
+      setIsDirty(false);
+      setSaveState('saved');
+      
+      toast.success(isTemporaryOperator 
+        ? 'Bonuses saved locally' 
+        : 'Bonuses saved to database'
+      );
+      
+      setTimeout(() => setSaveState('idle'), 2000);
     } catch (error) {
-      console.error('Error saving bonuses:', error);
+      console.error('❌ Manual save failed:', error);
+      setSaveState('idle');
       toast.error('Failed to save bonuses');
     }
   };
@@ -212,27 +233,32 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
             )}
             Bonuses & Promotions
           </div>
-          {/* Visual save state indicator */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {saveState === 'waiting' && (
-            <>
-              <Clock className="h-3 w-3" />
-              <span>Waiting...</span>
-            </>
-          )}
-          {saveState === 'saving' && (
-            <>
-              <Loader2 className="h-3 w-3 animate-spin" />
-              <span>Saving...</span>
-            </>
-          )}
-          {saveState === 'saved' && (
-            <>
-              <Check className="h-3 w-3 text-green-600" />
-              <span className="text-green-600">Saved</span>
-            </>
-          )}
-        </div>
+          <div className="flex items-center gap-2">
+            {saveState === 'waiting' && (
+              <div className="flex items-center gap-1.5 text-sm text-amber-600 bg-amber-50 dark:bg-amber-950 px-2 py-1 rounded">
+                <Clock className="h-4 w-4" />
+                <span>Waiting to save...</span>
+              </div>
+            )}
+            {saveState === 'saving' && (
+              <div className="flex items-center gap-1.5 text-sm text-blue-600 bg-blue-50 dark:bg-blue-950 px-2 py-1 rounded">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </div>
+            )}
+            {saveState === 'saved' && (
+              <div className="flex items-center gap-1.5 text-sm text-green-600 bg-green-50 dark:bg-green-950 px-2 py-1 rounded">
+                <Check className="h-4 w-4" />
+                <span>Saved!</span>
+              </div>
+            )}
+            {isDirty && saveState === 'idle' && (
+              <div className="flex items-center gap-1.5 text-sm text-orange-600 bg-orange-50 dark:bg-orange-950 px-2 py-1 rounded">
+                <AlertCircle className="h-4 w-4" />
+                <span>Unsaved changes</span>
+              </div>
+            )}
+          </div>
         </CardTitle>
         {isTemporaryOperator && (
           <Alert>
@@ -322,14 +348,34 @@ export function BonusManager({ bonuses, onSave, operatorId, disabled = false, on
           </Card>
         ))}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <Button type="button" onClick={addBonus} variant="outline" disabled={disabled}>
             <Plus className="h-4 w-4 mr-2" />
             Add Bonus
           </Button>
-          <Button type="button" onClick={handleSave} disabled={disabled}>
-            {isTemporaryOperator ? 'Save Locally' : 'Save Bonuses'}
+          <Button 
+            type="button" 
+            onClick={handleManualSave} 
+            className="flex-1" 
+            disabled={disabled || saveState === 'saving'}
+            variant={isDirty ? "default" : "outline"}
+          >
+            {saveState === 'saving' ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                {isDirty ? 'Save Changes' : 'All Changes Saved'}
+              </>
+            )}
           </Button>
+          {isDirty && saveState === 'waiting' && (
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              Auto-saves in 5s
+            </span>
+          )}
         </div>
       </CardContent>
     </Card>

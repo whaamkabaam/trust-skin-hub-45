@@ -52,8 +52,8 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
   // Save state tracking
   const [saveState, setSaveState] = useState<'idle' | 'waiting' | 'saving' | 'saved'>('idle');
   
-  // Debounce the local features with 3 second delay
-  const debouncedFeatures = useDebounce(localFeatures, 3000);
+  // Debounce the local features with 5 second delay
+  const debouncedFeatures = useDebounce(localFeatures, 5000);
   const prevDebouncedFeaturesRef = useRef(debouncedFeatures);
   
   // Create stable save function using useRef and useCallback
@@ -104,7 +104,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
       return;
     }
     
-    // Set saving state
+    console.log('🔄 Auto-save triggered for features');
     setSaveState('saving');
     
     // Update ref BEFORE save to prevent race condition
@@ -115,28 +115,39 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
         await stableSave(debouncedFeatures);
         setIsDirty(false);
         setSaveState('saved');
+        console.log('✅ Auto-save completed successfully');
+        
+        toast.success(isTemporaryOperator 
+          ? 'Features auto-saved locally' 
+          : 'Features auto-saved'
+        );
         
         // Reset to idle after showing success
         setTimeout(() => {
           setSaveState('idle');
         }, 2000);
       } catch (error) {
-        console.error('Auto-save failed:', error);
+        console.error('❌ Auto-save failed:', error);
         setSaveState('idle');
-        // Revert ref on error
         prevDebouncedFeaturesRef.current = effectiveFeatures;
+        toast.error('Auto-save failed. Please try manual save.');
       }
     };
     
     performSave();
-  }, [debouncedFeatures, isDirty, stableSave]); // Removed effectiveFeatures - not needed
+  }, [debouncedFeatures, isDirty, stableSave, isTemporaryOperator]);
   
-  // Show waiting state when there are pending changes
+  // Save on unmount (tab switch)
   useEffect(() => {
-    if (isDirty && saveState === 'idle') {
-      setSaveState('waiting');
-    }
-  }, [isDirty, saveState]);
+    return () => {
+      if (isDirty && performSaveRef.current) {
+        console.log('💾 Saving features on unmount...');
+        performSaveRef.current(localFeatures).catch(error => {
+          console.error('Save on unmount failed:', error);
+        });
+      }
+    };
+  }, []); // Empty deps - cleanup uses current ref values
 
   const addFeature = () => {
     // Notify parent that user is interacting with extensions
@@ -154,6 +165,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     const newFeatures = [...localFeatures, newFeature];
     setLocalFeatures(newFeatures);
     setIsDirty(true);
+    setSaveState('waiting'); // Set waiting state immediately
   };
 
   const updateFeature = (index: number, updates: Partial<OperatorFeature>) => {
@@ -168,6 +180,7 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     );
     setLocalFeatures(updated);
     setIsDirty(true);
+    setSaveState('waiting'); // Set waiting state immediately
   };
 
   const removeFeature = (index: number) => {
@@ -176,20 +189,30 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
     setIsDirty(true);
   };
 
-  const handleSave = () => {
+  const handleManualSave = async () => {
     if (disabled) {
       toast.error('Cannot save while publishing is in progress');
       return;
     }
     
+    console.log('💾 Manual save triggered for features');
+    setSaveState('saving');
+    
     try {
-      if (isTemporaryOperator) {
-        toast.success('Features saved locally - will be saved to database when operator is created');
-      } else {
-        toast.success('Features are automatically saved to database');
-      }
+      await stableSave(localFeatures);
+      prevDebouncedFeaturesRef.current = localFeatures;
+      setIsDirty(false);
+      setSaveState('saved');
+      
+      toast.success(isTemporaryOperator 
+        ? 'Features saved locally' 
+        : 'Features saved to database'
+      );
+      
+      setTimeout(() => setSaveState('idle'), 2000);
     } catch (error) {
-      console.error('Error saving features:', error);
+      console.error('❌ Manual save failed:', error);
+      setSaveState('idle');
       toast.error('Failed to save features');
     }
   };
@@ -206,27 +229,32 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
             )}
             Features & Highlights
           </div>
-          {/* Visual save state indicator */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {saveState === 'waiting' && (
-            <>
-              <Clock className="h-3 w-3" />
-              <span>Waiting...</span>
-            </>
-          )}
-          {saveState === 'saving' && (
-            <>
-              <Loader2 className="h-3 w-3 animate-spin" />
-              <span>Saving...</span>
-            </>
-          )}
-          {saveState === 'saved' && (
-            <>
-              <Check className="h-3 w-3 text-green-600" />
-              <span className="text-green-600">Saved</span>
-            </>
-          )}
-        </div>
+          <div className="flex items-center gap-2">
+            {saveState === 'waiting' && (
+              <div className="flex items-center gap-1.5 text-sm text-amber-600 bg-amber-50 dark:bg-amber-950 px-2 py-1 rounded">
+                <Clock className="h-4 w-4" />
+                <span>Waiting to save...</span>
+              </div>
+            )}
+            {saveState === 'saving' && (
+              <div className="flex items-center gap-1.5 text-sm text-blue-600 bg-blue-50 dark:bg-blue-950 px-2 py-1 rounded">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </div>
+            )}
+            {saveState === 'saved' && (
+              <div className="flex items-center gap-1.5 text-sm text-green-600 bg-green-50 dark:bg-green-950 px-2 py-1 rounded">
+                <Check className="h-4 w-4" />
+                <span>Saved!</span>
+              </div>
+            )}
+            {isDirty && saveState === 'idle' && (
+              <div className="flex items-center gap-1.5 text-sm text-orange-600 bg-orange-50 dark:bg-orange-950 px-2 py-1 rounded">
+                <AlertCircle className="h-4 w-4" />
+                <span>Unsaved changes</span>
+              </div>
+            )}
+          </div>
         </CardTitle>
         {isTemporaryOperator && (
           <Alert>
@@ -296,14 +324,34 @@ export function FeaturesManager({ features, onSave, operatorId, disabled = false
           </Card>
         ))}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <Button type="button" onClick={addFeature} variant="outline" disabled={disabled}>
             <Plus className="h-4 w-4 mr-2" />
             Add Feature
           </Button>
-          <Button type="button" onClick={handleSave} disabled={disabled}>
-            {isTemporaryOperator ? 'Save Locally' : 'Save Features'}
+          <Button 
+            type="button" 
+            onClick={handleManualSave} 
+            className="flex-1" 
+            disabled={disabled || saveState === 'saving'}
+            variant={isDirty ? "default" : "outline"}
+          >
+            {saveState === 'saving' ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                {isDirty ? 'Save Changes' : 'All Changes Saved'}
+              </>
+            )}
           </Button>
+          {isDirty && saveState === 'waiting' && (
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              Auto-saves in 5s
+            </span>
+          )}
         </div>
       </CardContent>
     </Card>
