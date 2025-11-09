@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Star, CheckCircle, Copy } from 'lucide-react';
+import { ArrowLeft, ExternalLink, CheckCircle, Copy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import StarRating from '@/components/StarRating';
+import { cn } from '@/lib/utils';
 
 interface OperatorReviewHeroProps {
   operator: {
@@ -51,9 +51,15 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
           </Button>
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm">{operator.name}</span>
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium">{scores.overall}</span>
+            <div className={cn(
+              "flex items-center gap-1 px-2 py-1 rounded-md font-bold text-sm",
+              scores.overall >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+              scores.overall >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+              scores.overall >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+              scores.overall >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+              "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+            )}>
+              <span>{scores.overall}</span>
             </div>
           </div>
           <Button size="sm" asChild>
@@ -119,25 +125,51 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
 
                 {/* Ratings */}
                 <div className="flex items-center gap-8 mb-6">
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">Our Rating:</span>
-                    <div className="flex items-center gap-1">
-                      <div className="flex">
-                        <StarRating rating={scores.overall} size="md" />
-                      </div>
-                      <span className="font-bold text-lg">{scores.overall}/10</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground font-medium">Our Rating:</span>
+                    <div className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-lg",
+                      scores.overall >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                      scores.overall >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                      scores.overall >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                      scores.overall >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                    )}>
+                      <span className="text-2xl font-black">{scores.overall}</span>
+                      <span className="text-sm opacity-70">/10</span>
                     </div>
+                    <span className={cn(
+                      "text-sm font-semibold",
+                      scores.overall >= 9 ? "text-green-600 dark:text-green-400" :
+                      scores.overall >= 8 ? "text-blue-600 dark:text-blue-400" :
+                      scores.overall >= 7 ? "text-yellow-600 dark:text-yellow-400" :
+                      scores.overall >= 6 ? "text-orange-600 dark:text-orange-400" :
+                      "text-red-600 dark:text-red-400"
+                    )}>
+                      {scores.overall >= 9 ? 'Excellent' :
+                       scores.overall >= 8 ? 'Very Good' :
+                       scores.overall >= 7 ? 'Good' :
+                       scores.overall >= 6 ? 'Average' :
+                       scores.overall >= 5 ? 'Below Average' : 'Poor'}
+                    </span>
                   </div>
+                  
                   <div className="h-6 w-px bg-border" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">User Rating:</span>
-                    <div className="flex items-center gap-1">
-                      <div className="flex">
-                        <StarRating rating={scores.user} size="md" />
-                      </div>
-                      <span className="font-bold">{scores.user}/10</span>
-                      <span className="text-muted-foreground">({userRatings.total})</span>
+                  
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground font-medium">User Rating:</span>
+                    <div className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-lg font-bold",
+                      scores.user >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                      scores.user >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                      scores.user >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                      scores.user >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                    )}>
+                      <span className="text-2xl font-black">{scores.user}</span>
+                      <span className="text-sm opacity-70">/10</span>
                     </div>
+                    <span className="text-sm text-muted-foreground">({userRatings.total} reviews)</span>
                   </div>
                 </div>
 
@@ -214,18 +246,35 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
                 )}
               </div>
 
-              <div className="flex items-center justify-center gap-4 mb-4 text-sm">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold">{scores.overall}/10</span>
+              <div className="flex items-center justify-center gap-6 mb-4">
+                <div className="flex flex-col items-center gap-2">
+                  <div className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold",
+                    scores.overall >= 9 ? "bg-green-100 text-green-800" :
+                    scores.overall >= 8 ? "bg-blue-100 text-blue-800" :
+                    scores.overall >= 7 ? "bg-yellow-100 text-yellow-800" :
+                    scores.overall >= 6 ? "bg-orange-100 text-orange-800" :
+                    "bg-red-100 text-red-800"
+                  )}>
+                    <span className="text-xl font-black">{scores.overall}</span>
+                    <span className="text-xs opacity-70">/10</span>
                   </div>
                   <span className="text-xs text-muted-foreground">Our Rating</span>
                 </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold">{scores.user}/10</span>
+                
+                <div className="h-8 w-px bg-border" />
+                
+                <div className="flex flex-col items-center gap-2">
+                  <div className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold",
+                    scores.user >= 9 ? "bg-green-100 text-green-800" :
+                    scores.user >= 8 ? "bg-blue-100 text-blue-800" :
+                    scores.user >= 7 ? "bg-yellow-100 text-yellow-800" :
+                    scores.user >= 6 ? "bg-orange-100 text-orange-800" :
+                    "bg-red-100 text-red-800"
+                  )}>
+                    <span className="text-xl font-black">{scores.user}</span>
+                    <span className="text-xs opacity-70">/10</span>
                   </div>
                   <span className="text-xs text-muted-foreground">User ({userRatings.total})</span>
                 </div>

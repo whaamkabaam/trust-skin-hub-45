@@ -224,6 +224,26 @@ export function formatVerificationStatus(status: string): string {
 export function formatWithdrawalTime(time: string): string {
   if (!time || time === 'N/A') return 'N/A';
   
+  // Handle direct numeric patterns like "1-3 days", "0-2 days", etc.
+  const directPattern = /^\d+[-–]\d+\s*(day|hour|minute)s?$/i;
+  if (directPattern.test(time.trim())) {
+    // Already in good format, just capitalize properly
+    return time
+      .trim()
+      .split(' ')
+      .map((word, idx) => idx === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+  
+  // Handle single values like "Instant", "24 hours"
+  const singlePattern = /^\d+\s*(day|hour|minute)s?$/i;
+  if (singlePattern.test(time.trim()) || time.toLowerCase() === 'instant') {
+    return time
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+  
   const timeMap: Record<string, string> = {
     'instant': 'Instant',
     'within_1_hour': 'Within 1 Hour',
@@ -233,5 +253,5 @@ export function formatWithdrawalTime(time: string): string {
     'manual_review': 'Manual Review Required'
   };
 
-  return timeMap[time.toLowerCase()] || formatGenericLabel(time);
+  return timeMap[time.toLowerCase()] || time;
 }

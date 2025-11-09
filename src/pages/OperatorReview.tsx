@@ -21,7 +21,7 @@ import { usePublicOperatorExtensions } from '@/hooks/usePublicOperatorExtensions
 import { useMedia } from '@/hooks/useMedia';
 import { SEOHead } from '@/components/SEOHead';
 import { ContentSectionRenderer } from '@/components/ContentSectionRenderer';
-import StarRating from '@/components/StarRating';
+import { cn } from '@/lib/utils';
 import { 
   formatSupportChannel, 
   formatFeatureName, 
@@ -196,9 +196,15 @@ const OperatorReview = () => {
           </Button>
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm">{operator?.name}</span>
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium">{scores.overall.toFixed(1)}</span>
+            <div className={cn(
+              "flex items-center gap-1 px-2 py-1 rounded-md font-bold text-sm",
+              scores.overall >= 9 ? "bg-green-100 text-green-800" :
+              scores.overall >= 8 ? "bg-blue-100 text-blue-800" :
+              scores.overall >= 7 ? "bg-yellow-100 text-yellow-800" :
+              scores.overall >= 6 ? "bg-orange-100 text-orange-800" :
+              "bg-red-100 text-red-800"
+            )}>
+              <span>{scores.overall.toFixed(1)}</span>
             </div>
           </div>
           <Button size="sm" asChild>
@@ -267,27 +273,49 @@ const OperatorReview = () => {
 
                     {/* Ratings */}
                     <div className="flex items-center gap-8 mb-6">
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">Our Rating:</span>
-                        <div className="flex items-center gap-1">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.overall / 2) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
-                          </div>
-                          <span className="font-bold text-lg">{scores.overall.toFixed(1)}/10</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-muted-foreground font-medium">Our Rating:</span>
+                        <div className={cn(
+                          "flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-lg",
+                          scores.overall >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                          scores.overall >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                          scores.overall >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                          scores.overall >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                          "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                        )}>
+                          <span className="text-2xl font-black">{scores.overall.toFixed(1)}</span>
+                          <span className="text-sm opacity-70">/10</span>
                         </div>
+                        <span className={cn(
+                          "text-sm font-semibold",
+                          scores.overall >= 9 ? "text-green-600 dark:text-green-400" :
+                          scores.overall >= 8 ? "text-blue-600 dark:text-blue-400" :
+                          scores.overall >= 7 ? "text-yellow-600 dark:text-yellow-400" :
+                          scores.overall >= 6 ? "text-orange-600 dark:text-orange-400" :
+                          "text-red-600 dark:text-red-400"
+                        )}>
+                          {scores.overall >= 9 ? 'Excellent' :
+                           scores.overall >= 8 ? 'Very Good' :
+                           scores.overall >= 7 ? 'Good' :
+                           scores.overall >= 6 ? 'Average' :
+                           scores.overall >= 5 ? 'Below Average' : 'Poor'}
+                        </span>
                       </div>
+                      
                       <div className="h-6 w-px bg-border" />
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">User Rating:</span>
-                        <div className="flex items-center gap-1">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-5 h-5 ${i < Math.floor(scores.user / 2) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                            ))}
-                          </div>
-                          <span className="font-bold">{scores.user.toFixed(1)}/10</span>
+                      
+                      <div className="flex items-center gap-3">
+                        <span className="text-muted-foreground font-medium">User Rating:</span>
+                        <div className={cn(
+                          "flex items-center gap-2 px-4 py-2 rounded-lg font-bold",
+                          scores.user >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                          scores.user >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                          scores.user >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                          scores.user >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                          "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                        )}>
+                          <span className="text-2xl font-black">{scores.user.toFixed(1)}</span>
+                          <span className="text-sm opacity-70">/10</span>
                           <span className="text-muted-foreground">({userRatings.total})</span>
                         </div>
                       </div>
@@ -503,11 +531,18 @@ const OperatorReview = () => {
                         {siteType}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-1 mb-2">
-                      <StarRating rating={scores.overall} size="sm" />
-                      <span className="font-bold text-sm">{scores.overall.toFixed(1)}/10</span>
-                      <span className="text-muted-foreground text-sm">({userRatings.total})</span>
+                    <div className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm mb-2",
+                      scores.overall >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                      scores.overall >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                      scores.overall >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                      scores.overall >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                    )}>
+                      <span className="text-lg font-black">{scores.overall.toFixed(1)}</span>
+                      <span className="text-xs opacity-70">/10</span>
                     </div>
+                    <span className="text-muted-foreground text-sm">({userRatings.total} reviews)</span>
                   </div>
                 </div>
 
@@ -1328,24 +1363,30 @@ const OperatorReview = () => {
                        </div>
                         <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
                           <span className="text-sm">UX Rating</span>
-                          <div className="flex items-center gap-2">
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.ux / 2) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                              ))}
-                            </div>
-                            <span className="font-semibold">{scores.ux.toFixed(1)}/10</span>
+                          <div className={cn(
+                            "flex items-center gap-1.5 px-3 py-1 rounded-md font-bold text-sm",
+                            scores.ux >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                            scores.ux >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                            scores.ux >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                            scores.ux >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                            "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                          )}>
+                            <span>{scores.ux.toFixed(1)}</span>
+                            <span className="text-xs opacity-70">/10</span>
                           </div>
                         </div>
                         <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
                           <span className="text-sm">Support Rating</span>
-                          <div className="flex items-center gap-2">
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`w-4 h-4 ${i < Math.floor(scores.support / 2) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                              ))}
-                            </div>
-                            <span className="font-semibold">{scores.support.toFixed(1)}/10</span>
+                          <div className={cn(
+                            "flex items-center gap-1.5 px-3 py-1 rounded-md font-bold text-sm",
+                            scores.support >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                            scores.support >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                            scores.support >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                            scores.support >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                            "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                          )}>
+                            <span>{scores.support.toFixed(1)}</span>
+                            <span className="text-xs opacity-70">/10</span>
                           </div>
                         </div>
                        <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
@@ -1425,9 +1466,16 @@ const OperatorReview = () => {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Overall Rating</span>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-semibold">{scores.overall.toFixed(1)}</span>
+                    <div className={cn(
+                      "flex items-center gap-1 px-2 py-1 rounded-md font-bold text-sm",
+                      scores.overall >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                      scores.overall >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                      scores.overall >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                      scores.overall >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                    )}>
+                      <span>{scores.overall.toFixed(1)}</span>
+                      <span className="text-xs opacity-70">/10</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -1508,9 +1556,8 @@ const OperatorReview = () => {
                         <div className="font-medium text-sm">CSGORoll</div>
                         <div className="text-xs text-muted-foreground">Case Opening</div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs font-medium">4.2</span>
+                      <div className="px-2 py-1 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 font-bold text-xs">
+                        4.2
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -1521,9 +1568,8 @@ const OperatorReview = () => {
                         <div className="font-medium text-sm">Stake</div>
                         <div className="text-xs text-muted-foreground">Multi-game</div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs font-medium">4.1</span>
+                      <div className="px-2 py-1 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 font-bold text-xs">
+                        4.1
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -1534,9 +1580,8 @@ const OperatorReview = () => {
                         <div className="font-medium text-sm">Rollbit</div>
                         <div className="text-xs text-muted-foreground">Casino & Skins</div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs font-medium">4.0</span>
+                      <div className="px-2 py-1 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 font-bold text-xs">
+                        4.0
                       </div>
                     </div>
                   </div>
