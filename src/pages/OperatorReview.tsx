@@ -399,7 +399,7 @@ const OperatorReview = () => {
 
                 {/* Operator Features - Redesigned with semantic color coding */}
                 {features && features.length > 0 && (
-                  <div className="space-y-3 border-t pt-4 mt-4">
+                  <div className="space-y-3 border-t pt-4 mt-4 pb-4">
                     <div>
                       <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Platform Features</span>
                       <div className="flex flex-wrap gap-2 mt-2">
