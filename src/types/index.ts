@@ -107,9 +107,9 @@ export interface Operator {
   company_background?: string;
   supported_countries?: string[];
   community_links?: Record<string, string>;
-  // Optional new fields
-  otherFeatures?: string[];
-  gamingModes?: string[];
+  // Optional new fields (database snake_case)
+  other_features?: string[];
+  gaming_modes?: string[];
   games?: string[];
   categories?: string[];
   // Relations

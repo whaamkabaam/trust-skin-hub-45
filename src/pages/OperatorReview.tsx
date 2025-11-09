@@ -402,7 +402,7 @@ const OperatorReview = () => {
                   <div className="space-y-3 border-t pt-4 mt-4">
                     <div>
                       <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Platform Features</span>
-                      <div className="flex flex-wrap gap-2 mt-3">
+                      <div className="flex flex-wrap gap-2 mt-2">
                          {/* Premium Features - Emerald with sparkles */}
                          {features.filter(f => f.feature_type === 'premium').map((feature) => (
                            <Badge key={feature.id} className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700 shadow-sm">
@@ -436,14 +436,17 @@ const OperatorReview = () => {
                 )}
 
                 {/* Optional Features */}
-                {(operator?.otherFeatures || operator?.gamingModes || operator?.games || operator?.categories) && (
+                {((operator?.other_features && operator.other_features.length > 0) || 
+                  (operator?.gaming_modes && operator.gaming_modes.length > 0) || 
+                  (operator?.games && operator.games.length > 0) || 
+                  (operator?.categories && operator.categories.length > 0)) && (
                   <div className="space-y-3 border-t pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {operator?.otherFeatures && (
+                      {operator?.other_features && operator.other_features.length > 0 && (
                         <div>
                           <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Other Features</span>
                           <div className="flex flex-wrap gap-1.5 mt-2">
-                            {operator.otherFeatures.map((feature) => (
+                            {operator.other_features.map((feature) => (
                               <Badge key={feature} variant="secondary" className="text-xs">
                                 {formatFeatureName(feature)}
                               </Badge>
@@ -452,11 +455,11 @@ const OperatorReview = () => {
                         </div>
                       )}
                       
-                      {operator?.gamingModes && (
+                      {operator?.gaming_modes && operator.gaming_modes.length > 0 && (
                         <div>
                           <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Gaming Modes</span>
                           <div className="flex flex-wrap gap-1.5 mt-2">
-                            {operator.gamingModes.map((mode) => (
+                            {operator.gaming_modes.map((mode) => (
                               <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
                                 {formatGamingMode(mode)}
                               </Badge>
@@ -465,7 +468,7 @@ const OperatorReview = () => {
                         </div>
                       )}
                       
-                      {operator?.games && (
+                      {operator?.games && operator.games.length > 0 && (
                         <div>
                           <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Games</span>
                           <div className="flex flex-wrap gap-1.5 mt-2">
@@ -478,7 +481,7 @@ const OperatorReview = () => {
                         </div>
                       )}
                       
-                      {operator?.categories && (
+                      {operator?.categories && operator.categories.length > 0 && (
                         <div>
                           <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Categories</span>
                           <div className="flex flex-wrap gap-1.5 mt-2">
@@ -928,14 +931,15 @@ const OperatorReview = () => {
               )}
 
               {/* Gaming Modes & Games */}
-              {(operator?.gamingModes || operator?.games) && (
+              {((operator?.gaming_modes && operator.gaming_modes.length > 0) || 
+                (operator?.games && operator.games.length > 0)) && (
                 <div className="grid md:grid-cols-2 gap-6">
-                  {operator?.gamingModes && (
+                  {operator?.gaming_modes && operator.gaming_modes.length > 0 && (
                     <Card>
                       <CardContent className="p-6">
                         <h3 className="text-lg font-semibold mb-4 text-blue-800 dark:text-blue-300">Gaming Modes</h3>
                         <div className="space-y-2">
-                          {operator.gamingModes.map((mode, index) => (
+                          {operator.gaming_modes.map((mode, index) => (
                             <div key={index} className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
                               <span className="text-blue-600">🎮</span>
                               <span className="text-sm font-medium">{formatGamingMode(mode)}</span>
@@ -946,7 +950,7 @@ const OperatorReview = () => {
                     </Card>
                   )}
 
-                  {operator?.games && (
+                  {operator?.games && operator.games.length > 0 && (
                     <Card>
                       <CardContent className="p-6">
                         <h3 className="text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Supported Games</h3>
@@ -965,7 +969,9 @@ const OperatorReview = () => {
               )}
 
               {/* Fallback when no features/games are available */}
-              {(!features || features.length === 0) && !operator?.gamingModes && !operator?.games && (
+              {(!features || features.length === 0) && 
+               (!operator?.gaming_modes || operator.gaming_modes.length === 0) && 
+               (!operator?.games || operator.games.length === 0) && (
                 <Card>
                   <CardContent className="p-6">
                     <div className="text-center text-muted-foreground">

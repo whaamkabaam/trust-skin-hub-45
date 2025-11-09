@@ -837,6 +837,8 @@ export type Database = {
           created_at: string
           draft_data: Json | null
           fairness_info: string | null
+          games: string[] | null
+          gaming_modes: string[] | null
           hero_image_url: string | null
           id: string
           kyc_required: boolean | null
@@ -844,6 +846,7 @@ export type Database = {
           launch_year: number | null
           logo_url: string | null
           name: string
+          other_features: string[] | null
           performance_metrics: Json | null
           prize_info: Json | null
           promo_code: string | null
@@ -876,6 +879,8 @@ export type Database = {
           created_at?: string
           draft_data?: Json | null
           fairness_info?: string | null
+          games?: string[] | null
+          gaming_modes?: string[] | null
           hero_image_url?: string | null
           id?: string
           kyc_required?: boolean | null
@@ -883,6 +888,7 @@ export type Database = {
           launch_year?: number | null
           logo_url?: string | null
           name: string
+          other_features?: string[] | null
           performance_metrics?: Json | null
           prize_info?: Json | null
           promo_code?: string | null
@@ -915,6 +921,8 @@ export type Database = {
           created_at?: string
           draft_data?: Json | null
           fairness_info?: string | null
+          games?: string[] | null
+          gaming_modes?: string[] | null
           hero_image_url?: string | null
           id?: string
           kyc_required?: boolean | null
@@ -922,6 +930,7 @@ export type Database = {
           launch_year?: number | null
           logo_url?: string | null
           name?: string
+          other_features?: string[] | null
           performance_metrics?: Json | null
           prize_info?: Json | null
           promo_code?: string | null

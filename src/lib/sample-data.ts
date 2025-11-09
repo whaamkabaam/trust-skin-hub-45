@@ -23,8 +23,8 @@ export const sampleOperators: Operator[] = [
     countries: ['Global except restricted'],
     url: 'https://stake.com',
     verified: true,
-    otherFeatures: ['Drop feed', 'Community Chat', 'Free play drop'],
-    gamingModes: ['Roulette', 'Jackpot', 'Coinflip'],
+    other_features: ['Drop feed', 'Community Chat', 'Free play drop'],
+    gaming_modes: ['Roulette', 'Jackpot', 'Coinflip'],
     games: ['Slots', 'Blackjack', 'Roulette', 'Live games', 'Plinko', 'Mines', 'Crash'],
     categories: ['CS2', 'Dota2', 'Rust']
   },
@@ -50,8 +50,8 @@ export const sampleOperators: Operator[] = [
     countries: ['Global except US'],
     url: 'https://csgoroll.com',
     verified: true,
-    otherFeatures: ['Drop feed', 'Custom boxes'],
-    gamingModes: ['Battles', 'Upgrader', 'Coinflip', 'Roulette'],
+    other_features: ['Drop feed', 'Custom boxes'],
+    gaming_modes: ['Battles', 'Upgrader', 'Coinflip', 'Roulette'],
     games: ['Crash', 'Mines'],
     categories: ['CS2', 'Team Fortress 2']
   },

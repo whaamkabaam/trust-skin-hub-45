@@ -248,14 +248,14 @@ const OperatorReview = () => {
                     </div>
 
                     {/* Optional Features - Better organized */}
-                    {(operator.otherFeatures || operator.gamingModes || operator.games || operator.categories) && (
+                    {(operator.other_features || operator.gaming_modes || operator.games || operator.categories) && (
                       <div className="space-y-3 border-t pt-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {operator.otherFeatures && (
+                          {operator.other_features && (
                             <div>
                               <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Other Features</span>
                               <div className="flex flex-wrap gap-1.5 mt-2">
-                                {operator.otherFeatures.map((feature) => (
+                                {operator.other_features.map((feature) => (
                                   <Badge key={feature} variant="secondary" className="text-xs hover-scale">
                                     {feature}
                                   </Badge>
@@ -264,11 +264,11 @@ const OperatorReview = () => {
                             </div>
                           )}
                           
-                          {operator.gamingModes && (
+                          {operator.gaming_modes && (
                             <div>
                               <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Gaming Modes</span>
                               <div className="flex flex-wrap gap-1.5 mt-2">
-                                {operator.gamingModes.map((mode) => (
+                                {operator.gaming_modes.map((mode) => (
                                   <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800 hover-scale">
                                     {mode}
                                   </Badge>
@@ -434,13 +434,13 @@ const OperatorReview = () => {
                     </div>
                     
                     {/* Optional Features - Mobile */}
-                    {(operator.otherFeatures || operator.gamingModes || operator.games || operator.categories) && (
+                    {(operator.other_features || operator.gaming_modes || operator.games || operator.categories) && (
                       <div className="space-y-3 border-t pt-3 mt-3">
-                        {operator.otherFeatures && (
+                        {operator.other_features && (
                           <div>
                             <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide block mb-2">Other Features</span>
                             <div className="flex flex-wrap gap-1">
-                              {operator.otherFeatures.map((feature) => (
+                              {operator.other_features.map((feature) => (
                                 <Badge key={feature} variant="secondary" className="text-xs">
                                   {feature}
                                 </Badge>
@@ -449,11 +449,11 @@ const OperatorReview = () => {
                           </div>
                         )}
                         
-                        {operator.gamingModes && (
+                        {operator.gaming_modes && (
                           <div>
                             <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide block mb-2">Gaming Modes</span>
                             <div className="flex flex-wrap gap-1">
-                              {operator.gamingModes.map((mode) => (
+                              {operator.gaming_modes.map((mode) => (
                                 <Badge key={mode} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
                                   {mode}
                                 </Badge>

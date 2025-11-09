@@ -50,8 +50,8 @@ const transformOperator = (op: any): Operator => ({
   verified: op.verification_status === 'verified',
   verification_status: op.verification_status,
   site_type: op.site_type,
-  otherFeatures: [],
-  gamingModes: [],
+  other_features: [],
+  gaming_modes: [],
   games: [],
   categories: op.categories || []
 });
