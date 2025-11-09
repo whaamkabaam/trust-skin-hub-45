@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Shield, Clock, CreditCard, Globe, Users, TrendingUp, Star, ChevronDown, CheckCircle, XCircle, AlertTriangle, Copy, Gamepad2, DollarSign, HelpCircle, FileText, MessageCircle, Sparkles, Package } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Shield, Clock, CreditCard, Globe, Users, TrendingUp, Star, ChevronDown, CheckCircle, XCircle, AlertTriangle, Copy, Gamepad2, DollarSign, HelpCircle, FileText, MessageCircle, MessageSquare, Sparkles, Package } from 'lucide-react';
 import BoxesCatalog from '@/components/BoxesCatalog';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -30,7 +30,8 @@ import {
   formatGameName, 
   formatCategoryName, 
   formatPaymentMethod,
-  formatWithdrawalTime
+  formatWithdrawalTime,
+  formatSiteType
 } from '@/lib/formatters';
 
 const OperatorReview = () => {
@@ -130,7 +131,7 @@ const OperatorReview = () => {
     setTimeout(() => setPromoCodeCopied(false), 2000);
   };
   
-  const siteType = operator?.site_type || (operator?.modes?.includes('Case Opening') ? 'Case Site' : 'Mystery Box');
+  const siteType = formatSiteType(operator?.site_type || (operator?.modes?.includes('Case Opening') ? 'case_opening' : 'mystery_box'));
   const userRatings = {
     total: userReviewStats.totalReviews || 0,
     breakdown: userReviewStats.breakdown || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
@@ -303,21 +304,37 @@ const OperatorReview = () => {
                       
                       <div className="h-6 w-px bg-border" />
                       
-                      <div className="flex items-center gap-3">
-                        <span className="text-muted-foreground font-medium">User Rating:</span>
-                        <div className={cn(
-                          "flex items-center gap-2 px-4 py-2 rounded-lg font-bold",
-                          scores.user >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
-                          scores.user >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
-                          scores.user >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
-                          scores.user >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
-                          "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                        )}>
-                          <span className="text-2xl font-black">{scores.user.toFixed(1)}</span>
-                          <span className="text-sm opacity-70">/10</span>
-                          <span className="text-muted-foreground">({userRatings.total})</span>
+                      {userRatings.total > 0 ? (
+                        <div className="flex items-center gap-3">
+                          <span className="text-muted-foreground font-medium">User Rating:</span>
+                          <div className={cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-lg font-bold",
+                            scores.user >= 9 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                            scores.user >= 8 ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                            scores.user >= 7 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                            scores.user >= 6 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                            "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                          )}>
+                            <span className="text-2xl font-black">{scores.user.toFixed(1)}</span>
+                            <span className="text-sm opacity-70">/10</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground">({userRatings.total} reviews)</span>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <span className="text-muted-foreground font-medium">User Rating:</span>
+                          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted/50">
+                            <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">No reviews yet</span>
+                          </div>
+                          <Button variant="outline" size="sm" onClick={() => {
+                            const reviewForm = document.getElementById('review-form');
+                            reviewForm?.scrollIntoView({ behavior: 'smooth' });
+                          }}>
+                            Write the first review
+                          </Button>
+                        </div>
+                      )}
                     </div>
 
                     {/* Key Facts */}
@@ -380,32 +397,36 @@ const OperatorReview = () => {
                   </div>
                 )}
 
-                {/* Operator Features */}
+                {/* Operator Features - Redesigned with semantic color coding */}
                 {features && features.length > 0 && (
-                  <div className="space-y-3 border-t pt-4">
+                  <div className="space-y-3 border-t pt-4 mt-4">
                     <div>
                       <span className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Platform Features</span>
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                         {features.filter(f => f.is_highlighted && f.feature_type === 'premium').map((feature) => (
-                           <Badge key={feature.id} className="text-xs bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700">
-                             <Sparkles className="w-3 h-3 mr-1" />
+                      <div className="flex flex-wrap gap-2 mt-3">
+                         {/* Premium Features - Emerald with sparkles */}
+                         {features.filter(f => f.feature_type === 'premium').map((feature) => (
+                           <Badge key={feature.id} className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700 shadow-sm">
+                             <Sparkles className="w-3 h-3 mr-1.5" />
                              {formatFeatureName(feature.feature_name)}
                            </Badge>
                          ))}
-                         {features.filter(f => f.is_highlighted && f.feature_type !== 'premium').map((feature) => (
-                           <Badge key={feature.id} className="text-xs bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700">
-                             <CheckCircle className="w-3 h-3 mr-1" />
+                         {/* Core Features - Blue with check */}
+                         {features.filter(f => f.feature_type === 'core').map((feature) => (
+                           <Badge key={feature.id} className="text-xs bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700 shadow-sm">
+                             <CheckCircle className="w-3 h-3 mr-1.5" />
                              {formatFeatureName(feature.feature_name)}
                            </Badge>
                          ))}
-                         {features.filter(f => !f.is_highlighted && f.feature_type === 'utility').map((feature) => (
-                           <Badge key={feature.id} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-700">
-                             <Package className="w-3 h-3 mr-1" />
+                         {/* Utility Features - Purple with package */}
+                         {features.filter(f => f.feature_type === 'utility').map((feature) => (
+                           <Badge key={feature.id} className="text-xs bg-purple-100 text-purple-800 border border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700 shadow-sm">
+                             <Package className="w-3 h-3 mr-1.5" />
                              {formatFeatureName(feature.feature_name)}
                            </Badge>
                          ))}
-                         {features.filter(f => !f.is_highlighted && f.feature_type !== 'utility' && f.feature_type !== 'premium').map((feature) => (
-                           <Badge key={feature.id} variant="outline" className="text-xs">
+                         {/* Standard Features - Neutral gray */}
+                         {features.filter(f => !['premium', 'core', 'utility'].includes(f.feature_type)).map((feature) => (
+                           <Badge key={feature.id} variant="outline" className="text-xs bg-muted/50">
                              {formatFeatureName(feature.feature_name)}
                            </Badge>
                          ))}
@@ -540,7 +561,7 @@ const OperatorReview = () => {
                     <div className="flex items-center gap-2 mb-2">
                       <h1 className="text-xl font-bold">{operator?.name}</h1>
                       <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
-                        {siteType}
+                        {formatSiteType(operator?.site_type || (operator?.modes?.includes('Case Opening') ? 'case_opening' : 'mystery_box'))}
                       </Badge>
                     </div>
                     <div className={cn(
@@ -1347,42 +1368,27 @@ const OperatorReview = () => {
               </div>
               
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Support Channels */}
-                <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200/50">
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <MessageCircle className="w-5 h-5 text-indigo-600" />
-                      Support Channels
-                    </h3>
-                    {operator?.support_channels && operator.support_channels.length > 0 ? (
+                {/* Support Channels - Only show if channels exist */}
+                {operator?.support_channels && operator.support_channels.length > 0 && (
+                  <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200/50">
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <MessageCircle className="w-5 h-5 text-indigo-600" />
+                        Support Channels
+                      </h3>
                       <div className="space-y-3">
                         {operator.support_channels.map((channel, index) => (
                           <div key={index} className="flex items-center gap-3 p-3 bg-white/50 dark:bg-white/10 rounded-lg">
                             <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
                               <span className="text-white text-xs">💬</span>
                             </div>
-                            <span className="font-medium">{channel}</span>
+                            <span className="font-medium">{formatSupportChannel(channel)}</span>
                           </div>
                         ))}
                       </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs">💬</span>
-                          </div>
-                          <span className="font-medium">Live Chat</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs">📧</span>
-                          </div>
-                          <span className="font-medium">Email Support</span>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* User Experience Features */}
                 <Card className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 border-pink-200/50">
@@ -1392,16 +1398,17 @@ const OperatorReview = () => {
                       User Experience
                     </h3>
                      <div className="space-y-3">
-                       <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
-                         <span className="text-sm">Support Channels</span>
-                         <div className="flex flex-wrap gap-1">
-                           {operator?.support_channels?.map((channel, i) => (
-                             <Badge key={i} variant="outline" className="text-xs">{channel}</Badge>
-                           )) || (
-                             <Badge variant="outline" className="text-xs">24/7 Live Chat</Badge>
-                           )}
+                       {/* Support Channels row - Only show if channels exist */}
+                       {operator?.support_channels && operator.support_channels.length > 0 && (
+                         <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
+                           <span className="text-sm">Support Channels</span>
+                           <div className="flex flex-wrap gap-1">
+                             {operator.support_channels.map((channel, i) => (
+                               <Badge key={i} variant="outline" className="text-xs">{formatSupportChannel(channel)}</Badge>
+                             ))}
+                           </div>
                          </div>
-                       </div>
+                       )}
                         <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-white/10 rounded-lg">
                           <span className="text-sm">UX Rating</span>
                           <div className={cn(

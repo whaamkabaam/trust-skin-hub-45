@@ -255,3 +255,22 @@ export function formatWithdrawalTime(time: string): string {
 
   return timeMap[time.toLowerCase()] || time;
 }
+
+/**
+ * Format site type from backend format to user-friendly display
+ */
+export function formatSiteType(siteType: string | any): string {
+  if (!siteType) return '';
+  if (typeof siteType !== 'string') return String(siteType);
+  
+  const siteTypeMap: Record<string, string> = {
+    'mystery_box': 'Mystery Box',
+    'case_opening': 'Case Opening',
+    'skin_trading': 'Skin Trading',
+    'gambling': 'Gambling',
+    'casino': 'Casino',
+    'betting': 'Betting'
+  };
+
+  return siteTypeMap[siteType.toLowerCase()] || formatGenericLabel(siteType);
+}

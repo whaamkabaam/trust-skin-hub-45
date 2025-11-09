@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink, CheckCircle, Copy, MessageSquare } from 'lucid
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { formatSiteType } from '@/lib/formatters';
 
 interface OperatorReviewHeroProps {
   operator: {
@@ -35,8 +36,6 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
     setPromoCodeCopied(true);
     setTimeout(() => setPromoCodeCopied(false), 2000);
   };
-
-  const siteType = operator.modes.includes('Case Opening') ? 'Case Site' : 'Mystery Box';
 
   return (
     <>
@@ -113,7 +112,7 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
                 <div className="flex items-center gap-4 mb-4">
                   <h1 className="text-3xl font-bold">{operator.name}</h1>
                   <Badge variant="outline" className="text-blue-600 border-blue-200">
-                    {siteType}
+                    {formatSiteType(operator.modes.includes('Case Opening') ? 'case_opening' : 'mystery_box')}
                   </Badge>
                   {operator.verified && (
                     <Badge className="bg-green-100 text-green-800">
@@ -252,7 +251,7 @@ const OperatorReviewHero = ({ operator, scores, userRatings, promoCode }: Operat
               <div className="flex items-center justify-center gap-2 mb-2">
                 <h1 className="text-2xl font-bold">{operator.name}</h1>
                 <Badge variant="outline" className="text-blue-600 border-blue-200 text-xs">
-                  {siteType}
+                  {formatSiteType(operator.modes.includes('Case Opening') ? 'case_opening' : 'mystery_box')}
                 </Badge>
                 {operator.verified && (
                   <Badge className="bg-green-100 text-green-800 text-xs">
