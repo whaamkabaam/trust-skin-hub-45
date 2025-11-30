@@ -21,9 +21,6 @@ interface ExtractedOperatorData {
   launch_year?: number;
   verification_status?: string;
   promo_code?: string;
-  verdict?: string;
-  bonus_terms?: string;
-  fairness_info?: string;
   categories?: string[];
   pros?: string[];
   cons?: string[];
