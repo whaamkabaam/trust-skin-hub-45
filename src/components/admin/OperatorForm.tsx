@@ -163,6 +163,39 @@ export function OperatorForm({
   const contentSections = watch('content_sections');
   const formData = watch();
 
+  // Normalize legacy country data to regions on load
+  useEffect(() => {
+    const countryToRegionMap: Record<string, string> = {
+      'Germany': 'Europe', 'France': 'Europe', 'UK': 'Europe', 'United Kingdom': 'Europe',
+      'Spain': 'Europe', 'Italy': 'Europe', 'Netherlands': 'Europe', 'Sweden': 'Europe',
+      'Norway': 'Europe', 'Finland': 'Europe', 'Denmark': 'Denmark', 'Poland': 'Europe',
+      'USA': 'North America', 'United States': 'North America', 'Canada': 'North America', 
+      'Mexico': 'North America',
+      'Brazil': 'South America', 'Argentina': 'South America', 'Chile': 'South America',
+      'Colombia': 'South America', 'Peru': 'South America', 'Latin America Region': 'South America',
+      'Australia': 'Oceania', 'New Zealand': 'Oceania',
+      'Japan': 'Asia', 'China': 'Asia', 'South Korea': 'Asia', 'India': 'Asia',
+      'Singapore': 'Asia', 'Thailand': 'Asia', 'Vietnam': 'Asia',
+      'South Africa': 'Africa', 'Nigeria': 'Africa', 'Kenya': 'Africa', 'Egypt': 'Africa',
+    };
+
+    const currentCountries = getValues('supported_countries') || [];
+    const normalizedRegions = new Set<string>();
+
+    currentCountries.forEach(country => {
+      const mappedRegion = countryToRegionMap[country];
+      if (mappedRegion) {
+        normalizedRegions.add(mappedRegion);
+      } else if (['Worldwide', 'Europe', 'North America', 'South America', 'Asia', 'Africa', 'Oceania'].includes(country)) {
+        normalizedRegions.add(country);
+      }
+    });
+
+    if (normalizedRegions.size > 0 && normalizedRegions.size !== currentCountries.length) {
+      setValue('supported_countries', Array.from(normalizedRegions));
+    }
+  }, [initialData]);
+
   // Load content sections for existing operators
   useEffect(() => {
     const loadContentSections = async () => {
@@ -926,18 +959,6 @@ export function OperatorForm({
               </div>
             ))}
           </div>
-          {countries.length > 0 && (
-            <div className="mt-4 p-3 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-2">Selected regions:</p>
-              <div className="flex flex-wrap gap-2">
-                {countries.map((country) => (
-                  <Badge key={country} variant="secondary">
-                    {country}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 
