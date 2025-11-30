@@ -29,8 +29,7 @@ import { CategoryManager } from './CategoryManager';
 import { EnhancedPaymentMethodsManager } from './EnhancedPaymentMethodsManager';
 import { SecurityManager } from './SecurityManager';
 import { FAQManager } from './FAQManager';
-import { ContentSectionManager, type ContentSection } from './ContentSectionManager';
-import { MasterContentEditor } from './MasterContentEditor';
+import { MasterContentEditor, type ContentSection } from './MasterContentEditor';
 import { MediaAssetManager } from './MediaAssetManager';
 import { OperatorSmartImport } from './OperatorSmartImport';
 import { PublishingDebugger } from './PublishingDebugger';
@@ -75,9 +74,6 @@ export function OperatorForm({
       logo_url: initialData.logo_url || '',
       tracking_link: initialData.tracking_link || '',
       launch_year: initialData.launch_year || undefined,
-      verdict: initialData.verdict || '',
-      bonus_terms: initialData.bonus_terms || '',
-      fairness_info: initialData.fairness_info || '',
       hero_image_url: initialData.hero_image_url || '',
       categories: (initialData.categories as string[]) || [],
       payment_methods: [],
@@ -116,9 +112,6 @@ export function OperatorForm({
       logo_url: '',
       tracking_link: '',
       launch_year: undefined,
-      verdict: '',
-      bonus_terms: '',
-      fairness_info: '',
       hero_image_url: '',
       categories: [],
       payment_methods: [],
@@ -1091,10 +1084,6 @@ export function OperatorForm({
                 console.log('Setting launch_year:', data.launch_year);
                 setValue('launch_year', data.launch_year);
               }
-              if (data.verdict) {
-                console.log('Setting verdict:', data.verdict);
-                setValue('verdict', data.verdict);
-              }
               if (data.verification_status) {
                 console.log('Setting verification_status:', data.verification_status);
                 setValue('verification_status', data.verification_status);
@@ -1102,14 +1091,6 @@ export function OperatorForm({
               if (data.promo_code) {
                 console.log('Setting promo_code:', data.promo_code);
                 setValue('promo_code', data.promo_code);
-              }
-              if (data.bonus_terms) {
-                console.log('Setting bonus_terms:', data.bonus_terms);
-                setValue('bonus_terms', data.bonus_terms);
-              }
-              if (data.fairness_info) {
-                console.log('Setting fairness_info:', data.fairness_info);
-                setValue('fairness_info', data.fairness_info);
               }
               if (data.categories) {
                 console.log('Setting categories:', data.categories);

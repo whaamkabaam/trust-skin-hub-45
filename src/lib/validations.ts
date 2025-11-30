@@ -9,9 +9,6 @@ export const operatorSchema = z.object({
     (val) => val === '' || val === null || val === undefined || (typeof val === 'number' && isNaN(val)) ? undefined : Number(val),
     z.number().min(1990, 'Launch year must be 1990 or later').max(new Date().getFullYear(), 'Launch year cannot be in the future').optional()
   ),
-  verdict: z.string().optional(),
-  bonus_terms: z.string().optional(),
-  fairness_info: z.string().optional(),
   hero_image_url: z.string().refine((val) => val === '' || z.string().url().safeParse(val).success, 'Must be a valid URL or empty').optional(),
   categories: z.array(z.string()).default([]), // Category slugs
   payment_methods: z.array(z.object({

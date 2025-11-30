@@ -141,9 +141,7 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         games: [],
         categories: operatorData.categories || [],
         launch_year: operatorData.launch_year,
-        ratings: operatorData.ratings as any,
-        bonus_terms: operatorData.bonus_terms,
-        fairness_info: operatorData.fairness_info
+        ratings: operatorData.ratings as any
       };
 
       setOperator(transformedOperator);
