@@ -66,6 +66,7 @@ export interface Operator {
   logo: string; // legacy field
   logo_url?: string; // database field
   hero_image_url?: string;
+  /** @deprecated Use content_sections with section_key='overview' instead */
   verdict: string;
   overallRating: number;
   feeLevel: 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';
@@ -94,7 +95,9 @@ export interface Operator {
     offering?: number;
     payments?: number;
   };
+  /** @deprecated Use content_sections with section_key='bonuses_summary' instead */
   bonus_terms?: string;
+  /** @deprecated Use content_sections with section_key='security_overview' instead */
   fairness_info?: string;
   // Database fields
   promo_code?: string;
@@ -104,6 +107,7 @@ export interface Operator {
   withdrawal_time_fiat?: string;
   withdrawal_time_skins?: string;
   support_channels?: string[];
+  /** @deprecated Use content_sections with section_key='company_background' instead */
   company_background?: string;
   supported_countries?: string[];
   community_links?: Record<string, string>;
