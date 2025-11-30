@@ -43,14 +43,8 @@ export interface OperatorSecurity {
   operator_id: string;
   ssl_enabled: boolean;
   ssl_provider?: string;
-  license_info?: string;
   compliance_certifications: string[];
-  data_protection_info?: string;
-  responsible_gaming_info?: string;
   provably_fair: boolean;
-  provably_fair_description?: string;
-  complaints_platform?: string;
-  audit_info?: string;
 }
 
 export interface OperatorFAQ {

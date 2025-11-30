@@ -29,14 +29,8 @@ export const createSecurityTemplate = (operatorId: string): OperatorSecurity => 
   operator_id: operatorId,
   ssl_enabled: true,
   ssl_provider: 'CloudFlare SSL',
-  license_info: 'Licensed and regulated by Curacao Gaming Authority',
   provably_fair: true,
-  provably_fair_description: 'All case openings use cryptographic hash verification. Players can verify each result using our provably fair system.',
   compliance_certifications: ['SSL Certificate', 'Gaming License', 'Anti-Money Laundering Compliance'],
-  data_protection_info: 'User data encrypted with AES-256. GDPR compliant data handling.',
-  responsible_gaming_info: 'Self-exclusion tools available. Deposit limits can be set.',
-  complaints_platform: 'Internal dispute resolution available 24/7',
-  audit_info: 'Regular third-party security audits conducted'
 });
 
 export const createFAQTemplate = (operatorId: string, operatorName: string): OperatorFAQ[] => [
