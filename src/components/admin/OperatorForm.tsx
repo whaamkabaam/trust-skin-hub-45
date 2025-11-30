@@ -30,6 +30,7 @@ import { EnhancedPaymentMethodsManager } from './EnhancedPaymentMethodsManager';
 import { SecurityManager } from './SecurityManager';
 import { FAQManager } from './FAQManager';
 import { ContentSectionManager, type ContentSection } from './ContentSectionManager';
+import { MasterContentEditor } from './MasterContentEditor';
 import { MediaAssetManager } from './MediaAssetManager';
 import { OperatorSmartImport } from './OperatorSmartImport';
 import { PublishingDebugger } from './PublishingDebugger';
@@ -548,12 +549,12 @@ export function OperatorForm({
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="grid w-full grid-cols-10">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
+          <TabsTrigger value="content">Review Content</TabsTrigger>
           <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
           <TabsTrigger value="payments">Payments</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="faqs">FAQs</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
-          <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="media">Media</TabsTrigger>
           <TabsTrigger value="import">Smart Import</TabsTrigger>
           <TabsTrigger value="debug">Debug</TabsTrigger>
@@ -745,15 +746,6 @@ export function OperatorForm({
               accept="image/*"
             />
           </div>
-
-          <div>
-            <Label>Company Background</Label>
-            <StableRichTextEditor
-              value={watch('company_background') || ''}
-              onChange={(value) => setValue('company_background', value)}
-              placeholder="Background information about the company..."
-            />
-          </div>
         </CardContent>
       </Card>
 
@@ -930,42 +922,6 @@ export function OperatorForm({
         </CardContent>
       </Card>
 
-      {/* Text Content */}
-      {/* Content */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Content</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <Label>Verdict</Label>
-            <StableRichTextEditor
-              value={watch('verdict') || ''}
-              onChange={(value) => setValue('verdict', value)}
-              placeholder="Overall verdict about the operator..."
-            />
-          </div>
-          
-          <div>
-            <Label>Bonus Terms</Label>
-            <StableRichTextEditor
-              value={watch('bonus_terms') || ''}
-              onChange={(value) => setValue('bonus_terms', value)}
-              placeholder="Details about bonus terms and conditions..."
-            />
-          </div>
-          
-          <div>
-            <Label>Fairness Information</Label>
-            <StableRichTextEditor
-              value={watch('fairness_info') || ''}
-              onChange={(value) => setValue('fairness_info', value)}
-              placeholder="Information about fairness and provability..."
-            />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Settings */}
       <Card>
         <CardHeader>
@@ -1087,8 +1043,8 @@ export function OperatorForm({
         </TabsContent>
 
         <TabsContent value="content" className="space-y-6">
-          <TabErrorBoundary tabName="Content Sections">
-            <ContentSectionManager 
+          <TabErrorBoundary tabName="Review Content">
+            <MasterContentEditor 
               operatorId={effectiveOperatorId}
               sections={contentSections || []}
               onSectionsChange={handleContentSectionsChange}
