@@ -362,6 +362,20 @@ export function MasterContentEditor({
             </CardContent>
           </Card>
         )}
+
+        {/* Bottom Save Button */}
+        {onSave && sections.length > 0 && (
+          <div className="flex justify-end pt-4 border-t">
+            <Button
+              onClick={handleSave}
+              disabled={disabled || saveState === 'saving' || operatorId.startsWith('temp-')}
+              className="min-w-[120px]"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {saveState === 'saving' ? 'Saving...' : 'Save All Content'}
+            </Button>
+          </div>
+        )}
       </div>
     </TabErrorBoundary>
   );
