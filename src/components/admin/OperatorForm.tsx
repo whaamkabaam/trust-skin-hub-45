@@ -1144,26 +1144,56 @@ export function OperatorForm({
                 console.log('Form validation errors:', form.formState.errors);
               }, 100);
 
+              // Bonus type mapping: AI types → BonusManager expected types
+              const bonusTypeMap: Record<string, string> = {
+                'no_deposit': 'freeplay',
+                'sign_up': 'welcome',
+                'deposit': 'welcome',
+                'reload': 'daily',
+                'cashback': 'cashback',
+                'rakeback': 'cashback',
+                'vip': 'vip',
+                'referral': 'referral'
+              };
+
               // Store extracted bonuses, payments, etc. in localStorage for extension managers
               if (data.bonuses?.length > 0) {
-                localStorage.setItem(`operator-bonuses-${effectiveOperatorId}`, JSON.stringify(data.bonuses));
-                console.log(`Stored ${data.bonuses.length} bonuses for operator ${effectiveOperatorId}`);
+                // Transform bonus types to match BonusManager expectations
+                const transformedBonuses = data.bonuses.map(bonus => ({
+                  ...bonus,
+                  bonus_type: bonusTypeMap[bonus.bonus_type] || bonus.bonus_type,
+                  operator_id: effectiveOperatorId,
+                }));
+                localStorage.setItem(`temp-bonuses-${effectiveOperatorId}`, JSON.stringify(transformedBonuses));
+                console.log(`Stored ${transformedBonuses.length} bonuses for operator ${effectiveOperatorId}`);
               }
               if (data.payments?.length > 0) {
-                localStorage.setItem(`operator-payments-${effectiveOperatorId}`, JSON.stringify(data.payments));
+                localStorage.setItem(`temp-payments-${effectiveOperatorId}`, JSON.stringify(data.payments));
                 console.log(`Stored ${data.payments.length} payments for operator ${effectiveOperatorId}`);
               }
               if (data.features?.length > 0) {
-                localStorage.setItem(`operator-features-${effectiveOperatorId}`, JSON.stringify(data.features));
+                localStorage.setItem(`temp-features-${effectiveOperatorId}`, JSON.stringify(data.features));
                 console.log(`Stored ${data.features.length} features for operator ${effectiveOperatorId}`);
               }
               if (data.faqs?.length > 0) {
-                localStorage.setItem(`operator-faqs-${effectiveOperatorId}`, JSON.stringify(data.faqs));
+                localStorage.setItem(`temp-faqs-${effectiveOperatorId}`, JSON.stringify(data.faqs));
                 console.log(`Stored ${data.faqs.length} FAQs for operator ${effectiveOperatorId}`);
               }
               if (data.security && Object.keys(data.security).length > 0) {
-                localStorage.setItem(`operator-security-${effectiveOperatorId}`, JSON.stringify(data.security));
+                localStorage.setItem(`temp-security-${effectiveOperatorId}`, JSON.stringify(data.security));
                 console.log(`Stored security data for operator ${effectiveOperatorId}`);
+              }
+
+              // Import content sections directly into form state
+              if (data.content_sections && data.content_sections.length > 0) {
+                console.log('Setting content_sections:', data.content_sections);
+                const formattedSections = data.content_sections.map((section, index) => ({
+                  section_key: section.section_key,
+                  heading: section.heading,
+                  rich_text_content: section.rich_text_content || '',
+                  order_number: section.order_number ?? index,
+                }));
+                setValue('content_sections', formattedSections);
               }
 
               // Trigger extension managers to refresh with new data
@@ -1175,7 +1205,17 @@ export function OperatorForm({
                 window.dispatchEvent(event);
               }, 100);
 
-              toast.success('Extracted data applied! Name, slug, and ratings are set. Check Bonuses, Payments, Features, and FAQ tabs for imported content.');
+              // Build import summary
+              const importedItems = [];
+              if (data.bonuses?.length) importedItems.push(`Bonuses tab (${data.bonuses.length})`);
+              if (data.payments?.length) importedItems.push(`Payments tab (${data.payments.length})`);
+              if (data.content_sections?.length) importedItems.push(`Review Content tab (${data.content_sections.length} sections)`);
+              if (data.faqs?.length) importedItems.push(`FAQs tab (${data.faqs.length})`);
+              if (data.features?.length) importedItems.push(`Features (${data.features.length})`);
+              
+              toast.success(importedItems.length > 0 
+                ? `Data imported! Check: ${importedItems.join(', ')}` 
+                : 'Basic data applied! Check all tabs to review content.');
             }}
             currentOperatorData={getValues()}
           />

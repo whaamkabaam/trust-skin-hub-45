@@ -247,14 +247,19 @@ export function OperatorSmartImport({ onDataExtracted, currentOperatorData }: Op
     // Apply data to form - localStorage storage now handled by OperatorForm
     onDataExtracted(extractedData);
     
-    // Show summary of what was imported
-    const importSummary = [];
-    if (extractedData.bonuses?.length) importSummary.push(`${extractedData.bonuses.length} bonuses`);
-    if (extractedData.payments?.length) importSummary.push(`${extractedData.payments.length} payment methods`);
-    if (extractedData.content_sections?.length) importSummary.push(`${extractedData.content_sections.length} content sections`);
-    if (extractedData.faqs?.length) importSummary.push(`${extractedData.faqs.length} FAQs`);
+    // Build detailed import summary
+    const importedTabs = [];
+    if (extractedData.bonuses?.length) importedTabs.push(`Bonuses (${extractedData.bonuses.length})`);
+    if (extractedData.payments?.length) importedTabs.push(`Payments (${extractedData.payments.length})`);
+    if (extractedData.content_sections?.length) importedTabs.push(`Review Content (${extractedData.content_sections.length} sections)`);
+    if (extractedData.faqs?.length) importedTabs.push(`FAQs (${extractedData.faqs.length})`);
+    if (extractedData.features?.length) importedTabs.push(`Features (${extractedData.features.length})`);
     
-    toast.success(`Data applied! Imported: ${importSummary.join(', ')}. Check all tabs to review content.`);
+    toast.success(
+      importedTabs.length > 0 
+        ? `✓ Imported to: ${importedTabs.join(', ')}. Check these tabs to review.`
+        : 'Basic info applied! Check all tabs.'
+    );
     
     // Clear the imported data to prevent reapplication
     setExtractedData(null);
