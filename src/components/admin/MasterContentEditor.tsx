@@ -31,20 +31,27 @@ interface MasterContentEditorProps {
   saveState?: 'idle' | 'saving' | 'saved' | 'error';
 }
 
-// Fixed sections that map to frontend review sections
-const FIXED_SECTIONS = [
-  { key: 'overview', label: 'Overview', defaultHeading: 'Overview', description: 'Main introduction and overview of the operator' },
-  { key: 'company_background', label: 'Company Background', defaultHeading: 'Company Background', description: 'History and background information' },
-  { key: 'bonuses_summary', label: 'Bonuses Overview', defaultHeading: 'Bonuses & Promotions', description: 'General bonus information and overview' },
-  { key: 'security_overview', label: 'Security Overview', defaultHeading: 'Security & Safety', description: 'General security and safety information' },
-  { key: 'licensing', label: 'Licensing & Regulation', defaultHeading: 'Licensing & Regulation', description: 'Licensing information and regulatory details' },
-  { key: 'provably_fair', label: 'Provably Fair System', defaultHeading: 'Provably Fair Gaming', description: 'How the provably fair system works' },
-  { key: 'data_protection', label: 'Data Protection', defaultHeading: 'Data Protection & Privacy', description: 'GDPR compliance and data handling practices' },
-  { key: 'responsible_gaming', label: 'Responsible Gaming', defaultHeading: 'Responsible Gaming', description: 'Responsible gaming measures and self-exclusion options' },
-  { key: 'complaints', label: 'Complaints Platform', defaultHeading: 'Complaints & Dispute Resolution', description: 'How to file complaints and resolve disputes' },
-  { key: 'audit', label: 'Audit Information', defaultHeading: 'Audits & Certifications', description: 'Third-party audits and security assessments' },
-  { key: 'final_verdict', label: 'Final Verdict', defaultHeading: 'Our Final Verdict', description: 'Comprehensive conclusion and final thoughts' },
+// Primary intro sections (shown at top of review page)
+const PRIMARY_INTRO_SECTIONS = [
+  { key: 'overview', label: 'Overview', defaultHeading: 'Overview', description: 'Main introduction - appears in "What is [Site]?" section', frontendSection: '"What is [Site]?"' },
+  { key: 'company_background', label: 'Company Background', defaultHeading: 'Company Background', description: 'History and background - appears in "What is [Site]?" section', frontendSection: '"What is [Site]?"' },
 ];
+
+// Page sections (shown at specific positions throughout review page)
+const PAGE_SECTIONS = [
+  { key: 'bonuses_summary', label: 'Bonuses Overview', defaultHeading: 'Bonuses & Promotions', description: 'Bonus information - appears in "Bonuses & Promos" section', frontendSection: '"Bonuses & Promos"' },
+  { key: 'security_overview', label: 'Security Overview', defaultHeading: 'Security & Safety', description: 'Security information - appears in "Fairness & Security" section', frontendSection: '"Fairness & Security"' },
+  { key: 'licensing', label: 'Licensing & Regulation', defaultHeading: 'Licensing & Regulation', description: 'Licensing details - appears in "Fairness & Security" section', frontendSection: '"Fairness & Security"' },
+  { key: 'provably_fair', label: 'Provably Fair System', defaultHeading: 'Provably Fair Gaming', description: 'Provably fair system - appears in "Fairness & Security" section', frontendSection: '"Fairness & Security"' },
+  { key: 'data_protection', label: 'Data Protection', defaultHeading: 'Data Protection & Privacy', description: 'Data handling - appears in "Fairness & Security" section', frontendSection: '"Fairness & Security"' },
+  { key: 'responsible_gaming', label: 'Responsible Gaming', defaultHeading: 'Responsible Gaming', description: 'Responsible gaming - appears in "Fairness & Security" section', frontendSection: '"Fairness & Security"' },
+  { key: 'complaints', label: 'Complaints Platform', defaultHeading: 'Complaints & Dispute Resolution', description: 'Dispute resolution - appears in "Fairness & Security" section', frontendSection: '"Fairness & Security"' },
+  { key: 'audit', label: 'Audit Information', defaultHeading: 'Audits & Certifications', description: 'Audits and certifications - appears in "Fairness & Security" section', frontendSection: '"Fairness & Security"' },
+  { key: 'final_verdict', label: 'Final Verdict', defaultHeading: 'Our Final Verdict', description: 'Final thoughts - appears in "Verdict" section at end of page', frontendSection: '"Verdict"' },
+];
+
+// All fixed sections combined
+const FIXED_SECTIONS = [...PRIMARY_INTRO_SECTIONS, ...PAGE_SECTIONS];
 
 export function MasterContentEditor({ 
   operatorId,
@@ -57,27 +64,34 @@ export function MasterContentEditor({
   const [selectedValue, setSelectedValue] = useState('');
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
-  // Separate fixed and custom sections
-  const { fixedSections, customSections } = useMemo(() => {
-    const fixed: ContentSection[] = [];
+  // Separate sections into intro, custom, and page sections
+  const { primaryIntroSections, customSections, pageSections } = useMemo(() => {
+    const intro: ContentSection[] = [];
     const custom: ContentSection[] = [];
+    const page: ContentSection[] = [];
     
     sections.forEach(section => {
-      if (FIXED_SECTIONS.some(fs => fs.key === section.section_key)) {
-        fixed.push(section);
+      if (PRIMARY_INTRO_SECTIONS.some(fs => fs.key === section.section_key)) {
+        intro.push(section);
+      } else if (PAGE_SECTIONS.some(fs => fs.key === section.section_key)) {
+        page.push(section);
       } else {
         custom.push(section);
       }
     });
     
-    return { fixedSections: fixed, customSections: custom };
+    return { 
+      primaryIntroSections: intro, 
+      customSections: custom, 
+      pageSections: page 
+    };
   }, [sections]);
 
   // Available fixed sections that haven't been added yet
   const availableFixedSections = useMemo(() => {
-    const usedKeys = new Set(fixedSections.map(s => s.section_key));
+    const usedKeys = new Set([...primaryIntroSections, ...pageSections].map(s => s.section_key));
     return FIXED_SECTIONS.filter(template => !usedKeys.has(template.key));
-  }, [fixedSections]);
+  }, [primaryIntroSections, pageSections]);
 
   const toggleSection = (sectionKey: string) => {
     setOpenSections(prev => {
@@ -186,10 +200,14 @@ export function MasterContentEditor({
       
       // Rebuild full sections array with updated order_numbers
       const newSections = [
-        ...fixedSections,
+        ...primaryIntroSections,
         ...reorderedCustomSections.map((s, i) => ({ 
           ...s, 
-          order_number: fixedSections.length + i 
+          order_number: primaryIntroSections.length + i 
+        })),
+        ...pageSections.map((s, i) => ({
+          ...s,
+          order_number: primaryIntroSections.length + reorderedCustomSections.length + i
         }))
       ];
       
@@ -384,18 +402,19 @@ export function MasterContentEditor({
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-6">
-            {/* Fixed Sections */}
-            {fixedSections.length > 0 && (
+          <div className="space-y-8">
+            {/* Primary Intro Sections */}
+            {primaryIntroSections.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                    Review Sections
+                  <h4 className="text-sm font-semibold text-primary uppercase tracking-wide">
+                    📌 Primary Intro
                   </h4>
+                  <Badge variant="secondary" className="text-xs">Appears at top of page</Badge>
                   <div className="h-px flex-1 bg-border" />
                 </div>
-                <div className="space-y-3">
-                  {fixedSections.map((section, idx) => {
+                <div className="space-y-3 border-l-2 border-primary/30 pl-4">
+                  {primaryIntroSections.map((section) => {
                     const globalIndex = sections.findIndex(s => s.section_key === section.section_key);
                     return renderSectionCard(section, globalIndex, false);
                   })}
@@ -407,14 +426,18 @@ export function MasterContentEditor({
             {customSections.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                    Custom Sections
+                  <h4 className="text-sm font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide">
+                    ✨ Custom Sections
                   </h4>
+                  <Badge variant="secondary" className="text-xs">Appears after intro</Badge>
                   {customSections.length > 1 && (
                     <Badge variant="outline" className="text-xs">Drag to reorder</Badge>
                   )}
                   <div className="h-px flex-1 bg-border" />
                 </div>
+                <p className="text-xs text-muted-foreground px-1">
+                  💡 These sections appear right after the intro on the review page
+                </p>
                 
                 <DndContext
                   sensors={sensors}
@@ -425,7 +448,7 @@ export function MasterContentEditor({
                     items={customSections.map(s => s.section_key)}
                     strategy={verticalListSortingStrategy}
                   >
-                    <div className="space-y-3">
+                    <div className="space-y-3 border-l-2 border-amber-500/30 pl-4">
                       {customSections.map((section) => {
                         const globalIndex = sections.findIndex(s => s.section_key === section.section_key);
                         return (
@@ -440,6 +463,28 @@ export function MasterContentEditor({
                     </div>
                   </SortableContext>
                 </DndContext>
+              </div>
+            )}
+
+            {/* Page Sections */}
+            {pageSections.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                    📋 Page Sections
+                  </h4>
+                  <Badge variant="outline" className="text-xs">Fixed positions</Badge>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+                <p className="text-xs text-muted-foreground px-1">
+                  💡 These are displayed at their designated sections throughout the review page
+                </p>
+                <div className="space-y-3 border-l-2 border-border pl-4">
+                  {pageSections.map((section) => {
+                    const globalIndex = sections.findIndex(s => s.section_key === section.section_key);
+                    return renderSectionCard(section, globalIndex, false);
+                  })}
+                </div>
               </div>
             )}
           </div>

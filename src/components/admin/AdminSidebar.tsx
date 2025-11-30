@@ -46,11 +46,6 @@ const sidebarItems = [
     icon: Globe,
   },
   {
-    title: 'Content Sections',
-    href: '/admin/content',
-    icon: FileText,
-  },
-  {
     title: 'Media Library',
     href: '/admin/media',
     icon: Image,
