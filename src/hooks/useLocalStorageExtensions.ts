@@ -63,6 +63,18 @@ export function useLocalStorageExtensions(tempId: string): LocalStorageExtension
     };
 
     loadFromStorage();
+
+    // Listen for extensionDataUpdated events to reload data in real-time
+    const handleDataUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.operatorId === tempId) {
+        console.log('Extension data updated event received, reloading from localStorage');
+        loadFromStorage();
+      }
+    };
+    
+    window.addEventListener('extensionDataUpdated', handleDataUpdate);
+    return () => window.removeEventListener('extensionDataUpdated', handleDataUpdate);
   }, [tempId]);
 
   const saveBonusesToLocal = useCallback((bonusData: OperatorBonus[]) => {
