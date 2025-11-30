@@ -5,11 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { StableRichTextEditor } from './StableRichTextEditor';
-import { Plus, Trash2, Save, ChevronDown, ChevronRight, FileText, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, Save, ChevronDown, ChevronRight, FileText, AlertCircle, GripVertical } from 'lucide-react';
 import { toast } from '@/lib/toast';
 import { TabErrorBoundary } from './TabErrorBoundary';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 export interface ContentSection {
   id?: string;
@@ -163,6 +166,75 @@ export function MasterContentEditor({
   const getSectionTemplate = (sectionKey: string) => {
     return FIXED_SECTIONS.find(t => t.key === sectionKey);
   };
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = customSections.findIndex(s => s.section_key === active.id);
+      const newIndex = customSections.findIndex(s => s.section_key === over.id);
+      
+      // Reorder custom sections
+      const reorderedCustomSections = arrayMove(customSections, oldIndex, newIndex);
+      
+      // Rebuild full sections array with updated order_numbers
+      const newSections = [
+        ...fixedSections,
+        ...reorderedCustomSections.map((s, i) => ({ 
+          ...s, 
+          order_number: fixedSections.length + i 
+        }))
+      ];
+      
+      onSectionsChange(newSections);
+    }
+  };
+
+  // Sortable wrapper for custom sections
+  function SortableSectionCard({ 
+    section, 
+    globalIndex, 
+    renderCard 
+  }: { 
+    section: ContentSection; 
+    globalIndex: number;
+    renderCard: () => React.ReactNode;
+  }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+      id: section.section_key
+    });
+    
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+    };
+    
+    return (
+      <div ref={setNodeRef} style={style}>
+        <div className="flex items-start gap-2">
+          <button
+            className="mt-4 p-2 cursor-grab hover:bg-accent rounded active:cursor-grabbing flex-shrink-0"
+            {...attributes}
+            {...listeners}
+            type="button"
+          >
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <div className="flex-1">
+            {renderCard()}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const renderSectionCard = (section: ContentSection, index: number, isCustom: boolean) => {
     const template = getSectionTemplate(section.section_key);
@@ -338,14 +410,36 @@ export function MasterContentEditor({
                   <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                     Custom Sections
                   </h4>
+                  {customSections.length > 1 && (
+                    <Badge variant="outline" className="text-xs">Drag to reorder</Badge>
+                  )}
                   <div className="h-px flex-1 bg-border" />
                 </div>
-                <div className="space-y-3">
-                  {customSections.map((section, idx) => {
-                    const globalIndex = sections.findIndex(s => s.section_key === section.section_key);
-                    return renderSectionCard(section, globalIndex, true);
-                  })}
-                </div>
+                
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={customSections.map(s => s.section_key)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-3">
+                      {customSections.map((section) => {
+                        const globalIndex = sections.findIndex(s => s.section_key === section.section_key);
+                        return (
+                          <SortableSectionCard
+                            key={section.section_key}
+                            section={section}
+                            globalIndex={globalIndex}
+                            renderCard={() => renderSectionCard(section, globalIndex, true)}
+                          />
+                        );
+                      })}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               </div>
             )}
           </div>
