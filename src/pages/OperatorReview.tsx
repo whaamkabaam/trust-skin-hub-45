@@ -33,6 +33,7 @@ import {
   formatWithdrawalTime,
   formatSiteType
 } from '@/lib/formatters';
+import DOMPurify from 'dompurify';
 
 const OperatorReview = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -45,6 +46,16 @@ const OperatorReview = () => {
   const { bonuses, features, security, faqs } = usePublicOperatorExtensions(slug || '');
   const { reviews, stats: userReviewStats } = usePublicReviews(operator?.id || '');
   const { assets: mediaAssets } = useMedia(operator?.id);
+
+  // Helper functions to get content sections
+  const getContentSection = (key: string) => {
+    return contentSections?.find(s => s.section_key === key);
+  };
+
+  const getContentHtml = (key: string) => {
+    const section = getContentSection(key);
+    return section?.rich_text_content || null;
+  };
 
   if (loading) {
     return (
@@ -788,18 +799,18 @@ const OperatorReview = () => {
               <Card>
                 <CardContent className="p-6 space-y-4">
                   <div className="text-muted-foreground leading-relaxed">
-                    {operator?.verdict ? (
-                      <div dangerouslySetInnerHTML={{ __html: operator.verdict }} />
+                    {getContentHtml('overview') ? (
+                      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('overview')!) }} />
                     ) : (
                       `${operator?.name} is a popular CS2 trading platform that offers case opening, skin trading, and various gaming modes for Counter-Strike 2 enthusiasts.`
                     )}
                   </div>
                   
                   {/* Company Background */}
-                  {operator?.company_background && (
+                  {getContentHtml('company_background') && (
                     <div className="border-t pt-4">
                       <h3 className="text-lg font-semibold mb-3">Company Background</h3>
-                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: operator.company_background }} />
+                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('company_background')!) }} />
                     </div>
                   )}
 
@@ -821,13 +832,24 @@ const OperatorReview = () => {
               </Card>
             </div>
 
-            {/* Content Sections - Main Platform Information */}
-            {contentSections && contentSections.length > 0 && (
-              <ContentSectionRenderer 
-                sections={contentSections} 
-                className="space-y-8"
-              />
-            )}
+            {/* Custom Content Sections - Non-fixed sections only */}
+            {(() => {
+              const fixedSectionKeys = [
+                'overview', 'company_background', 'bonuses_summary', 'security_overview',
+                'licensing', 'provably_fair', 'data_protection', 'responsible_gaming',
+                'complaints', 'audit', 'final_verdict'
+              ];
+              const customSections = contentSections?.filter(
+                s => !fixedSectionKeys.includes(s.section_key)
+              ) || [];
+              
+              return customSections.length > 0 ? (
+                <ContentSectionRenderer 
+                  sections={customSections} 
+                  className="space-y-8"
+                />
+              ) : null;
+            })()}
 
             {/* Screenshots Carousel */}
             {mediaAssets && mediaAssets.length > 0 && (
@@ -1236,8 +1258,8 @@ const OperatorReview = () => {
                     <CardContent className="p-6">
                       <h3 className="text-lg font-semibold mb-3">Bonus Information</h3>
                       <div className="text-muted-foreground leading-relaxed">
-                        {operator?.bonus_terms ? (
-                          <div dangerouslySetInnerHTML={{ __html: operator.bonus_terms }} />
+                        {getContentHtml('bonuses_summary') ? (
+                          <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('bonuses_summary')!) }} />
                         ) : (
                           `${operator?.name} offers various promotional bonuses and rewards for active users. Contact their support team for current bonus information.`
                         )}
@@ -1287,27 +1309,27 @@ const OperatorReview = () => {
                   </Card>
                 </div>
 
-                {security && (
+                {(security || getContentHtml('provably_fair') || getContentHtml('licensing') || getContentHtml('data_protection') || getContentHtml('responsible_gaming') || getContentHtml('complaints') || getContentHtml('audit')) && (
                   <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200/50">
                     <CardContent className="p-6 space-y-6">
-                      {security.provably_fair && security.provably_fair_description && (
+                      {(security?.provably_fair && getContentHtml('provably_fair')) && (
                         <div>
                           <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                             <Shield className="w-5 h-5 text-green-600" />
                             Provably Fair System
                           </h3>
-                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.provably_fair_description }} />
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('provably_fair')!) }} />
                         </div>
                       )}
                       
-                      {security.license_info && (
+                      {getContentHtml('licensing') && (
                         <div>
                           <h3 className="text-lg font-semibold mb-3">Licensing & Regulation</h3>
-                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.license_info }} />
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('licensing')!) }} />
                         </div>
                       )}
 
-                      {security.compliance_certifications && security.compliance_certifications.length > 0 && (
+                      {security?.compliance_certifications && security.compliance_certifications.length > 0 && (
                         <div>
                           <h3 className="text-lg font-semibold mb-3">Compliance Certifications</h3>
                           <div className="flex flex-wrap gap-2 mb-4">
@@ -1318,31 +1340,31 @@ const OperatorReview = () => {
                         </div>
                       )}
 
-                      {security.data_protection_info && (
+                      {getContentHtml('data_protection') && (
                         <div>
                           <h3 className="text-lg font-semibold mb-3">Data Protection</h3>
-                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.data_protection_info }} />
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('data_protection')!) }} />
                         </div>
                       )}
 
-                      {security.responsible_gaming_info && (
+                      {getContentHtml('responsible_gaming') && (
                         <div>
                           <h3 className="text-lg font-semibold mb-3">Responsible Gaming</h3>
-                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.responsible_gaming_info }} />
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('responsible_gaming')!) }} />
                         </div>
                       )}
 
-                      {security.complaints_platform && (
+                      {getContentHtml('complaints') && (
                         <div>
                           <h3 className="text-lg font-semibold mb-3">Complaints Platform</h3>
-                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.complaints_platform }} />
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('complaints')!) }} />
                         </div>
                       )}
 
-                      {security.audit_info && (
+                      {getContentHtml('audit') && (
                         <div>
                           <h3 className="text-lg font-semibold mb-3">Audit Information</h3>
-                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: security.audit_info }} />
+                          <div className="text-muted-foreground leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('audit')!) }} />
                         </div>
                       )}
                     </CardContent>
@@ -1352,8 +1374,8 @@ const OperatorReview = () => {
                     <CardContent className="p-6">
                       <h3 className="text-lg font-semibold mb-3">Security & Compliance</h3>
                       <div className="text-muted-foreground leading-relaxed">
-                        {operator?.fairness_info ? (
-                          <div dangerouslySetInnerHTML={{ __html: operator.fairness_info }} />
+                        {getContentHtml('security_overview') ? (
+                          <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('security_overview')!) }} />
                         ) : (
                           `${operator?.name} implements industry-standard security measures to protect user data and ensure fair gaming practices.`
                         )}
@@ -1486,6 +1508,23 @@ const OperatorReview = () => {
                 operatorName={operator?.name || ''} 
               />
             </div>
+
+            {/* Final Verdict Section */}
+            {getContentHtml('final_verdict') && (
+              <div id="verdict-section" className="space-y-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold">Our Final Verdict</h2>
+                </div>
+                <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200/50">
+                  <CardContent className="p-6">
+                    <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContentHtml('final_verdict')!) }} />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* FAQ Section */}
             <div className="space-y-4">
