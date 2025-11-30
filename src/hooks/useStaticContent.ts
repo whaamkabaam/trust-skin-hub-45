@@ -78,7 +78,7 @@ export function useStaticContent() {
         slug: operator.slug,
         logo: operator.logo_url,
         hero_image_url: operator.hero_image_url,
-        verdict: operator.verdict || '',
+        verdict: '', // Deprecated: kept for card previews
         overallRating: (operator.ratings as any)?.overall || 0,
         feeLevel: 'Medium',
         paymentMethods: ['crypto'],
@@ -102,8 +102,6 @@ export function useStaticContent() {
         categories: operator.categories || [],
         launch_year: operator.launch_year,
         ratings: operator.ratings as any,
-        bonus_terms: operator.bonus_terms,
-        fairness_info: operator.fairness_info,
         withdrawal_time_crypto: operator.withdrawal_time_crypto,
         withdrawal_time_skins: operator.withdrawal_time_skins,
         withdrawal_time_fiat: operator.withdrawal_time_fiat,
@@ -150,11 +148,16 @@ export function useStaticContent() {
       console.log('Generated static content:', staticContent);
 
       // Generate SEO data
+      const overviewSection = staticContent.contentSections.find(s => s.section_key === 'overview');
+      const descriptionText = overviewSection?.rich_text_content 
+        ? overviewSection.rich_text_content.replace(/<[^>]*>/g, '').substring(0, 150)
+        : `Complete review and analysis of ${staticContent.operator.name}`;
+      
       const seoData = {
         title: `${staticContent.operator.name} Review ${new Date().getFullYear()} - Complete Analysis`,
-        description: `In-depth review of ${staticContent.operator.name}. Rating: ${staticContent.operator.overallRating}/10. ${staticContent.operator.verdict?.substring(0, 100)}...`,
+        description: `In-depth review of ${staticContent.operator.name}. Rating: ${staticContent.operator.overallRating}/10. ${descriptionText}...`,
         ogTitle: `${staticContent.operator.name} Review - ${staticContent.operator.overallRating}/10 Rating`,
-        ogDescription: staticContent.operator.verdict?.substring(0, 150) || `Complete review and analysis of ${staticContent.operator.name}`,
+        ogDescription: descriptionText,
         ogImage: staticContent.operator.hero_image_url || staticContent.operator.logo,
         structuredData: {
           "@context": "https://schema.org",
@@ -175,7 +178,7 @@ export function useStaticContent() {
             "@type": "Organization",
             "name": "Expert Review Team"
           },
-          "reviewBody": staticContent.operator.verdict
+          "reviewBody": descriptionText
         }
       };
 

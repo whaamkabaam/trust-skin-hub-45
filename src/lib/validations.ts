@@ -53,7 +53,6 @@ export const operatorSchema = z.object({
   site_type: z.string().optional(),
   promo_code: z.string().optional(),
   verification_status: z.string().optional(),
-  company_background: z.string().optional(),
   performance_metrics: z.record(z.string(), z.any()).optional(),
   prize_info: z.record(z.string(), z.any()).optional(),
   shipping_info: z.record(z.string(), z.any()).optional(),

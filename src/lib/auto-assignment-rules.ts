@@ -81,15 +81,39 @@ const ASSIGNMENT_RULES: AssignmentRule[] = [
     minConfidence: 80
   },
 
-  // Company background and establishment
+  // Bonus Terms (now in content_sections)
   {
-    field: 'operator.company_background',
+    field: 'content_sections.bonuses_summary',
     patterns: [
+      /bonus(?:es)?\s+(?:terms?|summary)[:\s]+(.*?)(?:\n\n|$)/is,
+      /wagering\s+requirements?[:\s]+(.*?)(?:\n|$)/i
+    ],
+    keywords: ['bonus', 'bonuses', 'wagering', 'terms', 'requirements', 'promotion'],
+    minConfidence: 70
+  },
+
+  // Company background (now in content_sections)
+  {
+    field: 'content_sections.company_background',
+    patterns: [
+      /(?:company|corporate)\s+background[:\s]+(.*?)(?:\n\n|$)/is,
+      /(?:about|history)[:\s]+(.*?)(?:\n\n|$)/is,
       /established \d{4}/i,
       /operating for \d+\+? years?/i,
       /registered in \w+/i
     ],
-    keywords: ['established', 'operating', 'registered', 'company', 'years', 'cyprus'],
+    keywords: ['company', 'background', 'history', 'founded', 'established', 'operating', 'registered'],
+    minConfidence: 70
+  },
+
+  // Fairness Info (now in content_sections)
+  {
+    field: 'content_sections.fairness',
+    patterns: [
+      /fairness[:\s]+(.*?)(?:\n\n|$)/is,
+      /provably\s+fair[:\s]+(.*?)(?:\n\n|$)/is
+    ],
+    keywords: ['fairness', 'provably fair', 'random', 'rng', 'algorithm'],
     minConfidence: 75
   },
 
@@ -131,16 +155,6 @@ const ASSIGNMENT_RULES: AssignmentRule[] = [
     minConfidence: 75
   },
 
-  // Verdict or conclusion
-  {
-    field: 'operator.verdict',
-    patterns: [
-      /^(?:verdict|conclusion|summary|final thoughts?)[:.]?\s*(.{20,})/i
-    ],
-    keywords: ['verdict', 'conclusion', 'summary', 'final', 'overall'],
-    minConfidence: 70,
-    minLength: 50
-  },
 
   // Pros and cons
   {

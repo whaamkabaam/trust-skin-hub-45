@@ -1,124 +1,48 @@
-import React, { useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ContentSectionManager, type ContentSection } from '@/components/admin/ContentSectionManager';
-import { useOperators } from '@/hooks/useOperators';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/lib/toast';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertCircle } from 'lucide-react';
 
-export default function ContentSections() {
-  const { operators } = useOperators();
-  const [selectedOperatorId, setSelectedOperatorId] = useState<string>('');
-  const [sections, setSections] = useState<ContentSection[]>([]);
-  const [loading, setLoading] = useState(false);
+/**
+ * @deprecated This page has been replaced by the Master Content Editor
+ * Content sections are now managed within the operator form under "Review Content" tab
+ * This component redirects to the operators list
+ */
+const ContentSections = () => {
+  const navigate = useNavigate();
 
-  // Load sections when operator is selected
-  const handleOperatorChange = async (operatorId: string) => {
-    setSelectedOperatorId(operatorId);
-    if (operatorId) {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('content_sections')
-          .select('*')
-          .eq('operator_id', operatorId)
-          .order('order_number');
+  useEffect(() => {
+    // Redirect to operators list after a brief delay
+    const timer = setTimeout(() => {
+      navigate('/admin/operators');
+    }, 3000);
 
-        if (error) throw error;
-        setSections(data || []);
-      } catch (error) {
-        console.error('Error loading sections:', error);
-        toast.error('Failed to load content sections');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setSections([]);
-    }
-  };
-
-  const handleSectionsChange = (newSections: ContentSection[]) => {
-    setSections(newSections);
-  };
-
-  const handleSave = async () => {
-    if (!selectedOperatorId) return;
-    
-    try {
-      // Delete existing sections
-      await supabase
-        .from('content_sections')
-        .delete()
-        .eq('operator_id', selectedOperatorId);
-
-      // Insert new sections
-      if (sections.length > 0) {
-        const sectionsToInsert = sections.map((section, index) => ({
-          operator_id: selectedOperatorId,
-          section_key: section.section_key,
-          heading: section.heading,
-          rich_text_content: section.rich_text_content,
-          order_number: index,
-        }));
-
-        const { error } = await supabase
-          .from('content_sections')
-          .insert(sectionsToInsert);
-
-        if (error) throw error;
-      }
-      
-      toast.success('Content sections saved successfully');
-    } catch (error) {
-      console.error('Error saving sections:', error);
-      toast.error('Failed to save content sections');
-      throw error;
-    }
-  };
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Content Sections</h1>
-          <p className="text-muted-foreground">Manage content sections for operators</p>
-        </div>
-      </div>
-
-      <Card>
+    <div className="container mx-auto py-8">
+      <Card className="border-warning">
         <CardHeader>
-          <CardTitle>Select Operator</CardTitle>
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-warning" />
+            <CardTitle>Page Moved</CardTitle>
+          </div>
+          <CardDescription>
+            Content sections are now managed within the Master Content Editor
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Select value={selectedOperatorId} onValueChange={handleOperatorChange}>
-            <SelectTrigger className="w-full max-w-md">
-              <SelectValue placeholder="Choose an operator to manage content..." />
-            </SelectTrigger>
-            <SelectContent>
-              {operators.length === 0 ? (
-                <SelectItem value="none" disabled>No operators available</SelectItem>
-              ) : (
-                operators.map(operator => (
-                  <SelectItem key={operator.id} value={operator.id}>
-                    {operator.name}
-                  </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
+          <p className="text-sm text-muted-foreground mb-4">
+            This standalone page has been deprecated. Content sections are now managed directly within each operator's edit form under the "Review Content" tab.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Redirecting you to the operators list...
+          </p>
         </CardContent>
       </Card>
-
-      {selectedOperatorId && (
-        <ContentSectionManager 
-          operatorId={selectedOperatorId}
-          sections={sections}
-          onSectionsChange={handleSectionsChange}
-          onSave={handleSave}
-          disabled={loading}
-        />
-      )}
     </div>
   );
-}
+};
+
+export default ContentSections;

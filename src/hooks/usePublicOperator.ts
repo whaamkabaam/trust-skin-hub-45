@@ -118,7 +118,7 @@ export function usePublicOperator(slug: string): PublicOperatorData {
         slug: operatorData.slug,
         logo: operatorData.logo_url,
         hero_image_url: operatorData.hero_image_url,
-        verdict: operatorData.verdict || '',
+        verdict: '', // Deprecated: Use content_sections for full content
         overallRating: (operatorData.ratings as any)?.overall || 0,
         feeLevel: 'Medium',
         paymentMethods: ['crypto'],
