@@ -881,35 +881,63 @@ export function OperatorForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Supported Countries</CardTitle>
+          <CardTitle>Supported Regions</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {countries.map((country, index) => (
-            <div key={index} className="flex gap-2">
-              <Input
-                value={country}
-                onChange={(e) => updateArrayItem('supported_countries', index, e.target.value)}
-                placeholder="Country name"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => removeArrayItem('supported_countries', index)}
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground mb-4">
+            Select the regions where this operator is available
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { value: 'Worldwide', label: 'Worldwide', description: 'Available globally' },
+              { value: 'Europe', label: 'Europe', description: 'European countries' },
+              { value: 'North America', label: 'North America', description: 'USA, Canada, Mexico' },
+              { value: 'South America', label: 'South America', description: 'Latin America' },
+              { value: 'Asia', label: 'Asia', description: 'Asian countries' },
+              { value: 'Africa', label: 'Africa', description: 'African countries' },
+              { value: 'Oceania', label: 'Oceania', description: 'Australia, NZ, Pacific' },
+            ].map((region) => (
+              <div
+                key={region.value}
+                className={`flex items-start space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                  countries.includes(region.value) 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => {
+                  const isSelected = countries.includes(region.value);
+                  if (isSelected) {
+                    setValue('supported_countries', countries.filter(c => c !== region.value));
+                  } else {
+                    setValue('supported_countries', [...countries, region.value]);
+                  }
+                }}
               >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+                <input
+                  type="checkbox"
+                  checked={countries.includes(region.value)}
+                  onChange={() => {}}
+                  className="mt-1 h-4 w-4 rounded border-gray-300"
+                />
+                <div className="flex-1">
+                  <div className="font-medium text-sm">{region.label}</div>
+                  <div className="text-xs text-muted-foreground">{region.description}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {countries.length > 0 && (
+            <div className="mt-4 p-3 bg-muted rounded-lg">
+              <p className="text-sm font-medium mb-2">Selected regions:</p>
+              <div className="flex flex-wrap gap-2">
+                {countries.map((country) => (
+                  <Badge key={country} variant="secondary">
+                    {country}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => addArrayItem('supported_countries')}
-            className="w-full"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Country
-          </Button>
+          )}
         </CardContent>
       </Card>
 
