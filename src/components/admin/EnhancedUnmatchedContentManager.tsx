@@ -28,10 +28,11 @@ const FIELD_CATEGORIES = {
   'Operator Info': [
     { value: 'operator.name', label: 'Operator Name' },
     { value: 'operator.rating', label: 'Overall Rating' },
-    { value: 'operator.verdict', label: 'Editorial Verdict' },
+    { value: 'content_sections.overview', label: 'Overview / Summary' },
+    { value: 'content_sections.company_background', label: 'Company Background' },
+    { value: 'content_sections.bonuses_summary', label: 'Bonuses Summary' },
+    { value: 'content_sections.fairness', label: 'Fairness Information' },
     { value: 'operator.establishment_year', label: 'Establishment Year' },
-    { value: 'operator.company_background', label: 'Company Background' },
-    { value: 'operator.welcome_bonus', label: 'Welcome Bonus' },
     { value: 'operator.pros', label: 'Pros (add to list)' },
     { value: 'operator.cons', label: 'Cons (add to list)' }
   ],

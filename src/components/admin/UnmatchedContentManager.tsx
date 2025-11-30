@@ -22,9 +22,10 @@ interface Assignment {
 // Common field options for assignment
 const FIELD_OPTIONS = [
   { value: 'operator.name', label: 'Operator Name' },
-  { value: 'operator.verdict', label: 'Verdict' },
-  { value: 'operator.bonus_terms', label: 'Bonus Terms' },
-  { value: 'operator.company_background', label: 'Company Background' },
+  { value: 'content_sections.overview', label: 'Overview' },
+  { value: 'content_sections.bonuses_summary', label: 'Bonuses Summary' },
+  { value: 'content_sections.company_background', label: 'Company Background' },
+  { value: 'content_sections.fairness', label: 'Fairness Info' },
   { value: 'operator.pros', label: 'Pros (add to list)' },
   { value: 'operator.cons', label: 'Cons (add to list)' },
   { value: 'review.title', label: 'Review Title' },
